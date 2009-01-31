@@ -32,7 +32,6 @@ int TrackAPI_debugFlag = 0;
 */
 bool InArea(Image* binaryImage, int particleIndex, Rect rect)
 { 
-	char funcName[]="InArea";
 	double position;
 	
 	imaqMeasureParticle(binaryImage, particleIndex, 0, 
@@ -104,7 +103,6 @@ int GetLargestParticle(Image* binaryImage, int* largestParticleIndex, Rect rect)
 */
 int FindColor(FrcHue color, ParticleAnalysisReport* trackReport)
 {
-	char funcName[]="FindColor";
 	int success = 0;		// return: 0 = error
 	
 	/* track color */
@@ -203,7 +201,6 @@ int FindColor(ColorMode mode, const Range* plane1Range, const Range* plane2Range
 		const Range* plane3Range, ParticleAnalysisReport *trackReport, 
 		ColorReport *colorReport, Rect rect)
 {
-	char funcName[]="FindColor";
 	int errorCode = 0;
 	int success = 0;
 	
@@ -421,7 +418,6 @@ TrackingThreshold GetTrackingData(FrcHue hue, FrcLight light)
  */
 void PrintReport(ParticleAnalysisReport* myReport)
 {
-	char funcName[]="PrintReport";
 	dprintf(LOG_INFO, "particle analysis:\n    %s%i  %s%i\n    %s%lf\n    %s%i  %s%i\n    %s%g  %s%g\n    %s%g\n    %s%i  %s%i\n    %s%i  %s%i\n",
 			"imageHeight = ", myReport->imageHeight, 
 			"imageWidth = ", myReport->imageWidth, 
@@ -447,7 +443,6 @@ void PrintReport(ParticleAnalysisReport* myReport)
  */
 void PrintReport(ColorReport* myReport)
 {
-	char funcName[]="PrintReport";
 	dprintf(LOG_INFO, "particle ranges for %i particles:     ",
 			"numberParticlesFound = ", myReport->numberParticlesFound);
 	;
@@ -470,7 +465,6 @@ void PrintReport(ColorReport* myReport)
  */
 void PrintReport(TrackingThreshold* myReport)
 {
-	char funcName[]="PrintReport";
 	dprintf(LOG_INFO, "name of color: %s", myReport->name);
 
 	dprintf(LOG_INFO, "\n    %s%i  %s%i\n    %s%i %s%i\n    %s%i  %s%i\n -------",

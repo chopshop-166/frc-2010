@@ -36,6 +36,7 @@ public:
 	// CounterBase interface
 	void Start();
 	INT32 Get();
+	INT32 GetRaw();
 	void Reset();
 	void Stop();
 	double GetPeriod();

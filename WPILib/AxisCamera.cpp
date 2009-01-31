@@ -192,7 +192,6 @@ int GetImage(Image* image, double *timestamp)
  */
 int GetImageData(char** imageData, int* numBytes, double* currentImageTimestamp)
 {
-	char funcName[]="GetImageData";
 	int success = 0;
 	int readIndex;
 	int	readCount = 10;
@@ -284,7 +283,6 @@ int GetCameraMetric(FrcvCameraMetric metric)
  */
 int CameraCloseSocket(char *errstring, int socket)
 {
-	char funcName[]="CameraCloseSocket";
 	DPRINTF (LOG_CRITICAL, "Closing socket - CAMERA ERROR: %s", errstring );
 	close (socket);
 	return (ERROR);
@@ -522,7 +520,6 @@ int ConfigureCamera(char *configString){
  * @return success: 0=failure; 1=success
  */
 int GetCameraSetting(char *configString, char *cameraResponse){
-	char funcName[]="GetCameraSetting";
 	char *serverName = "192.168.0.90";		/* camera @ */ 
 	int success = 0;
 	int camSock = 0;    
@@ -556,7 +553,6 @@ int GetCameraSetting(char *configString, char *cameraResponse){
  * @return success: 0=failure; 1=success
  */
 int GetImageSetting(char *configString, char *cameraResponse){
-	char funcName[]="GetImageSetting";
 	char *serverName = "192.168.0.90";		/* camera @ */ 
 	int success = 0;
 	int camSock = 0;    
@@ -891,7 +887,6 @@ void StartImageSignal(int taskId) // Start issuing a SIGUSR1 signal to the speci
  */
 void StartImageAcquisition()
 {	
-	char funcName[]="StartImageAcquisition";
 	globalCamera.cameraMetrics[CAM_STARTS]++;  
 	globalCamera.acquire = 1; 
 	DPRINTF(LOG_DEBUG, "starting acquisition");
@@ -914,9 +909,8 @@ void StopImageAcquisition()
  * @param resolution Camera image size 
  * @param rotation Camera image rotation 
  */
-static int initCamera(int frames, int compression, ImageSize resolution, ImageRotation rotation) {
-	char funcName[]="initCamera";
-	//let user code determine debug level
+static int initCamera(int frames, int compression, ImageSize resolution, ImageRotation rotation) 
+{
 	//SetDebugFlag ( DEBUG_SCREEN_AND_FILE  ) ;
 	
 	DPRINTF(LOG_DEBUG, "\n+++++ camera task starting: rotation = %i", (int)rotation);
@@ -949,7 +943,7 @@ Task g_axisCameraTask("Camera", (FUNCPTR)initCamera);
  * @param frames Frames per second 
  * @param compression Camera image compression 
  * @param resolution Camera image size 
- * @param rotation Camera image rotation 
+ * @param rotation Camera image rotation (ROT_0 or ROT_180)
  * @return TaskID of camera task, or -1 if error.
  */
 int StartCameraTask()

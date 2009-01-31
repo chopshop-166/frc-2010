@@ -8,6 +8,7 @@
 #define PIDCONTROLLER_H_
 
 #include "Base.h"
+#include "semLib.h"
 
 class PIDOutput;
 class PIDSource;
@@ -38,6 +39,9 @@ private:
 	float m_setpoint;
 	float m_error;
 	float m_result;
+	float m_period;
+	
+	SEM_ID m_semaphore;
 	
 	PIDSource *m_pidInput;
 	PIDOutput *m_pidOutput;

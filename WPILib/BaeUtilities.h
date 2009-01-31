@@ -18,13 +18,12 @@
 #include "WPILib.h"
 
 /*  Constants */
-
-#define LOG_DEBUG    __FILE__,funcName,__LINE__,DEBUG_TYPE
-#define LOG_INFO     __FILE__,funcName,__LINE__,INFO_TYPE
-#define LOG_ERROR    __FILE__,funcName,__LINE__,ERROR_TYPE
-#define LOG_CRITICAL __FILE__,funcName,__LINE__,CRITICAL_TYPE
-#define LOG_FATAL    __FILE__,funcName,__LINE__,FATAL_TYPE
-#define LOG_DEBUG    __FILE__,funcName,__LINE__,DEBUG_TYPE
+#define LOG_DEBUG    __FILE__,__FUNCTION__,__LINE__,DEBUG_TYPE
+#define LOG_INFO     __FILE__,__FUNCTION__,__LINE__,INFO_TYPE
+#define LOG_ERROR    __FILE__,__FUNCTION__,__LINE__,ERROR_TYPE
+#define LOG_CRITICAL __FILE__,__FUNCTION__,__LINE__,CRITICAL_TYPE
+#define LOG_FATAL    __FILE__,__FUNCTION__,__LINE__,FATAL_TYPE
+#define LOG_DEBUG    __FILE__,__FUNCTION__,__LINE__,DEBUG_TYPE
 
 /*   Enumerated Types */
 

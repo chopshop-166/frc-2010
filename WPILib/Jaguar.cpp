@@ -76,9 +76,9 @@ float Jaguar::Get()
 }
 
 /**
- * Write out the PID value as seen in the @PIDOutput base object.
+ * Write out the PID value as seen in the PIDOutput base object.
  * 
- * @param output Write out the PWM value as was found in the @PIDController
+ * @param output Write out the PWM value as was found in the PIDController
  */
 void Jaguar::PIDWrite(float output)
 {

@@ -200,15 +200,12 @@ void Encoder::Stop()
 }
 
 /**
- * Gets the current count.
- * Returns the current count on the Encoder.
- * This method compensates for the decoding type.
- * 
- * @deprecated Use GetDistance() in favor of this method.  This returns unscaled pulses and GetDistance() scales using value from SetDistancePerPulse().
- *
- * @return Current count from the Encoder.
+ * Gets the raw value from the encoder.
+ * The raw value is the actual count unscaled by the 1x, 2x, or 4x scale
+ * factor.
+ * @return Current raw count from the encoder
  */
-INT32 Encoder::Get()
+INT32 Encoder::GetRaw()
 {
 	INT32 value;
 	if (m_counter)
@@ -218,7 +215,19 @@ INT32 Encoder::Get()
 		value = m_encoder->readOutput_Value(&status);
 		wpi_assertCleanStatus(status);
 	}
-	return (INT32)(value * DecodingScaleFactor());
+	return value;
+}
+
+/**
+ * Gets the current count.
+ * Returns the current count on the Encoder.
+ * This method compensates for the decoding type.
+ * 
+ * @return Current count from the Encoder adjusted for the 1x, 2x, or 4x scale factor.
+ */
+INT32 Encoder::Get()
+{
+	return (INT32) (GetRaw() * DecodingScaleFactor());
 }
 
 /**

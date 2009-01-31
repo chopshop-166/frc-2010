@@ -24,8 +24,8 @@ class AnalogModule;
 class Gyro : public SensorBase, public PIDSource
 {
 public:
-	static const UINT32 kOversampleBits = 7;
-	static const UINT32 kAverageBits = 3;
+	static const UINT32 kOversampleBits = 10;
+	static const UINT32 kAverageBits = 0;
 	static const float kSamplesPerSecond = 50.0;
 	static const float kCalibrationSampleTime = 5.0;
 	static const float kDefaultVoltsPerDegreePerSecond = 0.0125;

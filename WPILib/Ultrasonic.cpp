@@ -75,6 +75,7 @@ void Ultrasonic::Initialize()
  * the ping.
  * @param echoChannel The digital input channel that receives the echo. The length of time that the
  * echo is high represents the round trip time of the ping, and the distance.
+ * @param units The units returned in either kInches or kMilliMeters
  */
 Ultrasonic::Ultrasonic(UINT32 pingChannel, UINT32 echoChannel, DistanceUnit units)
 {
@@ -90,6 +91,7 @@ Ultrasonic::Ultrasonic(UINT32 pingChannel, UINT32 echoChannel, DistanceUnit unit
  * for the ping channel.
  * @param pingChannel The digital output object that starts the sensor doing a ping. Requires a 10uS pulse to start.
  * @param echoChannel The digital input object that times the return pulse to determine the range.
+ * @param units The units returned in either kInches or kMilliMeters
  */
 Ultrasonic::Ultrasonic(DigitalOutput *pingChannel, DigitalInput *echoChannel, DistanceUnit units)
 {
@@ -110,6 +112,7 @@ Ultrasonic::Ultrasonic(DigitalOutput *pingChannel, DigitalInput *echoChannel, Di
  * for the ping channel.
  * @param pingChannel The digital output object that starts the sensor doing a ping. Requires a 10uS pulse to start.
  * @param echoChannel The digital input object that times the return pulse to determine the range.
+ * @param units The units returned in either kInches or kMilliMeters
  */
 Ultrasonic::Ultrasonic(DigitalOutput &pingChannel, DigitalInput &echoChannel, DistanceUnit units)
 {
@@ -130,6 +133,7 @@ Ultrasonic::Ultrasonic(DigitalOutput &pingChannel, DigitalInput &echoChannel, Di
  * @param echoSlot The digital module that the echoChannel is in.
  * @param echoChannel The digital input channel that receives the echo. The length of time
  * that the echo is high represents the round trip time of the ping, and the distance.
+ * @param units The units returned in either kInches or kMilliMeters
  */
 Ultrasonic::Ultrasonic(UINT32 pingSlot, UINT32 pingChannel,
 		UINT32 echoSlot, UINT32 echoChannel, DistanceUnit units)
@@ -277,9 +281,9 @@ double Ultrasonic::GetRangeMM()
 }
 
 /**
- * Get the range in the current @DistanceUnit for the @PIDSource base object.
+ * Get the range in the current DistanceUnit for the PIDSource base object.
  * 
- * @return The range in @DistanceUnit
+ * @return The range in DistanceUnit
  */
 double Ultrasonic::PIDGet()
 {
@@ -295,9 +299,9 @@ double Ultrasonic::PIDGet()
 }
 
 /**
- * Set the current @DistanceUnit that should be used for the @PIDSource base object.
+ * Set the current DistanceUnit that should be used for the PIDSource base object.
  * 
- * @param units The @DistanceUnit that should be used.
+ * @param units The DistanceUnit that should be used.
  */
 void Ultrasonic::SetDistanceUnits(DistanceUnit units)
 {
@@ -305,9 +309,9 @@ void Ultrasonic::SetDistanceUnits(DistanceUnit units)
 }
 
 /**
- * Get the current @DistanceUnit that is used for the @PIDSource base object.
+ * Get the current DistanceUnit that is used for the PIDSource base object.
  * 
- * @return The type of @DistanceUnit that is being used.
+ * @return The type of DistanceUnit that is being used.
  */
 Ultrasonic::DistanceUnit Ultrasonic::GetDistanceUnits()
 {
