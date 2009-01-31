@@ -1,0 +1,151 @@
+#include "WPILib.h"
+#include "Drive166.h"
+#include "MemoryLog166.h"
+
+// Sample in memory buffer
+struct sbuf166
+{
+	struct timespec tp;               // Time of snapshot
+	float volt;                       // Voltage
+	
+};
+
+struct timespec tp;
+
+// Sample Memory Log
+class SensorLog : public MemoryLog166
+{
+public:
+	SensorLog() : MemoryLog166(32*1024) {return;};
+	~SensorLog() {return;};
+	unsigned int DumpBuffer(          // Dump the next buffer into the file
+			char *nptr,               // Buffer that needs to be formatted
+			FILE *outputFile);        // and then stored in this file
+	unsigned int PutOne(float v);     // Log the voltage
+};
+
+// Write one buffer into memory
+unsigned int SensorLog::PutOne(float v)
+{
+	struct sbuf166 *ob;               // Output buffer
+	
+	// Get output buffer
+	if ((ob = (struct sbuf166 *)GetNextBuffer(sizeof(struct sbuf166)))) {
+		
+		// Fill it in.
+		clock_gettime(CLOCK_REALTIME, &ob->tp);
+		ob->volt = v;
+		return (sizeof(struct sbuf166));
+	}
+	
+	// Did not get a buffer. Return a zero length
+	return (0);
+}
+
+// Format the next buffer for file output
+unsigned int SensorLog::DumpBuffer(char *nptr, FILE *ofile)
+{
+	struct sbuf166 *sb = (struct sbuf166 *)nptr;
+	
+	// Output the data into the file
+	fprintf(ofile, "%u, %u, %f\n", sb->tp.tv_sec, sb->tp.tv_nsec, sb->volt);
+	
+	// Done
+	return (sizeof(struct sbuf166));
+}
+
+
+// Drive task constructor
+Team166Drive::Team166Drive(void)
+{
+	// Initialize assorted fields
+	cvolt_lf = 2.5; // Standing still
+	encoder_count_lf = 0; // Nothing yet
+	encoder_direction_lf = false; 
+	encoder_stopped_lf = true;
+	
+	// Start our task
+	Start((char *)"166DriveTask");	
+};
+	
+// Drive task destructor
+Team166Drive::~Team166Drive(void)
+{		
+	return;
+};
+	
+// Main function of the drive task
+int Team166Drive::Main(int a2, int a3, int a4, int a5,
+			int a6, int a7, int a8, int a9, int a10)
+{
+
+	Robot166 *lHandle;            // Local handle
+	AnalogChannel ac1(T166_CURRENT_SENSOR_MOD, T166_CURRENT_SENSOR_LF); // Current sensor channel for Left Front wheel
+	SensorLog sl;                 // Sensor log
+	int sample_count = 0;         // Count of log samples
+	
+	
+	// Let the world know we're in
+	printf("In the 166 drive task\n");
+		
+	// Indicate that we've now completed initialization
+	MyTaskInitialized = 1;
+		
+	// Ensure we get into Autononmous or Tele Operasted mode
+	while (!Robot166::getInstance() ||
+	       ((Robot166::getInstance()->RobotMode != T166_AUTONOMOUS) &&
+	    	(Robot166::getInstance()->RobotMode != T166_OPERATOR))) {
+		Wait (0.050); // 50ms
+	}
+	MyTaskInitialized = 2;
+	lHandle = Robot166::getInstance();
+	
+	// How long we're still until encoder logic considers this as not moving
+	lHandle->lfEncoder.SetMaxPeriod(0.5);  // 500ms
+	
+	// Reset and start all encoders
+	lHandle->lfEncoder.Reset();
+	lHandle->lfEncoder.Start();
+	
+    // General main loop (while in Autonomous or Tele mode)
+	printf("Drive task is getting ready...\n");
+	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
+			(lHandle->RobotMode == T166_OPERATOR)) {
+		
+		float x, y;                       // Our copy of the X and Y for drive
+		float bat_volt;                   // Battery Volt
+		// Figure our what we have for battery voltage (must have bat plugged into AI8/Mod1)
+		bat_volt = lHandle->GetBatteryVoltage();
+		printf("Battery at %f Volt\n", bat_volt);
+		
+		// Should we log this value?
+		if (sample_count < 50) {
+			sl.PutOne(bat_volt);
+			sample_count++;
+		} else {
+			if (sample_count == 50) {
+				sl.DumpToFile("volt_sample.csv");
+				sample_count++;
+			}
+		}
+#if 0		
+		
+		// How is the left front wheel doing?
+		cvolt_lf = ac1.GetValue() * (20.0 / 4096.0);
+		printf("Current sensor (LF): %f Volt\n", cvolt_lf);
+		encoder_count_lf = lHandle->lfEncoder.Get();
+		encoder_direction_lf = lHandle->lfEncoder.GetDirection();
+		encoder_stopped_lf = lHandle->lfEncoder.GetStopped();
+        printf("Encoder (LF); Val: %d, Dir: %d, Stopped: %d\n", encoder_count_lf,
+        		encoder_direction_lf, encoder_stopped_lf);
+#endif
+        
+		// Drive it as requested by the joystick.
+		lHandle->GetJoyStick(&x, &y);
+		printf("Drive task; JoyStick at X=%f, Y=%f\n", x, y);
+		lHandle->myDrive.ArcadeDrive(y, x, 0);
+		MyWatchDog = 1;
+		Wait (0.100); // 100ms
+	}
+	return (0);
+}
