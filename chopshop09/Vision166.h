@@ -4,6 +4,12 @@
 #include "Robot166.h"
 #include "semLib.h"
 
+// WPILib include files for vision
+#include "TrackAPI.h" 
+
+// constants
+#define PI 3.14159265358979
+
 //
 // This defines a sample vision task
 //
@@ -21,11 +27,41 @@ public:
 	
 	// Main function of the vision task
 	virtual int Main(int a2, int a3, int a4, int a5,
-			int a6, int a7, int a8, int a9, int a10);
+			int a6, int a7, int a8, int a9, int a10);	
+
+	// Accessors
+	float GetBearing();
+	double GetTargetArea();
+	int GetTargetHeight();
+	bool IsTargetAcquired();
 
 // Members
-public:
-	float bearing;                       // Current target bearing
+private:
+	float bearing;                      // Current target bearing
+	double targetArea;					// area of target
+	int targetHeight;					// height of target
+	bool targetAcquired;				// target acquisition flag
+
+	Servo *horizontalServo;  		// servo object
+	float horizontalDestination;
+	float horizontalPosition;	
+	float horizontalServoPosition;
+	float servoDeadband;			// percentage servo delta to trigger move
+	int framesPerSecond;			// number of camera frames to get per second
+	float panControl;				// to slow down pan
+	float panPosition;
+	double sinStart;
+	static double panStartTime;
+	int panIncrement;				// pan needs a 1-up number for each call
 	
+	double savedImageTimestamp;		// timestamp of last image acquired
+	
+	ColorMode mode;
+	ParticleAnalysisReport pinkReport, greenReport;	// particle analysis reports
+	TrackingThreshold pinkSpec, greenSpec;			// color thresholds
+	
+	void AcquireTarget();
+	void SetServoPosition(float normalizedHorizontal);
+	void AdjustServoPosition(float normDeltaHorizontal);
 };
 #endif // !defined(_VISION166_H)
