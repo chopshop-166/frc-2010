@@ -1,5 +1,5 @@
 /********************************************************************************
-*  Project   		: FIRST Motor Controller
+*  Project   		: FIRST Motor Controller/Chopshop 2009
 *  File Name  		: Target166.h          
 *  Contributors   	: ELF
 *  Creation Date 	: January 12, 2008

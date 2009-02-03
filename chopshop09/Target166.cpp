@@ -1,8 +1,8 @@
 /********************************************************************************
-*  Project   		: FIRST Motor Controller
+*  Project   		: FIRST Motor Controller/Chopshop 2009
 *  File Name  		: Target166.cpp        
-*  Contributors   	: ELF, DWD, EMF
-*  Creation Date 	: January 12, 2008
+*  Contributors   	: ELF, EMF
+*  Creation Date 	      : January 12, 2008
 *  Revision History	: Source code & revision history maintained at sourceforge.WPI.edu   
 *  File Description	: Tracking Routines for FIRST Vision API
 */ 

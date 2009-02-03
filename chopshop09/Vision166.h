@@ -1,3 +1,12 @@
+/********************************************************************************
+*  Project   		: Chopshop 2009
+*  File Name  		: Vision166.h          
+*  Contributors   	: ELF
+*  Creation Date 	: February 2, 2008
+*  Revision History	: Source code & revision history maintained at code.google.com    
+*  File Description	: Header file for vision processing
+*/
+
 #if !defined(_VISION166_H)
 #define _VISION166_H
 #include "WPILib.h"

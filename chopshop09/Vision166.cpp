@@ -1,4 +1,11 @@
-
+/********************************************************************************
+*  Project   		: Chopshop 2009
+*  File Name  		: Vision166.cpp          
+*  Contributors   	: ELF
+*  Creation Date 	: February 2, 2008
+*  Revision History	: Source code & revision history maintained at code.google.com    
+*  File Description	: Code for vision processing
+*/
 #include "WPILib.h"
 #include <math.h>
 
