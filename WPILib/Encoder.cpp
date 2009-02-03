@@ -362,7 +362,7 @@ double Encoder::DecodingScaleFactor()
  */
 double Encoder::GetDistance()
 {
-	return Get() * m_distancePerPulse;
+	return GetRaw() * DecodingScaleFactor() * m_distancePerPulse;
 }
 
 /**

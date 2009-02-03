@@ -176,7 +176,6 @@ void Notifier::DeleteFromQueue()
 {
 	if (m_queued)
 	{
-		semTake(m_semaphore, WAIT_FOREVER);
 		m_queued = false;
 		wpi_assert(timerQueueHead != NULL);
 		if (timerQueueHead == this)

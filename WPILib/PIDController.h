@@ -59,6 +59,10 @@ public:
 	void SetContinuous(bool continuous = true);
 	void SetInputRange(float minimumInput, float maximumInput);
 	void SetOutputRange(float mimimumOutput, float maximumOutput);
+	void SetPID(float p, float i, float d);
+	float GetP();
+	float GetI();
+	float GetD();
 	
 	void SetSetpoint(float setpoint);
 	float GetSetpoint();

@@ -129,6 +129,63 @@ void PIDController::Calculate()
 }
 
 /**
+ * Set the PID Controller gain parameters.
+ * Set the proportional, integral, and differential coefficients.
+ * @param p Proportional coefficient
+ * @param i Integral coefficient
+ * @param d Differential coefficient
+ */
+void PIDController::SetPID(float p, float i, float d)
+{
+	CRITICAL_REGION(m_semaphore)
+	{
+		m_P = p;
+		m_I = i;
+		m_D = d;
+	}
+	END_REGION;
+}
+
+/**
+ * Get the Proportional coefficient
+ * @return proportional coefficient
+ */
+float PIDController::GetP()
+{
+	CRITICAL_REGION(m_semaphore)
+	{
+		return m_P;
+	}
+	END_REGION;
+}
+
+/**
+ * Get the Integral coefficient
+ * @return integral coefficient
+ */
+float PIDController::GetI()
+{
+	CRITICAL_REGION(m_semaphore)
+	{
+		return m_I;
+	}
+	END_REGION;
+}
+
+/**
+ * Get the Differential coefficient
+ * @return differential coefficient
+ */
+float PIDController::GetD()
+{
+	CRITICAL_REGION(m_semaphore)
+	{
+		return m_D;
+	}
+	END_REGION;
+}
+
+/**
  * Return the current PID result
  * This is always centered on zero and constrained the the max and min outs
  * @return the latest calculated output
