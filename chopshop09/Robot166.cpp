@@ -34,9 +34,9 @@ Robot166::Robot166(void) :
 	driveStick(T166_USB_STICK_1),        // USB port for 1st stick
 	dispStick(T166_USB_STICK_2),        // USB port for 2nd stick
 	lfEncoder(T166_ENC_LF_A, T166_ENC_LF_B, true), // Left Front encoder pins
-	rfEncoder(T166_ENC_RF_A, T166_ENC_RF_B, true), // Right Front encoder pins
+	rfEncoder(T166_ENC_RF_A, T166_ENC_RF_B, false), // Right Front encoder pins
 	lbEncoder(T166_ENC_LB_A, T166_ENC_LB_B, true), // Left Back encoder pins
-	rbEncoder(T166_ENC_RB_A, T166_ENC_RB_B, true) // Right Back encoder pins
+	rbEncoder(T166_ENC_RB_A, T166_ENC_RB_B, false) // Right Back encoder pins
 {
 	printf("Constructor\n");
 	RobotMode = T166_CONSTRUCTOR;
@@ -66,6 +66,8 @@ Robot166::Robot166(void) :
 		Wait (0.100);
 	}
 	printf("All tasks we depend upon are up!\n");
+	
+	
 }
 
 /**

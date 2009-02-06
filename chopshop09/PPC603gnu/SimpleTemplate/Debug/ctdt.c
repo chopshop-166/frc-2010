@@ -15,11 +15,13 @@ void _GLOBAL__I__ZN10PIDControlC2Ev();
 
 void _GLOBAL__I__ZN17Team166SensorTestC2Ev();
 
+void _GLOBAL__I__ZN19DashboardDataFormatC2Ev();
+
 void _GLOBAL__I__ZN7DispLog6PutOneEfff();
 
 void _GLOBAL__I__ZN8SonarLog6PutOneEf();
 
-void _GLOBAL__I__ZN9SensorLog6PutOneEfffffiiiibbbbbbbb();
+void _GLOBAL__I__ZN9SensorLog6PutOneEfffffiiiibbbbbbbbfffffff();
 
 void _GLOBAL__I__ZN9VisionLog6PutOneEf();
 
@@ -56,9 +58,10 @@ void (*_ctors[])() =
     _GLOBAL__I__ZN10Accel_Log26PutOneEfff,
     _GLOBAL__I__ZN10PIDControlC2Ev,
     _GLOBAL__I__ZN17Team166SensorTestC2Ev,
+    _GLOBAL__I__ZN19DashboardDataFormatC2Ev,
     _GLOBAL__I__ZN7DispLog6PutOneEfff,
     _GLOBAL__I__ZN8SonarLog6PutOneEf,
-    _GLOBAL__I__ZN9SensorLog6PutOneEfffffiiiibbbbbbbb,
+    _GLOBAL__I__ZN9SensorLog6PutOneEfffffiiiibbbbbbbbfffffff,
     _GLOBAL__I__ZN9VisionLog6PutOneEf,
     _GLOBAL__I_g_stopImageToPCServer,
     _GLOBAL__I__ZN12AnalogModule11GetInstanceEj,
@@ -84,11 +87,13 @@ void _GLOBAL__D__ZN10PIDControlC2Ev();
 
 void _GLOBAL__D__ZN17Team166SensorTestC2Ev();
 
+void _GLOBAL__D__ZN19DashboardDataFormatC2Ev();
+
 void _GLOBAL__D__ZN7DispLog6PutOneEfff();
 
 void _GLOBAL__D__ZN8SonarLog6PutOneEf();
 
-void _GLOBAL__D__ZN9SensorLog6PutOneEfffffiiiibbbbbbbb();
+void _GLOBAL__D__ZN9SensorLog6PutOneEfffffiiiibbbbbbbbfffffff();
 
 void _GLOBAL__D__ZN9VisionLog6PutOneEf();
 
@@ -117,9 +122,10 @@ void (*_dtors[])() =
     _GLOBAL__D__ZN10Accel_Log26PutOneEfff,
     _GLOBAL__D__ZN10PIDControlC2Ev,
     _GLOBAL__D__ZN17Team166SensorTestC2Ev,
+    _GLOBAL__D__ZN19DashboardDataFormatC2Ev,
     _GLOBAL__D__ZN7DispLog6PutOneEfff,
     _GLOBAL__D__ZN8SonarLog6PutOneEf,
-    _GLOBAL__D__ZN9SensorLog6PutOneEfffffiiiibbbbbbbb,
+    _GLOBAL__D__ZN9SensorLog6PutOneEfffffiiiibbbbbbbbfffffff,
     _GLOBAL__D__ZN9VisionLog6PutOneEf,
     _GLOBAL__D_g_stopImageToPCServer,
     _GLOBAL__D__ZN9ErrorBase16globalErrorMutexE,

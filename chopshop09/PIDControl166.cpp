@@ -9,6 +9,9 @@ PIDControl::PIDControl()
 	totalError = 0;		//Sets total error to zero initially
 	maxOutput = 1.0;	//sets max output
 	minOutput = -1.0;	//sets min output
+	input = 0;			// Input value for PID Controller
+	sPoint = 0;			// Setpoint value for PID Controller
+	result = 0;			// Result value
 }
 
 PIDControl::~PIDControl()
@@ -17,16 +20,19 @@ PIDControl::~PIDControl()
 }
 
 
-float PIDControl::calculate(float setPoint, INT32 wheelSpeed)
+float PIDControl::calculate(float setPoint, float wheelSpeed, float K_P, float K_I)
 {
+	static int foo =0;
+	
 	if(setPoint == 0)     //If the setpoint is 0 no calculations are done
 		return 0;
 	
-	float input = convertToInput(wheelSpeed); //Converts RPS Wheel Speed to Input values
-	float sPoint = setPoint;	//Gets the set points
-	float result;               //Stores the result
+	input = convertToInput(wheelSpeed); //Converts RPS Wheel Speed to Input values
 	
-	if(PIDEnabled)
+	sPoint = setPoint;	//Gets the set points
+	result = 0;               //Stores the result
+	
+	if(1)
 	{
 		error = sPoint - input;   //Error calculation
 		
@@ -45,18 +51,24 @@ float PIDControl::calculate(float setPoint, INT32 wheelSpeed)
 				else if (result < minOutput)
 					result = minOutput;
 	}
+	if(!(foo++%100))
+	{
+		//printf("Setpoint: %f, Input: %f, Result: %f\n", setPoint, input, result);
+		foo = 0;
+	}
+
 	return result;
 	
 }
 
 
-INT64 PIDControl::convertToRPS(float input)
+float PIDControl::convertToRPS(float input)
 {
-	INT64 wheelSpeed = input*MAX_WHEEL_SPEED;  //Calculates the wheel speed in RPS
+	float wheelSpeed = input*MAX_WHEEL_SPEED;  //Calculates the wheel speed in RPS
 	return wheelSpeed;
 }
 
-float PIDControl::convertToInput(INT32 wheelSpeed)
+float PIDControl::convertToInput(float wheelSpeed)
 {
 	float input = (wheelSpeed/MAX_WHEEL_SPEED);  //Caluclates the wheel speed in Float values
 	return input;

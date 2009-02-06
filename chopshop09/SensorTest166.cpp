@@ -18,10 +18,7 @@ int Team166SensorTest::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {
 	Robot166 *lHandle;  // Local handle
-	AnalogChannel acGyro(T166_GYRO_MOD, T166_GYRO_TEMP); // Declare Gyro channel R=Relative Temperature
-	printf("Sensor Test is initializing the Gyro...\n");
-	Gyro myGyro(T166_GYRO_MOD, T166_GYRO_TWIST);      // Declare Gyro channel T=Twist
-	printf("Gyro init complete!\n");
+	
 	
 
 #if 0	
@@ -56,9 +53,7 @@ int Team166SensorTest::Main(int a2, int a3, int a4, int a5,
 	MyTaskInitialized = 2;
 	lHandle = Robot166::getInstance();
 	
-	// Initialize the 2008 Gyro (Analog Devices AD22304)
-	myGyro.Reset();
-	myGyro.SetSensitivity(0.0125); // 12.5mV per degree per second
+	
 	
     // General main loop (while in Autonomous or Tele mode)
 	printf("Sensor test task is getting ready...\n");
@@ -72,11 +67,7 @@ int Team166SensorTest::Main(int a2, int a3, int a4, int a5,
 		printf("Current pot value: %d\n", pot);
 #endif
 		
-		// Figure out temperature (2.5V = 298K ~= 25C) -> 512 using 12bit ADC
-		float gyroTempCelcius = ((acGyro.GetValue() * (20.0 / 4096.0) - 2.5) / 0.0084) + 25;
-        printf("Current gyro values: Temp=%fC Twist=%f (angle)\n",
-        		gyroTempCelcius, myGyro.GetAngle());
-
+		
 #if 0
 		
         // Pick up Ultrasound values

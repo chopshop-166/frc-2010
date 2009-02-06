@@ -222,7 +222,17 @@ SimpleTemplate_partialImage/Debug/Objects/SimpleTemplate/Drive166.o:  \
   C:/Users/Sid/Documents/FIRST/software2009/SimpleTemplate/Dispenser166.h \
   C:/Users/Sid/Documents/FIRST/software2009/SimpleTemplate/PIDControl166.h \
   C:/WindRiver/vxworks-6.3/target/h/WPILib/Encoder.h \
-  C:/Users/Sid/Documents/FIRST/software2009/SimpleTemplate/MemoryLog166.h
+  C:/Users/Sid/Documents/FIRST/software2009/SimpleTemplate/MemoryLog166.h \
+  C:/Users/Sid/Documents/FIRST/software2009/SimpleTemplate/DashboardDataFormat.h \
+  C:/WindRiver/vxworks-6.3/target/h/math.h \
+  C:/WindRiver/vxworks-6.3/target/h/sysLib.h \
+  C:/WindRiver/vxworks-6.3/target/h/bootLib.h \
+  C:/WindRiver/vxworks-6.3/target/h/ttyLib.h \
+  C:/WindRiver/vxworks-6.3/target/h/types/vxTypes.h \
+  C:/WindRiver/vxworks-6.3/target/h/sioLib.h \
+  C:/WindRiver/vxworks-6.3/target/h/types/vxTypesOld.h \
+  C:/WindRiver/vxworks-6.3/target/h/sioLibCommon.h \
+  C:/WindRiver/vxworks-6.3/target/h/drv/timer/timerDev.h
 
 C:/WindRiver/vxworks-6.3/target/h/WPILib/WPILib.h:
 
@@ -669,3 +679,23 @@ C:/Users/Sid/Documents/FIRST/software2009/SimpleTemplate/PIDControl166.h:
 C:/WindRiver/vxworks-6.3/target/h/WPILib/Encoder.h:
 
 C:/Users/Sid/Documents/FIRST/software2009/SimpleTemplate/MemoryLog166.h:
+
+C:/Users/Sid/Documents/FIRST/software2009/SimpleTemplate/DashboardDataFormat.h:
+
+C:/WindRiver/vxworks-6.3/target/h/math.h:
+
+C:/WindRiver/vxworks-6.3/target/h/sysLib.h:
+
+C:/WindRiver/vxworks-6.3/target/h/bootLib.h:
+
+C:/WindRiver/vxworks-6.3/target/h/ttyLib.h:
+
+C:/WindRiver/vxworks-6.3/target/h/types/vxTypes.h:
+
+C:/WindRiver/vxworks-6.3/target/h/sioLib.h:
+
+C:/WindRiver/vxworks-6.3/target/h/types/vxTypesOld.h:
+
+C:/WindRiver/vxworks-6.3/target/h/sioLibCommon.h:
+
+C:/WindRiver/vxworks-6.3/target/h/drv/timer/timerDev.h:

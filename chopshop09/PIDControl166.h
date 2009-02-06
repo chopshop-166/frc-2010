@@ -4,10 +4,10 @@
 #include "Encoder.h"
 
 
-#define K_I (0.5)               //Stores the Integral Gain Value
-#define K_P (0.5)				  //Stores the Proporational Gain Value
-#define K_D (0.0)				  //This is not implemented yet, so it is 0			 
-#define MAX_WHEEL_SPEED (33300) //Maximum Wheel Speed in RPS
+//#define K_I (0.02)               //Stores the Integral Gain Value
+//define K_P (0.005)				  //Stores the Proporational Gain Value
+//#define K_D (0.0)				  //This is not implemented yet, so it is 0			 
+#define MAX_WHEEL_SPEED (8.0) //Maximum Wheel Speed in RPS
 
 
  //Sets the range for when the joystick is zero
@@ -20,11 +20,13 @@ public:
 	~PIDControl();
 
 
-	INT64 convertToRPS(float);  //Converts Float Speed Values to RPS Values
-	float convertToInput(INT32); //Converts RPS to Float Speed Values
-
+	float convertToRPS(float);  //Converts Float Speed Values to RPS Values
+	float convertToInput(float); //Converts RPS to Float Speed Values
 	
-	float calculate(float, INT32);  //Caluculates the new speed values after taking error into account
+	float input, sPoint, result;
+	
+	
+	float calculate(float, float, float, float);  //Caluculates the new speed values after taking error into account
 private:
 	int PIDEnabled;  //Checks to see if PID is Enables
 	

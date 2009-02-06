@@ -158,6 +158,10 @@ SimpleTemplate_partialImage/$(MODE_DIR)/% : LIBPATH =
 SimpleTemplate_partialImage/$(MODE_DIR)/% : LIBS = 
 SimpleTemplate_partialImage/$(MODE_DIR)/% : OBJ_DIR := SimpleTemplate_partialImage/$(MODE_DIR)
 
+SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/DashboardDataFormat.o : C:/Users/Sid/Documents/FIRST/software2009/SimpleTemplate/DashboardDataFormat.cpp
+	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
+
+
 SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/Dispenser166.o : C:/Users/Sid/Documents/FIRST/software2009/SimpleTemplate/Dispenser166.cpp
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
@@ -194,7 +198,8 @@ SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/Vision166.o : C:/
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-OBJECTS_SimpleTemplate_partialImage = SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/Dispenser166.o \
+OBJECTS_SimpleTemplate_partialImage = SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/DashboardDataFormat.o \
+	 SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/Dispenser166.o \
 	 SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/Drive166.o \
 	 SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/Inertia166.o \
 	 SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/MemoryLog166.o \
@@ -214,9 +219,10 @@ _clean :: SimpleTemplate_partialImage/$(MODE_DIR)/SimpleTemplate_partialImage_cl
 SimpleTemplate_partialImage/$(MODE_DIR)/SimpleTemplate_partialImage_clean : 
 	$(TRACE_FLAG)if [ -d "SimpleTemplate_partialImage" ]; then cd "SimpleTemplate_partialImage"; rm -rf $(MODE_DIR); fi
 
-DEP_FILES := SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/Dispenser166.d SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/Drive166.d SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/Inertia166.d \
-	 SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/MemoryLog166.d SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/PIDControl166.d SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/Robot166.d \
-	 SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/SensorTest166.d SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/Sonar166.d SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/Vision166.d
+DEP_FILES := SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/DashboardDataFormat.d SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/Dispenser166.d SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/Drive166.d \
+	 SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/Inertia166.d SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/MemoryLog166.d SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/PIDControl166.d \
+	 SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/Robot166.d SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/SensorTest166.d SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/Sonar166.d \
+	 SimpleTemplate_partialImage/$(MODE_DIR)/Objects/SimpleTemplate/Vision166.d
 -include $(DEP_FILES)
 
 

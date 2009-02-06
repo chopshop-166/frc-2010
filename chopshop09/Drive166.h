@@ -5,7 +5,7 @@
 #include "semLib.h"
 #include "PIDControl166.h"
 
-#define CLICKS_PER_REV (2000)							// Stores the Number of Clicks per revolution of the wheel
+#define CLICKS_PER_REV (4096.0)							// Stores the Number of Clicks per revolution of the wheel
 
 
 //
@@ -61,6 +61,7 @@ public:
 	float rfvolt;										// Right Front motor current sensor value
 	float rbvolt;										// Right Back motor current sensor value
 	
+	void getGains();									// Get the gains for PI
 	
 	
 	
@@ -69,14 +70,18 @@ public:
 private:
 	float leftMotorSpeed;								// Float to store the left motor speed values
 	float rightMotorSpeed;								// Float to store the roght motor speed values
+	
+	INT32 lfPast, lbPast, rfPast, rbPast;				// INT32's to continuosly hold encoder values
+	
+	
 	PIDControl lfPID;									// Used to access PID Control for Left Front Wheel
 	PIDControl lbPID;									// Used to access PID Control for Right Front Wheel
 	PIDControl rfPID;									// Used to access PID Control for Right Front Wheel
 	PIDControl rbPID;									// Used to access PID Control for Right Back Wheel
-	INT32 lfWheelSpeed;									// Left Front Wheel Speed
-	INT32 lbWheelSpeed;									// Left Back Wheel Speed
-	INT32 rfWheelSpeed;									// Right Front Wheel Speed
-	INT32 rbWheelSpeed;									// Right Back Wheel Speed
+	float lfWheelSpeed;									// Left Front Wheel Speed
+	float lbWheelSpeed;									// Left Back Wheel Speed
+	float rfWheelSpeed;									// Right Front Wheel Speed
+	float rbWheelSpeed;									// Right Back Wheel Speed
 	
 	Jaguar lfwheel; 									// To Use the Jaguar Speed Controlled for Left Front Motor
 	Jaguar lbwheel; 									// To Use the Jaguar Speed Controlled for Left Back Motor
@@ -87,6 +92,14 @@ private:
 	Victor vlbwheel; 									// To Use the Victor Speed Controlled for Left Back Motor
 	Victor vrfwheel; 									// To Use the Victor Speed Controlled for Right Front Motor
 	Victor vrbwheel; 									// To Use the Victor Speed Controlled for Right Back Motor
+	
+	float lfSpeed_PID;
+	float lbSpeed_PID;
+	float rfSpeed_PID;
+	float rbSpeed_PID;
+	
+	float K_P;
+	float K_I;
 	
 	
 	

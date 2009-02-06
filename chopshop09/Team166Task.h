@@ -15,7 +15,7 @@
 #define T166_GYRO_MOD (1)                   // Gyro module
 #define T166_GYRO_TWIST (1)                 // Twist
 #define T166_GYRO_TEMP (2)                  // Temperature
-#define T166_CURRENT_SENSOR_MOD (2)         // Module for current sensors
+#define T166_CURRENT_SENSOR_MOD (1)         // Module for current sensors
 #define T166_CURRENT_SENSOR_LF (1)          // Current sensor Left Front
 #define T166_CURRENT_SENSOR_LB (2)          // Current sensor Left Back
 #define T166_CURRENT_SENSOR_RF (3)          // Current sensor Right Front

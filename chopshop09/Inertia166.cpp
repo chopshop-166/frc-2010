@@ -140,8 +140,8 @@ int Team166Inertia::Main(int a2, int a3, int a4, int a5,
 		}
 		
 		
-        printf("Current accelerometer values (in g): X=%f Y=%f, Vector=%f\n",
-        		x_acc, y_acc, acc_vector);
+      //  printf("Current accelerometer values (in g): X=%f Y=%f, Vector=%f\n",
+      //  		x_acc, y_acc, acc_vector);
         
 
 		MyWatchDog = 1;

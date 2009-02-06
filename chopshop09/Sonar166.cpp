@@ -115,7 +115,7 @@ int Team166Sonar::Main(int a2, int a3, int a4, int a5,
         	aavg += uval[al];
         dist = (((aavg / UMAX) * (20.0 / 4.096)) / 10.0) * 2.54;
         if (!(uidx % UMAX))
-        	printf("Current Ultrasound value: %f\n", dist);
+        	//printf("Current Ultrasound value: %f\n", dist);
 	
 		// Should we log this value?
 		if (sample_count < 200) {
