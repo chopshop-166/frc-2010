@@ -19,9 +19,8 @@
 #include "FrcError.h"
 #include "Target166.h"
 
-// To locally enable debug printing: set VisionDemo_debugFlag to a 1, to disable set to 0
-int Vision166_debugFlag = 1;
-#define DPRINTF if(Vision166_debugFlag)dprintf
+// To locally enable debug printing: set true, to disable false
+#define DPRINTF if(true)dprintf
 
 // Sample in memory buffer
 struct vbuf166
@@ -90,20 +89,21 @@ Team166Vision::Team166Vision(void)
 	/* set up debug output: 
 	 * DEBUG_OFF, DEBUG_MOSTLY_OFF, DEBUG_SCREEN_ONLY, DEBUG_FILE_ONLY, DEBUG_SCREEN_AND_FILE 
 	 */
-	SetDebugFlag ( DEBUG_FILE_ONLY  ) ;
-
+	SetDebugFlag ( DEBUG_SCREEN_ONLY  ) ;
+	
+#if 0 //move to robot task
+	
 	/* start the CameraTask	 */
-	if (StartCameraTask(framesPerSecond, 0, k160x120, ROT_0) == -1) {
+	if (StartCameraTask(15, 0, k160x120, ROT_0) == -1) {
 		DPRINTF( LOG_ERROR,"Failed to spawn camera task; exiting. Error code %s", 
 				GetVisionErrorText(GetLastVisionError()) );
 	}
 	/* allow writing to vxWorks target */
 	Priv_SetWriteFileAllowed(1);   	
-	
+#endif	
 
 	// initialize pan variables
 	servoDeadband = 0.01;					// move if > this amount 
-	framesPerSecond = 15;					// number of camera frames to get per second
 	sinStart = 0.0;							// control where to start the sine wave for pan
 	panIncrement = 0;						// pan needs a 1-up number for each call
 	
@@ -276,7 +276,7 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 
 	Robot166 *lHandle;            // Local handle
 	VisionLog vl;                 // Vision log
-	int sample_count = 0;         // Count of log samples
+	//int sample_count = 0;         // Count of log samples
 	
 	// Let the world know we're in
 	printf("In the 166 vision task\n");
@@ -322,9 +322,9 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 	printf("Vision task is getting ready...\n");
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		
+
+#if 0		
 		float b=1.66;
-		
 		// Should we log this value?
 		if (sample_count < 200) {
 			vl.PutOne(b);
@@ -335,6 +335,7 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 				sample_count++;
 			}
 		}
+#endif
 		MyWatchDog = 1;
 		
 		AcquireTarget();

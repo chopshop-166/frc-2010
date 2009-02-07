@@ -43,6 +43,7 @@ public:
 	double GetTargetArea();
 	int GetTargetHeight();
 	bool IsTargetAcquired();
+	void AcquireTarget();
 
 // Members
 private:
@@ -69,7 +70,6 @@ private:
 	ParticleAnalysisReport pinkReport, greenReport;	// particle analysis reports
 	TrackingThreshold pinkSpec, greenSpec;			// color thresholds
 	
-	void AcquireTarget();
 	void SetServoPosition(float normalizedHorizontal);
 	void AdjustServoPosition(float normDeltaHorizontal);
 };

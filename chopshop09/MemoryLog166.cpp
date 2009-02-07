@@ -1,5 +1,10 @@
 #include <memLib.h>
+#include "BaeUtilities.h"
 #include "MemoryLog166.h"
+
+
+// To locally enable debug printing: set true, to disable false
+#define DPRINTF if(true)dprintf
 
 // Memory log constructor
 MemoryLog166::MemoryLog166(unsigned int msize)
@@ -52,7 +57,7 @@ int MemoryLog166::DumpToFile(char *fname)
 	if (!nptr)
 		return (0);
 	
-	printf("MemoryBase: 0x%x, MemoryNext: 0x%x, nptr: 0x%x\n", MemoryBase, MemoryNext, nptr);
+	DPRINTF(LOG_DEBUG, "MemoryBase: 0x%x, MemoryNext: 0x%x, nptr: 0x%x\n", MemoryBase, MemoryNext, nptr);
 	
 	// Create the output file
 	if (ofile = fopen(fname, "w")) {
@@ -64,7 +69,7 @@ int MemoryLog166::DumpToFile(char *fname)
 			// Call a user defined routine to format and dump this out
 			nptr += DumpBuffer(nptr, ofile);
 			l++;
-			printf("Dumped buffer #%d; nptr: 0x%x\n", l, nptr);
+			DPRINTF(LOG_DEBUG, "Dumped buffer #%d; nptr: 0x%x\n", l, nptr);
 		}
 		// Done. Close the file
 		fclose(ofile);

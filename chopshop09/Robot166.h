@@ -55,6 +55,7 @@ public:
 			float lift_motor);                //
 	void GetDispenser(t_ConveyerDirection *dir, // Get the direction of the
 			float *lift_motor);               // Dispenser
+	void Robot166::CameraDrive();             // Test routine for autonomous			
 };
 
 #endif // !defined(_ROBOT166_H)

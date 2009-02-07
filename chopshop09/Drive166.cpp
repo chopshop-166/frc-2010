@@ -2,7 +2,7 @@
 #include "Drive166.h"
 #include "MemoryLog166.h"
 #include "PIDControl166.h"
-#include "DashboardDataFormat.h"
+//#include "DashboardDataFormat.h"
 #include <math.h>
 #include <sysLib.h>
 
@@ -151,7 +151,9 @@ Team166Drive::Team166Drive(void)
 	rfPast = 0;
 	rbPast = 0;
 	// Start our task
-	Start((char *)"166DriveTask");	
+	//Start((char *)"166DriveTask");	
+	//test
+	MyTaskInitialized = 1;
 };
 	
 // Drive task destructor

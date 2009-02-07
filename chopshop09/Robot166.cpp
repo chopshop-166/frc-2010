@@ -4,6 +4,7 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include "WPILib.h"
+#include "BaeUtilities.h"
 #include "Team166Task.h"
 #include "Drive166.h"
 #include "Dispenser166.h"
@@ -11,6 +12,13 @@
 #include "Inertia166.h"
 #include "Vision166.h"
 #include "Sonar166.h"
+
+// needed for Camera Init
+#include "AxisCamera.h" 
+#include "FrcError.h"
+
+// To locally enable debug printing: set true, to disable false
+#define DPRINTF if(true)dprintf
 
 // Declare external tasks
 Team166Dispenser Team166DispenserObject;
@@ -38,7 +46,12 @@ Robot166::Robot166(void) :
 	lbEncoder(T166_ENC_LB_A, T166_ENC_LB_B, true), // Left Back encoder pins
 	rbEncoder(T166_ENC_RB_A, T166_ENC_RB_B, false) // Right Back encoder pins
 {
-	printf("Constructor\n");
+	/* set up debug output: 
+	 * DEBUG_OFF, DEBUG_MOSTLY_OFF, DEBUG_SCREEN_ONLY, DEBUG_FILE_ONLY, DEBUG_SCREEN_AND_FILE  */
+	SetDebugFlag ( DEBUG_SCREEN_ONLY  ) ;
+
+	DPRINTF(LOG_DEBUG, "Constructor\n");
+	
 	RobotMode = T166_CONSTRUCTOR;
 	JoyLock = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
 	DSLock = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
@@ -49,6 +62,15 @@ Robot166::Robot166(void) :
     ConvLift = 0.0;
 	RobotHandle = this;
 	
+
+	/* start the CameraTask -keep this here for now, maybe move to Vision166 later  */
+	if (StartCameraTask(15, 0, k160x120, ROT_0) == -1) {
+		DPRINTF( LOG_ERROR,"Failed to spawn camera task; exiting. Error code %s", 
+				GetVisionErrorText(GetLastVisionError()) );
+	}
+	/* allow writing to vxWorks target */
+	Priv_SetWriteFileAllowed(1);   	
+	
 	GetWatchdog().SetExpiration(5.0); // 5 seconds
 	while (!(Team166DispenserObject.MyTaskInitialized && 
 			Team166DriveObject.MyTaskInitialized &&
@@ -57,6 +79,7 @@ Robot166::Robot166(void) :
 			Team166SensorTestObject.MyTaskInitialized &&
 			Team166InertiaObject.MyTaskInitialized)) {
 		printf("Constructor is waiting %d %d %d %d %d %d..\n",
+				//printf("Constructor is waiting %d  %d %d %d %d..\n",
 				Team166DispenserObject.MyTaskInitialized,
 				Team166DriveObject.MyTaskInitialized,
 				Team166VisionObject.MyTaskInitialized,
@@ -175,9 +198,9 @@ float Robot166::GetBatteryVoltage(void)
 		for (int i=0; i<8; i++) {
 			if ((prev_a & 1<<i) != (ds_a & 1<<i)) {
 				if (ds_a & 1<<i) {
-					printf("Digial port %d is ON\n", i);
+					DPRINTF(LOG_INFO, "Digital port %d is ON\n", i);
 				} else {
-					printf("Digial port %d is OFF\n", i);
+					DPRINTF(LOG_INFO, "Digital port %d is OFF\n", i);
 				}
 			}
 		}
