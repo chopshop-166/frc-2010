@@ -34,10 +34,12 @@ struct vbuf166
 	float incrementH;               // increment from image to new bearing		
 	float tilt;                     // Target tilt	
 	float incrementV;               // increment from image to new tilt	
+	int   staleCount;				// Keeps track of the number of stale images
 };
 
 // Write one buffer into memory
 unsigned int VisionLog::PutOne(
+		int staleCount,
 		float bearing, float incrementH, 
 		float tilt, float incrementV)
 {
@@ -52,6 +54,7 @@ unsigned int VisionLog::PutOne(
 		ob->incrementH = incrementH;
 		ob->tilt = tilt;
 		ob->incrementV = incrementV;
+		ob->staleCount = staleCount;
 		return (sizeof(struct vbuf166));
 	}
 	
@@ -65,8 +68,8 @@ unsigned int VisionLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct vbuf166 *ab = (struct vbuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %f, %f, %f, %f\n", 
-			ab->tp.tv_sec,  
+	fprintf(ofile, "%lf, %u, %f, %f, %f, %f\n", 
+			(double)ab->tp.tv_sec+(double)(ab->tp.tv_nsec*1e-9), ab->staleCount,
 			ab->bearing, ab->incrementH, ab->tilt, ab->incrementV);
 	
 	// Done

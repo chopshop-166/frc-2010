@@ -48,7 +48,7 @@ public:
 	double GetTargetArea();
 	int GetTargetHeight();
 	bool IsTargetAcquired();
-	void AcquireTarget();
+	bool AcquireTarget();
 
 // Private functions and attributes
 private:

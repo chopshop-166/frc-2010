@@ -182,12 +182,13 @@ void Team166Vision::AdjustServoPositions(float normDeltaHorizontal, float normDe
 }
 
 // process images to find target
-void Team166Vision::AcquireTarget() {
+bool Team166Vision::AcquireTarget() {
 	//DPRINTF(LOG_DEBUG,"start");
 	
 	// incremental tasking toward dest (-1.0 to 1.0)
 	float incrementH, incrementV;					
-	bool staleImage; 
+	bool staleImage=false; 
+	static int staleCount = 0;
 	
 	// calculate servo position based on colors found 
 	
@@ -200,14 +201,15 @@ void Team166Vision::AcquireTarget() {
 			// This image has been processed already, 
 			// so don't do anything for this loop 
 			staleImage = true;
-			DPRINTF(LOG_DEBUG, "STALE IMAGE");
+			staleCount++;
+			DPRINTF(LOG_DEBUG, "STALE IMAGE staleCount:%d",staleCount);
 			
 		} else {
 			// The target was recognized
 			// save the timestamp
 			staleImage = false;
 			savedImageTimestamp = pinkReport.imageTimestamp;	
-			DPRINTF(LOG_DEBUG,"image timetamp: %lf", savedImageTimestamp);
+			//DPRINTF(LOG_DEBUG,"image timetamp: %lf", savedImageTimestamp);
 
 			// number of pixels 
 			targetHeight = pinkReport.boundingRect.height + greenReport.boundingRect.height;
@@ -245,12 +247,13 @@ void Team166Vision::AcquireTarget() {
 		// log stuff
 		// Should we log this value?
 		if (sample_count < 200) {
-			vl.PutOne(bearing, incrementH, tilt, incrementV);
+			vl.PutOne(staleCount, bearing, incrementH, tilt, incrementV);
 			sample_count++;
 		} else {
 			if (sample_count == 200) {
 				vl.DumpToFile("vision.csv");
 				sample_count++;
+				DPRINTF(LOG_INFO, "+++++++++++++++++  LOGGING COMPLETE  +++++++++++++++++");
 			}
 		}
 #endif
@@ -285,6 +288,7 @@ void Team166Vision::AcquireTarget() {
 			ShowActivity ("** %s and %s not found                                    ", pinkSpec.name, greenSpec.name);
 		}
 	}  // end if found color
+	return(staleImage);
 }
 
 
@@ -296,6 +300,7 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 
 	Robot166 *lHandle;            // Local handle
 	sample_count = 0;             // Initialize Count of log samples
+	bool staleFlag;
 	
 	// Let the world know we're in
 	DPRINTF(LOG_INFO, "In the 166 vision task\n");
@@ -326,7 +331,7 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 	SetServoPositions(horizontalDestination, verticalDestination);
 					
 	/* for controlling loop execution time */
-	float loopTime = 0.05;			
+	float loopTime = 0.1;		// slightly slower than	
 	double currentTime = GetTime();
 	double lastTime = currentTime;
 	
@@ -336,14 +341,15 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 			(lHandle->RobotMode == T166_OPERATOR)) {
 
 		MyWatchDog = 1;		
-		AcquireTarget();
+		staleFlag=AcquireTarget();
+		
 		
 		// sleep to keep loop at constant rate
 		// this helps keep pan consistant
 		// elapsed time can vary significantly due to debug printout
 		currentTime = GetTime();			
 		lastTime = currentTime;					
-		if ( loopTime > ElapsedTime(lastTime) ) {
+		if ( (loopTime > ElapsedTime(lastTime)) && !staleFlag) {
 			Wait( loopTime - ElapsedTime(lastTime) );	// seconds
 		}			
 	}
