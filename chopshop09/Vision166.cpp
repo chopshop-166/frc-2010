@@ -22,63 +22,15 @@
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(true)dprintf
 
-// Sample in memory buffer
-struct vbuf166
-{
-	struct timespec tp;               // Time of snapshot
-	float bearing;                    // Target bearing
-	
-};
-
-// Sample Memory Log
-class VisionLog : public MemoryLog166
-{
-public:
-	VisionLog() : MemoryLog166(128*1024) {return;};
-	~VisionLog() {return;};
-	unsigned int DumpBuffer(          // Dump the next buffer into the file
-			char *nptr,               // Buffer that needs to be formatted
-			FILE *outputFile);        // and then stored in this file
-	unsigned int PutOne(float b);     // Log the bearing
-};
-
-// Write one buffer into memory
-unsigned int VisionLog::PutOne(float b)
-{
-	struct vbuf166 *ob;               // Output buffer
-	
-	// Get output buffer
-	if ((ob = (struct vbuf166 *)GetNextBuffer(sizeof(struct vbuf166)))) {
-		
-		// Fill it in.
-		clock_gettime(CLOCK_REALTIME, &ob->tp);
-		ob->bearing = b;
-		return (sizeof(struct vbuf166));
-	}
-	
-	// Did not get a buffer. Return a zero length
-	return (0);
-}
-
-// Format the next buffer for file output
-unsigned int VisionLog::DumpBuffer(char *nptr, FILE *ofile)
-{
-	struct vbuf166 *ab = (struct vbuf166 *)nptr;
-	
-	// Output the data into the file
-	fprintf(ofile, "%u, %u, %f\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->bearing);
-	
-	// Done
-	return (sizeof(struct vbuf166));
-}
-
-
 // Vision task constructor
 Team166Vision::Team166Vision(void)
 {
+	VisionLog vl;                 // Vision log
+	
 	// Initialize assorted fields	
 	targetAcquired = false;			// target not acquired
-	bearing = 0.0;					// current normalized servo position	
+	bearing = 0.0;					// current horizontal normalized servo position	
+	tilt = 0.0;						// current vertical normalized servo position	
 	
 	// Start our task
 	Start((char *)"166VisionTask");	
@@ -92,7 +44,7 @@ Team166Vision::Team166Vision(void)
 	 */
 	SetDebugFlag ( DEBUG_SCREEN_ONLY  ) ;
 	
-#if 0 //move to robot task
+#if 0 //moved to robot task
 	
 	/* start the CameraTask	 */
 	if (StartCameraTask(15, 0, k160x120, ROT_0) == -1) {
@@ -128,7 +80,7 @@ Team166Vision::Team166Vision(void)
 	sprintf (greenSpec.name, "GREEN");
 	greenSpec.hue.minValue = 55;   
 	greenSpec.hue.maxValue = 125;  
-	greenSpec.saturation.minValue = 58;   
+	greenSpec.saturation.minValue = 28;   //test - was 58
 	greenSpec.saturation.maxValue = 255;    
 	greenSpec.luminance.minValue = 92;  
 	greenSpec.luminance.maxValue = 255;
@@ -149,16 +101,19 @@ double Team166Vision::GetTargetArea() { return targetArea; };
 int Team166Vision::GetTargetHeight() { return targetHeight; };
 float Team166Vision::GetBearing() { return bearing; }
 
-
 /**
- * Set servo position(0.0 to 1.0) translated from normalized values (-1.0 to 1.0). 
+ * Set servo positions (0.0 to 1.0) translated from normalized values (-1.0 to 1.0). 
  * 
  * @param normalizedHorizontal Pan Position from -1.0 to 1.0.
+ * @param normalizedVertical Tilt Position from -1.0 to 1.0.
  */
-void Team166Vision::SetServoPosition(float normalizedHorizontal)	{
+void Team166Vision::SetServoPositions(float normalizedHorizontal, float normalizedVertical)	{
 
-	float servoH = NormalizeToRange(normalizedHorizontal);	
-	float currentH = horizontalServo->Get();	
+	float servoH = NormalizeToRange(normalizedHorizontal);
+	float servoV = NormalizeToRange(normalizedVertical);
+	
+	float currentH = horizontalServo->Get();		
+	float currentV = verticalServo->Get();
 	
 	/* make sure the movement isn't too small */
 	if ( fabs(servoH - currentH) > servoDeadband ) {
@@ -166,17 +121,23 @@ void Team166Vision::SetServoPosition(float normalizedHorizontal)	{
 		/* save new normalized horizontal position */
 		bearing = RangeToNormalized(servoH, 1);
 	}
-}
-
+	if ( fabs(servoV - currentV) > servoDeadband ) {
+		verticalServo->Set( servoV );
+		//verticalPosition = RangeToNormalized(servoV, 1);
+		tilt = RangeToNormalized(servoV, 1);
+	}
+}	
 /**
- * Adjust servo positions(0.0 to 1.0) translated from normalized values (-1.0 to 1.0). 
+ * Adjust servo positions (0.0 to 1.0) translated from normalized values (-1.0 to 1.0). 
  * 
  * @param normalizedHorizontal Pan adjustment from -1.0 to 1.0.
+ * @param normalizedVertical Tilt adjustment from -1.0 to 1.0.
  */
-void Team166Vision::AdjustServoPosition(float normDeltaHorizontal)	{
+void Team166Vision::AdjustServoPositions(float normDeltaHorizontal, float normDeltaVertical)	{
 					
 	/* adjust for the fact that servo overshoots based on image input */
 	normDeltaHorizontal /= 8.0;
+	normDeltaVertical /= 4.0;
 	
 	/* compute horizontal goal */
 	float currentH = horizontalServo->Get();
@@ -185,27 +146,41 @@ void Team166Vision::AdjustServoPosition(float normDeltaHorizontal)	{
 	/* narrow range keep servo from going too far */
 	if (normDestH > 1.0) normDestH = 1.0;
 	if (normDestH < -1.0) normDestH = -1.0;			
-	/* convert inputs to servo range */
+	/* convert input to servo range */
 	float servoH = NormalizeToRange(normDestH);
+
+	/* compute vertical goal */
+	float currentV = verticalServo->Get();
+	float normCurrentV = RangeToNormalized(currentV, 1);
+	float normDestV = normCurrentV + normDeltaVertical;	
+	if (normDestV > 1.0) normDestV = 1.0;
+	if (normDestV < -1.0) normDestV = -1.0;
+	/* convert input to servo range */
+	float servoV = NormalizeToRange(normDestV, 0.2, 0.8);
 
 	/* make sure the movement isn't too small */
 	if ( fabs(currentH-servoH) > servoDeadband ) {
 		horizontalServo->Set( servoH );		
 		/* save new normalized horizontal position */
+		//horizontalPosition = RangeToNormalized(servoH, 1);
 		bearing = RangeToNormalized(servoH, 1);
 	}			
-}	
-
+	if ( fabs(currentV-servoV) > servoDeadband ) {
+		verticalServo->Set( servoV );
+		tilt = RangeToNormalized(servoV, 1);
+	}
+}
 
 // process images to find target
 void Team166Vision::AcquireTarget() {
-	dprintf(LOG_DEBUG,"start");
+	//DPRINTF(LOG_DEBUG,"start");
 	
 	// incremental tasking toward dest (-1.0 to 1.0)
-	float incrementH;					
+	float incrementH, incrementV;					
 	bool staleImage; 
 	
 	// calculate servo position based on colors found 
+	
 	if ( FindTwoColors(pinkSpec, greenSpec, ABOVE, &pinkReport, &greenReport) ){
 		//PrintReport(&par2);
 		targetAcquired = true;
@@ -227,6 +202,13 @@ void Team166Vision::AcquireTarget() {
 			// number of pixels 
 			targetHeight = pinkReport.boundingRect.height + greenReport.boundingRect.height;
 			targetArea = pinkReport.particleArea + greenReport.particleArea;
+
+			// get center of target 
+			// Average the color two particles to get center x & y of combined target
+			horizontalDestination = (pinkReport.center_mass_x_normalized + 
+					greenReport.center_mass_x_normalized) / 2;	
+			verticalDestination = (pinkReport.center_mass_y_normalized + 
+					greenReport.center_mass_y_normalized) / 2;
 		}
 	} else {  // need to pan 
 		targetAcquired = false;
@@ -239,12 +221,16 @@ void Team166Vision::AcquireTarget() {
 		 * reduces the need for calibration of the servo movement while
 		 * moving toward the target.
 		 */
-		incrementH = horizontalDestination - horizontalPosition;
-		// you may need to reverse this based on your vertical servo installation
-		AdjustServoPosition( incrementH);  
+		
+		//incrementH = horizontalDestination - horizontalPosition;
+		incrementH = horizontalDestination - bearing;
+		incrementV = verticalDestination - tilt;
+		// you may need to reverse this based on your servo installation
+		AdjustServoPositions( incrementH, incrementV);  
 
-		ShowActivity ("** %s & %s found: Servo: x: %f  height: %i  **", 
-				pinkSpec.name, greenSpec.name, horizontalDestination, targetHeight);	
+		ShowActivity ("** %s & %s found: Servo: x: %f  y: %f height: %i  **", 
+				pinkSpec.name, greenSpec.name, horizontalDestination, verticalDestination,
+				targetHeight);	
 		
 	} else { //if (!staleImage) {  // new image, but didn't find two colors
 		
@@ -255,15 +241,37 @@ void Team166Vision::AcquireTarget() {
 		/* pan to find color after a short wait to settle servos
 		 * panning must start directly after panInit or timing will be off */				
 		if (panIncrement == 3) {	
+			DPRINTF(LOG_DEBUG, "pan initializing");
 			/* don't reset target position & height immediately */
-			targetHeight = 0;			
+			targetHeight = 0;
+			targetArea = 0.0;
 			panInit(8.0);		// number of seconds for a pan
 		}
 		else if (panIncrement > 3) {	
 			panForTarget(horizontalServo, sinStart);	
+
+			/* Vertical action: In case the vertical servo is pointed off center,
+			 * center the vertical after several loops searching */
+			if (panIncrement == 20) { 
+				verticalServo->Set( 0.5 );	
+				DPRINTF(LOG_DEBUG, "pan resetting vertical servo");
+			}
 		}
 		panIncrement++;		
-
+#if 0		
+		// log stuff
+		float b=1.66;
+		// Should we log this value?
+		if (sample_count < 200) {
+			vl.PutOne(b);
+			sample_count++;
+		} else {
+			if (sample_count == 200) {
+				vl.DumpToFile("vision.csv");
+				sample_count++;
+			}
+		}
+#endif
 		ShowActivity ("** %s and %s not found                                    ", pinkSpec.name, greenSpec.name);
 	}  // end if found color
 }
@@ -276,11 +284,10 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 {
 
 	Robot166 *lHandle;            // Local handle
-	VisionLog vl;                 // Vision log
-	//int sample_count = 0;         // Count of log samples
+	sample_count = 0;             // Initialize Count of log samples
 	
 	// Let the world know we're in
-	printf("In the 166 vision task\n");
+	DPRINTF(LOG_INFO, "In the 166 vision task\n");
 		
 	// Indicate that we've now completed initialization
 	MyTaskInitialized = 1;
@@ -295,25 +302,18 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 	lHandle = Robot166::getInstance();
 	
 	// initialize vision stuff
-
-	// image data for tracking
-	TrackingThreshold td = GetTrackingData(RED, FLUORESCENT);
-	
-	
-	DPRINTF(LOG_DEBUG, "SERVO - looking for COLOR %s ", td.name);
+	DPRINTF(LOG_DEBUG, "SERVO - looking for COLOR %s ABOVE %s", pinkSpec.name, greenSpec.name);
 	
 	/* initialize position and destination variables
 	* position settings range from -1 to 1
 	* setServoPositions is a wrapper that handles the conversion to range for servo 
 	*/		
 	horizontalDestination = 0.0;		// final destination range -1.0 to +1.0
-	
-	// bearing is current position range -1.0 to +1.0
-	bearing = RangeToNormalized(horizontalServo->Get(),1);	
-	
+	verticalDestination = 0.0;		// final destination range -1.0 to +1.0
+
 	// set servos to start at center position
-	SetServoPosition(horizontalDestination);
-			
+	SetServoPositions(horizontalDestination, verticalDestination);
+					
 	/* for controlling loop execution time */
 	float loopTime = 0.05;			
 	double currentTime = GetTime();
@@ -324,21 +324,7 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 
-#if 0		
-		float b=1.66;
-		// Should we log this value?
-		if (sample_count < 200) {
-			vl.PutOne(b);
-			sample_count++;
-		} else {
-			if (sample_count == 200) {
-				vl.DumpToFile("vision.csv");
-				sample_count++;
-			}
-		}
-#endif
-		MyWatchDog = 1;
-		
+		MyWatchDog = 1;		
 		AcquireTarget();
 		
 		// sleep to keep loop at constant rate

@@ -21,13 +21,13 @@
 // constants
 #define PI 3.14159265358979
 
-//
-// This defines a sample vision task
-//
+/**
+  Team 166 vision task
+*/
 class Team166Vision : public Team166Task
 {
 	
-// Methods
+// Public functions and attributes
 public:
 	
 	// Vision task constructor
@@ -42,23 +42,26 @@ public:
 
 	// Accessors
 	float GetBearing();
+	float GetTilt();
 	double GetTargetArea();
 	int GetTargetHeight();
 	bool IsTargetAcquired();
 	void AcquireTarget();
 
-// Members
+// Private functions and attributes
 private:
-	float bearing;                      // Current target bearing
-	double targetArea;					// area of target
-	int targetHeight;					// height of target
-	bool targetAcquired;				// target acquisition flag
+	int sample_count;               // Count of log samples
+	float bearing;                  // Current target horizontal bearing
+	float tilt;                     // Current target vertical bearing
+	double targetArea;	            // area of target
+	int targetHeight;				// height of target
+	bool targetAcquired;			// target acquisition flag
 
 	Servo *horizontalServo;  		// servo object
 	Servo *verticalServo;  		 	// servo object
-	float horizontalDestination;
-	float horizontalPosition;	
-	float horizontalServoPosition;
+	float horizontalDestination;	// target position for servo
+	float verticalDestination;		// target position for servo
+	//float horizontalServoPosition;
 	float servoDeadband;			// percentage servo delta to trigger move
 	int framesPerSecond;			// number of camera frames to get per second
 	float panControl;				// to slow down pan
@@ -73,7 +76,7 @@ private:
 	ParticleAnalysisReport pinkReport, greenReport;	// particle analysis reports
 	TrackingThreshold pinkSpec, greenSpec;			// color thresholds
 	
-	void SetServoPosition(float normalizedHorizontal);
-	void AdjustServoPosition(float normDeltaHorizontal);
+	void SetServoPositions(float normalizedHorizontal, float normalizedVertical);
+	void AdjustServoPositions(float normDeltaHorizontal, float normDeltaVertical);
 };
 #endif // !defined(_VISION166_H)
