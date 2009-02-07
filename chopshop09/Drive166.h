@@ -6,8 +6,8 @@
 #include "PIDControl166.h"
 
 #define CLICKS_PER_REV (4096.0)							// Stores the Number of Clicks per revolution of the wheel
-#define NO_LOAD_CURRENT (2.0)							// Assume current of the motors when the traction is lost
-
+#define NO_LOAD_CURRENT (4.0)							// Assume current of the motors when the traction is lost
+#define FILTER_CONSTANT (.2)							// Constant to filter the current sensor input
 //
 // This defines a sample drive task
 //
@@ -110,6 +110,11 @@ private:
 	float lbSpeed;						//Left Back Motor
 	float rfSpeed;						//Right Front Motor
 	float rbSpeed;						//Right Back Motor
+	
+	float lfCurrentFiltered;
+	float lbCurrentFiltered;
+	float rfCurrentFiltered;
+	float rbCurrentFiltered;
 	
 	bool tractionLostFront;
 	bool tractionLostBack;

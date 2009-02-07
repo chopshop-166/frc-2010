@@ -170,6 +170,11 @@ Team166Drive::Team166Drive(void)
 	rfSpeed = 0;						//Right Front Motor
 	rbSpeed = 0;						//Right Back Motor
 	
+	lfCurrentFiltered = 0;
+	lbCurrentFiltered = 0;
+	rfCurrentFiltered = 0;
+	rbCurrentFiltered = 0;
+	
 	x=0;
 	y=0;
 	// Start our task
@@ -203,10 +208,7 @@ int Team166Drive::Main(int a2, int a3, int a4, int a5,
 
 	SensorLog sl;                 // Sensor log
 	int sample_count = 0;         // Count of log samples
-	AnalogChannel acGyro(T166_GYRO_MOD, T166_GYRO_TEMP); // Declare Gyro channel R=Relative Temperature
-	printf("Sensor Test is initializing the Gyro...\n");
-	Gyro myGyro(T166_GYRO_MOD, T166_GYRO_TWIST);      // Declare Gyro channel T=Twist
-	printf("Gyro init complete!\n");
+
 	
 	// Let the world know we're in
 	printf("In the 166 drive task\n");
@@ -244,8 +246,7 @@ int Team166Drive::Main(int a2, int a3, int a4, int a5,
 	
 	// Initialize the 2008 Gyro (Analog Devices AD22304)
 #if 1
-		myGyro.Reset();
-		myGyro.SetSensitivity(0.0125); // 12.5mV per degree per second
+		
 #else
 		//Code for 2009 Gyro
 #endif
@@ -295,8 +296,8 @@ int Team166Drive::Main(int a2, int a3, int a4, int a5,
 		encoder_stopped_rf = lHandle->rfEncoder.GetStopped();		// Get the Right front stopped flag
 		encoder_stopped_rb = lHandle->rbEncoder.GetStopped();		// Get the Right back stopped flag
 		// Figure out temperature (2.5V = 298K ~= 25C) -> 512 using 12bit ADC
-		float gyroTempCelcius = ((acGyro.GetValue() * (20.0 / 4096.0) - 2.5) / 0.0084) + 25;
-		float gyroTwist = myGyro.GetAngle();
+		float gyroTempCelcius = 0;
+		float gyroTwist = 0;
 		
 
 		//UpdateDashboard(encoder_count_lf,encoder_count_lb,encoder_count_rf,encoder_count_rb);
@@ -477,6 +478,10 @@ void Team166Drive::SetMotorSpeeds(float leftSpeed, float rightSpeed)
 #endif
 	
 	tractionControl();
+	lfSpeed_PID = 0;
+	lbSpeed_PID = 0;
+	rfSpeed_PID = 0;
+	rbSpeed_PID = 0;
 }
 
 void Team166Drive::getWheelSpeed()
@@ -546,38 +551,84 @@ void Team166Drive::getGains()
 
 void Team166Drive::tractionControl()
 {
-	lfCurrent = ((lfCurrentSensor.GetValue() * (20.0 / 4096.0)) - 2.5)/0.02;    		// Get Left front motor current sensor voltage, and subtract the offset. Divide by .02 to get current.
-	lbCurrent = ((lbCurrentSensor.GetValue() * (20.0 / 4096.0)) - 2.5)/0.02;			// Get Left back motor current sensor voltage, and subtract the offset. Divide by .02 to get current.
-	rfCurrent = ((rfCurrentSensor.GetValue() * (20.0 / 4096.0)) - 2.5)/0.02;			// Get Right motor current sensor voltage, and subtract the offset. Divide by .02 to get current.
-	rbCurrent = ((rbCurrentSensor.GetValue() * (20.0 / 4096.0)) - 2.5)/0.02;			// Get Right motor current sensor voltage, and subtract the offset. Divide by .02 to get current.
+	static int foo = 0;
+	lfCurrent = ((lfCurrentSensor.GetValue() * (20.0 / 4096.0))-2.43)/0.02;    		// Get Left front motor current sensor voltage, and subtract the offset. Divide by .02 to get current.
+	lbCurrent = ((lbCurrentSensor.GetValue() * (20.0 / 4096.0))-2.43)/0.02;			// Get Left back motor current sensor voltage, and subtract the offset. Divide by .02 to get current.
+	rfCurrent = ((rfCurrentSensor.GetValue() * (20.0 / 4096.0))-2.43)/0.02;			// Get Right motor current sensor voltage, and subtract the offset. Divide by .02 to get current.
+	rbCurrent = ((rbCurrentSensor.GetValue() * (20.0 / 4096.0))-2.43)/0.02;			// Get Right motor current sensor voltage, and subtract the offset. Divide by .02 to get current.
+	//Filter for current
+	if(lfCurrentFiltered < lfCurrent)
+	{
+		lfCurrentFiltered += FILTER_CONSTANT;
+	}
+	else if(lfCurrentFiltered > lfCurrent)
+	{
+		lfCurrentFiltered -= FILTER_CONSTANT;
+	}
 	
+	if(lbCurrentFiltered < lbCurrent)
+	{
+		lbCurrentFiltered += FILTER_CONSTANT;
+	}
+	else if(lbCurrentFiltered > lbCurrent)
+	{
+		lbCurrentFiltered -= FILTER_CONSTANT;
+	}
+	
+	if(rfCurrentFiltered < rfCurrent)
+	{
+		rfCurrentFiltered += FILTER_CONSTANT;
+	}
+	else if(rfCurrentFiltered > rfCurrent)
+	{
+		rfCurrentFiltered -= FILTER_CONSTANT;
+	}
+	
+	if(rbCurrentFiltered < rbCurrent)
+	{
+		rbCurrentFiltered += FILTER_CONSTANT;
+	}
+	else if(rbCurrentFiltered > rbCurrent)
+	{
+		rbCurrentFiltered -= FILTER_CONSTANT;
+	}
+	
+	
+	
+	
+	
+	if(!(foo++%50))
+	{
+		printf("\nlfCurrentFiltered: %f, lbCurrentFiltered: %f, rfCurrentFiltered: %f, rbCurrentFiltered: %f\n", lfCurrentFiltered, lbCurrentFiltered, rfCurrentFiltered, rbCurrentFiltered);
+		//printf("\nlfCurrentFiltered: %f, lfCurrent: %f\n", lfCurrentFiltered, lfCurrent);
+	}
 	if(tractionLostFront == 0)
 	{
-		if((fabs(lfWheelSpeed) >= (MAX_WHEEL_SPEED * .1)) && (fabs(lfCurrent) <= NO_LOAD_CURRENT))
+		if((fabs(lfWheelSpeed) >= (MAX_WHEEL_SPEED * .3)) && (fabs(lfCurrentFiltered) <= NO_LOAD_CURRENT))
 		{
 			tractionLostFront = 1;
 			lfSpeed = 0.0;
-			rfSpeed = 0.0;
+			//rfSpeed = 0.0;
 		}
-		if((fabs(rfWheelSpeed) >= (MAX_WHEEL_SPEED * .1)) && (fabs(rfCurrent) <= NO_LOAD_CURRENT))
+		if((fabs(rfWheelSpeed) >= (MAX_WHEEL_SPEED * .3)) && (fabs(rfCurrentFiltered) <= NO_LOAD_CURRENT))
 		{
 			tractionLostFront = 1;
-			lfSpeed = 0.0;
+			//lfSpeed = 0.0;
 			rfSpeed = 0.0;
 		}
 	}
 	if(tractionLostBack == 0)
 	{
-		if((fabs(lbWheelSpeed) >= (MAX_WHEEL_SPEED * .1)) && (fabs(lbCurrent) <= NO_LOAD_CURRENT))
+		if((fabs(lbWheelSpeed) >= (MAX_WHEEL_SPEED * .3)) && (fabs(lbCurrentFiltered) <= NO_LOAD_CURRENT))
 		{
 			tractionLostBack = 1;
 			lbSpeed = 0.0;
-			rbSpeed = 0.0;
+			//rbSpeed = 0.0;
 		}
-		if((fabs(rbWheelSpeed) >= (MAX_WHEEL_SPEED * .1)) && (fabs(rbCurrent) <= NO_LOAD_CURRENT))
+		if((fabs(rbWheelSpeed) >= (MAX_WHEEL_SPEED * .3)) && (fabs(rbCurrentFiltered) <= NO_LOAD_CURRENT))
 		{
 			tractionLostBack = 1;
-			lbSpeed = 0.0;
+			//lbSpeed = 0.0;
 			rbSpeed = 0.0;
 		}
 	}
