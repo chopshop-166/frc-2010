@@ -2,7 +2,7 @@
 #include "Drive166.h"
 #include "MemoryLog166.h"
 #include "PIDControl166.h"
-//#include "DashboardDataFormat.h"
+
 #include <math.h>
 #include <sysLib.h>
 
@@ -44,6 +44,9 @@ struct sbuf166
 	float setPoint;					  // Set point in PID Controller
 	float input;					  // Input for PID Controller	
 	float PWMinput;					  // PWM input sent to the wheel
+	
+	bool frontTractionFlag;
+	bool backTractionFlag;
 };
 
 
@@ -57,11 +60,11 @@ public:
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
 			FILE *outputFile);        // and then stored in this file
-	unsigned int PutOne(float v, float lfc, float lbc, float rfc, float rbc, INT32 lfec, INT32 lbec, INT32 rfec, INT32 rbec, bool lfd, bool lfs, bool lbd, bool lbs, bool rfd, bool rfs, bool rbd, bool rbs, float x, float y, float angle, float result, float setPoint, float input, float PWMinput);     // Log the voltage
+	unsigned int PutOne(float v, float lfc, float lbc, float rfc, float rbc, INT32 lfec, INT32 lbec, INT32 rfec, INT32 rbec, bool lfd, bool lfs, bool lbd, bool lbs, bool rfd, bool rfs, bool rbd, bool rbs, float joyx, float joyy, float angle, float result, float setPoint, float input, float PWMinput, bool fFlag, bool bFlag);     // Log the voltage
 };
 
 // Write one buffer into memory
-unsigned int SensorLog::PutOne(float v, float lfc, float lbc, float rfc, float rbc, INT32 lfec, INT32 lbec, INT32 rfec, INT32 rbec, bool lfd, bool lfs, bool lbd, bool lbs, bool rfd, bool rfs, bool rbd, bool rbs, float x, float y, float angle, float result, float setPoint, float input, float PWMinput)
+unsigned int SensorLog::PutOne(float v, float lfc, float lbc, float rfc, float rbc, INT32 lfec, INT32 lbec, INT32 rfec, INT32 rbec, bool lfd, bool lfs, bool lbd, bool lbs, bool rfd, bool rfs, bool rbd, bool rbs, float joyx, float joyy, float angle, float result, float setPoint, float input, float PWMinput, bool fFlag, bool bFlag)
 {
 	struct sbuf166 *ob;               // Output buffer
 
@@ -89,9 +92,11 @@ unsigned int SensorLog::PutOne(float v, float lfc, float lbc, float rfc, float r
 		ob->lbIsStopped = lbs;
 		ob->rfIsStopped = rfs;
 		ob->rbIsStopped = rbs;
-		ob->sendX = x;
-		ob->sendY = y;
+		ob->sendX = joyx;
+		ob->sendY = joyy;
 		ob->PWMinput = PWMinput;
+		ob->frontTractionFlag = fFlag;
+		ob->backTractionFlag = fFlag;
 		return (sizeof(struct sbuf166));
 	}
 	
@@ -105,7 +110,7 @@ unsigned int SensorLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct sbuf166 *sb = (struct sbuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %f, %f, %d, %f, %f, %f, %f\n", sb->tp.tv_sec, sb->tp.tv_nsec, sb->sendX, sb->sendY, sb->lfEncoderCount, sb->result, sb->setPoint, sb->input, sb->PWMinput);
+	fprintf(ofile, "%u, %u, %f, %f, %f, %f, %f, %f, %u, %u\n", sb->tp.tv_sec, sb->tp.tv_nsec, sb->sendX, sb->sendY, sb->lfCurrent, sb->lbCurrent, sb->rfCurrent, sb->rbCurrent, sb->frontTractionFlag, sb->backTractionFlag);
 	
 	// Done
 	return (sizeof(struct sbuf166));
@@ -123,6 +128,10 @@ Team166Drive::Team166Drive(void)
 ,vlbwheel(T166_LEFT_BACK_MOTOR_CHANNEL)   //To Use the Victor Speed Controlled for Left Back Motor
 ,vrfwheel(T166_RIGHT_FRONT_MOTOR_CHANNEL) //To Use the Victor Speed Controlled for Right Front Motor
 ,vrbwheel(T166_RIGHT_BACK_MOTOR_CHANNEL)  //To Use the Victor Speed Controlled for Right Back Motor
+,lfCurrentSensor(T166_CURRENT_SENSOR_MOD, T166_CURRENT_SENSOR_LF) // Current sensor channel for Left Front wheel
+,lbCurrentSensor(T166_CURRENT_SENSOR_MOD, T166_CURRENT_SENSOR_LB) // Current sensor channel for Left Back wheel
+,rfCurrentSensor(T166_CURRENT_SENSOR_MOD, T166_CURRENT_SENSOR_RF)	// Current sensor channel for Right Front wheel
+,rbCurrentSensor(T166_CURRENT_SENSOR_MOD, T166_CURRENT_SENSOR_RB) // Current sensor channel for Left Back wheel
 
 {
 	// Initialize assorted fields
@@ -141,19 +150,30 @@ Team166Drive::Team166Drive(void)
 	encoder_stopped_rf = 0;                            // Right front encoder stopped
 	encoder_stopped_rb = 0;                            // Right back encoder stopped
 	
-	lfvolt = 2.5;										// Left Front motor current sensor value
-	lbvolt = 2.5;										// Left Back motor current sensor value
-	rfvolt = 2.5;										// Right Front motor current sensor value
-	rbvolt = 2.5;										// Right Back motor current sensor value
+	lfCurrent = 0;										// Left Front motor current sensor value
+	lbCurrent = 0;										// Left Back motor current sensor value
+	rfCurrent = 0;										// Right Front motor current sensor value
+	rbCurrent = 0;										// Right Back motor current sensor value
+	
+	tractionLostFront = 0;		  						// Flag to see if front wheels have lost traction
+	tractionLostBack = 0;		  						// Flag for the back wheel
+	tractionLostFrontCounter = 0;	  					// Counter to measure the time the power to wheels is cut
+	tractionLostBackCounter = 0;						// Counter to measure the time the power to wheels is cut
 	
 	lfPast = 0;											// Holds all of the encoder values
 	lbPast = 0;
 	rfPast = 0;
 	rbPast = 0;
+	
+	lfSpeed = 0;                      //Left Front Motor
+	lbSpeed = 0;						//Left Back Motor
+	rfSpeed = 0;						//Right Front Motor
+	rbSpeed = 0;						//Right Back Motor
+	
+	x=0;
+	y=0;
 	// Start our task
-	//Start((char *)"166DriveTask");	
-	//test
-	MyTaskInitialized = 1;
+	Start((char *)"166DriveTask");	
 };
 	
 // Drive task destructor
@@ -249,15 +269,16 @@ int Team166Drive::Main(int a2, int a3, int a4, int a5,
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		
-		float x, y;                       // Our copy of the X and Y for drive
+		                     // Our copy of the X and Y for drive
 		float bat_volt;                   // Battery Volt
 		// Strobing all of the values to log
 		bat_volt = lHandle->GetBatteryVoltage();  					// Get battery voltage
 		
-		lfvolt = lfCurrent.GetValue() * (20.0 / 4096.0);    		// Get Left front voltage 
-		lbvolt = lbCurrent.GetValue() * (20.0 / 4096.0);			// Get Left back voltage
-		rfvolt = rfCurrent.GetValue() * (20.0 / 4096.0);			// Get Right front voltage
-		rbvolt = rbCurrent.GetValue() * (20.0 / 4096.0);			// Get Right back voltage
+		lfvolt = ((lfCurrentSensor.GetValue() * (20.0 / 4096.0)) - 2.5)/0.02;    		// Get Left front motor current sensor voltage, and subtract the offset. Divide by .02 to get current.
+		lbvolt = ((lbCurrentSensor.GetValue() * (20.0 / 4096.0)) - 2.5)/0.02;			// Get Left back motor current sensor voltage, and subtract the offset. Divide by .02 to get current.
+		rfvolt = ((rfCurrentSensor.GetValue() * (20.0 / 4096.0)) - 2.5)/0.02;			// Get Right motor current sensor voltage, and subtract the offset. Divide by .02 to get current.
+		rbvolt = ((rbCurrentSensor.GetValue() * (20.0 / 4096.0)) - 2.5)/0.02;			// Get Right motor current sensor voltage, and subtract the offset. Divide by .02 to get current.
+		
 		
 		encoder_count_lf = lHandle->lfEncoder.GetRaw();    			// Get the Left front Encoder count
 		encoder_count_lb = lHandle->lbEncoder.GetRaw();    			// Get the Left back Encoder count
@@ -340,7 +361,7 @@ int Team166Drive::Main(int a2, int a3, int a4, int a5,
 		getGains();
 		ArcadeDrive166(y, -x, false);	// Calls an arade drive that has the PID Control
 		if (sample_count < 1000) {
-			sl.PutOne(bat_volt, lfvolt, lbvolt, rfvolt, rbvolt, encoder_count_lf, encoder_count_lb, encoder_count_rf, encoder_count_rb, encoder_direction_lf, encoder_direction_lb, encoder_direction_rf, encoder_direction_rb, encoder_stopped_lf, encoder_stopped_lb, encoder_stopped_rf, encoder_stopped_rb,x,y, gyroTwist, lfPID.result, lfPID.sPoint, lfPID.input, lfSpeed_PID);
+			sl.PutOne(bat_volt, lfvolt, lbvolt, rfvolt, rbvolt, encoder_count_lf, encoder_count_lb, encoder_count_rf, encoder_count_rb, encoder_direction_lf, encoder_direction_lb, encoder_direction_rf, encoder_direction_rb, encoder_stopped_lf, encoder_stopped_lb, encoder_stopped_rf, encoder_stopped_rb,x,y, gyroTwist, lfPID.result, lfPID.sPoint, lfPID.input, lfSpeed_PID, tractionLostFront, tractionLostBack);
 			sample_count++;
 		} else {
 			if (sample_count == 1000) {
@@ -413,10 +434,16 @@ void Team166Drive::SetMotorSpeeds(float leftSpeed, float rightSpeed)
 	leftSpeed = limitSpeed(leftSpeed);
 	rightSpeed = limitSpeed(rightSpeed);
 	//Stores the Speed Float values to be used to set the motor speed
-	float lfSpeed = leftSpeed;                      //Left Front Motor
-	float lbSpeed = leftSpeed;						//Left Back Motor
-	float rfSpeed = rightSpeed;						//Right Front Motor
-	float rbSpeed = rightSpeed;						//Right Back Motor
+	if(tractionLostFront == 0)
+	{
+		lfSpeed = leftSpeed;                      //Left Front Motor
+		rfSpeed = rightSpeed;						//Right Front Motor
+	}
+	if(tractionLostBack == 0)
+	{
+		lbSpeed = leftSpeed;						//Left Back Motor
+		rbSpeed = rightSpeed;						//Right Back Motor
+	}
 	
 	
 #if 1		//Send the Speed values to the PIDController to recived error corrected values
@@ -448,6 +475,8 @@ void Team166Drive::SetMotorSpeeds(float leftSpeed, float rightSpeed)
 	vrfwheel.Set(-rfSpeed);
 	vrbwheel.Set(-rbSpeed);	
 #endif
+	
+	tractionControl();
 }
 
 void Team166Drive::getWheelSpeed()
@@ -499,7 +528,7 @@ float Team166Drive::limitSpeed(float speed)
 
 void Team166Drive::getGains()
 {
-	static int cc = 0;
+
 	AnalogChannel acI(1,6); 
 	AnalogChannel acP(1,5); 
 	
@@ -511,7 +540,67 @@ void Team166Drive::getGains()
 	//K_I = potI/10000.0;
 	K_P = 0.10;
 	K_I = 0.040;
-	if(!(cc++%50))
-		printf("K_P: %f, K_I: %f\n",K_P, K_I);
+	
 	
 }
+
+void Team166Drive::tractionControl()
+{
+	lfCurrent = ((lfCurrentSensor.GetValue() * (20.0 / 4096.0)) - 2.5)/0.02;    		// Get Left front motor current sensor voltage, and subtract the offset. Divide by .02 to get current.
+	lbCurrent = ((lbCurrentSensor.GetValue() * (20.0 / 4096.0)) - 2.5)/0.02;			// Get Left back motor current sensor voltage, and subtract the offset. Divide by .02 to get current.
+	rfCurrent = ((rfCurrentSensor.GetValue() * (20.0 / 4096.0)) - 2.5)/0.02;			// Get Right motor current sensor voltage, and subtract the offset. Divide by .02 to get current.
+	rbCurrent = ((rbCurrentSensor.GetValue() * (20.0 / 4096.0)) - 2.5)/0.02;			// Get Right motor current sensor voltage, and subtract the offset. Divide by .02 to get current.
+	
+	if(tractionLostFront == 0)
+	{
+		if((fabs(lfWheelSpeed) >= (MAX_WHEEL_SPEED * .1)) && (fabs(lfCurrent) <= NO_LOAD_CURRENT))
+		{
+			tractionLostFront = 1;
+			lfSpeed = 0.0;
+			rfSpeed = 0.0;
+		}
+		if((fabs(rfWheelSpeed) >= (MAX_WHEEL_SPEED * .1)) && (fabs(rfCurrent) <= NO_LOAD_CURRENT))
+		{
+			tractionLostFront = 1;
+			lfSpeed = 0.0;
+			rfSpeed = 0.0;
+		}
+	}
+	if(tractionLostBack == 0)
+	{
+		if((fabs(lbWheelSpeed) >= (MAX_WHEEL_SPEED * .1)) && (fabs(lbCurrent) <= NO_LOAD_CURRENT))
+		{
+			tractionLostBack = 1;
+			lbSpeed = 0.0;
+			rbSpeed = 0.0;
+		}
+		if((fabs(rbWheelSpeed) >= (MAX_WHEEL_SPEED * .1)) && (fabs(rbCurrent) <= NO_LOAD_CURRENT))
+		{
+			tractionLostBack = 1;
+			lbSpeed = 0.0;
+			rbSpeed = 0.0;
+		}
+	}
+	
+	
+	if(tractionLostFront == 1)
+	{
+		tractionLostFrontCounter++;
+		if(tractionLostFrontCounter >= 20)
+		{
+			tractionLostFront = 0;
+			tractionLostFrontCounter = 0;
+		}
+	}
+	if(tractionLostBack == 1)
+	{
+		tractionLostBackCounter++;
+		if(tractionLostBackCounter >= 20)
+		{
+			tractionLostBack = 0;
+			tractionLostBackCounter = 0;
+		}			
+	}
+}
+
+

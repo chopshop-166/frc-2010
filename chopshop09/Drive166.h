@@ -6,7 +6,7 @@
 #include "PIDControl166.h"
 
 #define CLICKS_PER_REV (4096.0)							// Stores the Number of Clicks per revolution of the wheel
-
+#define NO_LOAD_CURRENT (2.0)							// Assume current of the motors when the traction is lost
 
 //
 // This defines a sample drive task
@@ -38,6 +38,9 @@ public:
 	// Limit the float values to -1.0 to 1.0
 	float limitSpeed(float);
 	
+	// Traction control function - uses current sensors
+	void tractionControl();
+	
 // Members
 public:
 	
@@ -56,10 +59,10 @@ public:
 	bool encoder_stopped_rf;                            // Right front encoder stopped
 	bool encoder_stopped_rb;                            // Right back encoder stopped
 	
-	float lfvolt;										// Left Front motor current sensor value
-	float lbvolt;										// Left Back motor current sensor value
-	float rfvolt;										// Right Front motor current sensor value
-	float rbvolt;										// Right Back motor current sensor value
+	float lfCurrent;										// Left Front motor current sensor value
+	float lbCurrent;										// Left Back motor current sensor value
+	float rfCurrent;										// Right Front motor current sensor value
+	float rbCurrent;										// Right Back motor current sensor value
 	
 	void getGains();									// Get the gains for PI
 	
@@ -93,13 +96,35 @@ private:
 	Victor vrfwheel; 									// To Use the Victor Speed Controlled for Right Front Motor
 	Victor vrbwheel; 									// To Use the Victor Speed Controlled for Right Back Motor
 	
+	AnalogChannel lfCurrentSensor; 							// Current sensor channel for Left Front wheel
+	AnalogChannel lbCurrentSensor; 							// Current sensor channel for Left Back wheel
+	AnalogChannel rfCurrentSensor; 							// Current sensor channel for Right Front wheel
+	AnalogChannel rbCurrentSensor; 							// Current sensor channel for Left Back wheel
+	
 	float lfSpeed_PID;
 	float lbSpeed_PID;
 	float rfSpeed_PID;
 	float rbSpeed_PID;
 	
+	float lfSpeed;                      //Left Front Motor
+	float lbSpeed;						//Left Back Motor
+	float rfSpeed;						//Right Front Motor
+	float rbSpeed;						//Right Back Motor
+	
+	bool tractionLostFront;
+	bool tractionLostBack;
+	int tractionLostFrontCounter;
+	int tractionLostBackCounter;
+	
 	float K_P;
 	float K_I;
+	
+	float x, y;
+	
+	float lfvolt;										// Left Front motor current sensor value
+	float lbvolt;										// Left Back motor current sensor value
+	float rfvolt;										// Right Front motor current sensor value
+	float rbvolt;										// Right Back motor current sensor value
 	
 	
 	
