@@ -28,7 +28,7 @@ public:
 		stick = new Joystick(1);           // create the joysticks
 		GetWatchdog().SetExpiration(100);
 		hServo = new Servo(9);            // create the demo servo
-		//vServo = new Servo(10);           // create the other demo servo
+		vServo = new Servo(10);           // create the other demo servo
 		
 	}
 
