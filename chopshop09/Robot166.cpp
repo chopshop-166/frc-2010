@@ -64,7 +64,7 @@ Robot166::Robot166(void) :
 	
 
 	/* start the CameraTask -keep this here for now, maybe move to Vision166 later  */
-	if (StartCameraTask(15, 0, k160x120, ROT_0) == -1) {
+	if (StartCameraTask(15, 0, k160x120, ROT_180) == -1) {
 		DPRINTF( LOG_ERROR,"Failed to spawn camera task; exiting. Error code %s", 
 				GetVisionErrorText(GetLastVisionError()) );
 	}

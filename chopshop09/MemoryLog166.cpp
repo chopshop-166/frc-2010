@@ -4,7 +4,7 @@
 
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(true)dprintf
+#define DPRINTF if(false)dprintf
 
 // Memory log constructor
 MemoryLog166::MemoryLog166(unsigned int msize)

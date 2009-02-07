@@ -29,6 +29,7 @@
 #define T166_ANALOG_MODULE_1 (1)
 #define T166_ANALOG_MODULE_2 (2)
 
+// first analog module
 /** \def #define T166_CURRENT_SENSOR_MOD (1)  
  * \brief current sensor module */
 #define T166_CURRENT_SENSOR_MOD (T166_ANALOG_MODULE_1)         // Module for current sensors
@@ -45,9 +46,10 @@
 #define T166_US_DIST (7)                    // Ultrasound distance pin
 #define T166_BAT_MOD (T166_ANALOG_MODULE_1)                    // Module for battery sensor
 #define T166_BAT_VOLT (8)                   // Channel for battery voltage
-#define T166_ACCEL_MOD (T166_ANALOG_MODULE_1)                  // Accelerometer module
-#define T166_ACCEL_X (9)                    // X-Axis for acccelerometer
-#define T166_ACCEL_Y (10)                    // Y-Axis for acccelerometer
+// second analog module
+#define T166_ACCEL_MOD (T166_ANALOG_MODULE_2)                  // Accelerometer module
+#define T166_ACCEL_X (1)                    // X-Axis for acccelerometer
+#define T166_ACCEL_Y (2)                    // Y-Axis for acccelerometer
 
 //
 // Digital Pin layout

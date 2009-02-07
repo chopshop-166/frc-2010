@@ -17,11 +17,63 @@
 
 #include "AxisCamera.h" 
 #include "FrcError.h"
-#include "Target166.h" 
 #include "Utility.h" 
+
+#include "MemoryLog166.h"
+#include "Target166.h" 
 
 int Target_debugFlag = 0;
 #define DPRINTF if(Target_debugFlag)dprintf
+
+
+// Sample in memory buffer
+struct vbuf166
+{
+	struct timespec tp;             // Time of snapshot
+	float bearing;                  // Target bearing	
+	float incrementH;               // increment from image to new bearing		
+	float tilt;                     // Target tilt	
+	float incrementV;               // increment from image to new tilt	
+};
+
+// Write one buffer into memory
+unsigned int VisionLog::PutOne(
+		float bearing, float incrementH, 
+		float tilt, float incrementV)
+{
+	struct vbuf166 *ob;               // Output buffer
+	
+	// Get output buffer
+	if ((ob = (struct vbuf166 *)GetNextBuffer(sizeof(struct vbuf166)))) {
+		
+		// Fill it in.
+		clock_gettime(CLOCK_REALTIME, &ob->tp);
+		ob->bearing = bearing;
+		ob->incrementH = incrementH;
+		ob->tilt = tilt;
+		ob->incrementV = incrementV;
+		return (sizeof(struct vbuf166));
+	}
+	
+	// Did not get a buffer. Return a zero length
+	return (0);
+}
+
+// Format the next buffer for file output
+unsigned int VisionLog::DumpBuffer(char *nptr, FILE *ofile)
+{
+	struct vbuf166 *ab = (struct vbuf166 *)nptr;
+	
+	// Output the data into the file
+	fprintf(ofile, "%u, %f, %f, %f, %f\n", 
+			ab->tp.tv_sec,  
+			ab->bearing, ab->incrementH, ab->tilt, ab->incrementV);
+	
+	// Done
+	return (sizeof(struct vbuf166));
+}
+
+
 
 struct HitNode {
 	int nodeIndex;

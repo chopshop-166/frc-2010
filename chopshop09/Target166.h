@@ -87,5 +87,20 @@ int FindTwoColors(TrackingThreshold td1, TrackingThreshold td2,
 
 void PrintReport(ImageHits* myReport);
 
+// Vision Memory Log
+class VisionLog : public MemoryLog166
+{
+public:
+	VisionLog() : MemoryLog166(128*1024) {return;};
+	~VisionLog() {return;};
+	unsigned int DumpBuffer(          // Dump the next buffer into the file
+			char *nptr,               // Buffer that needs to be formatted
+			FILE *outputFile);        // and then stored in this file
+	unsigned int VisionLog::PutOne(
+			float bearing, float incrementH, 
+			float tilt, float incrementV);
+};
+
+
 #endif
 
