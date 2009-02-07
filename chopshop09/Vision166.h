@@ -9,9 +9,11 @@
 
 #if !defined(_VISION166_H)
 #define _VISION166_H
+
+#include "semLib.h"
 #include "WPILib.h"
 #include "Robot166.h"
-#include "semLib.h"
+#include "Team166Task.h"
 
 // WPILib include files for vision
 #include "TrackAPI.h" 
@@ -53,6 +55,7 @@ private:
 	bool targetAcquired;				// target acquisition flag
 
 	Servo *horizontalServo;  		// servo object
+	Servo *verticalServo;  		 	// servo object
 	float horizontalDestination;
 	float horizontalPosition;	
 	float horizontalServoPosition;

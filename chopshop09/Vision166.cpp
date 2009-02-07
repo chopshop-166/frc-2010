@@ -84,7 +84,8 @@ Team166Vision::Team166Vision(void)
 	Start((char *)"166VisionTask");	
 
 	// remember to use jumpers on the sidecar for the Servo PWMs
-	horizontalServo = new Servo(10); 		// create horizontal servo
+	horizontalServo = new Servo(T166_HORIZONTAL_SERVO_CHANNEL);  // create horizontal servo
+	verticalServo = new Servo(T166_VERTICAL_SERVO_CHANNEL);  // create vertical servo
 
 	/* set up debug output: 
 	 * DEBUG_OFF, DEBUG_MOSTLY_OFF, DEBUG_SCREEN_ONLY, DEBUG_FILE_ONLY, DEBUG_SCREEN_AND_FILE 

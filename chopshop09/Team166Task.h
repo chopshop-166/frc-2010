@@ -1,32 +1,53 @@
+/********************************************************************************
+*  Project   		: Chopshop 2009
+*  File Name  		: Team166Task.h          
+*  Contributors   	: PSH
+*  Creation Date 	: February 6, 2008
+*  Revision History	: Source code & revision history maintained at code.google.com    
+*  File Description	: This file defines the high level and shared context for a Team 166
+*/
+
 #if !defined(_TEAM166TASK_H)
 #define _TEAM166TASK_H
 #include "WPILib.h"
 
 //
-// This class defines the high level and shared context for a Team 166
 // task (as in kernel task)
-//
-#define TEAM166TASK_K_STACKSIZE (64 * 1024) // 64KB
-#define TEAM166TASK_K_PRIO (100)            // Spawned task priority
+/** Stack size 64 KB */
+#define TEAM166TASK_K_STACKSIZE (64 * 1024) 
+/** Spawned task priority (100) */
+#define TEAM166TASK_K_PRIO (100)
 
 //
 // Analog Pin layout
+// _MOD refers to cRIO module (1 or 2)
+// If module 2 is used, make sure you have 2 sidecars
+// Other stuff is the channel in the module
 //
-#define T166_GYRO_MOD (1)                   // Gyro module
-#define T166_GYRO_TWIST (1)                 // Twist
-#define T166_GYRO_TEMP (2)                  // Temperature
-#define T166_CURRENT_SENSOR_MOD (1)         // Module for current sensors
+/** \def #define T166_ANALOG_MODULE_1 (1)  
+ * \brief cRIO analog module 1 */
+#define T166_ANALOG_MODULE_1 (1)
+#define T166_ANALOG_MODULE_2 (2)
+
+/** \def #define T166_CURRENT_SENSOR_MOD (1)  
+ * \brief current sensor module */
+#define T166_CURRENT_SENSOR_MOD (T166_ANALOG_MODULE_1)         // Module for current sensors
+/** \def #define T166_CURRENT_SENSOR_LF (1)  
+ * \brief current sensor left front channel */
 #define T166_CURRENT_SENSOR_LF (1)          // Current sensor Left Front
 #define T166_CURRENT_SENSOR_LB (2)          // Current sensor Left Back
 #define T166_CURRENT_SENSOR_RF (3)          // Current sensor Right Front
 #define T166_CURRENT_SENSOR_RB (4)          // Current sensor Right Back
-#define T166_ACCEL_MOD (1)                  // Accelerometer module
-#define T166_ACCEL_X (4)                    // X-Axis for acccelerometer
-#define T166_ACCEL_Y (5)                    // Y-Axis for acccelerometer
-#define T166_BAT_MOD (1)                    // Module for battery sensor
+#define T166_GYRO_MOD (T166_ANALOG_MODULE_1)                   // Gyro module
+#define T166_GYRO_TWIST (5)                 // Twist
+#define T166_GYRO_TEMP (6)                  // Temperature
+#define T166_US_MOD (T166_ANALOG_MODULE_1)                     // Ultrasound module
+#define T166_US_DIST (7)                    // Ultrasound distance pin
+#define T166_BAT_MOD (T166_ANALOG_MODULE_1)                    // Module for battery sensor
 #define T166_BAT_VOLT (8)                   // Channel for battery voltage
-#define T166_US_MOD (1)                     // Ultrasound module
-#define T166_US_DIST (6)                    // Ultrasound distance pin
+#define T166_ACCEL_MOD (T166_ANALOG_MODULE_1)                  // Accelerometer module
+#define T166_ACCEL_X (9)                    // X-Axis for acccelerometer
+#define T166_ACCEL_Y (10)                    // Y-Axis for acccelerometer
 
 //
 // Digital Pin layout
@@ -50,18 +71,26 @@
 //
 // PWM layout
 //
-#define T166_LEFT_FRONT_MOTOR_CHANNEL (1)					// Stores the channel for the Left Front Motor     
-#define T166_RIGHT_FRONT_MOTOR_CHANNEL (2)					// Stores the channel for the Right Front Motor
-#define T166_LEFT_BACK_MOTOR_CHANNEL (3)						// Stores the channel for the Left Back Motor
+/** \def #define T166_LEFT_FRONT_MOTOR_CHANNEL (1)  
+ * \brief Stores the channel for the Left Front Motor */
+#define T166_LEFT_FRONT_MOTOR_CHANNEL (1)  
+/** Stores the channel for the Right Front Motor */   
+#define T166_RIGHT_FRONT_MOTOR_CHANNEL (2)  
+/** Stores the channel for the Left Back Motor */
+#define T166_LEFT_BACK_MOTOR_CHANNEL (3)   
+/** Stores the channel for the Right Back Motor */    
 #define T166_RIGHT_BACK_MOTOR_CHANNEL (4)	
-
+/** Stores the channel for the Horizontal Servo */    
+#define T166_HORIZONTAL_SERVO_CHANNEL (9)     
+/** Stores the channel for the Vertical Servo */    
+#define T166_VERTICAL_SERVO_CHANNEL (10)    
 //
 // USB port layout
 //
-#define T166_USB_STICK_1 (1)                // First stick is in USB port #1
-#define T166_USB_STICK_2 (2)                // Second stick is in USB port #2
-
-
+/** First stick is in USB port #1 */
+#define T166_USB_STICK_1 (1)                
+/** Second stick is in USB port #2 */
+#define T166_USB_STICK_2 (2)               
 
 
 class Team166Task
