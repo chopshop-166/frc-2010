@@ -30,18 +30,23 @@ int Target_debugFlag = 0;
 struct vbuf166
 {
 	struct timespec tp;             // Time of snapshot
+	int   staleCount;				// Keeps track of the number of stale images
+	double imageTime;		 	    // image timestamp
 	float bearing;                  // Target bearing	
+	float hs;               		// horizontal servo position
+	float nhs;		                // normalized horizontal servo position
 	float incrementH;               // increment from image to new bearing		
 	float tilt;                     // Target tilt	
+	float vs;               		// vertical servo position
+	float nvs;		                // normalized vertical servo position
 	float incrementV;               // increment from image to new tilt	
-	int   staleCount;				// Keeps track of the number of stale images
 };
 
 // Write one buffer into memory
 unsigned int VisionLog::PutOne(
-		int staleCount,
-		float bearing, float incrementH, 
-		float tilt, float incrementV)
+		int staleCount, double imageTime,
+		float bearing, float hs, float nhs, float incrementH, 
+		float tilt, float vs, float nvs, float incrementV)
 {
 	struct vbuf166 *ob;               // Output buffer
 	
@@ -50,11 +55,16 @@ unsigned int VisionLog::PutOne(
 		
 		// Fill it in.
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
+		ob->staleCount = staleCount;
+		ob->imageTime = imageTime;
 		ob->bearing = bearing;
+		ob->hs = hs;
+		ob->nhs = nhs;
 		ob->incrementH = incrementH;
 		ob->tilt = tilt;
+		ob->vs = vs;
+		ob->nvs = nvs;
 		ob->incrementV = incrementV;
-		ob->staleCount = staleCount;
 		return (sizeof(struct vbuf166));
 	}
 	
@@ -68,9 +78,11 @@ unsigned int VisionLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct vbuf166 *ab = (struct vbuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%lf, %u, %f, %f, %f, %f\n", 
-			(double)ab->tp.tv_sec+(double)(ab->tp.tv_nsec*1e-9), ab->staleCount,
-			ab->bearing, ab->incrementH, ab->tilt, ab->incrementV);
+	fprintf(ofile, "%lf, %u, %lf, %f, %f, %f, %f, %f, %f, %f, %f\n", 
+			(double)ab->tp.tv_sec+(double)(ab->tp.tv_nsec*1e-9), 
+			ab->staleCount, ab->imageTime,
+			ab->bearing, ab->hs, ab->nhs, ab->incrementH, 
+			ab->tilt, ab->vs, ab->nvs, ab->incrementV);
 	
 	// Done
 	return (sizeof(struct vbuf166));

@@ -97,9 +97,9 @@ public:
 			char *nptr,               // Buffer that needs to be formatted
 			FILE *outputFile);        // and then stored in this file
 	unsigned int VisionLog::PutOne(
-			int staleCount,
-			float bearing, float incrementH, 
-			float tilt, float incrementV);
+			int staleCount, double imageTime,
+			float bearing, float hs, float nhs, float incrementH, 
+			float tilt, float vs, float nvs, float incrementV);
 };
 
 
