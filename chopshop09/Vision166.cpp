@@ -19,21 +19,22 @@
 #include "Target166.h"
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(true)dprintf
+#define DPRINTF if(false)dprintf
 // To show activity printout set true
-#define SHOWACTIVITY true
+#define SHOWACTIVITY 0
 
 // Vision task constructor
-Team166Vision::Team166Vision(void)
-{	
-	// Initialize assorted fields	
-	targetAcquired = false;			// target not acquired
-	bearing = 0.0;					// current horizontal normalized servo position	
-	tilt = 0.0;						// current vertical normalized servo position	
-	
-	// Start our task
-	Start((char *)"166VisionTask");	
-
+Team166Vision::Team166Vision(void) :
+	visionActive(true),             // vision flag for teleop mode
+	bearing(0.0),					// current horizontal normalized servo position	
+	targetAcquired(false),			// target not acquired
+	tilt(0.0),						// current vertical normalized servo position	
+	servoDeadband(0.005),			// pan flag to move if > this amount 
+	sinStart(0.0),					// control where to start the sine wave for pan
+	panIncrement(0),				// pan 1-up number for each call
+	mode(IMAQ_HSL), 			    // Color mode (RGB or HSL) for image processing	
+	savedImageTimestamp(0.0)		// timestamp of last image acquired
+{		
 	// remember to use jumpers on the sidecar for the Servo PWMs
 	horizontalServo = new Servo(T166_HORIZONTAL_SERVO_CHANNEL);  // create horizontal servo
 	verticalServo = new Servo(T166_VERTICAL_SERVO_CHANNEL);  // create vertical servo
@@ -42,22 +43,6 @@ Team166Vision::Team166Vision(void)
 	 * DEBUG_OFF, DEBUG_MOSTLY_OFF, DEBUG_SCREEN_ONLY, DEBUG_FILE_ONLY, DEBUG_SCREEN_AND_FILE 
 	 */
 	SetDebugFlag ( DEBUG_SCREEN_ONLY  ) ;
-	
-#if 0 //moved to robot task
-	
-	/* start the CameraTask	 */
-	if (StartCameraTask(15, 0, k160x120, ROT_0) == -1) {
-		DPRINTF( LOG_ERROR,"Failed to spawn camera task; exiting. Error code %s", 
-				GetVisionErrorText(GetLastVisionError()) );
-	}
-	/* allow writing to vxWorks target */
-	Priv_SetWriteFileAllowed(1);   	
-#endif	
-
-	// initialize pan variables
-	servoDeadband = 0.01;					// move if > this amount 
-	sinStart = 0.0;							// control where to start the sine wave for pan
-	panIncrement = 0;						// pan needs a 1-up number for each call
 	
 	//initialize targetting variables
 	memset(&pinkReport,0,sizeof(ParticleAnalysisReport));			// initialize particle analysis report
@@ -84,8 +69,8 @@ Team166Vision::Team166Vision(void)
 	greenSpec.luminance.minValue = 92;  
 	greenSpec.luminance.maxValue = 255;
 
-	mode = IMAQ_HSL; 				// RGB or HSL	
-	savedImageTimestamp = 0.0;		// timestamp of last image acquired
+	// Start our task
+	Start((char *)"166VisionTask");	
 };
 	
 // Vision task destructor
@@ -100,6 +85,47 @@ double Team166Vision::GetTargetArea() { return targetArea; };
 int Team166Vision::GetTargetHeight() { return targetHeight; };
 float Team166Vision::GetBearing() { return bearing; }
 
+/////////////// Control
+
+/**
+ * @brief Set vision processing on or off
+ * If off, the main loop just idles and monitors this flag
+ * 
+ * @param onFlag if true, process images to find the target
+ */
+void Team166Vision::SetVisionOn(bool onFlag) {
+	if (onFlag) { visionActive = true; }
+	else { visionActive = false;	}
+}
+
+/**
+ * Set servo positions (0.0 to 1.0) 
+ * 
+ * @param servoHorizontal Pan Position from 0.0 to 1.0.
+ * @param servoVertical Tilt Position from 0.0 to 1.0.
+ */
+void Team166Vision::DoServos(float servoHorizontal, float servoVertical)	{
+	
+	float currentH = horizontalServo->Get();		
+	float currentV = verticalServo->Get();
+	
+	/* make sure the movement isn't too small */
+	if ( fabs(servoHorizontal - currentH) > servoDeadband ) {
+		horizontalServo->Set( servoHorizontal );
+		/* save new normalized horizontal position */
+		bearing = RangeToNormalized(servoHorizontal, 1);
+	}
+	if ( fabs(servoVertical - currentV) > servoDeadband ) {
+		// don't look straight up or down
+		if (servoVertical > 0.8) servoVertical = 0.8;
+		if (servoVertical < 0.2) servoVertical = 0.2;
+		
+		verticalServo->Set( servoVertical );
+		/* save new normalized vertical position */
+		tilt = RangeToNormalized(servoVertical, 1);
+	}
+}	
+
 /**
  * Set servo positions (0.0 to 1.0) translated from normalized values (-1.0 to 1.0). 
  * 
@@ -107,30 +133,22 @@ float Team166Vision::GetBearing() { return bearing; }
  * @param normalizedVertical Tilt Position from -1.0 to 1.0.
  */
 void Team166Vision::SetServoPositions(float normalizedHorizontal, float normalizedVertical)	{
-
 	float servoH = NormalizeToRange(normalizedHorizontal);
 	float servoV = NormalizeToRange(normalizedVertical);
-	
-	float currentH = horizontalServo->Get();		
-	float currentV = verticalServo->Get();
-	
-	/* make sure the movement isn't too small */
-	if ( fabs(servoH - currentH) > servoDeadband ) {
-		horizontalServo->Set( servoH );
-		/* save new normalized horizontal position */
-		bearing = RangeToNormalized(servoH, 1);
-	}
-	if ( fabs(servoV - currentV) > servoDeadband ) {
-		// don't look straight up or down
-		if (servoV > 0.8) servoV = 0.8;
-		if (servoV < 0.2) servoV = 0.2;
-		
-		verticalServo->Set( servoV );
-		tilt = RangeToNormalized(servoV, 1);
-	}
+	DoServos(servoH, servoV);
 }	
+
+//TODO: Test this - does it need to be doubled?
+/** ratio of horizontal image field of view (54 degrees) to horizontal servo (180) */
+#define HORIZONTAL_IMAGE_TO_SERVO_ADJUSTMENT 0.41
+/** ratio of vertical image field of view (40.5 degrees) to vertical servo (180) */
+#define VERTICAL_IMAGE_TO_SERVO_ADJUSTMENT 0.45
 /**
- * Adjust servo positions (0.0 to 1.0) translated from normalized values (-1.0 to 1.0). 
+ * @brief Adjust servo positions (0.0 to 1.0) translated from normalized values (-1.0 to 1.0). 
+ * Inputs are normalized values from an image with field of view 
+ * horizontal 54 degrees/vertical 40.5 degrees. This value is 
+ * multiplied by a factor to correspond to the 180 degree H/V 
+ * range of the servo. 
  * 
  * @param normalizedHorizontal Pan adjustment from -1.0 to 1.0.
  * @param normalizedVertical Tilt adjustment from -1.0 to 1.0.
@@ -141,8 +159,10 @@ void Team166Vision::AdjustServoPositions(float normDeltaHorizontal, float normDe
 	/* adjust for the fact that servo overshoots based on image input */
 	//normDeltaHorizontal /= 8.0;
 	//normDeltaVertical /= 4.0;
-	normDeltaHorizontal *= .125;
-	normDeltaVertical *= 0.25;
+	//normDeltaHorizontal *= .125;
+	//normDeltaVertical *= 0.25;
+	normDeltaHorizontal *= HORIZONTAL_IMAGE_TO_SERVO_ADJUSTMENT;
+	normDeltaVertical *= VERTICAL_IMAGE_TO_SERVO_ADJUSTMENT;
 	
 	/* compute horizontal goal */
 	float currentH = horizontalServo->Get();  //servo range
@@ -165,6 +185,8 @@ void Team166Vision::AdjustServoPositions(float normDeltaHorizontal, float normDe
 	float servoV = NormalizeToRange(normDestV, 0.2, 0.8);
 	//float servoV = NormalizeToRange(normDestV);
 
+	DoServos(servoH, servoV);
+#if 0
 	/* make sure the movement isn't too small */
 	if ( fabs(currentH-servoH) > servoDeadband ) {
 		horizontalServo->Set( servoH );		
@@ -179,6 +201,7 @@ void Team166Vision::AdjustServoPositions(float normDeltaHorizontal, float normDe
 		verticalServo->Set( servoV );
 		tilt = RangeToNormalized(servoV, 1);
 	}
+#endif
 }
 
 // process images to find target
@@ -246,8 +269,12 @@ bool Team166Vision::AcquireTarget() {
 #if 1		
 		// log stuff
 		// Should we log this value?
+		float hs = horizontalServo->Get();
+		float vs = verticalServo->Get();
 		if (sample_count < 200) {
-			vl.PutOne(staleCount, bearing, incrementH, tilt, incrementV);
+			vl.PutOne(staleCount, pinkReport.imageTimestamp,
+					bearing, hs, RangeToNormalized(hs,1), incrementH, 
+					tilt, vs, RangeToNormalized(vs,1), incrementV);
 			sample_count++;
 		} else {
 			if (sample_count == 200) {
@@ -297,7 +324,7 @@ bool Team166Vision::AcquireTarget() {
 int Team166Vision::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {
-
+	int loopCounter = 0;
 	Robot166 *lHandle;            // Local handle
 	sample_count = 0;             // Initialize Count of log samples
 	bool staleFlag;
@@ -331,18 +358,20 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 	SetServoPositions(horizontalDestination, verticalDestination);
 					
 	/* for controlling loop execution time */
-	float loopTime = 0.1;		// slightly slower than	
+	float loopTime = 0.05;		// should be slightly slower than camera
 	double currentTime = GetTime();
 	double lastTime = currentTime;
 	
     // General main loop (while in Autonomous or Tele mode)
 	printf("Vision task is getting ready...\n");
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
-			(lHandle->RobotMode == T166_OPERATOR)) {
-
+		   (lHandle->RobotMode == T166_OPERATOR)) 
+	{
+		loopCounter++;
 		MyWatchDog = 1;		
-		staleFlag=AcquireTarget();
-		
+		if (visionActive) {
+			staleFlag=AcquireTarget();		
+		}
 		
 		// sleep to keep loop at constant rate
 		// this helps keep pan consistant
@@ -350,8 +379,11 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 		currentTime = GetTime();			
 		lastTime = currentTime;					
 		if ( (loopTime > ElapsedTime(lastTime)) && !staleFlag) {
+			//DPRINTF(LOG_DEBUG,"%i WAITING: current time: %f", currentTime, loopCounter);
 			Wait( loopTime - ElapsedTime(lastTime) );	// seconds
-		}			
+		} else {
+			DPRINTF(LOG_DEBUG,"~~~~~~~~~ %i NOT WAITING: current time: %f", currentTime, loopCounter);
+		}
 	}
 	return (0);
 }

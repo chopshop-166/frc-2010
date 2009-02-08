@@ -49,16 +49,20 @@ public:
 	int GetTargetHeight();
 	bool IsTargetAcquired();
 	bool AcquireTarget();
+	
+	// Control
+	void SetVisionOn(bool onFlag);
 
 // Private functions and attributes
 private:
-	VisionLog vl;                 // Vision log
+	VisionLog vl;                   // Vision log
+	bool visionActive;              // flag to control vision processon on/off
 	int sample_count;               // Count of log samples
 	float bearing;                  // Current target horizontal bearing
-	float tilt;                     // Current target vertical bearing
 	double targetArea;	            // area of target
 	int targetHeight;				// height of target
 	bool targetAcquired;			// target acquisition flag
+	float tilt;                     // Current target vertical bearing
 
 	Servo *horizontalServo;  		// servo object
 	Servo *verticalServo;  		 	// servo object
@@ -70,15 +74,15 @@ private:
 	float panPosition;
 	double sinStart;
 	static double panStartTime;
-	int panIncrement;				// pan needs a 1-up number for each call
-	
+	int panIncrement;				// pan needs a 1-up number for each call	
+	ColorMode mode;
 	double savedImageTimestamp;		// timestamp of last image acquired
 	
-	ColorMode mode;
 	ParticleAnalysisReport pinkReport, greenReport;	// particle analysis reports
 	TrackingThreshold pinkSpec, greenSpec;			// color thresholds
 	
 	void SetServoPositions(float normalizedHorizontal, float normalizedVertical);
 	void AdjustServoPositions(float normDeltaHorizontal, float normDeltaVertical);
+	void DoServos(float servoHorizontal, float servoVertical);
 };
 #endif // !defined(_VISION166_H)
