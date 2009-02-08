@@ -6,7 +6,8 @@
 #include "Robot166.h"
 #include "Sonar166.h"
 
-
+// To locally enable debug printing: set true, to disable false
+#define DPRINTF if(false)dprintf
 // Get access to vision related things
 #if 1
 extern Team166Vision Team166VisionObject;
@@ -29,8 +30,6 @@ public:
  		return bearing;
  	}
 #endif
-
-
 
 
 autonomous166::autonomous166(void):
@@ -58,8 +57,12 @@ void autonomous166::autonomous_main(void)
 	lhandle=Robot166::getInstance();
 	int difference_camera;        // difference between last picture's height and current picutre's height
 	float difference_ultrasonic;  // difference between last ultrasonic value and current ultrasonic value
-	float y;                      // the wishing speed for the robot
-	float x;                      // the wishing bearing for the robot
+	float x;
+	float y=archived_y;
+	
+	
+                 
+	
 	
 	
 	
@@ -67,25 +70,26 @@ void autonomous166::autonomous_main(void)
 	
   if(Team166VisionObject.IsTargetAcquired())
   {
-	  
+	  DPRINTF(LOG_INFO,"TARGET AQUIRED\n");
 	
 	  difference_camera=tracking();
-	if(difference_camera>0)
+	  DPRINTF(LOG_INFO,"the difference is %i \n", difference_camera);
+	if(difference_camera >= 0)
 		{
 			camera_perspective = T166_AWAY;
 		}
-	else if(difference_camera<=0)
+	else if(difference_camera < 0)
 		{
-			camera_perspective=T166_CLOSER;
+			camera_perspective = T166_CLOSER;
 		}
 	
 	difference_ultrasonic=ultrasonic();
 	
-	if(difference_ultrasonic<=0)
+	if(difference_ultrasonic <= 0)
 			{
 				sonar_perspectve=T166_AWAY;
 			}
-		else if(difference_ultrasonic>0)
+		else if(difference_ultrasonic > 0)
 			{
 				sonar_perspectve=T166_CLOSER;
 			}
@@ -93,15 +97,18 @@ void autonomous166::autonomous_main(void)
 		{
 			if(camera_perspective==T166_AWAY)
 				{
-					y = y+(y*.10);
+					DPRINTF(LOG_INFO,"AWAY\n");
+					y = y+(y*.01);
 				}
 			else if(camera_perspective==T166_CLOSER)
 				{
-					y = y-(y*.10);
+					DPRINTF(LOG_INFO,"CLOSER\n");
+					y = y-(y*.01);
 				}
 		}
-	else
+	else if(camera_perspective == sonar_perspectve)
 		{
+			DPRINTF(LOG_INFO,"They are equal\n");
 			y = (difference_ultrasonic/check_time);
 			if((archived_y <= y) && (archived_distance > drop_distance))
 			{
@@ -113,11 +120,11 @@ void autonomous166::autonomous_main(void)
 			{
 				activate_drop=1;
 			}
-			archived_y = y;
+			
 		}
 			
-			
-				
+		DPRINTF(LOG_INFO,"Set with algorithems\n");	
+	  archived_y = y;		                // keeps track of the y value tat was last set
 	  x = Team166VisionObject.GetBearing(); //gets the position of the servo from the vision task
 	  lhandle->SetJoyStick(x,y);
 				
@@ -126,16 +133,17 @@ void autonomous166::autonomous_main(void)
   {
 	  if(target_acquisition())
 	  {
-		  x = -0.5;
-		  y = 0.5;
+		  x = -0.25;
+		  y = 0.75;
 		  lhandle->SetJoyStick(x,y);
 	  }
 	  else
 	  {
-		  x = 0.5;
-		  y = 0.5;
+		  x = 0.25;
+		  y = 0.75;
 		  lhandle->SetJoyStick(x,y);
 	  }
+	  DPRINTF(LOG_INFO,"Set without algorithems\n");
   }
 			
 			
@@ -146,15 +154,18 @@ int autonomous166::tracking(void)
 {
 	int current_image_height=0;    // the new height of the target
 	int difference_camera;         // the difference between the target's previous height and its current height
+	DPRINTF(LOG_INFO,"the first time variable = %f", first_time);
 	if(first_time==0)                // if the camera has not submitted a target yet      
 		{
 			archived_image_height = Team166VisionObject.GetTargetHeight();   // get the first archived image height
+			DPRINTF(LOG_INFO,"first image height = %i \n", archived_image_height);
 			difference_camera = archived_image_height;                 // set the difference as positive
 			first_time=1;                                              // end the first time call
 		}
 	else
 		{
 			current_image_height = Team166VisionObject.GetTargetHeight();           // get the latest image height 
+			DPRINTF(LOG_INFO,"image height = %i \n",current_image_height);
 			difference_camera = archived_image_height-current_image_height;   // find the difference between the old height and the lastest height
 			archived_image_height = current_image_height;                     // set the new base height
 		}
@@ -174,9 +185,9 @@ bool autonomous166::target_acquisition(void)
 		past_time=current_time;
 	}
 	
-	if(past_time-current_time>=5)
+	if(current_time-past_time>=5)
 	{
-		if(past_time-current_time>=10)
+		if(current_time-past_time>=10)
 		{
 			past_time=current_time;
 		}
