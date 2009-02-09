@@ -2,6 +2,7 @@
 #include "Team166Task.h"
 #include "Dispenser166.h"
 #include "MemoryLog166.h"
+#include "Robot166.h"
 
 // Sample in memory buffer
 struct abuf166
@@ -80,6 +81,7 @@ int Team166Dispenser::Main(int a2, int a3, int a4, int a5,
 	DispLog sl;                   // Dispenser log
 	int sample_count = 0;         // Count of log samples
 	
+	
 	// Let the world know we're in
 	printf("In the 166 dispenser task\n");
 		
@@ -105,19 +107,28 @@ int Team166Dispenser::Main(int a2, int a3, int a4, int a5,
 		// Strobe the sensors
 		
 		// Get the command we're asked to apply
-        lHandle->GetDispenser(&cdir, &lift_motor);
+        lHandle->GetDispenser(&cdir, &lift_motor);   //gives the values for the conveyor direction and the desired lift motor speed
+        //printf("cdir = %u, lift_motor = %f\n", cdir, lift_motor);
         
-		// Set the agitator motor direction
-        switch (cdir) {
-        case T166_CB_UNKNOWN:
-        	break;
-        case T166_CB_FORWARD:
-        	break;
-        case T166_CB_BACKWARD:
-        	break;
-        case T166_CB_STILL:
-        	break;
+        switch(cdir)                                     	//switch for the direction of the conveyor belt
+        {
+        	case T166_CB_BACKWARD:                        	  //when the direction given is backward...
+        		lHandle->treadmill_victor.Set(TREADMILL_REVERSE_SPEED); //set the treadmill victor to the set reverse speed
+        		break;											
+        	case T166_CB_FORWARD: 								//when the direction given is forward...
+        		lHandle->treadmill_victor.Set(TREADMILL_FORWARD_SPEED); //set the treadmill victor to the set forward speed
+        		break;
+        	default:										//when no direction is given
+        		lHandle->treadmill_victor.Set(NO_SPEED);				//set the treadmill victor speed to 0
         }
+        //if(/*(lHandle->limitswitch_top1.Get()==1)&&*/(lHandle->limitswitch_top2.Get()==0)/*&&(lHandle->limitswitch_bottom1.Get()==1)&&(lHandle->limitswitch_bottom2.Get()==1)*/)
+        //{
+        	lHandle->lift_victor.Set(lift_motor);         //set the speed of the victor equal to the value of the joystick output
+        //}
+       // else
+       // {
+       // 	lHandle->lift_victor.Set(0);
+       // }
         
         // Check limit switches, user command and motor direction
         

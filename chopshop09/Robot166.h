@@ -32,6 +32,12 @@ public:
     Encoder rfEncoder;						  // Encoder for the Right Front
     Encoder lbEncoder;						  // Encoder for the Left Back
     Encoder rbEncoder;						  // Encoder for the Right Back
+	Victor lift_victor;                       // Victor controlling the lift
+    Victor treadmill_victor;                  // Victor controlling the treadmill
+    DigitalInput limitswitch_top1;            //the first of two limit switches on the high end of the lifter
+    DigitalInput limitswitch_top2; 			  //the second of two limit switches on the high end of the lifter
+    DigitalInput limitswitch_bottom1;         //the first of two limit switches on the bottom end of the lifter
+    DigitalInput limitswitch_bottom2;         //the second of two limit switches on the bottom end of the lifter
     
 private:
 	SEM_ID JoyLock;                           // Coordination of Joystick parameters

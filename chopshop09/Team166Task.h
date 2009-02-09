@@ -70,6 +70,10 @@
 #define T166_ENC_RB_B (11)                  // Right Back wheel encoder; channel B
 #define T116_ENC_RB_I (12)					// Right Back wheel encoder; Index Channel
 
+#define TOP_LIMITSWITCH_DIGITAL_INPUT1    (13)  //top limit switch 
+#define TOP_LIMITSWITCH_DIGITAL_INPUT2    (14)  //top limit switch
+#define BOTTOM_LIMITSWITCH_DIGITAL_INPUT1 (15) //bottom limit switch
+#define BOTTOM_LIMITSWITCH_DIGITAL_INPUT2 (16) //bottom limit switch    
 //
 // PWM layout
 //
@@ -85,7 +89,13 @@
 /** Stores the channel for the Horizontal Servo */    
 #define T166_HORIZONTAL_SERVO_CHANNEL (9)     
 /** Stores the channel for the Vertical Servo */    
-#define T166_VERTICAL_SERVO_CHANNEL (10)    
+#define T166_VERTICAL_SERVO_CHANNEL (10)
+
+#define T166_LIFT_MOTOR (5)                 // Lift motor
+#define T166_TREADMILL_MOTOR (6)            // Treadmill for balls
+
+
+
 //
 // USB port layout
 //

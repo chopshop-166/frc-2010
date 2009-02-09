@@ -1,7 +1,11 @@
-                         #if !defined(_DISPENSER166_H)
+#if !defined(_DISPENSER166_H)
 #define _DISPENSER166_H
 #include "WPILib.h"
 #include "Robot166.h"
+
+#define TREADMILL_REVERSE_SPEED -1.0  //forward speed for the treadmill victor
+#define TREADMILL_FORWARD_SPEED  1.0  //reverse speed for the treadmill victor
+#define NO_SPEED				 0    //speed to use when there is no input for the treadmill victor
 
 //
 // This defines a sample dispenser task

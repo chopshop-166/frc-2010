@@ -345,16 +345,16 @@ int Team166Drive::Main(int a2, int a3, int a4, int a5,
 		}
 #define MS_SLEEP (5*1000000)		
 		// How far into this cycle have we run?
-		if (!(cc % 500))
-		  printf("%u = Delta: %u s, %u ns (%u ms)\n", cc, delta_time.tv_sec, delta_time.tv_nsec, delta_time.tv_nsec / (1000000));
+		//if (!(cc % 500))
+		//  printf("%u = Delta: %u s, %u ns (%u ms)\n", cc, delta_time.tv_sec, delta_time.tv_nsec, delta_time.tv_nsec / (1000000));
 		delta_time.tv_nsec = MS_SLEEP - (delta_time.tv_nsec % MS_SLEEP); // 5ms into nano seconds
 		if (delta_time.tv_nsec < half_tick)
 			  delta_time.tv_nsec = MS_SLEEP;
 		delta_time.tv_sec = 0;
 		
 		// Display the sleep time
-		if (!(cc % 500))
-			printf("%u = Sleep Delta: %u s, %u ns (%u ms)\n", cc, delta_time.tv_sec, delta_time.tv_nsec, delta_time.tv_nsec / (1000000));
+		//if (!(cc % 500))
+		//	printf("%u = Sleep Delta: %u s, %u ns (%u ms)\n", cc, delta_time.tv_sec, delta_time.tv_nsec, delta_time.tv_nsec / (1000000));
 		nanosleep((const struct timespec *)&delta_time, &non_sleep);
 		cc++;
 		
@@ -477,7 +477,7 @@ void Team166Drive::SetMotorSpeeds(float leftSpeed, float rightSpeed)
 	vrbwheel.Set(-rbSpeed);	
 #endif
 	
-	tractionControl();
+	//tractionControl();
 	lfSpeed_PID = 0;
 	lbSpeed_PID = 0;
 	rfSpeed_PID = 0;
@@ -534,12 +534,12 @@ float Team166Drive::limitSpeed(float speed)
 void Team166Drive::getGains()
 {
 
-	AnalogChannel acI(1,6); 
-	AnalogChannel acP(1,5); 
+	//AnalogChannel acI(1,6); 
+	//AnalogChannel acP(1,5); 
 	
 	
-	INT16 potI = acI.GetValue();
-	INT16 potP = acP.GetValue();
+	//INT16 potI = acI.GetValue();
+	//INT16 potP = acP.GetValue();
 	
 	//K_P = potP/10000.0;
 	//K_I = potI/10000.0;
@@ -599,7 +599,7 @@ void Team166Drive::tractionControl()
 	
 	if(!(foo++%50))
 	{
-		printf("\nlfCurrentFiltered: %f, lbCurrentFiltered: %f, rfCurrentFiltered: %f, rbCurrentFiltered: %f\n", lfCurrentFiltered, lbCurrentFiltered, rfCurrentFiltered, rbCurrentFiltered);
+		//printf("\nlfCurrentFiltered: %f, lbCurrentFiltered: %f, rfCurrentFiltered: %f, rbCurrentFiltered: %f\n", lfCurrentFiltered, lbCurrentFiltered, rfCurrentFiltered, rbCurrentFiltered);
 		//printf("\nlfCurrentFiltered: %f, lfCurrent: %f\n", lfCurrentFiltered, lfCurrent);
 	}
 	if(tractionLostFront == 0)
