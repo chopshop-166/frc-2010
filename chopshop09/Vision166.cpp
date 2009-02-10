@@ -19,9 +19,9 @@
 #include "Target166.h"
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(true)dprintf
+#define DPRINTF if(false)dprintf
 // To show activity printout set true
-#define SHOWACTIVITY 1
+#define SHOWACTIVITY 0
 
 // Vision task constructor
 Team166Vision::Team166Vision(void) :
