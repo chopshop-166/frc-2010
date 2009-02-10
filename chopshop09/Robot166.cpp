@@ -13,6 +13,7 @@
 #include "Vision166.h"
 #include "Sonar166.h"
 
+
 // needed for Camera Init
 #include "AxisCamera.h" 
 #include "FrcError.h"
@@ -219,12 +220,16 @@ float Robot166::GetBatteryVoltage(void)
  */
 void Robot166::Autonomous(void)
 {
-	printf("autonomous\n");
-	RobotMode = T166_AUTONOMOUS;
-	GetWatchdog().SetEnabled(false);
-	SetJoyStick(0.0, 0.5);
-	Wait(2.0); 				//    for 2 seconds
-	SetJoyStick(0.0, 0.0); 	// stop robot
+	while(IsAutonomous())
+	{
+		printf("autonomous\n");
+		RobotMode = T166_AUTONOMOUS;
+		GetWatchdog().SetEnabled(false);
+		steveautonomous.autonomous_main();
+	}
+	
+	
+	
 }
 
 /** 
