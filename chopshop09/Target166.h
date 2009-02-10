@@ -98,6 +98,7 @@ public:
 			FILE *outputFile);        // and then stored in this file
 	unsigned int VisionLog::PutOne(
 			int staleCount, double imageTime,
+			//bearing, horiz servo, normal horiz serv, normalized increment
 			float bearing, float hs, float nhs, float incrementH, 
 			float tilt, float vs, float nvs, float incrementV);
 };

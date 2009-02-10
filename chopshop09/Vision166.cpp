@@ -19,9 +19,9 @@
 #include "Target166.h"
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(false)dprintf
+#define DPRINTF if(true)dprintf
 // To show activity printout set true
-#define SHOWACTIVITY 0
+#define SHOWACTIVITY 1
 
 // Vision task constructor
 Team166Vision::Team166Vision(void) :
@@ -117,8 +117,8 @@ void Team166Vision::DoServos(float servoHorizontal, float servoVertical)	{
 	}
 	if ( fabs(servoVertical - currentV) > servoDeadband ) {
 		// don't look straight up or down
-		if (servoVertical > 0.8) servoVertical = 0.8;
-		if (servoVertical < 0.2) servoVertical = 0.2;
+		//if (servoVertical > 0.8) servoVertical = 0.8;
+		//if (servoVertical < 0.2) servoVertical = 0.2;
 		
 		verticalServo->Set( servoVertical );
 		/* save new normalized vertical position */
@@ -138,11 +138,16 @@ void Team166Vision::SetServoPositions(float normalizedHorizontal, float normaliz
 	DoServos(servoH, servoV);
 }	
 
-//TODO: Test this - does it need to be doubled?
 /** ratio of horizontal image field of view (54 degrees) to horizontal servo (180) */
-#define HORIZONTAL_IMAGE_TO_SERVO_ADJUSTMENT 0.41
+//#define HORIZONTAL_IMAGE_TO_SERVO_ADJUSTMENT 0.3   // FOV ratios
+//#define HORIZONTAL_IMAGE_TO_SERVO_ADJUSTMENT 0.45  // ratio of sine
+//#define HORIZONTAL_IMAGE_TO_SERVO_ADJUSTMENT 0.225   // mysterious sine / 2
+#define HORIZONTAL_IMAGE_TO_SERVO_ADJUSTMENT 0.125   // this seems to work
 /** ratio of vertical image field of view (40.5 degrees) to vertical servo (180) */
-#define VERTICAL_IMAGE_TO_SERVO_ADJUSTMENT 0.45
+//#define VERTICAL_IMAGE_TO_SERVO_ADJUSTMENT 0.225  // FOV ratios
+//#define VERTICAL_IMAGE_TO_SERVO_ADJUSTMENT 0.34   // ratio of sine
+//#define VERTICAL_IMAGE_TO_SERVO_ADJUSTMENT 0.175	    // mysterious sine / 2
+#define VERTICAL_IMAGE_TO_SERVO_ADJUSTMENT 0.125	    // this seems to work
 /**
  * @brief Adjust servo positions (0.0 to 1.0) translated from normalized values (-1.0 to 1.0). 
  * Inputs are normalized values from an image with field of view 
@@ -157,10 +162,6 @@ void Team166Vision::AdjustServoPositions(float normDeltaHorizontal, float normDe
 			
 	//NORMALIZED
 	/* adjust for the fact that servo overshoots based on image input */
-	//normDeltaHorizontal /= 8.0;
-	//normDeltaVertical /= 4.0;
-	//normDeltaHorizontal *= .125;
-	//normDeltaVertical *= 0.25;
 	normDeltaHorizontal *= HORIZONTAL_IMAGE_TO_SERVO_ADJUSTMENT;
 	normDeltaVertical *= VERTICAL_IMAGE_TO_SERVO_ADJUSTMENT;
 	
@@ -182,8 +183,8 @@ void Team166Vision::AdjustServoPositions(float normDeltaHorizontal, float normDe
 	//SERVO RANGE
 	/* convert input to servo range */
 	float servoH = NormalizeToRange(normDestH);
-	float servoV = NormalizeToRange(normDestV, 0.2, 0.8);
-	//float servoV = NormalizeToRange(normDestV);
+	//float servoV = NormalizeToRange(normDestV, 0.2, 0.8);
+	float servoV = NormalizeToRange(normDestV);
 
 	DoServos(servoH, servoV);
 #if 0
@@ -214,8 +215,9 @@ bool Team166Vision::AcquireTarget() {
 	static int staleCount = 0;
 	
 	// calculate servo position based on colors found 
-	
-	if ( FindTwoColors(pinkSpec, greenSpec, ABOVE, &pinkReport, &greenReport) ){
+	// TODO: get color
+	SecondColorPosition relativePosition = ABOVE;
+	if ( FindTwoColors(pinkSpec, greenSpec, relativePosition, &pinkReport, &greenReport) ){
 		//PrintReport(&par2);
 		targetAcquired = true;
 		// reset pan		
@@ -242,8 +244,16 @@ bool Team166Vision::AcquireTarget() {
 			// Average the color two particles to get center x & y of combined target
 			horizontalDestination = (pinkReport.center_mass_x_normalized + 
 					greenReport.center_mass_x_normalized) / 2;	
-			verticalDestination = (pinkReport.center_mass_y_normalized + 
-					greenReport.center_mass_y_normalized) / 2;
+			//verticalDestination = (pinkReport.center_mass_y_normalized + 
+					//greenReport.center_mass_y_normalized) / 2;
+			//TODO use BOTTOM color not hardcode pink
+			if (relativePosition == ABOVE) {
+				verticalDestination = RangeToNormalized(pinkReport.boundingRect.top, 
+						pinkReport.imageHeight);
+			} else {
+				verticalDestination = RangeToNormalized(greenReport.boundingRect.top, 
+						greenReport.imageHeight);
+			}
 		}
 	} else {  // need to pan 
 		targetAcquired = false;
