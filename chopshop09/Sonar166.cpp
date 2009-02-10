@@ -113,13 +113,13 @@ int Team166Sonar::Main(int a2, int a3, int a4, int a5,
         aavg = 0;
         for (al=0; al<UMAX; al++)
         	aavg += uval[al];
-        dist = (((aavg / UMAX) * (20.0 / 4.096)) / 10.0) * 2.54;
+        distance = (((aavg / UMAX) * (20.0 / 4.096)) / 10.0) * 2.54;
         if (!(uidx % UMAX))
-        	//printf("Current Ultrasound value: %f\n", dist);
+        	//printf("Current Ultrasound value: %f\n", distance);
 	
 		// Should we log this value?
 		if (sample_count < 200) {
-			sl.PutOne(dist);
+			sl.PutOne(distance);
 			sample_count++;
 		} else {
 			if (sample_count == 200) {

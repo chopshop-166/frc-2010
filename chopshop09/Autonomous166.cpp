@@ -11,6 +11,7 @@
 // Get access to vision related things
 #if 1
 extern Team166Vision Team166VisionObject;
+extern Team166Sonar Team166SonarObject;
 #else //this doesn't work yet
 class Team166Vision
 {
@@ -31,7 +32,7 @@ public:
  	}
 #endif
 
-
+//constructor for autonomous166 class
 autonomous166::autonomous166(void):
 	first_time(0),
 	past_time(0),
@@ -39,7 +40,8 @@ autonomous166::autonomous166(void):
 	archived_y(0),
 	archived_distance(0),
 	drop_distance(0),
-	activate_drop(0)
+	activate_drop(0),
+	gyrate(0)
 	
 {
 	
@@ -50,15 +52,16 @@ autonomous166::autonomous166(void):
 
 	
 }
+// the "brain" of autonomous that sets the joystick inputs for drive and the dispenser
 
 void autonomous166::autonomous_main(void)
 {
 	Robot166 *lhandle;
-	lhandle=Robot166::getInstance();
-	int difference_camera;        // difference between last picture's height and current picutre's height
-	float difference_ultrasonic;  // difference between last ultrasonic value and current ultrasonic value
-	float x;
-	float y=archived_y;
+	lhandle=Robot166::getInstance();  // gets the lhandle tag that allows autonomos to grab from the Robot166 main task runner
+	int difference_camera;            // difference between last picture's height and current picutre's height
+	float difference_ultrasonic;      // difference between last ultrasonic value and current ultrasonic value
+	float x;                          // initializes the local variable for the bearing of the robot
+	float y=archived_y;               // sets the local variable for the speed of the robot to what it was set to in the last iteration of the autonomous function
 	
 	
                  
@@ -68,7 +71,7 @@ void autonomous166::autonomous_main(void)
 	
 	
 	
-  if(Team166VisionObject.IsTargetAcquired())
+  if(Team166VisionObject.IsTargetAcquired())   // sees if the camera has aquired a target or not 
   {
 	  DPRINTF(LOG_INFO,"TARGET AQUIRED\n");
 	
@@ -76,74 +79,67 @@ void autonomous166::autonomous_main(void)
 	  DPRINTF(LOG_INFO,"the difference is %i \n", difference_camera);
 	if(difference_camera >= 0)
 		{
-			camera_perspective = T166_AWAY;
+			camera_perspective = T166_AWAY;    // camera sees the target moving away
 		}
 	else if(difference_camera < 0)
 		{
-			camera_perspective = T166_CLOSER;
+			camera_perspective = T166_CLOSER;  // camera sees the target moving closer
 		}
 	
 	difference_ultrasonic=ultrasonic();
 	
 	if(difference_ultrasonic <= 0)
 			{
-				sonar_perspectve=T166_AWAY;
+				sonar_perspectve=T166_AWAY;   // sonar sensor sees the target moving away
 			}
 		else if(difference_ultrasonic > 0)
 			{
-				sonar_perspectve=T166_CLOSER;
+				sonar_perspectve=T166_CLOSER; // sonar sensor sees the target moving toward the robot
 			}
 	if(camera_perspective != sonar_perspectve)
 		{
-			if(camera_perspective==T166_AWAY)
-				{
-					DPRINTF(LOG_INFO,"AWAY\n");
-					y = y+(y*.01);
-				}
-			else if(camera_perspective==T166_CLOSER)
-				{
-					DPRINTF(LOG_INFO,"CLOSER\n");
-					y = y-(y*.01);
-				}
+			y = y+(y*.01);       // speeds the robot up until the sonar sensor agrees with the camera on the location of the target 
 		}
 	else if(camera_perspective == sonar_perspectve)
 		{
 			DPRINTF(LOG_INFO,"They are equal\n");
-			y = (difference_ultrasonic/check_time);
+			y = (difference_ultrasonic/check_time);                    // sets the y value to the current speed of the target
 			if((archived_y <= y) && (archived_distance > drop_distance))
 			{
-				y = y+((difference_ultrasonic/check_time)*.10);
+				y = y+((difference_ultrasonic/check_time)*.10);        // speeds up our robot while we are slower than the opposing robot
 				activate_drop=0;
-				
 			}
 			else if(archived_distance <= drop_distance)
 			{
-				activate_drop=1;
+				activate_drop=1;                                       // activates the dropping mechanism
+				lhandle->SetDispenser(T166_CB_FORWARD, activate_drop); //sets the dispenser to begin raising and turns on the conveyer
 			}
 			
 		}
+	
+	
 			
 		DPRINTF(LOG_INFO,"Set with algorithems\n");	
 	  archived_y = y;		                // keeps track of the y value tat was last set
-	  x = Team166VisionObject.GetBearing(); //gets the position of the servo from the vision task
-	  lhandle->SetJoyStick(x,y);
+	  x = Team166VisionObject.GetBearing(); // gets the position of the servo from the vision task
+	  lhandle->SetJoyStick(x,y);            // sets the joystick values for drive
 				
   }	
   else
   {
-	  if(target_acquisition())
+	  if(target_acquisition())              // checks which direction to angle the robot in when a target hasn't been acquired
 	  {
-		  x = -0.25;
-		  y = 0.75;
-		  lhandle->SetJoyStick(x,y);
+		  x = -0.25;                        // sets the bearing to 25 degrees to te left
+		  y = 0.75;                         // sets the speed to 75 percent of maximum
+		  lhandle->SetJoyStick(x,y);        // sets the Joystick input values
 	  }
 	  else
 	  {
-		  x = 0.25;
-		  y = 0.75;
-		  lhandle->SetJoyStick(x,y);
+		  x = 0.25;                         // sets the bearing to 25 degrees to te left
+		  y = 0.75;                         // sets the speed to 75 percent of maximum
+		  lhandle->SetJoyStick(x,y);        // sets the Joystick input values
 	  }
-	  DPRINTF(LOG_INFO,"Set without algorithems\n");
+	  DPRINTF(LOG_INFO,"Set without algorithems\n"); 
   }
 			
 			
@@ -173,43 +169,47 @@ int autonomous166::tracking(void)
 	
 }
 
+// if the robot has not found a target trigger a zig-zagging autonomos that gets away from the starting location and helps rotate the camera to find a target
+
 bool autonomous166::target_acquisition(void)
 {
-	double current_time=0;
-	bool direction;
+	double current_time=0;           // the local variable for the current time 
+	bool direction;                  // arbitrary direction setting for the robot while it is zig-zagging
 	
-	current_time = GetTime();
+	current_time = GetTime();        // gets the current system time
 	
-	if(past_time==0)
+	if(past_time==0)                 // sees if this is the robot's first time in the function
 	{
-		past_time=current_time;
+		past_time=current_time;      // sets the starting time for the function
 	}
 	
 	if(current_time-past_time>=5)
 	{
 		if(current_time-past_time>=10)
 		{
-			past_time=current_time;
+			past_time=current_time; // if 10 seconds have past then reset the direction of the robot
 		}
 		else
 		{
-			direction = 1;
+			direction = 1;          // if 5 seconds have past change the direction of the robot from left to right
 		}
 	}
 	else
 	{
-		direction=0;
+		direction=0;                // set the direction of the robot to the left
 	}
 	
-	return direction;
+	return direction;               // return the direction of the robot to the main function
 }
+
+// reads information from the ultrasonic sensor and determines the distance of the target and the speed it is going
 
 float autonomous166::ultrasonic (void)
 {
 	float current_distance=0;                                // the distance the target is from the robot
 	float ultra_differance;                                  // the differance between the last distance and the current distance
 	
-	//current_distance = GetDistance();                        // get the distance from the ultrasonic class
+	current_distance = Team166SonarObject.distance;          // get the distance from the ultrasonic class
 	ultra_differance = archived_distance-current_distance;   // calculate the differance 
 	archived_distance = current_distance;                    // reset the archived distance
 	
