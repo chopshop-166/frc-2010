@@ -4,6 +4,7 @@
 #include "Team166Task.h"
 #include "Drive166.h"
 #include "Dispenser166.h"
+#include "Autonomous166.h"
 
 //
 // Robot modes
@@ -48,6 +49,7 @@ private:
     t_ConveyerDirection ConvDir;              // Conveyer direction
     float ConvLift;                           // Conveyer motor lift
     DriverStation *dsHandle;                  // Driver Station handle 
+    autonomous166 steveautonomous;
     
 public:
 	Robot166(void);                           // Constructor

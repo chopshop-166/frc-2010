@@ -51,7 +51,8 @@ Robot166::Robot166(void) :
     limitswitch_top1(TOP_LIMITSWITCH_DIGITAL_INPUT1),  //top limit switch digital input
     limitswitch_top2(TOP_LIMITSWITCH_DIGITAL_INPUT2), 	//top limit switch digital input		  
     limitswitch_bottom1(BOTTOM_LIMITSWITCH_DIGITAL_INPUT1), //bottom limit switch digital input        
-    limitswitch_bottom2(BOTTOM_LIMITSWITCH_DIGITAL_INPUT2)  //bottom limit switch digital input
+    limitswitch_bottom2(BOTTOM_LIMITSWITCH_DIGITAL_INPUT2),  //bottom limit switch digital input
+    steveautonomous()
 {
 	/* set up debug output: 
 	 * DEBUG_OFF, DEBUG_MOSTLY_OFF, DEBUG_SCREEN_ONLY, DEBUG_FILE_ONLY, DEBUG_SCREEN_AND_FILE  */
