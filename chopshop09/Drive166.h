@@ -4,10 +4,11 @@
 #include "Robot166.h"
 #include "semLib.h"
 #include "PIDControl166.h"
-
+#include "PIDGyro.h"
 #define CLICKS_PER_REV (4096.0)							// Stores the Number of Clicks per revolution of the wheel
 #define NO_LOAD_CURRENT (4.0)							// Assume current of the motors when the traction is lost
 #define FILTER_CONSTANT (.2)							// Constant to filter the current sensor input
+#define GYRO_FILTER_CONSTANT (.02)						// Constant to filter the yaw rate values
 //
 // This defines a sample drive task
 //
@@ -40,6 +41,9 @@ public:
 	
 	// Traction control function - uses current sensors
 	void tractionControl();
+	
+	// Heading control for robot drive using a yaw rate sensor
+	void headingControl();
 	
 // Members
 public:
@@ -101,6 +105,8 @@ private:
 	AnalogChannel rfCurrentSensor; 							// Current sensor channel for Right Front wheel
 	AnalogChannel rbCurrentSensor; 							// Current sensor channel for Left Back wheel
 	
+	AnalogChannel gyroSensor;    							// Gyro to sense the yaw rate
+	
 	float lfSpeed_PID;
 	float lbSpeed_PID;
 	float rfSpeed_PID;
@@ -125,13 +131,23 @@ private:
 	float K_I;
 	
 	float x, y;
+	float x_PID;
 	
 	float lfvolt;										// Left Front motor current sensor value
 	float lbvolt;										// Left Back motor current sensor value
 	float rfvolt;										// Right Front motor current sensor value
 	float rbvolt;										// Right Back motor current sensor value
 	
+	float gyroTwist;									// Float to store the yaw rate of the platform sensed from the yaw rate sensor
+	float gyroTwistFiltered;							// Filter yaw rate value
+	float yawRPS;										// The yaw rate of the platform converted to revolutions per second 
 	
+	float yFiltered;									// Filtered y input
+	
+	float Y_CONSTANT_ACC;
+	float Y_CONSTANT_DEACC;
+	
+	PIDGyro headingPID;
 	
 };
 #endif // !defined(_DRIVE166_H)

@@ -187,22 +187,6 @@ void Team166Vision::AdjustServoPositions(float normDeltaHorizontal, float normDe
 	float servoV = NormalizeToRange(normDestV);
 
 	DoServos(servoH, servoV);
-#if 0
-	/* make sure the movement isn't too small */
-	if ( fabs(currentH-servoH) > servoDeadband ) {
-		horizontalServo->Set( servoH );		
-		/* save new normalized horizontal position */
-		bearing = RangeToNormalized(servoH, 1);
-	}			
-	if ( fabs(currentV-servoV) > servoDeadband ) {
-		// don't look straight up or down
-		if (servoV > 0.8) servoV = 0.8;
-		if (servoV < 0.2) servoV = 0.2;
-		
-		verticalServo->Set( servoV );
-		tilt = RangeToNormalized(servoV, 1);
-	}
-#endif
 }
 
 // process images to find target
@@ -215,7 +199,7 @@ bool Team166Vision::AcquireTarget() {
 	static int staleCount = 0;
 	
 	// calculate servo position based on colors found 
-	// TODO: get color
+	// TODO: get alliance here
 	SecondColorPosition relativePosition = ABOVE;
 	if ( FindTwoColors(pinkSpec, greenSpec, relativePosition, &pinkReport, &greenReport) ){
 		//PrintReport(&par2);
@@ -246,7 +230,7 @@ bool Team166Vision::AcquireTarget() {
 					greenReport.center_mass_x_normalized) / 2;	
 			//verticalDestination = (pinkReport.center_mass_y_normalized + 
 					//greenReport.center_mass_y_normalized) / 2;
-			//TODO use BOTTOM color not hardcode pink
+			// use BOTTOM color not hardcode pink
 			if (relativePosition == ABOVE) {
 				verticalDestination = RangeToNormalized(pinkReport.boundingRect.top, 
 						pinkReport.imageHeight);
@@ -267,8 +251,13 @@ bool Team166Vision::AcquireTarget() {
 		 * moving toward the target.
 		 */
 		// you may need to reverse this based on your servo installation
-		incrementH = horizontalDestination - bearing;
-		incrementV = verticalDestination - tilt;
+
+		//incrementH = horizontalDestination - bearing;
+		//incrementV = verticalDestination - tilt;
+
+		incrementH = horizontalDestination - bearing - horizontalDestination;
+		incrementV =  tilt - verticalDestination;
+		
 		AdjustServoPositions( incrementH, incrementV);  
 		
 		if (SHOWACTIVITY) {

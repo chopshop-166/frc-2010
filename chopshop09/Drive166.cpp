@@ -2,6 +2,8 @@
 #include "Drive166.h"
 #include "MemoryLog166.h"
 #include "PIDControl166.h"
+#include "BaeUtilities.h"
+#include "PIDGyro.h"
 
 #include <math.h>
 #include <sysLib.h>
@@ -9,6 +11,25 @@
 #define Calculatemax(x, y) (((x) > (y)) ? (x) : (y))
 #define USE_JAGUAR (1)  //Set to 1 to use Jaguar code
 #define USE_VICTOR (0)  //Set to 1 to use Victor code
+#define HEADING (0)		// Set to 1 to run heading PID Control
+ //The constant to get to the wishing y value slowly
+/* This is the constant that is derived based on the calculations given below:
+ * The distance between the left and right wheels is 24.34 inches, and the 
+ * distance between the front and back wheels is 26.049 inches. From this,
+ * the distance from one wheel to the center of the machine was calculated as
+ * 17.82 inches. Next, the wheel diameter of 5.936 inches; the radius of the
+ * wheel is 2.968 inches. From the wheel radius and the turning radius, which
+ * is the distance from one wheel to the center of the platform, a ratio 
+ * was calculated as 17.82/2.968 ~ 6. 
+ * The constant was calculated by taking the ration (6)/(RATE SENSOR SENSITIVITY - .007 volt/degree/sec)*(DEGREES OER REVOLUTION - 360)*(MAXIMUM REVOLUTIONS PER SECOND OF WHEEL - 8)
+ * This equals 0.2976.                                                        */
+ 
+#define YAW_RPS_CONSTANT (0.2976)		
+#define GRYO_PID_K_I (.0001)
+#define GYRO_PID_K_P (.001)
+
+#define DPRINTF if(true)dprintf
+
 
 // Sample in memory buffer
 struct sbuf166
@@ -130,8 +151,10 @@ Team166Drive::Team166Drive(void)
 ,vrbwheel(T166_RIGHT_BACK_MOTOR_CHANNEL)  //To Use the Victor Speed Controlled for Right Back Motor
 ,lfCurrentSensor(T166_CURRENT_SENSOR_MOD, T166_CURRENT_SENSOR_LF) // Current sensor channel for Left Front wheel
 ,lbCurrentSensor(T166_CURRENT_SENSOR_MOD, T166_CURRENT_SENSOR_LB) // Current sensor channel for Left Back wheel
-,rfCurrentSensor(T166_CURRENT_SENSOR_MOD, T166_CURRENT_SENSOR_RF)	// Current sensor channel for Right Front wheel
+,rfCurrentSensor(T166_CURRENT_SENSOR_MOD, T166_CURRENT_SENSOR_RF) // Current sensor channel for Right Front wheel
 ,rbCurrentSensor(T166_CURRENT_SENSOR_MOD, T166_CURRENT_SENSOR_RB) // Current sensor channel for Left Back wheel
+,gyroSensor(T166_GYRO_MOD,T166_GYRO_TWIST)						  // Gyro to detect yaw rate for heading control	
+,headingPID() 
 
 {
 	// Initialize assorted fields
@@ -177,6 +200,8 @@ Team166Drive::Team166Drive(void)
 	
 	x=0;
 	y=0;
+	x_PID = 0;
+	yFiltered = 0;
 	// Start our task
 	Start((char *)"166DriveTask");	
 };
@@ -205,7 +230,7 @@ int Team166Drive::Main(int a2, int a3, int a4, int a5,
 	AnalogChannel lbCurrent(T166_CURRENT_SENSOR_MOD, T166_CURRENT_SENSOR_LB); // Current sensor channel for Left Back wheel
 	AnalogChannel rfCurrent(T166_CURRENT_SENSOR_MOD, T166_CURRENT_SENSOR_RF); // Current sensor channel for Right Front wheel
 	AnalogChannel rbCurrent(T166_CURRENT_SENSOR_MOD, T166_CURRENT_SENSOR_RB); // Current sensor channel for Left Back wheel
-
+	AnalogChannel ac1(2,6);
 	SensorLog sl;                 // Sensor log
 	int sample_count = 0;         // Count of log samples
 
@@ -299,9 +324,59 @@ int Team166Drive::Main(int a2, int a3, int a4, int a5,
 		float gyroTempCelcius = 0;
 		float gyroTwist = 0;
 		
+		
 
 		//UpdateDashboard(encoder_count_lf,encoder_count_lb,encoder_count_rf,encoder_count_rb);
-		lHandle->GetJoyStick(&x, &y);
+		if(tractionLostFront == 0 || tractionLostBack == 0)
+		{
+			lHandle->GetJoyStick(&x, &y);
+		}
+		else if(tractionLostFront == 1 || tractionLostBack == 1)
+		{
+			lHandle->GetJoyStick(&x, &y);
+			y=0;
+		}
+		
+
+		
+		
+		//Y_CONSTANT_ACC = ac1.GetValue()/10000.0;
+		Y_CONSTANT_ACC = .009;
+		Y_CONSTANT_DEACC = .01;
+		
+		if(!(printIt%100))
+		{
+			DPRINTF(LOG_DEBUG,"Acc value: %f", Y_CONSTANT_ACC);
+		}
+		
+		
+		if(fabs(yFiltered) < fabs(y))
+		{
+			if(yFiltered<y)
+			{
+				yFiltered += Y_CONSTANT_ACC;
+			}
+			else if(yFiltered>y)
+			{
+				yFiltered -= Y_CONSTANT_ACC;
+			}
+		}
+		else if(fabs(yFiltered) > fabs(y))
+		{
+			if(yFiltered<y)
+			{
+					yFiltered += Y_CONSTANT_DEACC;
+			}
+			else if(yFiltered>y)
+			{
+					yFiltered -= Y_CONSTANT_DEACC;
+			}
+		}
+		
+		if(y == 0)
+		{
+			yFiltered = 0;
+		}
 		
 		// Should we log this value?
 		
@@ -309,26 +384,26 @@ int Team166Drive::Main(int a2, int a3, int a4, int a5,
 		
 		// How is the left front wheel doing?
 		cvolt_lf = ac1.GetValue() * (20.0 / 4096.0);
-		printf("Current sensor (LF): %f Volt\n", cvolt_lf);
+		DPRINTF("Current sensor (LF): %f Volt\n", cvolt_lf);
 		encoder_count_lf = lHandle->lfEncoder.Get();
 		encoder_direction_lf = lHandle->lfEncoder.GetDirection();
 		encoder_stopped_lf = lHandle->lfEncoder.GetStopped();
-        printf("Encoder (LF); Val: %d, Dir: %d, Stopped: %d\n", encoder_count_lf,
+        DPRINTF("Encoder (LF); Val: %d, Dir: %d, Stopped: %d\n", encoder_count_lf,
         		encoder_direction_lf, encoder_stopped_lf);
 #endif
         
 		// Drive it as requested by the joystick.
-#if !defined(PRINT)		
-		if(!(printIt++%100))
+		
+		if(!(printIt%100))
 		{
-			//printf("JoyStick at X=%f, Y=%f\n", x, y);	
-			//printf("Encoder RF: %d", encoder_count_rf);
-			//printf("Current sensor at rb %f\n", rbvolt);	
-			//printf("Current gyro values: Temp=%fC Twist=%f (angle)\n",
+			DPRINTF(LOG_DEBUG,"JoyStick at X=%f, Y=%f\n", x, yFiltered);	
+			//DPRINTF("Encoder RF: %d", encoder_count_rf);
+			//DPRINTF("Current sensor at rb %f\n", rbvolt);	
+			//DPRINTF("Current gyro values: Temp=%fC Twist=%f (angle)\n",
 			//		 		gyroTempCelcius, myGyro.GetAngle());
 			
 		}
-#endif		
+		printIt++;
 			
 
 		
@@ -346,7 +421,7 @@ int Team166Drive::Main(int a2, int a3, int a4, int a5,
 #define MS_SLEEP (5*1000000)		
 		// How far into this cycle have we run?
 		//if (!(cc % 500))
-		//  printf("%u = Delta: %u s, %u ns (%u ms)\n", cc, delta_time.tv_sec, delta_time.tv_nsec, delta_time.tv_nsec / (1000000));
+		//  DPRINTF("%u = Delta: %u s, %u ns (%u ms)\n", cc, delta_time.tv_sec, delta_time.tv_nsec, delta_time.tv_nsec / (1000000));
 		delta_time.tv_nsec = MS_SLEEP - (delta_time.tv_nsec % MS_SLEEP); // 5ms into nano seconds
 		if (delta_time.tv_nsec < half_tick)
 			  delta_time.tv_nsec = MS_SLEEP;
@@ -354,13 +429,18 @@ int Team166Drive::Main(int a2, int a3, int a4, int a5,
 		
 		// Display the sleep time
 		//if (!(cc % 500))
-		//	printf("%u = Sleep Delta: %u s, %u ns (%u ms)\n", cc, delta_time.tv_sec, delta_time.tv_nsec, delta_time.tv_nsec / (1000000));
+		//	DPRINTF("%u = Sleep Delta: %u s, %u ns (%u ms)\n", cc, delta_time.tv_sec, delta_time.tv_nsec, delta_time.tv_nsec / (1000000));
 		nanosleep((const struct timespec *)&delta_time, &non_sleep);
 		cc++;
 		
 		getWheelSpeed();
 		getGains();
-		ArcadeDrive166(y, -x, false);	// Calls an arade drive that has the PID Control
+#if HEADING
+		headingControl();
+#else
+		x_PID = x;
+#endif
+		ArcadeDrive166(yFiltered, -x_PID, false);	// Calls an arade drive that has the PID Control
 		if (sample_count < 1000) {
 			sl.PutOne(bat_volt, lfvolt, lbvolt, rfvolt, rbvolt, encoder_count_lf, encoder_count_lb, encoder_count_rf, encoder_count_rb, encoder_direction_lf, encoder_direction_lb, encoder_direction_rf, encoder_direction_rb, encoder_stopped_lf, encoder_stopped_lb, encoder_stopped_rf, encoder_stopped_rb,x,y, gyroTwist, lfPID.result, lfPID.sPoint, lfPID.input, lfSpeed_PID, tractionLostFront, tractionLostBack);
 			sample_count++;
@@ -477,7 +557,7 @@ void Team166Drive::SetMotorSpeeds(float leftSpeed, float rightSpeed)
 	vrbwheel.Set(-rbSpeed);	
 #endif
 	
-	//tractionControl();
+	tractionControl();
 	lfSpeed_PID = 0;
 	lbSpeed_PID = 0;
 	rfSpeed_PID = 0;
@@ -505,7 +585,7 @@ void Team166Drive::getWheelSpeed()
 #if defined(PRINTIT)
 	if(abc++%100)
 	{
-			printf("LFSpeed : %f,", lfWheelSpeed);
+			DPRINTF("LFSpeed : %f,", lfWheelSpeed);
 			abc=0;
 	}	
 #endif
@@ -599,22 +679,22 @@ void Team166Drive::tractionControl()
 	
 	if(!(foo++%50))
 	{
-		//printf("\nlfCurrentFiltered: %f, lbCurrentFiltered: %f, rfCurrentFiltered: %f, rbCurrentFiltered: %f\n", lfCurrentFiltered, lbCurrentFiltered, rfCurrentFiltered, rbCurrentFiltered);
-		//printf("\nlfCurrentFiltered: %f, lfCurrent: %f\n", lfCurrentFiltered, lfCurrent);
+		//DPRINTF("\nlfCurrentFiltered: %f, lbCurrentFiltered: %f, rfCurrentFiltered: %f, rbCurrentFiltered: %f\n", lfCurrentFiltered, lbCurrentFiltered, rfCurrentFiltered, rbCurrentFiltered);
+		//DPRINTF("\nlfCurrentFiltered: %f, lfCurrent: %f\n", lfCurrentFiltered, lfCurrent);
 	}
 	if(tractionLostFront == 0)
 	{
 		if((fabs(lfWheelSpeed) >= (MAX_WHEEL_SPEED * .3)) && (fabs(lfCurrentFiltered) <= NO_LOAD_CURRENT))
 		{
 			tractionLostFront = 1;
-			lfSpeed = 0.0;
+			//lfSpeed = 0.0;
 			//rfSpeed = 0.0;
 		}
 		if((fabs(rfWheelSpeed) >= (MAX_WHEEL_SPEED * .3)) && (fabs(rfCurrentFiltered) <= NO_LOAD_CURRENT))
 		{
 			tractionLostFront = 1;
 			//lfSpeed = 0.0;
-			rfSpeed = 0.0;
+			//rfSpeed = 0.0;
 		}
 	}
 	if(tractionLostBack == 0)
@@ -622,14 +702,14 @@ void Team166Drive::tractionControl()
 		if((fabs(lbWheelSpeed) >= (MAX_WHEEL_SPEED * .3)) && (fabs(lbCurrentFiltered) <= NO_LOAD_CURRENT))
 		{
 			tractionLostBack = 1;
-			lbSpeed = 0.0;
+			//lbSpeed = 0.0;
 			//rbSpeed = 0.0;
 		}
 		if((fabs(rbWheelSpeed) >= (MAX_WHEEL_SPEED * .3)) && (fabs(rbCurrentFiltered) <= NO_LOAD_CURRENT))
 		{
 			tractionLostBack = 1;
 			//lbSpeed = 0.0;
-			rbSpeed = 0.0;
+			//rbSpeed = 0.0;
 		}
 	}
 	
@@ -637,7 +717,7 @@ void Team166Drive::tractionControl()
 	if(tractionLostFront == 1)
 	{
 		tractionLostFrontCounter++;
-		if(tractionLostFrontCounter >= 20)
+		if(tractionLostFrontCounter >= 40)
 		{
 			tractionLostFront = 0;
 			tractionLostFrontCounter = 0;
@@ -646,7 +726,7 @@ void Team166Drive::tractionControl()
 	if(tractionLostBack == 1)
 	{
 		tractionLostBackCounter++;
-		if(tractionLostBackCounter >= 20)
+		if(tractionLostBackCounter >= 40)
 		{
 			tractionLostBack = 0;
 			tractionLostBackCounter = 0;
@@ -654,4 +734,15 @@ void Team166Drive::tractionControl()
 	}
 }
 
+void Team166Drive::headingControl()
+{
+	gyroTwist = gyroSensor.GetVoltage()-2.5;
+	DPRINTF("GYROVALUE : %f\n", gyroTwist);
+	if(gyroTwistFiltered < gyroTwist)
+	{
+		gyroTwistFiltered += GYRO_FILTER_CONSTANT;
+	}
+	yawRPS = gyroTwistFiltered * YAW_RPS_CONSTANT;					//This is the feedback value in RPS from the yaw rate sensor. This is the actual platform revolutions per second.
+	x_PID = headingPID.calculate(x , yawRPS , GYRO_PID_K_P , GRYO_PID_K_I) + x;			
+}
 

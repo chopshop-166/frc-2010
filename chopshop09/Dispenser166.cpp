@@ -80,8 +80,8 @@ int Team166Dispenser::Main(int a2, int a3, int a4, int a5,
 	Robot166 *lHandle;            // Local handle
 	DispLog sl;                   // Dispenser log
 	int sample_count = 0;         // Count of log samples
-	
-	
+	int tick = 0;
+	int print, print2;
 	// Let the world know we're in
 	printf("In the 166 dispenser task\n");
 		
@@ -103,36 +103,74 @@ int Team166Dispenser::Main(int a2, int a3, int a4, int a5,
 		
 		t_ConveyerDirection cdir;                 // Agitator direction
 		float lift_motor;                         // Lift motor direction/power
-
+        int girate_switch;
 		// Strobe the sensors
 		
 		// Get the command we're asked to apply
-        lHandle->GetDispenser(&cdir, &lift_motor);   //gives the values for the conveyor direction and the desired lift motor speed
+        lHandle->GetDispenser(&cdir, &lift_motor,&girate_switch);   //gives the values for the conveyor direction and the desired lift motor speed
         //printf("cdir = %u, lift_motor = %f\n", cdir, lift_motor);
-        
-        switch(cdir)                                     	//switch for the direction of the conveyor belt
-        {
-        	case T166_CB_BACKWARD:                        	  //when the direction given is backward...
-        		lHandle->treadmill_victor.Set(TREADMILL_REVERSE_SPEED); //set the treadmill victor to the set reverse speed
-        		break;											
-        	case T166_CB_FORWARD: 								//when the direction given is forward...
-        		lHandle->treadmill_victor.Set(TREADMILL_FORWARD_SPEED); //set the treadmill victor to the set forward speed
-        		break;
-        	default:										//when no direction is given
-        		lHandle->treadmill_victor.Set(NO_SPEED);				//set the treadmill victor speed to 0
-        }
-        //if(/*(lHandle->limitswitch_top1.Get()==1)&&*/(lHandle->limitswitch_top2.Get()==0)/*&&(lHandle->limitswitch_bottom1.Get()==1)&&(lHandle->limitswitch_bottom2.Get()==1)*/)
-        //{
-        	lHandle->lift_victor.Set(lift_motor);         //set the speed of the victor equal to the value of the joystick output
-        //}
-       // else
-       // {
-       // 	lHandle->lift_victor.Set(0);
-       // }
-        
-        // Check limit switches, user command and motor direction
-        
-        // Set motor direction for lifter
+                if(girate_switch==0)
+                {
+                    tick = 0;
+                }
+                else
+                {
+                	if(lHandle->limitswitch_top.Get()==1)
+                	{
+                		tick = 4;
+                	}
+                	if(lHandle->limitswitch_bottom.Get()==1)
+                  	{
+                   		tick = 0;
+                	}
+                	if(tick < 4)
+                	{
+                		lHandle->lift_victor.Set(1);
+                		tick++;
+                	}
+                	else if(tick >= 4)
+                	{
+                		lHandle->lift_victor.Set(-1);
+                		tick++;
+                	}
+                	if(tick == 7)
+                	{
+                		lHandle->lift_victor.Set(0);
+                		tick = 0;
+                	}
+                	
+                }
+                switch(cdir)                                     	//switch for the direction of the conveyor belt
+                {
+                	case T166_CB_BACKWARD:                        	  //when the direction given is backward...
+                		lHandle->treadmill_victor.Set(TREADMILL_REVERSE_SPEED); //set the treadmill victor to the set reverse speed
+                		break;											
+                	case T166_CB_FORWARD: 								//when the direction given is forward...
+                		lHandle->treadmill_victor.Set(TREADMILL_FORWARD_SPEED); //set the treadmill victor to the set forward speed
+                		break;
+                	default:										//when no direction is given
+                		lHandle->treadmill_victor.Set(NO_SPEED);				//set the treadmill victor speed to 0
+                }
+                print = lHandle->limitswitch_top.Get();
+                print2 = lHandle->limitswitch_bottom.Get();
+                printf("SWITCH TOP: %d\n",print);
+                printf("SWITCH BOTTOM: %d\n",print2);
+                    if(girate_switch==0)
+                    {
+                       if((lHandle->limitswitch_top.Get()==1)&&(lift_motor>0))
+                       {
+                    	lHandle->lift_victor.Set(0);   
+                       }                                          //set the speed of the victor equal to the value of the joystick output
+                       else if((lHandle->limitswitch_bottom.Get()==1)&&(lift_motor<0))
+                       {
+                    	lHandle->lift_victor.Set(0);
+                       }
+                       else 
+                       {
+                    	   lHandle->lift_victor.Set(lift_motor);
+                       }
+                    }
+            
         
         // Should we log this value?
 		if (sample_count < 200) {

@@ -112,7 +112,7 @@ void autonomous166::autonomous_main(void)
 			else if(archived_distance <= drop_distance)
 			{
 				activate_drop=1;                                       // activates the dropping mechanism
-				lhandle->SetDispenser(T166_CB_FORWARD, activate_drop); //sets the dispenser to begin raising and turns on the conveyer
+				lhandle->SetDispenser(T166_CB_FORWARD, activate_drop,gyrate); //sets the dispenser to begin raising and turns on the conveyer
 			}
 			
 		}

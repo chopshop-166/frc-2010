@@ -48,10 +48,8 @@ Robot166::Robot166(void) :
 	rbEncoder(T166_ENC_RB_A, T166_ENC_RB_B, false), // Right Back encoder pins
 	lift_victor(T166_LIFT_MOTOR),       // Victor controlling the lift
 	treadmill_victor(T166_TREADMILL_MOTOR), // Victor controlling the treadmill
-    limitswitch_top1(TOP_LIMITSWITCH_DIGITAL_INPUT1),  //top limit switch digital input
-    limitswitch_top2(TOP_LIMITSWITCH_DIGITAL_INPUT2), 	//top limit switch digital input		  
-    limitswitch_bottom1(BOTTOM_LIMITSWITCH_DIGITAL_INPUT1), //bottom limit switch digital input        
-    limitswitch_bottom2(BOTTOM_LIMITSWITCH_DIGITAL_INPUT2),  //bottom limit switch digital input
+    limitswitch_top(TOP_LIMITSWITCH_DIGITAL_INPUT),  //top limit switch digital input
+    limitswitch_bottom(BOTTOM_LIMITSWITCH_DIGITAL_INPUT), //bottom limit switch digital input 
     steveautonomous()
 {
 	/* set up debug output: 
@@ -143,42 +141,45 @@ void Robot166::GetJoyStick(float *x, float *y)
 /**
  * Dispenser command
  */
-void Robot166::SetDispenser(t_ConveyerDirection dir, float lift_motor)
+void Robot166::SetDispenser(t_ConveyerDirection dir, float lift_motor, int girate_switch)
 {
 	// Set conveyer direction
 	semTake(DispLock, WAIT_FOREVER);
 	ConvDir = dir;
 	ConvLift = lift_motor;
+	ConvShake = girate_switch;
 	semGive(DispLock);
 	
 	// Done
 	return;
 }
-void Robot166::GetDispenser(t_ConveyerDirection *dir, float *lift_motor)
+void Robot166::GetDispenser(t_ConveyerDirection *dir, float *lift_motor,int *girate_switch)
 {
 	
 	// Pick up the dispenser command
 	switch (RobotMode) {
 	case T166_OPERATOR: {
-		semTake(DSLock, WAIT_FOREVER);
-		float agit = dispStick.GetX();
-		*lift_motor = -dispStick.GetY();		
-		semGive(DSLock);
-		if (agit <= -0.4) {
-			*dir = T166_CB_BACKWARD;
-		} else {
-			if (agit >= 0.4) {
-				*dir = T166_CB_FORWARD;
+			semTake(DSLock, WAIT_FOREVER);
+
+			*lift_motor = -dispStick.GetY();	
+			*girate_switch = dispStick.GetButton(dispStick.kTriggerButton);
+			semGive(DSLock);
+			if (dispStick.GetRawButton(2)==1) {
+				*dir = T166_CB_BACKWARD;
 			} else {
-				*dir = T166_CB_STILL;
+				if (dispStick.GetRawButton(3)==1) {
+					*dir = T166_CB_FORWARD;
+				} else {
+					*dir = T166_CB_STILL;
+				}
 			}
-		}
-		break;
-	    }
+			break;
+		    }
 	default: {
 		semTake(DispLock, WAIT_FOREVER);
 		*dir = ConvDir;
 		*lift_motor = ConvLift;
+		*girate_switch = ConvShake;
 		semGive(DispLock);
 		break;
 	    }

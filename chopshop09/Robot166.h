@@ -35,10 +35,9 @@ public:
     Encoder rbEncoder;						  // Encoder for the Right Back
 	Victor lift_victor;                       // Victor controlling the lift
     Victor treadmill_victor;                  // Victor controlling the treadmill
-    DigitalInput limitswitch_top1;            //the first of two limit switches on the high end of the lifter
-    DigitalInput limitswitch_top2; 			  //the second of two limit switches on the high end of the lifter
-    DigitalInput limitswitch_bottom1;         //the first of two limit switches on the bottom end of the lifter
-    DigitalInput limitswitch_bottom2;         //the second of two limit switches on the bottom end of the lifter
+    DigitalInput limitswitch_top;            //the first of two limit switches on the high end of the lifter
+    DigitalInput limitswitch_bottom;         //the first of two limit switches on the bottom end of the lifter
+
     
 private:
 	SEM_ID JoyLock;                           // Coordination of Joystick parameters
@@ -48,6 +47,7 @@ private:
     SEM_ID DispLock;                          // Dispenser lock
     t_ConveyerDirection ConvDir;              // Conveyer direction
     float ConvLift;                           // Conveyer motor lift
+    int ConvShake;
     DriverStation *dsHandle;                  // Driver Station handle 
     autonomous166 steveautonomous;
     
@@ -60,9 +60,9 @@ public:
 	void GetJoyStick(float *x, float *y);	  // Get our virtual joystick
 	float GetBatteryVoltage(void);            // Get voltage of battery on robot
 	void SetDispenser(t_ConveyerDirection dir,// Set dispenser/agitator direction
-			float lift_motor);                //
+			float lift_motor, int girate_switch);                //
 	void GetDispenser(t_ConveyerDirection *dir, // Get the direction of the
-			float *lift_motor);               // Dispenser
+			float *lift_motor, int *girate_switch);               // Dispenser
 	void Robot166::CameraDrive();             // Test routine for autonomous			
 };
 
