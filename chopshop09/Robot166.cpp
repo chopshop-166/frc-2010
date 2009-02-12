@@ -67,6 +67,7 @@ Robot166::Robot166(void) :
     ConvDir = T166_CB_UNKNOWN;
     ConvLift = 0.0;
 	RobotHandle = this;
+	mlHead = 0;
 	
 
 	/* start the CameraTask -keep this here for now, maybe move to Vision166 later  */
@@ -239,11 +240,29 @@ void Robot166::Autonomous(void)
  */
 void Robot166::OperatorControl(void)
 {
+	int has_been_disabled = 0;
+	static int dnum = 0;
+	
 	printf("Operator control\n");
 	RobotMode = T166_OPERATOR;
 	GetWatchdog().SetEnabled(true);
 	while (IsOperatorControl())
 	{
+		// Are we being disabled?
+		if (IsDisabled()) {
+			if (!has_been_disabled) {
+				has_been_disabled = 1;
+				if (dnum < 10) {
+				    printf("Dumping log files...\n");
+				    DumpLoggers(dnum);
+				    printf("Logfiles dumped!\n");
+				    dnum++;
+				}
+			}
+			Wait (0.5);
+			continue;
+		}
+		
 		// Each task needs to update for us to feed the watch dog.
 		if (Team166DispenserObject.MyWatchDog && 
 				Team166DriveObject.MyWatchDog &&
@@ -263,6 +282,41 @@ void Robot166::OperatorControl(void)
 Robot166 *Robot166::getInstance(void)
 {
 	return (RobotHandle);
+}
+
+/**
+ * Register a log object
+ */
+void Robot166::RegisterLogger(MemoryLog166 *ml)
+{
+	
+	// Has this handler been registered already?
+	if (!ml->Registered) {
+		
+		// No. Insert it at the head
+		ml->mlNext = mlHead;
+		mlHead = ml;
+		ml->Registered = 1;
+	}
+}
+
+/**
+ * Dump log objects
+ */
+void Robot166::DumpLoggers(int dnum)
+{
+	MemoryLog166 *ml;
+	
+	// Iterate through the list of loggers
+	ml = mlHead;
+	while (ml) {
+		
+		// Dump the next one
+		ml->DumpToFile(dnum);
+		
+		// Advance to the next log
+		ml = ml->mlNext;
+	}
 }
 
 START_ROBOT_CLASS(Robot166);

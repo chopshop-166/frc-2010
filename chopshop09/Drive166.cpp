@@ -76,7 +76,7 @@ struct sbuf166
 class SensorLog : public MemoryLog166
 {
 public:
-	SensorLog() : MemoryLog166(128*1024) {return;};
+	SensorLog() : MemoryLog166(256*10*1024, "drive") {return;};
 	~SensorLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
@@ -232,7 +232,6 @@ int Team166Drive::Main(int a2, int a3, int a4, int a5,
 	AnalogChannel rbCurrent(T166_CURRENT_SENSOR_MOD, T166_CURRENT_SENSOR_RB); // Current sensor channel for Left Back wheel
 	AnalogChannel ac1(2,6);
 	SensorLog sl;                 // Sensor log
-	int sample_count = 0;         // Count of log samples
 
 	
 	// Let the world know we're in
@@ -249,6 +248,7 @@ int Team166Drive::Main(int a2, int a3, int a4, int a5,
 	}
 	MyTaskInitialized = 2;
 	lHandle = Robot166::getInstance();
+	lHandle->RegisterLogger(&sl);
 	printf("Drive task is getting ready...\n");
 	// How long we're still until encoder logic considers this as not moving
 	lHandle->lfEncoder.SetMaxPeriod(0.5);  // 500ms
@@ -441,16 +441,7 @@ int Team166Drive::Main(int a2, int a3, int a4, int a5,
 		x_PID = x;
 #endif
 		ArcadeDrive166(yFiltered, -x_PID, false);	// Calls an arade drive that has the PID Control
-		if (sample_count < 1000) {
-			sl.PutOne(bat_volt, lfvolt, lbvolt, rfvolt, rbvolt, encoder_count_lf, encoder_count_lb, encoder_count_rf, encoder_count_rb, encoder_direction_lf, encoder_direction_lb, encoder_direction_rf, encoder_direction_rb, encoder_stopped_lf, encoder_stopped_lb, encoder_stopped_rf, encoder_stopped_rb,x,y, gyroTwist, lfPID.result, lfPID.sPoint, lfPID.input, lfSpeed_PID, tractionLostFront, tractionLostBack);
-			sample_count++;
-		} else {
-			if (sample_count == 1000) {
-				sl.DumpToFile("drive.csv");
-				sample_count++;
-			}
-		}
-		
+		sl.PutOne(bat_volt, lfvolt, lbvolt, rfvolt, rbvolt, encoder_count_lf, encoder_count_lb, encoder_count_rf, encoder_count_rb, encoder_direction_lf, encoder_direction_lb, encoder_direction_rf, encoder_direction_rb, encoder_stopped_lf, encoder_stopped_lb, encoder_stopped_rf, encoder_stopped_rb,x,y, gyroTwist, lfPID.result, lfPID.sPoint, lfPID.input, lfSpeed_PID, tractionLostFront, tractionLostBack);
 		MyWatchDog = 1;					// Sets Watch dog to 1
 	}
 	return (0);

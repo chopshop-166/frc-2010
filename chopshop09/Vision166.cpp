@@ -270,18 +270,9 @@ bool Team166Vision::AcquireTarget() {
 		// Should we log this value?
 		float hs = horizontalServo->Get();
 		float vs = verticalServo->Get();
-		if (sample_count < 200) {
-			vl.PutOne(staleCount, pinkReport.imageTimestamp,
-					bearing, hs, RangeToNormalized(hs,1), incrementH, 
-					tilt, vs, RangeToNormalized(vs,1), incrementV);
-			sample_count++;
-		} else {
-			if (sample_count == 200) {
-				vl.DumpToFile("vision.csv");
-				sample_count++;
-				DPRINTF(LOG_INFO, "+++++++++++++++++  LOGGING COMPLETE  +++++++++++++++++");
-			}
-		}
+		vl.PutOne(staleCount, pinkReport.imageTimestamp,
+				bearing, hs, RangeToNormalized(hs,1), incrementH, 
+				tilt, vs, RangeToNormalized(vs,1), incrementV);
 #endif
 		
 	} else { //if (!staleImage) {  // new image, but didn't find two colors

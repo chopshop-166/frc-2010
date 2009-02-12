@@ -27,7 +27,8 @@ int Team166SensorTest::Main(int a2, int a3, int a4, int a5,
 #endif	
 	
 	
-#define UMAX (10)		
+#define UMAX (10)
+#if 0
 	INT16 gval[2];                // Gyro value
 	INT16 csensor;                // Current sensor
 	INT16 uval[UMAX];             // Ultrasound value
@@ -37,6 +38,7 @@ int Team166SensorTest::Main(int a2, int a3, int a4, int a5,
 	int al;
 	float cvolt;
 	INT16 pot;                    // Pot value
+#endif
 	
 	// Let the world know we're in
 	printf("In the 166 sensor test task\n");

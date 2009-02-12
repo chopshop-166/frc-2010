@@ -1,5 +1,7 @@
 #include <memLib.h>
 #include "BaeUtilities.h"
+#include <string.h>
+#include <stdlib.h>
 #include "MemoryLog166.h"
 
 
@@ -7,7 +9,7 @@
 #define DPRINTF if(false)dprintf
 
 // Memory log constructor
-MemoryLog166::MemoryLog166(unsigned int msize)
+MemoryLog166::MemoryLog166(unsigned int msize, char *f)
 {
 	
 	// Allocate the requested memory
@@ -17,6 +19,17 @@ MemoryLog166::MemoryLog166(unsigned int msize)
 	MemorySize = msize;
 	MemoryEnd = &MemoryBase[msize];
 	MemoryNext = MemoryBase;
+	Next = 0;
+	BuffersRequested = 0;
+	BuffersObtained = 0;
+	
+	// Capture name of file
+	FileName = (char *)malloc(strlen(f) + 1);
+	strcpy(FileName, f);
+	
+	// Not yet registered
+	Registered = 0;
+	mlNext = 0;
 	
 	// Done
 	return;
@@ -36,10 +49,12 @@ char *MemoryLog166::GetNextBuffer(unsigned int bsize)
     char *mptr = MemoryNext;
     
 	// Ensure we have something to allocate
+    BuffersRequested++;
 	if ((!MemoryNext) || (&MemoryNext[bsize] > MemoryEnd))
 		return (0);
 	
 	// Bump next
+	BuffersObtained++;
 	MemoryNext = &MemoryNext[bsize];
 	
 	// Back to caller with a link to the memory we just allocated
@@ -47,10 +62,11 @@ char *MemoryLog166::GetNextBuffer(unsigned int bsize)
 }
 
 // Dump the buffers into a file
-int MemoryLog166::DumpToFile(char *fname)
+int MemoryLog166::DumpToFile(int dnum)
 {
 	
 	char *nptr = MemoryBase;
+	char Factual[128];
 	FILE *ofile;
 	
 	// Back out if there is nothing (likely due to allocation failure in constructor
@@ -60,7 +76,9 @@ int MemoryLog166::DumpToFile(char *fname)
 	DPRINTF(LOG_DEBUG, "MemoryBase: 0x%x, MemoryNext: 0x%x, nptr: 0x%x\n", MemoryBase, MemoryNext, nptr);
 	
 	// Create the output file
-	if (ofile = fopen(fname, "w")) {
+	Factual[sizeof(Factual) - 1] = 0;
+	snprintf(Factual, sizeof(Factual) - 1, "%s%d.csv", FileName, dnum);
+	if (ofile = fopen(Factual, "w")) {
 	
 		// Enter loop to dump out the data into the file
 		int l=0;
@@ -74,6 +92,13 @@ int MemoryLog166::DumpToFile(char *fname)
 		// Done. Close the file
 		fclose(ofile);
 	}
+	
+	// Reset what we have logged
+	MemoryNext = MemoryBase;
+	printf("Completed dump for %s into %s; Requested buffers %d, Obtained buffers %d\n",
+			FileName, Factual, BuffersRequested, BuffersObtained);
+	BuffersRequested = 0;
+	BuffersObtained = 0;
 	
 	// Back to caller
 	return (0);

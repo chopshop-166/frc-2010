@@ -2,6 +2,7 @@
 #include "Sonar166.h"
 #include "MemoryLog166.h"
 #include <math.h>
+#include <sysLib.h>
 
 // Sample in memory buffer
 struct sobuf166
@@ -15,7 +16,7 @@ struct sobuf166
 class SonarLog : public MemoryLog166
 {
 public:
-	SonarLog() : MemoryLog166(128*1024) {return;};
+	SonarLog() : MemoryLog166(128*1024, "sonar") {return;};
 	~SonarLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
@@ -77,13 +78,20 @@ int Team166Sonar::Main(int a2, int a3, int a4, int a5,
 	Robot166 *lHandle;            // Local handle
 	AnalogChannel ac(T166_US_MOD, T166_US_DIST); // Ultrasound sensor
 	SonarLog sl;                  // Sonar log
-	int sample_count = 0;         // Count of log samples
+	struct timespec start_time;   // Time when our logic starts	
+	struct timespec current_time; // Time when we check again
+	struct timespec delta_time;   // Time when we check again
+	struct timespec non_sleep;    // Time not slept
+	unsigned int nano_left;       // Nano seconds left of second
+	unsigned int crate;           // Clock rate
+	unsigned int half_tick;       // Length of a half tick
 #define UMAX (10)                 // Window size for rolling average		
 	INT16 uval[UMAX];             // Ultrasound value
 	int uidx = 0;                 // Index into array
 	int al;                       // Average distance loop
 	unsigned int aavg;            // Cumulative count
 	float dist;                   // Distance as an average
+	static int cc = 0;            // Counter to control print out
 	
 	// Let the world know we're in
 	printf("In the 166 Sonar task\n");
@@ -99,16 +107,30 @@ int Team166Sonar::Main(int a2, int a3, int a4, int a5,
 	}
 	MyTaskInitialized = 2;
 	lHandle = Robot166::getInstance();
-	
-
-    // General main loop (while in Autonomous or Tele mode)
+	lHandle->RegisterLogger(&sl);
 	printf("Sonar task is getting ready...\n");
+
+	// Figure out this board's tick size (in nano seconds)
+	crate = (1000 * 1000 * 1000) / sysClkRateGet();
+	
+	// And then the duration of a half-tick (in nano seconds)
+	half_tick = crate / 2;
+	
+	// Establish our start time
+	clock_gettime(CLOCK_REALTIME, &start_time);
+	
+	// And then the nano seconds left to the next full second
+	nano_left = (1000*1000*1000) - start_time.tv_nsec;
+	
+    // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		
         // Pick up Ultrasound values
         uval[(uidx++ % UMAX)] = ac.GetValue();
-        
+#if 0       
+        printf("US value: %d %d\n", ac.GetValue(), ac2.GetValue());
+#endif   
         // Compute an average
         aavg = 0;
         for (al=0; al<UMAX; al++)
@@ -118,17 +140,40 @@ int Team166Sonar::Main(int a2, int a3, int a4, int a5,
         	//printf("Current Ultrasound value: %f\n", distance);
 	
 		// Should we log this value?
-		if (sample_count < 200) {
-			sl.PutOne(distance);
-			sample_count++;
+        sl.PutOne(dist);
+
+		// Get the current time
+		clock_gettime(CLOCK_REALTIME, &current_time);
+		
+		// Compute delta time since we started out loop
+		delta_time.tv_sec = current_time.tv_sec - start_time.tv_sec;
+		if (current_time.tv_nsec >= start_time.tv_nsec) {
+			delta_time.tv_nsec = current_time.tv_nsec - start_time.tv_nsec;
 		} else {
-			if (sample_count == 200) {
-				sl.DumpToFile("sonar.csv");
-				sample_count++;
-			}
+			delta_time.tv_nsec = current_time.tv_nsec + nano_left;
+			delta_time.tv_sec--; // We do not care about this for our sleep
 		}
+#define MS_SLEEP (50*1000000)		
+		// How far into this cycle have we run?
+#if 0
+		if (!(cc % 500))
+		  printf("%u = Delta: %u s, %u ns (%u ms)\n", cc, delta_time.tv_sec, delta_time.tv_nsec, delta_time.tv_nsec / (1000000));
+#endif
+		delta_time.tv_nsec = MS_SLEEP - (delta_time.tv_nsec % MS_SLEEP); // 5ms into nano seconds
+		if (delta_time.tv_nsec < half_tick)
+			  delta_time.tv_nsec = MS_SLEEP;
+		delta_time.tv_sec = 0;
+		
+		// Display the sleep time
+#if 0
+		if (!(cc % 500))
+			printf("%u = Sleep Delta: %u s, %u ns (%u ms)\n", cc, delta_time.tv_sec, delta_time.tv_nsec, delta_time.tv_nsec / (1000000));
+#endif
+		nanosleep((const struct timespec *)&delta_time, &non_sleep);
+		cc++;
+		
 		MyWatchDog = 1;
-		Wait (0.025); // 25ms
+		//Wait (0.100); // 25ms
 	}
 	return (0);
 }

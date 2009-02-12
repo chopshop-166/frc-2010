@@ -91,7 +91,7 @@ void PrintReport(ImageHits* myReport);
 class VisionLog : public MemoryLog166
 {
 public:
-	VisionLog() : MemoryLog166(128*1024) {return;};
+	VisionLog() : MemoryLog166(128*1024, "vision") {return;};
 	~VisionLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted

@@ -17,7 +17,7 @@ struct abuf166
 class Accel_Log2 : public MemoryLog166
 {
 public:
-	Accel_Log2() : MemoryLog166(128*1024) {return;};
+	Accel_Log2() : MemoryLog166(128*1024, "inertia") {return;};
 	~Accel_Log2() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
@@ -82,7 +82,6 @@ int Team166Inertia::Main(int a2, int a3, int a4, int a5,
 	Accelerometer acX(T166_ACCEL_MOD, T166_ACCEL_Y);  // Accelerometer, X axis
 	Accelerometer acY(T166_ACCEL_MOD, T166_ACCEL_X);  // Accelerometer, Y-axis
 	Accel_Log2 sl;                 // Sensor log
-	int sample_count = 0;         // Count of log samples
 	
 	// Let the world know we're in
 	printf("In the 166 intertia task\n");
@@ -98,6 +97,7 @@ int Team166Inertia::Main(int a2, int a3, int a4, int a5,
 	}
 	MyTaskInitialized = 2;
 	lHandle = Robot166::getInstance();
+	lHandle->RegisterLogger(&sl);
 	
 #if 1 // 2008 model
 	// Initialize 2008 Accelerometer (Analog Devices ADXL204)
@@ -129,20 +129,10 @@ int Team166Inertia::Main(int a2, int a3, int a4, int a5,
 		acc_vector = sqrt((x_acc*x_acc)+(y_acc*y_acc));
 
 		// Should we log this value?
-		if (sample_count < 200) {
-			sl.PutOne(x_acc,y_acc, acc_vector);
-			sample_count++;
-		} else {
-			if (sample_count == 200) {
-				sl.DumpToFile("accel_sample.csv");
-				sample_count++;
-			}
-		}
-		
-		
-      //  printf("Current accelerometer values (in g): X=%f Y=%f, Vector=%f\n",
-      //  		x_acc, y_acc, acc_vector);
-        
+		sl.PutOne(x_acc,y_acc, acc_vector);
+
+		//  printf("Current accelerometer values (in g): X=%f Y=%f, Vector=%f\n",
+		//  		x_acc, y_acc, acc_vector);
 
 		MyWatchDog = 1;
 		Wait (0.100); // 100ms

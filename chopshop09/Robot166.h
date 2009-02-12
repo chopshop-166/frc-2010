@@ -4,12 +4,13 @@
 #include "Team166Task.h"
 #include "Drive166.h"
 #include "Dispenser166.h"
+#include "MemoryLog166.h"
 #include "Autonomous166.h"
 
 //
 // Robot modes
 //
-typedef enum {T166_UNKNOWN=0, T166_CONSTRUCTOR, T166_AUTONOMOUS, T166_OPERATOR} t_RobotMode;
+typedef enum {T166_UNKNOWN=0, T166_CONSTRUCTOR, T166_AUTONOMOUS, T166_OPERATOR, T166_DISABLED} t_RobotMode;
 
 //
 // Direction for the conveyer belt
@@ -47,8 +48,9 @@ private:
     SEM_ID DispLock;                          // Dispenser lock
     t_ConveyerDirection ConvDir;              // Conveyer direction
     float ConvLift;                           // Conveyer motor lift
+    DriverStation *dsHandle;                  // Driver Station handle
+    MemoryLog166 *mlHead;                     // Memory log head
     int ConvShake;
-    DriverStation *dsHandle;                  // Driver Station handle 
     autonomous166 steveautonomous;
     
 public:
@@ -63,7 +65,9 @@ public:
 			float lift_motor, int girate_switch);                //
 	void GetDispenser(t_ConveyerDirection *dir, // Get the direction of the
 			float *lift_motor, int *girate_switch);               // Dispenser
-	void Robot166::CameraDrive();             // Test routine for autonomous			
+	void CameraDrive();             // Test routine for autonomous			
+	void RegisterLogger(MemoryLog166 *ml);    // Register memory logger
+	void DumpLoggers(int dnum);               // Dump all logs
 };
 
 #endif // !defined(_ROBOT166_H)

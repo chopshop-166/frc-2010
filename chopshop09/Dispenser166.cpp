@@ -18,7 +18,7 @@ struct abuf166
 class DispLog : public MemoryLog166
 {
 public:
-	DispLog() : MemoryLog166(128*1024) {return;};
+	DispLog() : MemoryLog166(128*1024, "dispenser") {return;};
 	~DispLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
@@ -79,9 +79,9 @@ int Team166Dispenser::Main(int a2, int a3, int a4, int a5,
 		
 	Robot166 *lHandle;            // Local handle
 	DispLog sl;                   // Dispenser log
-	int sample_count = 0;         // Count of log samples
 	int tick = 0;
 	int print, print2;
+	
 	// Let the world know we're in
 	printf("In the 166 dispenser task\n");
 		
@@ -96,6 +96,7 @@ int Team166Dispenser::Main(int a2, int a3, int a4, int a5,
 	}
 	MyTaskInitialized = 2;
 	lHandle = Robot166::getInstance();
+	lHandle->RegisterLogger(&sl);	
 		
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
@@ -173,15 +174,7 @@ int Team166Dispenser::Main(int a2, int a3, int a4, int a5,
             
         
         // Should we log this value?
-		if (sample_count < 200) {
-			sl.PutOne(0, 0, 0);
-			sample_count++;
-		} else {
-			if (sample_count == 200) {
-				sl.DumpToFile("dispenser.csv");
-				sample_count++;
-			}
-		}
+		sl.PutOne(0, 0, 0);
 		MyWatchDog = 1;
 		Wait (0.100); // 100ms
 
