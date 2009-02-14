@@ -356,7 +356,8 @@ void Robot166::OperatorControl(void)
 		Wait (0.5);
 	}
 	
-	if ( (driveStick.GetRawButton(8) ) or ( driveStick.GetRawButton(9) )) {
+	if ( driveStick.GetRawButton(8) or driveStick.GetRawButton(9) 
+			or dispStick.GetRawButton(8) or driveStick.GetRawButton(9) ) {
 		TakeSnapshot("166_joystick_img.png");
 	}
 }
