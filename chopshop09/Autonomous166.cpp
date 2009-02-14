@@ -9,6 +9,57 @@
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
+
+/ Sample in memory buffer
+struct autobuf166
+{
+	struct timespec tp;               // Time of snapshot
+	float distance_diff;              // Delta of distance seen
+	
+};
+
+// Sample Memory Log
+class AutoLog : public MemoryLog166
+{
+public:
+	AutoLog() : MemoryLog166(128*1024, "autonomous") {return;};
+	~AutoLog() {return;};
+	unsigned int DumpBuffer(          // Dump the next buffer into the file
+			char *nptr,               // Buffer that needs to be formatted
+			FILE *outputFile);        // and then stored in this file
+	unsigned int PutOne(float dd);    // Log the distanace difference
+};
+
+// Write one buffer into memory
+unsigned int AutoLog::PutOne(float dd)
+{
+	struct autobuf166 *ob;               // Output buffer
+	
+	// Get output buffer
+	if ((ob = (struct autobuf166 *)GetNextBuffer(sizeof(struct autobuf166)))) {
+		
+		// Fill it in.
+		clock_gettime(CLOCK_REALTIME, &ob->tp);
+		ob->distance_diff = dd;
+		return (sizeof(struct autobuf166));
+	}
+	
+	// Did not get a buffer. Return a zero length
+	return (0);
+}
+
+// Format the next buffer for file output
+unsigned int AutoLog::DumpBuffer(char *nptr, FILE *ofile)
+{
+	struct autobuf166 *ab = (struct autobuf166 *)nptr;
+	
+	// Output the data into the file
+	fprintf(ofile, "%u, %u, %f\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->distance_diff);
+	
+	// Done
+	return (sizeof(struct autobuf166));
+}
+
 // Get access to vision related things
 #if 1
 extern Team166Vision Team166VisionObject;
@@ -63,15 +114,13 @@ void autonomous166::autonomous_main(void)
 	int difference_camera;            // difference between last picture's height and current picutre's height
 	float difference_ultrasonic;      // difference between last ultrasonic value and current ultrasonic value
 	float x;                          // initializes the local variable for the bearing of the robot
-	float y=archived_y;               // sets the local variable for the speed of the robot to what it was set to in the last iteration of the autonomous function
+	float y;                          // sets the local variable for the speed of the robot to what it was set to in the last iteration of the autonomous function
+	AutoLog al;                       // Autonomous log
 	
-	
-                 
-	
-	
-	
-	
-	
+	lhandle->RegisterLogger(&al);
+while(IsAutonomous())
+{
+	y=archived_y;               // sets the local variable for the speed of the robot to what it was set to in the last iteration of the autonomous function
 	
   if(Team166VisionObject.IsTargetAcquired())   // sees if the camera has aquired a target or not 
   {
@@ -89,6 +138,7 @@ void autonomous166::autonomous_main(void)
 		}
 	
 	difference_ultrasonic=ultrasonic();
+	 al.PutOne(difference_ultrasonic);
 	
 	if(difference_ultrasonic >= 0)
 			{
@@ -142,7 +192,7 @@ void autonomous166::autonomous_main(void)
 				
   }	
 /*  else
-  {
+  	{
 	  if(target_acquisition())              // checks which direction to angle the robot in when a target hasn't been acquired
 	  {
 		  x = -0.25;                        // sets the bearing to 25 degrees to te left
@@ -156,11 +206,12 @@ void autonomous166::autonomous_main(void)
 		  lhandle->SetJoyStick(x,y);        // sets the Joystick input values
 	  }
 	  DPRINTF(LOG_INFO,"Set without algorithems\n"); 
-  } */
+  	} */
 		
   // allow other processes to run
   Wait(0.05);
 			
+   }
 }
 	
 
