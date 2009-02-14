@@ -148,8 +148,8 @@ Robot166::Robot166(void) :
 				SetupCamera(outputString);
 			}
 		}
-		TakeSnapshot(imageName);
 	}
+	TakeSnapshot(imageName);
 
 	/* allow writing to vxWorks target */
 	Priv_SetWriteFileAllowed(1);   	
@@ -357,7 +357,7 @@ void Robot166::OperatorControl(void)
 	}
 	
 	if ( (driveStick.GetRawButton(8) ) or ( driveStick.GetRawButton(9) )) {
-		TakeSnapshot("joystick_img.png");
+		TakeSnapshot("166_joystick_img.png");
 	}
 }
 	
