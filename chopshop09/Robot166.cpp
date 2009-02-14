@@ -26,7 +26,7 @@
 // Declare external tasks
 Team166Dispenser Team166DispenserObject;
 Team166Drive Team166DriveObject;
-Team166SensorTest Team166SensorTestObject;
+//Team166SensorTest Team166SensorTestObject;
 Team166Inertia Team166InertiaObject;
 Team166Vision Team166VisionObject;
 Team166Sonar Team166SonarObject;
@@ -79,7 +79,6 @@ void configureCameraAndTakeSnapshot(char* configString, char* imageName)
  * the driver station or the field controls.
  */ 
 Robot166::Robot166(void) :
-	myDrive(T166_LEFT_FRONT_MOTOR_CHANNEL, T166_LEFT_BACK_MOTOR_CHANNEL, T166_RIGHT_FRONT_MOTOR_CHANNEL, T166_RIGHT_BACK_MOTOR_CHANNEL), // Motors in use
 	driveStick(T166_USB_STICK_1),        // USB port for 1st stick
 	dispStick(T166_USB_STICK_2),        // USB port for 2nd stick
 	lfEncoder(T166_ENC_LF_A, T166_ENC_LF_B, true), // Left Front encoder pins
@@ -140,15 +139,15 @@ Robot166::Robot166(void) :
 			Team166DriveObject.MyTaskInitialized &&
 			Team166VisionObject.MyTaskInitialized &&
 			Team166SonarObject.MyTaskInitialized &&
-			Team166SensorTestObject.MyTaskInitialized &&
+//			Team166SensorTestObject.MyTaskInitialized &&
 			Team166InertiaObject.MyTaskInitialized)) {
-		printf("Constructor is waiting %d %d %d %d %d %d..\n",
+		printf("Constructor is waiting %d %d %d %d %d..\n",
 				//printf("Constructor is waiting %d  %d %d %d %d..\n",
 				Team166DispenserObject.MyTaskInitialized,
 				Team166DriveObject.MyTaskInitialized,
 				Team166VisionObject.MyTaskInitialized,
 				Team166SonarObject.MyTaskInitialized,
-				Team166SensorTestObject.MyTaskInitialized,
+//				Team166SensorTestObject.MyTaskInitialized,
 				Team166InertiaObject.MyTaskInitialized);
 		Wait (0.100);
 	}
@@ -157,7 +156,20 @@ Robot166::Robot166(void) :
 	
 }
 
-/**
+/* **
+ * Get the Throttle gain from both of the joy sticks
+ */
+void Robot166::GetGains(float *g1, float *g2)
+{
+	// Lock 
+	semTake(DSLock, WAIT_FOREVER);
+	*g1 = driveStick.GetZ();
+	*g2 = dispStick.GetZ();
+	semGive(DSLock);
+	
+}
+
+/* **
  * Joy stick control. X and Y value are in range -1.0 to +1.0
  */
 void Robot166::SetJoyStick(float x, float y)
@@ -280,16 +292,10 @@ float Robot166::GetBatteryVoltage(void)
  */
 void Robot166::Autonomous(void)
 {
-	while(IsAutonomous())
-	{
-		//DPRINTF(LOG_DEBUG,"autonomous\n");
-		RobotMode = T166_AUTONOMOUS;
-		GetWatchdog().SetEnabled(false);
-		steveautonomous.autonomous_main();
-	}
-	
-	
-	
+	//DPRINTF(LOG_DEBUG,"autonomous\n");
+	RobotMode = T166_AUTONOMOUS;
+	GetWatchdog().SetEnabled(false);
+	steveautonomous.autonomous_main();
 }
 
 /** 
@@ -322,12 +328,10 @@ void Robot166::OperatorControl(void)
 		
 		// Each task needs to update for us to feed the watch dog.
 		if (Team166DispenserObject.MyWatchDog && 
-				Team166DriveObject.MyWatchDog &&
-				Team166SensorTestObject.MyWatchDog) {
+				Team166DriveObject.MyWatchDog) {
 		    GetWatchdog().Feed();
 		    Team166DispenserObject.MyWatchDog = 0;
 		    Team166DriveObject.MyWatchDog = 0;
-		    Team166SensorTestObject.MyWatchDog = 0;
 		}
 		Wait (0.5);
 	}
