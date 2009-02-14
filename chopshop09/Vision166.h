@@ -80,9 +80,13 @@ private:
 	
 	ParticleAnalysisReport pinkReport, greenReport;	// particle analysis reports
 	TrackingThreshold pinkSpec, greenSpec;			// color thresholds
+
+	enum AllianceType {BLUE, RED};
+	AllianceType alliance;
 	
 	void SetServoPositions(float normalizedHorizontal, float normalizedVertical);
 	void AdjustServoPositions(float normDeltaHorizontal, float normDeltaVertical);
 	void DoServos(float servoHorizontal, float servoVertical);
+	SecondColorPosition GetRelativePosition();
 };
 #endif // !defined(_VISION166_H)

@@ -33,7 +33,8 @@ Team166Vision::Team166Vision(void) :
 	sinStart(0.0),					// control where to start the sine wave for pan
 	panIncrement(0),				// pan 1-up number for each call
 	mode(IMAQ_HSL), 			    // Color mode (RGB or HSL) for image processing	
-	savedImageTimestamp(0.0)		// timestamp of last image acquired
+	savedImageTimestamp(0.0),		// timestamp of last image acquired
+	alliance(BLUE)					// default alliance
 {		
 	// remember to use jumpers on the sidecar for the Servo PWMs
 	horizontalServo = new Servo(T166_HORIZONTAL_SERVO_CHANNEL);  // create horizontal servo
@@ -99,6 +100,18 @@ void Team166Vision::SetVisionOn(bool onFlag) {
 }
 
 /**
+ * @brief Determine whether the second color (GREEN) is above or below the first color (PINK)
+ * 
+ * @return SecondColorPosition if alliance is BLUE, ABOVE, otherwise, BELOW
+ */
+SecondColorPosition Team166Vision::GetRelativePosition() {
+	// TODO: get alliance here instead of hard-coding
+	alliance = BLUE;
+	if (alliance = BLUE) return ABOVE;
+	return BELOW;
+}
+
+/**
  * Set servo positions (0.0 to 1.0) 
  * 
  * @param servoHorizontal Pan Position from 0.0 to 1.0.
@@ -117,8 +130,8 @@ void Team166Vision::DoServos(float servoHorizontal, float servoVertical)	{
 	}
 	if ( fabs(servoVertical - currentV) > servoDeadband ) {
 		// don't look straight up or down
-		//if (servoVertical > 0.8) servoVertical = 0.8;
-		//if (servoVertical < 0.2) servoVertical = 0.2;
+		if (servoVertical > 0.9) servoVertical = 0.9;
+		if (servoVertical < 0.1) servoVertical = 0.1;
 		
 		verticalServo->Set( servoVertical );
 		/* save new normalized vertical position */
@@ -199,9 +212,7 @@ bool Team166Vision::AcquireTarget() {
 	static int staleCount = 0;
 	
 	// calculate servo position based on colors found 
-	// TODO: get alliance here
-	SecondColorPosition relativePosition = ABOVE;
-	if ( FindTwoColors(pinkSpec, greenSpec, relativePosition, &pinkReport, &greenReport) ){
+	if ( FindTwoColors(pinkSpec, greenSpec, GetRelativePosition(), &pinkReport, &greenReport) ){
 		//PrintReport(&par2);
 		targetAcquired = true;
 		// reset pan		
@@ -228,10 +239,7 @@ bool Team166Vision::AcquireTarget() {
 			// Average the color two particles to get center x & y of combined target
 			horizontalDestination = (pinkReport.center_mass_x_normalized + 
 					greenReport.center_mass_x_normalized) / 2;	
-			//verticalDestination = (pinkReport.center_mass_y_normalized + 
-					//greenReport.center_mass_y_normalized) / 2;
-			// use BOTTOM color not hardcode pink
-			if (relativePosition == ABOVE) {
+			if (GetRelativePosition() == ABOVE) {
 				verticalDestination = RangeToNormalized(pinkReport.boundingRect.top, 
 						pinkReport.imageHeight);
 			} else {
@@ -252,11 +260,11 @@ bool Team166Vision::AcquireTarget() {
 		 */
 		// you may need to reverse this based on your servo installation
 
-		//incrementH = horizontalDestination - bearing;
-		//incrementV = verticalDestination - tilt;
+		incrementH = horizontalDestination - bearing;
+		incrementV = verticalDestination - tilt;
 
-		incrementH = horizontalDestination - bearing - horizontalDestination;
-		incrementV =  tilt - verticalDestination;
+		//incrementH = bearing - horizontalDestination;
+		//incrementV =  tilt - verticalDestination;
 		
 		AdjustServoPositions( incrementH, incrementV);  
 		
