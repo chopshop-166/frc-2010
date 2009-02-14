@@ -29,7 +29,7 @@ Team166Vision::Team166Vision(void) :
 	bearing(0.0),					// current horizontal normalized servo position	
 	targetAcquired(false),			// target not acquired
 	tilt(0.0),						// current vertical normalized servo position	
-	verticalDefault(0.45),			// default vertial servo position
+	verticalDefault(0.4),			// default vertial servo position
 	servoDeadband(0.005),			// pan flag to move if > this amount 
 	sinStart(0.0),					// control where to start the sine wave for pan
 	panIncrement(0),				// pan 1-up number for each call
@@ -101,14 +101,37 @@ void Team166Vision::SetVisionOn(bool onFlag) {
 }
 
 /**
- * @brief Determine whether the second color (GREEN) is above or below the first color (PINK)
+ * @brief Determine whether the second color (GREEN) is above or below 
+ * the first color (PINK)
  * 
  * @return SecondColorPosition if alliance is BLUE, ABOVE, otherwise, BELOW
  */
 SecondColorPosition Team166Vision::GetRelativePosition() {
-	// TODO: get alliance here instead of hard-coding
-	alliance = BLUE;
-	if (alliance = BLUE) return ABOVE;
+	DriverStation *dsHandle = DriverStation::GetInstance();
+	DriverStation::Alliance myAlliance = dsHandle->GetAlliance();
+	switch (myAlliance)  {
+	// return relative position for opposing alliance target
+	case DriverStation::kRed:    //pink on top
+		DPRINTF(LOG_DEBUG, "RED alliance");  
+		return ABOVE;  //green is above pink
+		break;
+	case DriverStation::kBlue:   // green on top
+		DPRINTF(LOG_DEBUG, "BLUE alliance");
+		return BELOW; 
+		break;
+	case DriverStation::kInvalid:
+		// must not be in a competition, so use the switch on the DS
+		if (dsHandle->GetDigitalIn(1))		{
+			DPRINTF(LOG_DEBUG, "RED alliance USING SWITCH DEFAULT");
+			return BELOW;  //TODO: check this			
+		}
+		else		{
+			DPRINTF(LOG_DEBUG, "BLUE alliance USING SWITCH DEFAULT");
+			return ABOVE;  //TODO: check this						
+		}
+		break;
+	}
+	DPRINTF(LOG_DEBUG, "RED alliance DEFAULT"); 
 	return BELOW;
 }
 
