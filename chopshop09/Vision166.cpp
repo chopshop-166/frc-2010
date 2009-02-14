@@ -29,8 +29,8 @@ Team166Vision::Team166Vision(void) :
 	bearing(0.0),					// current horizontal normalized servo position	
 	targetAcquired(false),			// target not acquired
 	tilt(0.0),						// current vertical normalized servo position	
-	servoDeadband(0.005),			// pan flag to move if > this amount 
 	verticalDefault(0.45),			// default vertial servo position
+	servoDeadband(0.005),			// pan flag to move if > this amount 
 	sinStart(0.0),					// control where to start the sine wave for pan
 	panIncrement(0),				// pan 1-up number for each call
 	mode(IMAQ_HSL), 			    // Color mode (RGB or HSL) for image processing	
