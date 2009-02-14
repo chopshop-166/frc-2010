@@ -21,7 +21,7 @@
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
 // To show activity printout set true
-#define SHOWACTIVITY 0
+#define SHOWACTIVITY 1
 
 // Vision task constructor
 Team166Vision::Team166Vision(void) :
@@ -260,10 +260,10 @@ bool Team166Vision::AcquireTarget() {
 		 */
 		// you may need to reverse this based on your servo installation
 
-		//incrementH = horizontalDestination - bearing;
+		incrementH = horizontalDestination - bearing;
+		//incrementH = bearing - horizontalDestination;
+		
 		incrementV = verticalDestination - tilt;
-
-		incrementH = bearing - horizontalDestination;
 		//incrementV =  tilt - verticalDestination;
 		
 		AdjustServoPositions( incrementH, incrementV);  
