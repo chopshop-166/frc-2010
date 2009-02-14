@@ -18,6 +18,7 @@
 #include "AxisCamera.h" 
 #include "FrcError.h"
 #include "PCVideoServer.h"
+#include "VisionAPI.h"
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
@@ -25,13 +26,51 @@
 // Declare external tasks
 Team166Dispenser Team166DispenserObject;
 Team166Drive Team166DriveObject;
-//Team166SensorTest Team166SensorTestObject;
+Team166SensorTest Team166SensorTestObject;
 Team166Inertia Team166InertiaObject;
 Team166Vision Team166VisionObject;
 Team166Sonar Team166SonarObject;
 
 class Robot166;
 Robot166 *RobotHandle = 0;
+
+
+/** 
+ * Pass to the camera the configuration string and store an image on the cRIO 
+ * @param configString camera configuration string 
+ * @param imageName stored on home directory of cRIO ( "/" )
+ **/
+void configureCameraAndTakeSnapshot(char* configString, char* imageName)	
+{
+	StopCameraTask();	
+	ConfigureCamera(configString);
+	Wait(0.5);
+	/* start the CameraTask -keep this here for now, maybe move to Vision166 later  */
+	if (StartCameraTask(15, 0, k160x120, ROT_180) == -1) {
+		DPRINTF( LOG_ERROR,"Failed to spawn camera task; exiting. Error code %s", 
+				GetVisionErrorText(GetLastVisionError()) );
+	}
+	Wait(4.0);
+	/* this will take one picture and save it to a file
+	 */
+	DPRINTF(LOG_DEBUG, "taking a SNAPSHOT ");
+	Image* cameraImage = frcCreateImage(IMAQ_IMAGE_HSL);
+	if (!cameraImage) {
+		dprintf (LOG_INFO,"frcCreateImage failed - errorcode %i",GetLastVisionError()); 
+	}
+	Wait(1.0);
+	if ( !GetImage (cameraImage,NULL) ) {
+		  dprintf (LOG_INFO,"\nCamera Acquisition failed %i", GetLastVisionError());
+	} else { 
+		  if (!frcWriteImage(cameraImage, imageName) ) { 
+				dprintf (LOG_INFO,"frcWriteImage failed - errorcode %i",GetLastVisionError());
+		  } else { 
+			  	dprintf (LOG_INFO,"\n>>>>> Saved image to %s", imageName);	
+				// always dispose of image objects when done
+				frcDispose(cameraImage);
+		  }
+	}
+}
 
 /**
  * This is a demo program showing the use of the RobotBase class.
@@ -40,6 +79,7 @@ Robot166 *RobotHandle = 0;
  * the driver station or the field controls.
  */ 
 Robot166::Robot166(void) :
+	myDrive(T166_LEFT_FRONT_MOTOR_CHANNEL, T166_LEFT_BACK_MOTOR_CHANNEL, T166_RIGHT_FRONT_MOTOR_CHANNEL, T166_RIGHT_BACK_MOTOR_CHANNEL), // Motors in use
 	driveStick(T166_USB_STICK_1),        // USB port for 1st stick
 	dispStick(T166_USB_STICK_2),        // USB port for 2nd stick
 	lfEncoder(T166_ENC_LF_A, T166_ENC_LF_B, true), // Left Front encoder pins
@@ -69,13 +109,29 @@ Robot166::Robot166(void) :
     ConvShake = 0;
 	RobotHandle = this;
 	mlHead = 0;
-	PCVideoServer pc;  // start server to PC
+	/* start the PCVideoServer to use the dashboard video */
+	//PCVideoServer pc;
 
-	/* start the CameraTask -keep this here for now, maybe move to Vision166 later  */
-	if (StartCameraTask(15, 0, k160x120, ROT_180) == -1) {
-		DPRINTF( LOG_ERROR,"Failed to spawn camera task; exiting. Error code %s", 
-				GetVisionErrorText(GetLastVisionError()) );
+	/* read a configuration file and send it to the camera	 */
+	char *imageName = "166_ConfigImage.png";
+	char* cameraConfigFile = "166Camera.txt"; 
+	char outputString[1024]; 
+
+	/* Calling processFile with 3rd argument 0 returns number of configuration lines */
+	int lineCountMax = processFile(cameraConfigFile, outputString,0);
+	if (lineCountMax == -1) {
+		DPRINTF (LOG_DEBUG, "error reading %s",cameraConfigFile);
+	} else {
+		for (int index = 1;index <= lineCountMax;index++)
+		{
+			/* calling processFile with line number returns that configuration line */
+			if (processFile(cameraConfigFile, outputString, index) != -1) {
+				DPRINTF (LOG_DEBUG, "OUTPUT STRING:%s\n",outputString);
+				configureCameraAndTakeSnapshot(outputString, imageName);
+			}
+		}
 	}
+
 	/* allow writing to vxWorks target */
 	Priv_SetWriteFileAllowed(1);   	
 	
@@ -84,15 +140,15 @@ Robot166::Robot166(void) :
 			Team166DriveObject.MyTaskInitialized &&
 			Team166VisionObject.MyTaskInitialized &&
 			Team166SonarObject.MyTaskInitialized &&
-//			Team166SensorTestObject.MyTaskInitialized &&
+			Team166SensorTestObject.MyTaskInitialized &&
 			Team166InertiaObject.MyTaskInitialized)) {
-		printf("Constructor is waiting %d %d %d %d %d..\n",
+		printf("Constructor is waiting %d %d %d %d %d %d..\n",
 				//printf("Constructor is waiting %d  %d %d %d %d..\n",
 				Team166DispenserObject.MyTaskInitialized,
 				Team166DriveObject.MyTaskInitialized,
 				Team166VisionObject.MyTaskInitialized,
 				Team166SonarObject.MyTaskInitialized,
-//				Team166SensorTestObject.MyTaskInitialized,
+				Team166SensorTestObject.MyTaskInitialized,
 				Team166InertiaObject.MyTaskInitialized);
 		Wait (0.100);
 	}
@@ -100,19 +156,8 @@ Robot166::Robot166(void) :
 	
 	
 }
-/* **
- * Get the Throttle gain from both of the joy sticks
- */
-void Robot166::GetGains(float *g1, float *g2)
-{
-	// Lock 
-	semTake(DSLock, WAIT_FOREVER);
-	*g1 = driveStick.GetZ();
-	*g2 = dispStick.GetZ();
-	semGive(DSLock);
-	
-}
-/* **
+
+/**
  * Joy stick control. X and Y value are in range -1.0 to +1.0
  */
 void Robot166::SetJoyStick(float x, float y)
@@ -134,7 +179,7 @@ void Robot166::GetJoyStick(float *x, float *y)
 	case T166_OPERATOR: {
 		semTake(DSLock, WAIT_FOREVER);
 		*x = driveStick.GetX();
-		*y = -driveStick.GetY();
+		*y = -driveStick.GetY();		
 		semGive(DSLock);
 		break;
 	    }
@@ -277,10 +322,12 @@ void Robot166::OperatorControl(void)
 		
 		// Each task needs to update for us to feed the watch dog.
 		if (Team166DispenserObject.MyWatchDog && 
-				Team166DriveObject.MyWatchDog) {
+				Team166DriveObject.MyWatchDog &&
+				Team166SensorTestObject.MyWatchDog) {
 		    GetWatchdog().Feed();
 		    Team166DispenserObject.MyWatchDog = 0;
 		    Team166DriveObject.MyWatchDog = 0;
+		    Team166SensorTestObject.MyWatchDog = 0;
 		}
 		Wait (0.5);
 	}
