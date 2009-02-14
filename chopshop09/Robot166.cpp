@@ -112,7 +112,7 @@ Robot166::Robot166(void) :
 	//PCVideoServer pc;
 
 	/* read a configuration file and send it to the camera	 */
-	char *imageName = "166_ConfigImage.png";
+	char *imageName = "166StartPic.png";
 	char* cameraConfigFile = "166Camera.txt"; 
 	char outputString[1024]; 
 
