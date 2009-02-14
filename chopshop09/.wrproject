@@ -25,6 +25,7 @@
                 <stringAttribute value="-I$(WIND_BASE)/target/h/wrn/coreip"/>
             </listAttribute>
             <listAttribute key="BLD::Info|Incl|PPC603gnu">
+                <stringAttribute value="-I%Proj-WPILib%"/>
                 <stringAttribute value="-I$(WIND_BASE)/target/h"/>
                 <stringAttribute value="-I$(WIND_BASE)/target/h/WPILib"/>
                 <stringAttribute value="-I$(WIND_BASE)/target/h/wrn/coreip"/>
@@ -33,6 +34,7 @@
                 <stringAttribute value="$(WIND_BASE)/target/lib/WPILib.a"/>
             </listAttribute>
             <listAttribute key="BLD::Info|Libs|PPC603gnu">
+                <stringAttribute value="$(WS_ROOT_DIR)/WPILib/PPC603gnu_DEBUG/WPILib.a"/>
                 <stringAttribute value="$(WIND_BASE)/target/lib/WPILib.a"/>
             </listAttribute>
             <listAttribute key="BLD::Info|Macros">
@@ -246,7 +248,7 @@
     <buildtargets>
         <buildtarget buildtool="Linker" name="chopshop09" passed="false" targetname="chopshop09">
             <contents>
-                <folder name="/chopshop09-97" recursive="true"/>
+                <folder name="/chopshop09" recursive="true"/>
             </contents>
         </buildtarget>
     </buildtargets>
