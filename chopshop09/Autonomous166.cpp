@@ -10,7 +10,7 @@
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
 
-/ Sample in memory buffer
+// Sample in memory buffer
 struct autobuf166
 {
 	struct timespec tp;               // Time of snapshot
@@ -118,7 +118,7 @@ void autonomous166::autonomous_main(void)
 	AutoLog al;                       // Autonomous log
 	
 	lhandle->RegisterLogger(&al);
-while(IsAutonomous())
+while(lhandle->IsAutonomous())
 {
 	y=archived_y;               // sets the local variable for the speed of the robot to what it was set to in the last iteration of the autonomous function
 	
