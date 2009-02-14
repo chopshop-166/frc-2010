@@ -27,7 +27,8 @@ class autonomous166
         float archived_distance;             // the current distance to the target
   		float drop_distance;                 // distance at which the dropper can be activated
   		float activate_drop;                 // activates dropping function variable
-  		int gyrate;                        // activates gyrating action for the motor 
+  		int gyrate;                        	 // activates gyrating action for the motor
+  		int score;                           // activates the autonomous scoring
 	
 	
 };

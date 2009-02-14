@@ -5,6 +5,7 @@
 #include "Vision166.h"
 #include "Robot166.h"
 #include "Sonar166.h"
+#include <math.h>
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
@@ -41,7 +42,8 @@ autonomous166::autonomous166(void):
 	archived_distance(0),
 	drop_distance(0),
 	activate_drop(0),
-	gyrate(0)
+	gyrate(0),
+	score(0)
 	
 {
 	
@@ -88,11 +90,11 @@ void autonomous166::autonomous_main(void)
 	
 	difference_ultrasonic=ultrasonic();
 	
-	if(difference_ultrasonic <= 0)
+	if(difference_ultrasonic >= 0)
 			{
 				sonar_perspectve=T166_AWAY;   // sonar sensor sees the target moving away
 			}
-		else if(difference_ultrasonic > 0)
+		else if(difference_ultrasonic < 0)
 			{
 				sonar_perspectve=T166_CLOSER; // sonar sensor sees the target moving toward the robot
 			}
@@ -103,16 +105,30 @@ void autonomous166::autonomous_main(void)
 	else if(camera_perspective == sonar_perspectve)
 		{
 			DPRINTF(LOG_INFO,"They are equal\n");
+			difference_ultrasonic = fabs(difference_ultrasonic);
+			archived_distance = difference_ultrasonic;
 			y = (difference_ultrasonic/check_time);                    // sets the y value to the current speed of the target
 			if((archived_y <= y) && (archived_distance > drop_distance))
 			{
 				y = y+((difference_ultrasonic/check_time)*.10);        // speeds up our robot while we are slower than the opposing robot
 				activate_drop=0;
+				score = 0;
 			}
 			else if(archived_distance <= drop_distance)
 			{
-				activate_drop=1;                                       // activates the dropping mechanism
-				lhandle->SetDispenser(T166_CB_FORWARD, activate_drop,gyrate); //sets the dispenser to begin raising and turns on the conveyer
+				
+				if(score >= 3)
+				{
+				
+					activate_drop=1;                                              // activates the dropping mechanism
+					gyrate = 0;                                                   // test - make sure its 0
+					lhandle->SetDispenser(T166_CB_FORWARD, activate_drop,gyrate); //sets the dispenser to begin raising and turns on the conveyer
+				}
+				else
+				{
+					score++;
+				}
+				
 			}
 			
 		}
@@ -125,7 +141,7 @@ void autonomous166::autonomous_main(void)
 	  lhandle->SetJoyStick(x,y);            // sets the joystick values for drive
 				
   }	
-  else
+/*  else
   {
 	  if(target_acquisition())              // checks which direction to angle the robot in when a target hasn't been acquired
 	  {
@@ -140,8 +156,10 @@ void autonomous166::autonomous_main(void)
 		  lhandle->SetJoyStick(x,y);        // sets the Joystick input values
 	  }
 	  DPRINTF(LOG_INFO,"Set without algorithems\n"); 
-  }
-			
+  } */
+		
+  // allow other processes to run
+  Wait(0.05);
 			
 }
 	
