@@ -115,7 +115,7 @@ SecondColorPosition Team166Vision::GetRelativePosition() {
 		DPRINTF(LOG_DEBUG, "RED alliance");  
 		return ABOVE;  //green is above pink
 		break;
-	case DriverStation::kBlue:   // green on top
+	case DriverStation::kBlue:   // green on bottom
 		DPRINTF(LOG_DEBUG, "BLUE alliance");
 		return BELOW; 
 		break;
