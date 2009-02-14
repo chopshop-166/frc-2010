@@ -1,0 +1,45 @@
+FRC Axis 206 Camera Demonstration Program
+-----------------------------------------
+
+This is based on the SimpleDemo program, with changes in autonomous for 
+camera configuration. There are a number of options as described below,
+with more extensive explanation in the program header:
+
+SNAPSHOT;
+    Stores an image from the camera on the cRIO. 
+RESET; 	
+	Set camera settings back to a known default. 
+CONFIG_BRIGHTNESS; 	
+	Set camera brightness to several values in the brightness  
+	range (0-100) and take a snapshot of each one.
+CONFIG_WHITEBALANCE; 
+	Set camera white balance to each possible value 
+	and take a snapshot of each one.
+CONFIG_EXPOSURE; 
+	Set camera exposure to each possible value 
+	and take a snapshot of each one.
+CONFIG_EXPOSURE_PRIORITY; 
+	Set camera exposure priority to each possible value 
+	and take a snapshot of each one.
+CONFIG_COLOR_LEVEL; 
+	Set camera color level to several values in the color level  
+	range (0-100) and take a snapshot of each one.
+CONFIG_SHARPNESS; 
+	Set camera sharpness to several values in the sharpness 
+	range (0-100) and take a snapshot of each one.
+GET_CAMERA_CONFIG; 	
+	This queries the camera and prints to the console 
+	the following properties of the camera:
+	Sensor Properties: Brightness, White Balance, Exposure, 
+		Exposure Priority, Color Level, Sharpness
+	Image Properties: Resolution, Compression, Rotation	
+READ_FILE; 		
+	Uses the utility ProcessFile to obtain camera configuration settings
+	from a file called "166Camera.txt" on the cRIO. This configuration 
+	is then set on the camera. 
+	
+	A sample 166Camera.txt file is included with this project. Note that
+	it must be ftp'd to the root directory of the cRIO for this feature to work.
+	
+Revision History:
+v1 - Initial release
