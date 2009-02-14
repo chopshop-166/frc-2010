@@ -28,7 +28,7 @@
 #define GRYO_PID_K_I (.0001)
 #define GYRO_PID_K_P (.001)
 
-#define DPRINTF if(true)dprintf
+#define DPRINTF if(false)dprintf
 
 
 // Sample in memory buffer
