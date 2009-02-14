@@ -3,6 +3,10 @@
 #include "Dispenser166.h"
 #include "MemoryLog166.h"
 #include "Robot166.h"
+#include "BaeUtilities.h"
+
+// To locally enable debug printing: set true, to disable false
+#define DPRINTF if(false)dprintf
 
 // Sample in memory buffer
 struct abuf166
@@ -83,7 +87,7 @@ int Team166Dispenser::Main(int a2, int a3, int a4, int a5,
 	int print, print2;
 	
 	// Let the world know we're in
-	printf("In the 166 dispenser task\n");
+	DPRINTF(LOG_DEBUG,"In the 166 dispenser task\n");
 		
 	// Indicate that we've now completed initialization
 	MyTaskInitialized = 1;
@@ -109,7 +113,7 @@ int Team166Dispenser::Main(int a2, int a3, int a4, int a5,
 		
 		// Get the command we're asked to apply
         lHandle->GetDispenser(&cdir, &lift_motor,&girate_switch);   //gives the values for the conveyor direction and the desired lift motor speed
-        //printf("cdir = %u, lift_motor = %f\n", cdir, lift_motor);
+        //("cdir = %u, lift_motor = %f\n", cdir, lift_motor);
                 if(girate_switch==0)
                 {
                     tick = 0;
@@ -144,18 +148,18 @@ int Team166Dispenser::Main(int a2, int a3, int a4, int a5,
                 switch(cdir)                                     	//switch for the direction of the conveyor belt
                 {
                 	case T166_CB_BACKWARD:                        	  //when the direction given is backward...
-                		lHandle->treadmill_victor.Set(TREADMILL_REVERSE_SPEED); //set the treadmill victor to the set reverse speed
+                		lHandle->treadmill_victor.Set(TREADMILL_FORWARD_SPEED); //set the treadmill victor to the set reverse speed
                 		break;											
                 	case T166_CB_FORWARD: 								//when the direction given is forward...
-                		lHandle->treadmill_victor.Set(TREADMILL_FORWARD_SPEED); //set the treadmill victor to the set forward speed
+                		lHandle->treadmill_victor.Set(TREADMILL_REVERSE_SPEED); //set the treadmill victor to the set forward speed
                 		break;
                 	default:										//when no direction is given
                 		lHandle->treadmill_victor.Set(NO_SPEED);				//set the treadmill victor speed to 0
                 }
                 print = lHandle->limitswitch_top.Get();
                 print2 = lHandle->limitswitch_bottom.Get();
-                printf("SWITCH TOP: %d\n",print);
-                printf("SWITCH BOTTOM: %d\n",print2);
+                DPRINTF(LOG_DEBUG,"SWITCH TOP: %d\n",print);
+                DPRINTF(LOG_DEBUG,"SWITCH BOTTOM: %d\n",print2);
                     if(girate_switch==0)
                     {
                        if((lHandle->limitswitch_top.Get()==1)&&(lift_motor>0))
