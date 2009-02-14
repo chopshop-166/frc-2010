@@ -17,9 +17,10 @@
 // needed for Camera Init
 #include "AxisCamera.h" 
 #include "FrcError.h"
+#include "PCVideoServer.h"
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(true)dprintf
+#define DPRINTF if(false)dprintf
 
 // Declare external tasks
 Team166Dispenser Team166DispenserObject;
@@ -66,8 +67,10 @@ Robot166::Robot166(void) :
 	dsHandle = DriverStation::GetInstance();
     ConvDir = T166_CB_UNKNOWN;
     ConvLift = 0.0;
+    ConvShake = 0;
 	RobotHandle = this;
 	mlHead = 0;
+	PCVideoServer pc;
 	
 
 	/* start the CameraTask -keep this here for now, maybe move to Vision166 later  */
@@ -225,7 +228,7 @@ void Robot166::Autonomous(void)
 {
 	while(IsAutonomous())
 	{
-		printf("autonomous\n");
+		//DPRINTF(LOG_DEBUG,"autonomous\n");
 		RobotMode = T166_AUTONOMOUS;
 		GetWatchdog().SetEnabled(false);
 		steveautonomous.autonomous_main();
