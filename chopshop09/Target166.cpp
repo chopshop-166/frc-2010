@@ -474,7 +474,7 @@ int FindTwoColors(TrackingThreshold td1, TrackingThreshold td2,
 							//return the relevant track report
 							DPRINTF(LOG_DEBUG,"++++++  FOUND +++++");
 							memcpy(par1, firstTrackReport, sizeof(ParticleAnalysisReport));
-							memcpy(par2, firstTrackReport, sizeof(ParticleAnalysisReport));
+							memcpy(par2, secondTrackReport, sizeof(ParticleAnalysisReport));
 							return true;
 						}
 					}	
@@ -491,7 +491,7 @@ int FindTwoColors(TrackingThreshold td1, TrackingThreshold td2,
 							secondTrackReport->boundingRect.top) )  
 					{	
 						memcpy(par1, firstTrackReport, sizeof(ParticleAnalysisReport));
-						memcpy(par2, firstTrackReport, sizeof(ParticleAnalysisReport));
+						memcpy(par2, secondTrackReport, sizeof(ParticleAnalysisReport));
 						return true;
 					}
 				}	
@@ -508,7 +508,7 @@ int FindTwoColors(TrackingThreshold td1, TrackingThreshold td2,
 							secondTrackReport->boundingRect.left ) )  
 					{	
 						memcpy(par1, firstTrackReport, sizeof(ParticleAnalysisReport));
-						memcpy(par2, firstTrackReport, sizeof(ParticleAnalysisReport));
+						memcpy(par2, secondTrackReport, sizeof(ParticleAnalysisReport));
 						return true;
 					}
 				}	
@@ -525,7 +525,7 @@ int FindTwoColors(TrackingThreshold td1, TrackingThreshold td2,
 							secondTrackReport->boundingRect.width) ) )
 					{	
 						memcpy(par1, firstTrackReport, sizeof(ParticleAnalysisReport));
-						memcpy(par2, firstTrackReport, sizeof(ParticleAnalysisReport));
+						memcpy(par2, secondTrackReport, sizeof(ParticleAnalysisReport));
 						return true;
 					}
 				}	
