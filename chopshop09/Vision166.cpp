@@ -30,6 +30,7 @@ Team166Vision::Team166Vision(void) :
 	targetAcquired(false),			// target not acquired
 	tilt(0.0),						// current vertical normalized servo position	
 	servoDeadband(0.005),			// pan flag to move if > this amount 
+	verticalDefault(0.45),			// default vertial servo position
 	sinStart(0.0),					// control where to start the sine wave for pan
 	panIncrement(0),				// pan 1-up number for each call
 	mode(IMAQ_HSL), 			    // Color mode (RGB or HSL) for image processing	
@@ -304,7 +305,7 @@ bool Team166Vision::AcquireTarget() {
 			/* Vertical action: In case the vertical servo is pointed off center,
 			 * center the vertical after several loops searching */
 			if (panIncrement == 20) { 
-				verticalServo->Set( 0.5 );	
+				verticalServo->Set( verticalDefault );	
 				DPRINTF(LOG_DEBUG, "pan resetting vertical servo");
 			}
 		}
@@ -349,8 +350,8 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 	* position settings range from -1 to 1
 	* setServoPositions is a wrapper that handles the conversion to range for servo 
 	*/		
-	horizontalDestination = 0.0;		// final destination range -1.0 to +1.0
-	verticalDestination = 0.0;		// final destination range -1.0 to +1.0
+	horizontalDestination = 0.0;			// final destination range -1.0 to +1.0
+	verticalDestination = verticalDefault;	// final destination range -1.0 to +1.0
 
 	// set servos to start at center position
 	SetServoPositions(horizontalDestination, verticalDestination);
