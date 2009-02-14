@@ -260,10 +260,10 @@ bool Team166Vision::AcquireTarget() {
 		 */
 		// you may need to reverse this based on your servo installation
 
-		incrementH = horizontalDestination - bearing;
+		//incrementH = horizontalDestination - bearing;
 		incrementV = verticalDestination - tilt;
 
-		//incrementH = bearing - horizontalDestination;
+		incrementH = bearing - horizontalDestination;
 		//incrementV =  tilt - verticalDestination;
 		
 		AdjustServoPositions( incrementH, incrementV);  
