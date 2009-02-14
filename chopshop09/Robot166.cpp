@@ -37,10 +37,35 @@ Robot166 *RobotHandle = 0;
 
 /** 
  * Pass to the camera the configuration string and store an image on the cRIO 
- * @param configString camera configuration string 
  * @param imageName stored on home directory of cRIO ( "/" )
  **/
-void configureCameraAndTakeSnapshot(char* configString, char* imageName)	
+void TakeSnapshot(char* imageName)	
+{	
+	DPRINTF(LOG_DEBUG, "taking a SNAPSHOT ");
+	Image* cameraImage = frcCreateImage(IMAQ_IMAGE_HSL);
+	if (!cameraImage) {
+		DPRINTF (LOG_INFO,"frcCreateImage failed - errorcode %i",GetLastVisionError()); 
+	}
+	Wait(1.0);
+	if ( !GetImage (cameraImage,NULL) ) {
+		DPRINTF (LOG_INFO,"\nCamera Acquisition failed %i", GetLastVisionError());
+	} else { 
+		  if (!frcWriteImage(cameraImage, imageName) ) { 
+			  DPRINTF (LOG_INFO,"frcWriteImage failed - errorcode %i",GetLastVisionError());
+		  } else { 
+			  	dprintf (LOG_INFO,"\n>>>>> Saved image to %s", imageName);	
+				// always dispose of image objects when done
+				frcDispose(cameraImage);
+		  }
+	}
+}
+
+
+/** 
+ * Pass to the camera the configuration string and store an image on the cRIO 
+ * @param configString camera configuration string 
+ **/
+void SetupCamera(char* configString)	
 {
 	StopCameraTask();	
 	ConfigureCamera(configString);
@@ -57,18 +82,6 @@ void configureCameraAndTakeSnapshot(char* configString, char* imageName)
 	Image* cameraImage = frcCreateImage(IMAQ_IMAGE_HSL);
 	if (!cameraImage) {
 		dprintf (LOG_INFO,"frcCreateImage failed - errorcode %i",GetLastVisionError()); 
-	}
-	Wait(1.0);
-	if ( !GetImage (cameraImage,NULL) ) {
-		  dprintf (LOG_INFO,"\nCamera Acquisition failed %i", GetLastVisionError());
-	} else { 
-		  if (!frcWriteImage(cameraImage, imageName) ) { 
-				dprintf (LOG_INFO,"frcWriteImage failed - errorcode %i",GetLastVisionError());
-		  } else { 
-			  	dprintf (LOG_INFO,"\n>>>>> Saved image to %s", imageName);	
-				// always dispose of image objects when done
-				frcDispose(cameraImage);
-		  }
 	}
 }
 
@@ -132,9 +145,10 @@ Robot166::Robot166(void) :
 			/* calling processFile with line number returns that configuration line */
 			if (processFile(cameraConfigFile, outputString, index) != -1) {
 				DPRINTF (LOG_DEBUG, "OUTPUT STRING:%s\n",outputString);
-				configureCameraAndTakeSnapshot(outputString, imageName);
+				SetupCamera(outputString);
 			}
 		}
+		TakeSnapshot(imageName);
 	}
 
 	/* allow writing to vxWorks target */
@@ -340,6 +354,10 @@ void Robot166::OperatorControl(void)
 		    Team166DriveObject.MyWatchDog = 0;
 		}
 		Wait (0.5);
+	}
+	
+	if ( (driveStick.GetRawButton(8) ) or ( driveStick.GetRawButton(9) )) {
+		TakeSnapshot("joystick_img.png");
 	}
 }
 	
