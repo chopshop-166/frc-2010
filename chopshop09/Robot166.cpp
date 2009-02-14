@@ -50,7 +50,7 @@ void configureCameraAndTakeSnapshot(char* configString, char* imageName)
 		DPRINTF( LOG_ERROR,"Failed to spawn camera task; exiting. Error code %s", 
 				GetVisionErrorText(GetLastVisionError()) );
 	}
-	Wait(4.0);
+	Wait(2.0);
 	/* this will take one picture and save it to a file
 	 */
 	DPRINTF(LOG_DEBUG, "taking a SNAPSHOT ");
@@ -115,6 +115,12 @@ Robot166::Robot166(void) :
 	char *imageName = "166StartPic.png";
 	char* cameraConfigFile = "166Camera.txt"; 
 	char outputString[1024]; 
+
+	/* start the CameraTask  */
+	if (StartCameraTask(15, 0, k160x120, ROT_180) == -1) {
+		DPRINTF( LOG_ERROR,"Failed to spawn camera task; exiting. Error code %s", 
+				GetVisionErrorText(GetLastVisionError()) );
+	}
 
 	/* Calling processFile with 3rd argument 0 returns number of configuration lines */
 	int lineCountMax = processFile(cameraConfigFile, outputString,0);
