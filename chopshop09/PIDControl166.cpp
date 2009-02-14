@@ -53,8 +53,7 @@ float PIDControl::calculate(float setPoint, float wheelSpeed, float K_P, float K
 	}
 	if(!(foo++%100))
 	{
-		//printf("Setpoint: %f, Input: %f, Result: %f\n", setPoint, input, result);
-		foo = 0;
+		//printf("Setpoint: %f, Input: %f, Result: %f\n", setPoint, input, result);		
 	}
 
 	return result;

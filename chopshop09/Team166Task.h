@@ -24,32 +24,30 @@
 // If module 2 is used, make sure you have 2 sidecars
 // Other stuff is the channel in the module
 //
-/** \def #define T166_ANALOG_MODULE_1 (1)  
- * \brief cRIO analog module 1 */
 #define T166_ANALOG_MODULE_1 (1)
 #define T166_ANALOG_MODULE_2 (2)
 
 // first analog module
-/** \def #define T166_CURRENT_SENSOR_MOD (1)  
- * \brief current sensor module */
 #define T166_CURRENT_SENSOR_MOD (T166_ANALOG_MODULE_1)         // Module for current sensors
-/** \def #define T166_CURRENT_SENSOR_LF (1)  
- * \brief current sensor left front channel */
 #define T166_CURRENT_SENSOR_LF (1)          // Current sensor Left Front
 #define T166_CURRENT_SENSOR_LB (2)          // Current sensor Left Back
 #define T166_CURRENT_SENSOR_RF (3)          // Current sensor Right Front
 #define T166_CURRENT_SENSOR_RB (4)          // Current sensor Right Back
-#define T166_GYRO_MOD (T166_ANALOG_MODULE_1)                   // Gyro module
+#define T166_GYRO_MOD (T166_ANALOG_MODULE_1)// Gyro module
 #define T166_GYRO_TWIST (5)                 // Twist
 #define T166_GYRO_TEMP (6)                  // Temperature
-#define T166_US_MOD (T166_ANALOG_MODULE_1)                     // Ultrasound module
+#define T166_US_MOD (T166_ANALOG_MODULE_1)  // Ultrasound module
 #define T166_US_DIST (7)                    // Ultrasound distance pin
-#define T166_BAT_MOD (T166_ANALOG_MODULE_1)                    // Module for battery sensor
+#define T166_BAT_MOD (T166_ANALOG_MODULE_1) // Module for battery sensor
 #define T166_BAT_VOLT (8)                   // Channel for battery voltage
+
 // second analog module
-#define T166_ACCEL_MOD (T166_ANALOG_MODULE_2)                  // Accelerometer module
+#define T166_ACCEL_MOD (T166_ANALOG_MODULE_2)// Accelerometer module
 #define T166_ACCEL_X (1)                    // X-Axis for acccelerometer
 #define T166_ACCEL_Y (2)                    // Y-Axis for acccelerometer
+#define T166_ACCEL_Z (3)                    // Z-Axis for acccelerometer (currently not used)
+#define T166_POT_MOD (T166_ANALOG_MODULE_2)	// Mod for the pot 
+#define T166_POT_CHANNEL (6)				// Channel for the pot
 
 //
 // Digital Pin layout

@@ -9,6 +9,9 @@
 #define NO_LOAD_CURRENT (4.0)							// Assume current of the motors when the traction is lost
 #define FILTER_CONSTANT (.2)							// Constant to filter the current sensor input
 #define GYRO_FILTER_CONSTANT (.02)						// Constant to filter the yaw rate values
+#define USE_JAGUAR (1)  //Set to 1 to use Jaguar code
+#define Y_ZERO_RANGE (.1)
+#define X_ZERO_RANGE (.1)
 //
 // This defines a sample drive task
 //
@@ -89,17 +92,17 @@ private:
 	float lbWheelSpeed;									// Left Back Wheel Speed
 	float rfWheelSpeed;									// Right Front Wheel Speed
 	float rbWheelSpeed;									// Right Back Wheel Speed
-	
+#if USE_JAGUAR
 	Jaguar lfwheel; 									// To Use the Jaguar Speed Controlled for Left Front Motor
 	Jaguar lbwheel; 									// To Use the Jaguar Speed Controlled for Left Back Motor
 	Jaguar rfwheel; 									// To Use the Jaguar Speed Controlled for Right Front Motor
 	Jaguar rbwheel; 									// To Use the Jaguar Speed Controlled for Right Back Motor
-	
+#else
 	Victor vlfwheel; 									// To Use the Victor Speed Controlled for Left Front Motor
 	Victor vlbwheel; 									// To Use the Victor Speed Controlled for Left Back Motor
 	Victor vrfwheel; 									// To Use the Victor Speed Controlled for Right Front Motor
 	Victor vrbwheel; 									// To Use the Victor Speed Controlled for Right Back Motor
-	
+#endif	
 	AnalogChannel lfCurrentSensor; 							// Current sensor channel for Left Front wheel
 	AnalogChannel lbCurrentSensor; 							// Current sensor channel for Left Back wheel
 	AnalogChannel rfCurrentSensor; 							// Current sensor channel for Right Front wheel
@@ -133,6 +136,9 @@ private:
 	float x, y;
 	float x_PID;
 	
+	float gain1;                                        // Constant from JoyStick to control drive logic
+	float gain2;                                        // Constant from JoyStick to control drive logic
+	
 	float lfvolt;										// Left Front motor current sensor value
 	float lbvolt;										// Left Back motor current sensor value
 	float rfvolt;										// Right Front motor current sensor value
@@ -143,9 +149,12 @@ private:
 	float yawRPS;										// The yaw rate of the platform converted to revolutions per second 
 	
 	float yFiltered;									// Filtered y input
+	float xFiltered;									// Filtered x input
 	
 	float Y_CONSTANT_ACC;
-	float Y_CONSTANT_DEACC;
+	float Y_CONSTANT_DEACC;	
+	float X_CONSTANT_ACC;
+	float X_CONSTANT_DEACC;
 	
 	PIDGyro headingPID;
 	

@@ -9,7 +9,7 @@
 #include <sysLib.h>
 
 #define Calculatemax(x, y) (((x) > (y)) ? (x) : (y))
-#define USE_JAGUAR (1)  //Set to 1 to use Jaguar code
+
 #define USE_VICTOR (0)  //Set to 1 to use Victor code
 #define HEADING (0)		// Set to 1 to run heading PID Control
  //The constant to get to the wishing y value slowly
@@ -141,14 +141,17 @@ Team166Drive::Team166Drive(void)
 ,lbPID()
 ,rfPID()
 ,rbPID()
+#if USE_JAGUAR
 ,lfwheel(T166_LEFT_FRONT_MOTOR_CHANNEL)  //To Use the Jaguar Speed Controlled for Left Front Motor
 ,lbwheel(T166_LEFT_BACK_MOTOR_CHANNEL)   //To Use the Jaguar Speed Controlled for Left Back Motor
 ,rfwheel(T166_RIGHT_FRONT_MOTOR_CHANNEL) //To Use the Jaguar Speed Controlled for Right Front Motor
 ,rbwheel(T166_RIGHT_BACK_MOTOR_CHANNEL)  //To Use the Jaguar Speed Controlled for Right Back Motor
+#else
 ,vlfwheel(T166_LEFT_FRONT_MOTOR_CHANNEL)  //To Use the Victor Speed Controlled for Left Front Motor
 ,vlbwheel(T166_LEFT_BACK_MOTOR_CHANNEL)   //To Use the Victor Speed Controlled for Left Back Motor
 ,vrfwheel(T166_RIGHT_FRONT_MOTOR_CHANNEL) //To Use the Victor Speed Controlled for Right Front Motor
 ,vrbwheel(T166_RIGHT_BACK_MOTOR_CHANNEL)  //To Use the Victor Speed Controlled for Right Back Motor
+#endif
 ,lfCurrentSensor(T166_CURRENT_SENSOR_MOD, T166_CURRENT_SENSOR_LF) // Current sensor channel for Left Front wheel
 ,lbCurrentSensor(T166_CURRENT_SENSOR_MOD, T166_CURRENT_SENSOR_LB) // Current sensor channel for Left Back wheel
 ,rfCurrentSensor(T166_CURRENT_SENSOR_MOD, T166_CURRENT_SENSOR_RF) // Current sensor channel for Right Front wheel
@@ -226,11 +229,8 @@ int Team166Drive::Main(int a2, int a3, int a4, int a5,
 	static int cc = 0;            // Counter to control print out
 	
 	Robot166 *lHandle;            // Local handle
-	AnalogChannel lfCurrent(T166_CURRENT_SENSOR_MOD, T166_CURRENT_SENSOR_LF); // Current sensor channel for Left Front wheel
-	AnalogChannel lbCurrent(T166_CURRENT_SENSOR_MOD, T166_CURRENT_SENSOR_LB); // Current sensor channel for Left Back wheel
-	AnalogChannel rfCurrent(T166_CURRENT_SENSOR_MOD, T166_CURRENT_SENSOR_RF); // Current sensor channel for Right Front wheel
-	AnalogChannel rbCurrent(T166_CURRENT_SENSOR_MOD, T166_CURRENT_SENSOR_RB); // Current sensor channel for Left Back wheel
-	AnalogChannel ac1(2,6);
+
+	AnalogChannel ac1(T166_POT_MOD,T166_POT_CHANNEL);
 	SensorLog sl;                 // Sensor log
 
 	
@@ -336,13 +336,15 @@ int Team166Drive::Main(int a2, int a3, int a4, int a5,
 			lHandle->GetJoyStick(&x, &y);
 			y=0;
 		}
-		
+		lHandle->GetGains(&gain1, &gain2);
 
 		
 		
 		//Y_CONSTANT_ACC = ac1.GetValue()/10000.0;
-		Y_CONSTANT_ACC = .009;
-		Y_CONSTANT_DEACC = .01;
+		Y_CONSTANT_ACC = 0.009;
+		Y_CONSTANT_DEACC = 0.05;
+		X_CONSTANT_ACC = 0.009;
+		Y_CONSTANT_DEACC = 0.05;
 		
 		if(!(printIt%100))
 		{
@@ -371,29 +373,51 @@ int Team166Drive::Main(int a2, int a3, int a4, int a5,
 			{
 					yFiltered -= Y_CONSTANT_DEACC;
 			}
-		}
-		
+		}		
 		if(y == 0)
 		{
-			yFiltered = 0;
+			if((yFiltered <= Y_ZERO_RANGE) && (y >= -Y_ZERO_RANGE))
+				yFiltered = 0;
+			else if(yFiltered >= y)
+				yFiltered -= Y_CONSTANT_DEACC;
+			else if(yFiltered <= y)
+				yFiltered += Y_CONSTANT_DEACC;
 		}
 		
-		// Should we log this value?
+		if(fabs(xFiltered) < fabs(x))
+		{
+			if(xFiltered<x)
+			{
+				xFiltered += X_CONSTANT_ACC;
+			}
+			else if(xFiltered>x)
+			{
+				xFiltered -= X_CONSTANT_ACC;
+			}
+		}
+		else if(fabs(xFiltered) > fabs(x))
+		{
+			if(xFiltered<x)
+			{
+					xFiltered += X_CONSTANT_DEACC;
+			}
+			else if(xFiltered>x)
+			{
+					xFiltered -= X_CONSTANT_DEACC;
+			}
+		}		
+		if(x == 0)
+		{
+			if((xFiltered <= X_ZERO_RANGE) && (x >= -X_ZERO_RANGE))
+				xFiltered = 0;
+			else if(xFiltered >= x)
+				xFiltered -= X_CONSTANT_DEACC;
+			else if(yFiltered <= y)
+				xFiltered += X_CONSTANT_DEACC;
+		}
 		
-#if 0		
 		
-		// How is the left front wheel doing?
-		cvolt_lf = ac1.GetValue() * (20.0 / 4096.0);
-		DPRINTF("Current sensor (LF): %f Volt\n", cvolt_lf);
-		encoder_count_lf = lHandle->lfEncoder.Get();
-		encoder_direction_lf = lHandle->lfEncoder.GetDirection();
-		encoder_stopped_lf = lHandle->lfEncoder.GetStopped();
-        DPRINTF("Encoder (LF); Val: %d, Dir: %d, Stopped: %d\n", encoder_count_lf,
-        		encoder_direction_lf, encoder_stopped_lf);
-#endif
-        
 		// Drive it as requested by the joystick.
-		
 		if(!(printIt%100))
 		{
 			DPRINTF(LOG_DEBUG,"JoyStick at X=%f, Y=%f\n", x, yFiltered);	
@@ -418,7 +442,7 @@ int Team166Drive::Main(int a2, int a3, int a4, int a5,
 			delta_time.tv_nsec = current_time.tv_nsec + nano_left;
 			delta_time.tv_sec--; // We do not care about this for our sleep
 		}
-#define MS_SLEEP (5*1000000)		
+#define MS_SLEEP (10*1000000)		
 		// How far into this cycle have we run?
 		//if (!(cc % 500))
 		//  DPRINTF("%u = Delta: %u s, %u ns (%u ms)\n", cc, delta_time.tv_sec, delta_time.tv_nsec, delta_time.tv_nsec / (1000000));
@@ -728,7 +752,7 @@ void Team166Drive::tractionControl()
 void Team166Drive::headingControl()
 {
 	gyroTwist = gyroSensor.GetVoltage()-2.5;
-	DPRINTF("GYROVALUE : %f\n", gyroTwist);
+	DPRINTF(LOG_DEBUG, "GYROVALUE : %f\n", gyroTwist);
 	if(gyroTwistFiltered < gyroTwist)
 	{
 		gyroTwistFiltered += GYRO_FILTER_CONSTANT;
