@@ -180,7 +180,7 @@ int Team166Dispenser::Main(int a2, int a3, int a4, int a5,
         // Should we log this value?
 		sl.PutOne(0, 0, 0);
 		MyWatchDog = 1;
-		Wait (0.100); // 100ms
+		Wait (0.010); // changed to 10 ms from 100 ms so limit switch won't be missed
 
 		// 
 	}
