@@ -234,7 +234,7 @@ public:
 
 		int numBrightnessValues = 5;				// number of settings for brightness
 		//int brightness[] = {95,80,65,35,15,5};		// brightness ranges from 0-100
-		int brightness[] = {0,25,50,75,99};		// brightness ranges from 0-100 default 99
+		int brightness[] = {0,25,50,75,99};		// brightness ranges from 0-100 default 50
 
 		int numWhiteBalanceValues = 7;			// number of settings for white balance
 		char *whiteBalanceValueNames[] = {		// Possible white balance values - default auto
