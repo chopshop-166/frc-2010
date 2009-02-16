@@ -488,7 +488,9 @@ int FindTwoColors(TrackingThreshold td1, TrackingThreshold td2,
 							secondTrackReport->boundingRect.width) &&
 						Adjacent( (firstTrackReport->boundingRect.top + 
 							firstTrackReport->boundingRect.height),							
-							secondTrackReport->boundingRect.top) )  
+							secondTrackReport->boundingRect.top) )   &&
+						SizesRelative(firstTrackReport->particleArea, 
+								secondTrackReport->particleArea	)  )  
 					{	
 						memcpy(par1, firstTrackReport, sizeof(ParticleAnalysisReport));
 						memcpy(par2, secondTrackReport, sizeof(ParticleAnalysisReport));
