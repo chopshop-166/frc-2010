@@ -35,9 +35,9 @@ public:
     Encoder rbEncoder;						  // Encoder for the Right Back
 	Victor lift_victor;                       // Victor controlling the lift
     Victor treadmill_victor;                  // Victor controlling the treadmill
-    DigitalInput limitswitch_top;            //the first of two limit switches on the high end of the lifter
-    DigitalInput limitswitch_bottom;         //the first of two limit switches on the bottom end of the lifter
-
+    DigitalInput limitswitch_top;             //the first of two limit switches on the high end of the lifter
+    DigitalInput limitswitch_bottom;          //the first of two limit switches on the bottom end of the lifter
+    
     
 private:
 	SEM_ID JoyLock;                           // Coordination of Joystick parameters
@@ -68,6 +68,7 @@ public:
 	void RegisterLogger(MemoryLog166 *ml);    // Register memory logger
 	void DumpLoggers(int dnum);               // Dump all logs
 	void GetGains(float *g1, float *g2);      // Pick up joystick gains
+	int GetAllianceSwitch(void);    		  // Get Alliance Switch
 	
 };
 

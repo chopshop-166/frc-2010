@@ -81,7 +81,7 @@ autonomous166::autonomous166(void):
 	
 	// Initialize key members
 	camera_perspective = T166_UNKNOWND;
-	sonar_perspectve = T166_UNKNOWND;
+	sonar_perspective = T166_UNKNOWND;
 	
 
 	
@@ -108,7 +108,7 @@ while(lhandle->IsAutonomous())
 	
 	  difference_camera=tracking();
 	  DPRINTF(LOG_INFO,"the difference is %i \n", difference_camera);
-	if(difference_camera >= 0)
+	if(difference_camera > 0)
 		{
 			camera_perspective = T166_AWAY;    // camera sees the target moving away
 		}
@@ -116,25 +116,33 @@ while(lhandle->IsAutonomous())
 		{
 			camera_perspective = T166_CLOSER;  // camera sees the target moving closer
 		}
+	else if(difference_camera == 0)
+		{
+			camera_perspective = T166_Constant; // target height has not changed
+		}
 	
 	difference_ultrasonic=ultrasonic();
 	 al.PutOne(difference_ultrasonic);
 	
-	if(difference_ultrasonic >= 0)
+	if(difference_ultrasonic > 0)
 			{
-				sonar_perspectve=T166_AWAY;   // sonar sensor sees the target moving away
+				sonar_perspective=T166_AWAY;   // sonar sensor sees the target moving away
 			}
 		else if(difference_ultrasonic < 0)
 			{
-				sonar_perspectve=T166_CLOSER; // sonar sensor sees the target moving toward the robot
+				sonar_perspective=T166_CLOSER; // sonar sensor sees the target moving toward the robot
 			}
-	if(camera_perspective != sonar_perspectve)
+		else if(difference_ultrasonic == 0)
+			{
+				sonar_perspective=T166_Constant; // target has not varied its distance
+			}
+	if(camera_perspective != sonar_perspective)
 		{
 			y = y+(y*.01);       // speeds the robot up until the sonar sensor agrees with the camera on the location of the target 
 		}
-	else if(camera_perspective == sonar_perspectve)
+	else if(camera_perspective == sonar_perspective)
 		{
-			DPRINTF(LOG_INFO,"They are equal\n");
+			DPRINTF(LOG_INFO,"ENTERED AREA 111111111111111111\n");
 			difference_ultrasonic = fabs(difference_ultrasonic);
 			if(difference_ultrasonic == 0)
 			{
@@ -145,15 +153,17 @@ while(lhandle->IsAutonomous())
 				y = (difference_ultrasonic/check_time);                    // sets the y value to the current speed of the target
 			}
 			
-			if(/*(archived_y <= y) && */ (archived_distance > drop_distance))
+			if(archived_distance > drop_distance)
 			{
+				DPRINTF(LOG_INFO,"NOOOT CLOOOOOOOSE ENOUUUUUUUGH\n");
 				y = y+((difference_ultrasonic/check_time)*.10);        // speeds up our robot while we are slower than the opposing robot
-				activate_drop=0;
+				activate_drop=1;
+				lhandle->SetDispenser(T166_CB_STILL, activate_drop, gyrate); //sets the dispenser to begin lowering and turns on the conveyer
 				score = 0;
 			}
 			else if(archived_distance <= drop_distance)
 			{
-				
+				DPRINTF(LOG_INFO,"ENTERED AREA 2222222222222222\n");
 				if(score >= 3)
 				{
 				
@@ -167,9 +177,7 @@ while(lhandle->IsAutonomous())
 				}
 				
 			}
-			activate_drop=1;
-			lhandle->SetDispenser(T166_CB_STILL, activate_drop, gyrate); //sets the dispenser to begin lowering and turns on the conveyer
-			
+				
 			
 		}
 	
@@ -181,7 +189,7 @@ while(lhandle->IsAutonomous())
 	  lhandle->SetJoyStick(x,y);            // sets the joystick values for drive
 				
   }	
-/*  else
+  else
   	{
 	  if(target_acquisition())              // checks which direction to angle the robot in when a target hasn't been acquired
 	  {
@@ -196,7 +204,7 @@ while(lhandle->IsAutonomous())
 		  lhandle->SetJoyStick(x,y);        // sets the Joystick input values
 	  }
 	  DPRINTF(LOG_INFO,"Set without algorithems\n"); 
-  	} */
+  	} 
 		
   // allow other processes to run
   Wait(0.05);

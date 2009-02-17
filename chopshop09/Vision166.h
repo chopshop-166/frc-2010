@@ -1,7 +1,7 @@
 /********************************************************************************
 *  Project   		: Chopshop 2009
 *  File Name  		: Vision166.h          
-*  Contributors   	: ELF
+*  Contributors   	: ELF, SJE
 *  Creation Date 	: February 2, 2008
 *  Revision History	: Source code & revision history maintained at code.google.com    
 *  File Description	: Header file for vision processing
@@ -78,6 +78,8 @@ private:
 	int panIncrement;				// pan needs a 1-up number for each call	
 	ColorMode mode;
 	double savedImageTimestamp;		// timestamp of last image acquired
+	Robot166 *robotHandle;			// handle to my robot instance
+	DriverStation *dsHandle;		// handle to my ds
 	
 	ParticleAnalysisReport pinkReport, greenReport;	// particle analysis reports
 	TrackingThreshold pinkSpec, greenSpec;			// color thresholds

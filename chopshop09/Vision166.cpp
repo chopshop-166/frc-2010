@@ -21,7 +21,7 @@
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
 // To show activity printout set true
-#define SHOWACTIVITY 1
+#define SHOWACTIVITY 0
 
 // Vision task constructor
 Team166Vision::Team166Vision(void) :
@@ -40,6 +40,9 @@ Team166Vision::Team166Vision(void) :
 	// remember to use jumpers on the sidecar for the Servo PWMs
 	horizontalServo = new Servo(T166_HORIZONTAL_SERVO_CHANNEL);  // create horizontal servo
 	verticalServo = new Servo(T166_VERTICAL_SERVO_CHANNEL);  // create vertical servo
+
+	robotHandle=Robot166::getInstance();
+	dsHandle = DriverStation::GetInstance();
 
 	/* set up debug output: 
 	 * DEBUG_OFF, DEBUG_MOSTLY_OFF, DEBUG_SCREEN_ONLY, DEBUG_FILE_ONLY, DEBUG_SCREEN_AND_FILE 
@@ -107,9 +110,10 @@ void Team166Vision::SetVisionOn(bool onFlag) {
  * @return SecondColorPosition if alliance is BLUE, ABOVE, otherwise, BELOW
  */
 SecondColorPosition Team166Vision::GetRelativePosition() {
-	DriverStation *dsHandle = DriverStation::GetInstance();
-	DriverStation::Alliance myAlliance = dsHandle->GetAlliance();
-	switch (myAlliance)  {
+
+	DriverStation::Alliance fmsAlliance = dsHandle->GetAlliance();
+	
+	switch (fmsAlliance)  {
 	// return relative position for opposing alliance target
 	case DriverStation::kRed:    //pink on top
 		DPRINTF(LOG_DEBUG, "RED alliance");  
@@ -121,7 +125,7 @@ SecondColorPosition Team166Vision::GetRelativePosition() {
 		break;
 	case DriverStation::kInvalid:
 		// must not be in a competition, so use the switch on the DS
-		if (dsHandle->GetDigitalIn(1))		{
+		if (robotHandle->GetAllianceSwitch()==1)		{
 			DPRINTF(LOG_DEBUG, "RED alliance USING SWITCH DEFAULT");
 			return BELOW;  //TODO: check this			
 		}

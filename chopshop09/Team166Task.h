@@ -70,7 +70,9 @@
 
 #define TOP_LIMITSWITCH_DIGITAL_INPUT    (13)  //top limit switch 
 #define BOTTOM_LIMITSWITCH_DIGITAL_INPUT (14)  //bottom limit switch
-    
+
+#define DS_ALLIANCE_SWITCH_INPUT          (1)  // Driver station switch for alliance
+#define DS_AUTOTRACKNG_SWITCH_INPUT       (2)  // Driver station switch for auto tracking
 //
 // PWM layout
 //

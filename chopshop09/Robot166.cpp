@@ -102,6 +102,7 @@ Robot166::Robot166(void) :
 	treadmill_victor(T166_TREADMILL_MOTOR), // Victor controlling the treadmill
     limitswitch_top(TOP_LIMITSWITCH_DIGITAL_INPUT),  //top limit switch digital input
     limitswitch_bottom(BOTTOM_LIMITSWITCH_DIGITAL_INPUT), //bottom limit switch digital input 
+   
     steveautonomous()
 {
 	/* set up debug output: 
@@ -121,6 +122,7 @@ Robot166::Robot166(void) :
     ConvShake = 0;
 	RobotHandle = this;
 	mlHead = 0;
+	
 	/* start the PCVideoServer to use the dashboard video */
 	//PCVideoServer pc;
 
@@ -176,6 +178,15 @@ Robot166::Robot166(void) :
 	
 }
 
+
+/* **
+ * Get Alliance Switch
+ */
+int Robot166::GetAllianceSwitch(void) {
+	return dsHandle->GetDigitalIn(DS_ALLIANCE_SWITCH_INPUT);
+}
+
+void GetGains(float *g1, float *g2);    
 /* **
  * Get the Throttle gain from both of the joy sticks
  */
@@ -205,12 +216,35 @@ void Robot166::SetJoyStick(float x, float y)
 }
 void Robot166::GetJoyStick(float *x, float *y)
 {
-	
+    static int swpos=-1;
+    
 	// Pick up the X/Y value
 	switch (RobotMode) {
 	case T166_OPERATOR: {
 		semTake(DSLock, WAIT_FOREVER);
-		*x = driveStick.GetX();
+		if(dsHandle->GetDigitalIn(DS_AUTOTRACKNG_SWITCH_INPUT))
+			{
+			    if (swpos != 1) {
+			    	printf("\n\nSwitch turned ON\n");
+			    	swpos = 1;
+			    }
+				if(Team166VisionObject.IsTargetAcquired())
+					{
+						*x = Team166VisionObject.GetBearing();
+					}
+				else
+					{
+						*x = driveStick.GetX();
+					}
+			}
+		else
+			{
+				if (swpos != 0) {
+					printf("\n\nSwitch turned OFF\n");
+					swpos = 0;
+				}
+				*x = driveStick.GetX();
+			}
 		*y = -driveStick.GetY();		
 		semGive(DSLock);
 		break;
@@ -227,6 +261,7 @@ void Robot166::GetJoyStick(float *x, float *y)
 	// Done
 	return;
 }
+
 
 /**
  * Dispenser command

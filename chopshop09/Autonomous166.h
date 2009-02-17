@@ -23,7 +23,7 @@ public:
 };
 
 // Target location relative to where it has moved since it was last checked by the camera
-typedef enum {T166_UNKNOWND=0, T166_CLOSER, T166_AWAY} T166Target_t;
+typedef enum {T166_UNKNOWND=0, T166_CLOSER, T166_AWAY, T166_Constant} T166Target_t;
 
 //the autonomous class: this is where the magic begins
 class autonomous166
@@ -39,7 +39,7 @@ class autonomous166
 	// variables	
 	private:
         T166Target_t camera_perspective;     // Camera's idea of where the target is
-        T166Target_t sonar_perspectve;       // Sonar's idea of where the target is
+        T166Target_t sonar_perspective;       // Sonar's idea of where the target is
         int archived_image_height;           // the previous height of the target
         float first_time;                    // the first time the image is recorded
         double past_time;                    // the recorded time at the start of avoidance mode 
