@@ -127,7 +127,7 @@ int Team166Sonar::Main(int a2, int a3, int a4, int a5,
 		
         // Pick up Ultrasound values
         uval[(uidx++ % UMAX)] = ac.GetValue();
-#if 1       
+#if 0       
 		if (!(cc % 20))
        printf("US value: %d\n", ac.GetValue());
 #endif   
@@ -136,9 +136,10 @@ int Team166Sonar::Main(int a2, int a3, int a4, int a5,
         for (al=0; al<UMAX; al++)
         	aavg += uval[al];
         distance = (((aavg / UMAX) * (20.0 / 4.096)) / 10.0) * 2.54;
+#if 0
         if (!(uidx % UMAX))
         	printf("Current Ultrasound value: %f\n", distance);
-	
+#endif	
 		// Should we log this value?
         sl.PutOne(distance);
 
