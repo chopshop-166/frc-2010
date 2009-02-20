@@ -90,7 +90,6 @@ int Team166Sonar::Main(int a2, int a3, int a4, int a5,
 	int uidx = 0;                 // Index into array
 	int al;                       // Average distance loop
 	unsigned int aavg;            // Cumulative count
-	float dist;                   // Distance as an average
 	static int cc = 0;            // Counter to control print out
 	
 	// Let the world know we're in
@@ -161,7 +160,7 @@ int Team166Sonar::Main(int a2, int a3, int a4, int a5,
 		  printf("%u = Delta: %u s, %u ns (%u ms)\n", cc, delta_time.tv_sec, delta_time.tv_nsec, delta_time.tv_nsec / (1000000));
 #endif
 		delta_time.tv_nsec = MS_SLEEP - (delta_time.tv_nsec % MS_SLEEP); // 5ms into nano seconds
-		if (delta_time.tv_nsec < half_tick)
+		if ((unsigned int)delta_time.tv_nsec < half_tick)
 			  delta_time.tv_nsec = MS_SLEEP;
 		delta_time.tv_sec = 0;
 		
