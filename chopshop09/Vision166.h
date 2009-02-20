@@ -55,6 +55,7 @@ public:
 
 // Private functions and attributes
 private:
+	Robot166 *lHandle;            // Local handle to  robot instance
 	VisionLog vl;                   // Vision log
 	bool visionActive;              // flag to control vision processon on/off
 	int sample_count;               // Count of log samples

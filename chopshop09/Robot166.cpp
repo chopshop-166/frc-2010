@@ -179,12 +179,6 @@ Robot166::Robot166(void) :
 }
 
 
-/* **
- * Get Alliance Switch
- */
-int Robot166::GetAllianceSwitch(void) {
-	return dsHandle->GetDigitalIn(DS_ALLIANCE_SWITCH_INPUT);
-}
 
 void GetGains(float *g1, float *g2);    
 /* **
@@ -260,6 +254,29 @@ void Robot166::GetJoyStick(float *x, float *y)
 	
 	// Done
 	return;
+}
+/* **
+ * Get Alliance Switch
+ */
+int Robot166::GetAllianceSwitch(void) {
+	bool switchOn;
+//printf("ROBOTMODE=%i", RobotMode\n);
+	switch (RobotMode) {
+	case T166_OPERATOR: 
+	case T166_AUTONOMOUS:
+		semTake(DSLock, WAIT_FOREVER);		
+		switchOn = dsHandle->GetDigitalIn(DS_ALLIANCE_SWITCH_INPUT);	
+		semGive(DSLock);
+		
+		if (switchOn) {
+			return 1;
+		} else {
+			return 0;
+		}
+		break;
+	default:
+		return 2;
+	}
 }
 
 

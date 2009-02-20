@@ -42,6 +42,7 @@ Team166Vision::Team166Vision(void) :
 	verticalServo = new Servo(T166_VERTICAL_SERVO_CHANNEL);  // create vertical servo
 
 	robotHandle=Robot166::getInstance();
+
 	dsHandle = DriverStation::GetInstance();
 
 	/* set up debug output: 
@@ -111,8 +112,11 @@ void Team166Vision::SetVisionOn(bool onFlag) {
  */
 SecondColorPosition Team166Vision::GetRelativePosition() {
 
+	if (lHandle->RobotMode == T166_OPERATOR or 
+			lHandle->RobotMode == T166_AUTONOMOUS) {
+#if false  // change to true for FIELD MANAGEMENT SYSTEM
 	DriverStation::Alliance fmsAlliance = dsHandle->GetAlliance();
-	
+
 	switch (fmsAlliance)  {
 	// return relative position for opposing alliance target
 	case DriverStation::kRed:    //pink on top
@@ -124,18 +128,38 @@ SecondColorPosition Team166Vision::GetRelativePosition() {
 		return BELOW; 
 		break;
 	case DriverStation::kInvalid:
-		// must not be in a competition, so use the switch on the DS
-		if (robotHandle->GetAllianceSwitch()==1)		{
-			DPRINTF(LOG_DEBUG, "RED alliance USING SWITCH DEFAULT");
-			return BELOW;  //TODO: check this			
-		}
-		else		{
-			DPRINTF(LOG_DEBUG, "BLUE alliance USING SWITCH DEFAULT");
-			return ABOVE;  //TODO: check this						
-		}
+		DPRINTF(LOG_DEBUG, "INVALID INPUT FROM FMS");
 		break;
 	}
+	
+#else  // enable to use the DRIVERSTATION SWITCH
+	
+	// must not be in a competition, so use the switch on the DS
+	int intAlliance = lHandle->GetAllianceSwitch();
+	DriverStation::Alliance myAlliance = (DriverStation::Alliance)intAlliance;
+	//DPRINTF(LOG_DEBUG, "Alliance value from GetAllianceSwitch = %i", intAlliance);
+	
+	switch (myAlliance)  {
+	// return relative position for opposing alliance target
+	case DriverStation::kRed:    //pink on top	{
+		DPRINTF(LOG_DEBUG, "RED alliance from SWITCH");
+		return BELOW;  //TODO: check this	
+		break;
+	case DriverStation::kBlue:   // green on top
+		DPRINTF(LOG_DEBUG, "BLUE alliance from SWITCH");
+		return ABOVE;  //TODO: check this	
+		break;
+	case DriverStation::kInvalid:
+		DPRINTF(LOG_DEBUG, "INVALID INPUT SWITCH GET");
+		break;					
+	}
+#endif
+	
 	DPRINTF(LOG_DEBUG, "RED alliance DEFAULT"); 
+	return BELOW;
+	}
+	
+	DPRINTF(LOG_DEBUG, "NOT READY returning RED"); 
 	return BELOW;
 }
 
@@ -351,7 +375,6 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {
 	int loopCounter = 0;
-	Robot166 *lHandle;            // Local handle
 	sample_count = 0;             // Initialize Count of log samples
 	bool staleFlag;
 	
@@ -360,7 +383,6 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 		
 	// Indicate that we've now completed initialization
 	MyTaskInitialized = 1;
-		
 	// Ensure we get into Autononmous or Tele Operasted mode
 	while (!Robot166::getInstance() ||
 	       ((Robot166::getInstance()->RobotMode != T166_AUTONOMOUS) &&
@@ -368,8 +390,10 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 		Wait (0.050); // 50ms
 	}
 	MyTaskInitialized = 2;
+
+	// get handle to robot
 	lHandle = Robot166::getInstance();
-	
+		
 	// initialize vision stuff
 	DPRINTF(LOG_DEBUG, "SERVO - looking for COLOR %s ABOVE %s", greenSpec.name, pinkSpec.name);
 	
