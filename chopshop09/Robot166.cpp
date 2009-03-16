@@ -378,6 +378,8 @@ void Robot166::OperatorControl(void)
 {
 	int has_been_disabled = 0;
 	static int dnum = 0;
+	int joystickImageCount = 0;
+	char imageName[80]; 
 	
 	printf("Operator control\n");
 	RobotMode = T166_OPERATOR;
@@ -406,13 +408,17 @@ void Robot166::OperatorControl(void)
 		    Team166DispenserObject.MyWatchDog = 0;
 		    Team166DriveObject.MyWatchDog = 0;
 		}
+		
+		// take a picture
+		if ( driveStick.GetRawButton(8) or driveStick.GetRawButton(9) 
+				or dispStick.GetRawButton(8) or driveStick.GetRawButton(9) ) {
+			joystickImageCount++;
+			sprintf(imageName, "166_joystick_img_%03i.png", joystickImageCount);
+			TakeSnapshot(imageName);
+		}
 		Wait (0.5);
 	}
 	
-	if ( driveStick.GetRawButton(8) or driveStick.GetRawButton(9) 
-			or dispStick.GetRawButton(8) or driveStick.GetRawButton(9) ) {
-		TakeSnapshot("166_joystick_img.png");
-	}
 }
 	
 /**
