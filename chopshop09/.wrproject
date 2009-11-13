@@ -35,7 +35,6 @@
             </listAttribute>
             <listAttribute key="BLD::Info|Libs|PPC603gnu">
                 <stringAttribute value="$(WS_ROOT_DIR)/WPILib/PPC603gnu_DEBUG/WPILib.a"/>
-                <stringAttribute value="$(WIND_BASE)/target/lib/WPILib.a"/>
             </listAttribute>
             <listAttribute key="BLD::Info|Macros">
                 <stringAttribute value="VX_CPU_FAMILY"/>

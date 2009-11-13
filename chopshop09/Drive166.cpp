@@ -322,6 +322,7 @@ int Team166Drive::Main(int a2, int a3, int a4, int a5,
 		encoder_stopped_rb = lHandle->rbEncoder.GetStopped();		// Get the Right back stopped flag
 		// Figure out temperature (2.5V = 298K ~= 25C) -> 512 using 12bit ADC
 		float gyroTempCelcius = 0;
+		(void)gyroTempCelcius;
 		float gyroTwist = 0;
 		
 		
@@ -447,7 +448,7 @@ int Team166Drive::Main(int a2, int a3, int a4, int a5,
 		//if (!(cc % 500))
 		//  DPRINTF("%u = Delta: %u s, %u ns (%u ms)\n", cc, delta_time.tv_sec, delta_time.tv_nsec, delta_time.tv_nsec / (1000000));
 		delta_time.tv_nsec = MS_SLEEP - (delta_time.tv_nsec % MS_SLEEP); // 5ms into nano seconds
-		if (delta_time.tv_nsec < half_tick)
+		if (delta_time.tv_nsec < int(half_tick) )
 			  delta_time.tv_nsec = MS_SLEEP;
 		delta_time.tv_sec = 0;
 		
@@ -584,6 +585,7 @@ void Team166Drive::getWheelSpeed()
 	Robot166 *lHandle;            // Local handle
 	lHandle = Robot166::getInstance();
 	static int abc = 0;
+	(void)abc;
 	INT32 lfNew, lbNew, rfNew, rbNew; //Temporary storage to calculate the actual wheel Speed
 	
 	//Gets the encoder counts after the wait
