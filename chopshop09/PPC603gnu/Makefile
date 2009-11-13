@@ -54,7 +54,7 @@ LIBS =
 
 IDE_INCLUDES = -IW:/workspace/WPILib -I$(WIND_BASE)/target/h -I$(WIND_BASE)/target/h/WPILib -I$(WIND_BASE)/target/h/wrn/coreip 
 
-IDE_LIBRARIES = $(WS_ROOT_DIR)/WPILib/PPC603gnu_DEBUG/WPILib.a $(WIND_BASE)/target/lib/WPILib.a 
+IDE_LIBRARIES = $(WS_ROOT_DIR)/WPILib/PPC603gnu_DEBUG/WPILib.a 
 
 
 
@@ -99,7 +99,7 @@ chopshop09/$(MODE_DIR)/% : DEBUGFLAGS_Librarian =
 chopshop09/$(MODE_DIR)/% : DEBUGFLAGS_Assembler = -O2 -fstrength-reduce -fno-builtin
 endif
 chopshop09/$(MODE_DIR)/% : IDE_INCLUDES = -IW:/workspace/WPILib -I$(WIND_BASE)/target/h -I$(WIND_BASE)/target/h/WPILib -I$(WIND_BASE)/target/h/wrn/coreip 
-chopshop09/$(MODE_DIR)/% : IDE_LIBRARIES = $(WS_ROOT_DIR)/WPILib/PPC603gnu_DEBUG/WPILib.a $(WIND_BASE)/target/lib/WPILib.a 
+chopshop09/$(MODE_DIR)/% : IDE_LIBRARIES = $(WS_ROOT_DIR)/WPILib/PPC603gnu_DEBUG/WPILib.a 
 chopshop09/$(MODE_DIR)/% : PROJECT_TYPE = DKM
 chopshop09/$(MODE_DIR)/% : DEFINES = 
 chopshop09/$(MODE_DIR)/% : EXPAND_DBG = 0
