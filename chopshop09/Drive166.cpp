@@ -422,9 +422,9 @@ int Team166Drive::Main(int a2, int a3, int a4, int a5,
 		if(!(printIt%100))
 		{
 			DPRINTF(LOG_DEBUG,"JoyStick at X=%f, Y=%f\n", x, yFiltered);	
-			//DPRINTF("Encoder RF: %d", encoder_count_rf);
-			//DPRINTF("Current sensor at rb %f\n", rbvolt);	
-			//DPRINTF("Current gyro values: Temp=%fC Twist=%f (angle)\n",
+			//DPRINTF(LOG_DEBUG,"Encoder RF: %d", encoder_count_rf);
+			//DPRINTF(LOG_DEBUG,"Current sensor at rb %f\n", rbvolt);	
+			//DPRINTF(LOG_DEBUG,"Current gyro values: Temp=%fC Twist=%f (angle)\n",
 			//		 		gyroTempCelcius, myGyro.GetAngle());
 			
 		}
@@ -446,7 +446,7 @@ int Team166Drive::Main(int a2, int a3, int a4, int a5,
 #define MS_SLEEP (10*1000000)		
 		// How far into this cycle have we run?
 		//if (!(cc % 500))
-		//  DPRINTF("%u = Delta: %u s, %u ns (%u ms)\n", cc, delta_time.tv_sec, delta_time.tv_nsec, delta_time.tv_nsec / (1000000));
+		//  DPRINTF(LOG_DEBUG,"%u = Delta: %u s, %u ns (%u ms)\n", cc, delta_time.tv_sec, delta_time.tv_nsec, delta_time.tv_nsec / (1000000));
 		delta_time.tv_nsec = MS_SLEEP - (delta_time.tv_nsec % MS_SLEEP); // 5ms into nano seconds
 		if (delta_time.tv_nsec < int(half_tick) )
 			  delta_time.tv_nsec = MS_SLEEP;
@@ -454,7 +454,7 @@ int Team166Drive::Main(int a2, int a3, int a4, int a5,
 		
 		// Display the sleep time
 		//if (!(cc % 500))
-		//	DPRINTF("%u = Sleep Delta: %u s, %u ns (%u ms)\n", cc, delta_time.tv_sec, delta_time.tv_nsec, delta_time.tv_nsec / (1000000));
+		//	DPRINTF(LOG_DEBUG,"%u = Sleep Delta: %u s, %u ns (%u ms)\n", cc, delta_time.tv_sec, delta_time.tv_nsec, delta_time.tv_nsec / (1000000));
 		nanosleep((const struct timespec *)&delta_time, &non_sleep);
 		cc++;
 		
@@ -602,7 +602,7 @@ void Team166Drive::getWheelSpeed()
 #if defined(PRINTIT)
 	if(abc++%100)
 	{
-			DPRINTF("LFSpeed : %f,", lfWheelSpeed);
+			DPRINTF(LOG_DEBUG,"LFSpeed : %f,", lfWheelSpeed);
 			abc=0;
 	}	
 #endif
@@ -696,8 +696,8 @@ void Team166Drive::tractionControl()
 	
 	if(!(foo++%50))
 	{
-		//DPRINTF("\nlfCurrentFiltered: %f, lbCurrentFiltered: %f, rfCurrentFiltered: %f, rbCurrentFiltered: %f\n", lfCurrentFiltered, lbCurrentFiltered, rfCurrentFiltered, rbCurrentFiltered);
-		//DPRINTF("\nlfCurrentFiltered: %f, lfCurrent: %f\n", lfCurrentFiltered, lfCurrent);
+		//DPRINTF(LOG_DEBUG,"\nlfCurrentFiltered: %f, lbCurrentFiltered: %f, rfCurrentFiltered: %f, rbCurrentFiltered: %f\n", lfCurrentFiltered, lbCurrentFiltered, rfCurrentFiltered, rbCurrentFiltered);
+		//DPRINTF(LOG_DEBUG,"\nlfCurrentFiltered: %f, lfCurrent: %f\n", lfCurrentFiltered, lfCurrent);
 	}
 	if(tractionLostFront == 0)
 	{
