@@ -411,7 +411,7 @@ void Robot166::OperatorControl(void)
 		
 		// take a picture
 		if ( driveStick.GetRawButton(8) or driveStick.GetRawButton(9) 
-				or dispStick.GetRawButton(8) or driveStick.GetRawButton(9) ) {
+				or dispStick.GetRawButton(8) or dispStick.GetRawButton(9) ) {
 			joystickImageCount++;
 			sprintf(imageName, "166_joystick_img_%03i.png", joystickImageCount);
 			TakeSnapshot(imageName);
