@@ -54,7 +54,7 @@ LIBS =
 
 IDE_INCLUDES = -I$(WIND_BASE)/target/h -I$(WIND_BASE)/target/h/WPILib -I$(WIND_BASE)/target/h/wrn/coreip -I$(WIND_BASE)/target/h/WPILib/Vision2009 
 
-IDE_LIBRARIES = -L $(WIND_BASE)/target/lib/WPILib.a 
+IDE_LIBRARIES = $(WIND_BASE)/target/lib/WPILib.a 
 
 
 
@@ -99,7 +99,7 @@ chopshop10/$(MODE_DIR)/% : DEBUGFLAGS_Librarian =
 chopshop10/$(MODE_DIR)/% : DEBUGFLAGS_Assembler = -O2 -fstrength-reduce -fno-builtin
 endif
 chopshop10/$(MODE_DIR)/% : IDE_INCLUDES = -I$(WIND_BASE)/target/h -I$(WIND_BASE)/target/h/WPILib -I$(WIND_BASE)/target/h/wrn/coreip -I$(WIND_BASE)/target/h/WPILib/Vision2009 
-chopshop10/$(MODE_DIR)/% : IDE_LIBRARIES = -L $(WIND_BASE)/target/lib/WPILib.a 
+chopshop10/$(MODE_DIR)/% : IDE_LIBRARIES = $(WIND_BASE)/target/lib/WPILib.a 
 chopshop10/$(MODE_DIR)/% : PROJECT_TYPE = DKM
 chopshop10/$(MODE_DIR)/% : DEFINES = 
 chopshop10/$(MODE_DIR)/% : EXPAND_DBG = 0
