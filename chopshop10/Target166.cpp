@@ -13,6 +13,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "string.h"
+#include "Timer.h" 
 #include "vxWorks.h" 
 
 #include "AxisCamera.h" 
