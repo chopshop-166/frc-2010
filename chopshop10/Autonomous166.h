@@ -31,7 +31,7 @@ class autonomous166
 	// methods
 	public:
 		autonomous166(void);
-		void autonomous_main(void);          // the "brain" of autonomous that sets the joystick inputs for drive and the dispenser
+		void autonomous_main(void);          // the "brain" of autonomous that sets the joystick inputs for drive
 		int tracking(void);                  // takes the input from the camera and reports the height difference to the main function
 		bool target_acquisition(void);       // if the robot has not found a target trigger a zig-zagging autonomos that gets away from the starting location and helps rotate the camera to find a target
 		float ultrasonic (void);             // reads information from the ultrasonic sensor and determines the distance of the target and the speed it is going

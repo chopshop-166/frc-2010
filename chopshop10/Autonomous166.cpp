@@ -86,7 +86,7 @@ autonomous166::autonomous166(void):
 
 	
 }
-// the "brain" of autonomous that sets the joystick inputs for drive and the dispenser
+// the "brain" of autonomous that sets the joystick inputs for drive
 
 void autonomous166::autonomous_main(void)
 {
@@ -151,33 +151,7 @@ while(lhandle->IsAutonomous())
 			else
 			{
 				y = (difference_ultrasonic/check_time);                    // sets the y value to the current speed of the target
-			}
-			
-			if(archived_distance > drop_distance)
-			{
-				DPRINTF(LOG_INFO,"NOOOT CLOOOOOOOSE ENOUUUUUUUGH\n");
-				y = y+((difference_ultrasonic/check_time)*.10);        // speeds up our robot while we are slower than the opposing robot
-				activate_drop=1;
-				lhandle->SetDispenser(T166_CB_STILL, activate_drop, gyrate); //sets the dispenser to begin lowering and turns on the conveyer
-				score = 0;
-			}
-			else if(archived_distance <= drop_distance)
-			{
-				DPRINTF(LOG_INFO,"ENTERED AREA 2222222222222222\n");
-				if(score >= 3)
-				{
-				
-					activate_drop=-1;                                              // activates the dropping mechanism
-					gyrate = 0;                                                   // test - make sure its 0
-					lhandle->SetDispenser(T166_CB_FORWARD, activate_drop,gyrate); //sets the dispenser to begin raising and turns on the conveyer
-				}
-				else
-				{
-					score++;
-				}
-				
-			}
-				
+			}			
 			
 		}
 	

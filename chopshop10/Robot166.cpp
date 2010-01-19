@@ -5,9 +5,9 @@
 #include <stdio.h>
 #include "WPILib.h"
 #include "BaeUtilities.h"
+#include "Arm166.h"
 #include "Team166Task.h"
 #include "Drive166.h"
-#include "Dispenser166.h"
 #include "SensorTest166.h"
 #include "Inertia166.h"
 #include "Vision166.h"
@@ -24,7 +24,7 @@
 #define DPRINTF if(false)dprintf
 
 // Declare external tasks
-Team166Dispenser Team166DispenserObject;
+Team166Arm Team166ArmObject;
 Team166Drive Team166DriveObject;
 //Team166SensorTest Team166SensorTestObject;
 Team166Inertia Team166InertiaObject;
@@ -114,7 +114,8 @@ Robot166::Robot166(void) :
 	RobotMode = T166_CONSTRUCTOR;
 	JoyLock = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
 	DSLock = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
-	DispLock = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
+	ArmLock = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
+	KickLock = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
 	JoyX = JoyY = 0.0;
 	dsHandle = DriverStation::GetInstance();
     ConvDir = T166_CB_UNKNOWN;
@@ -157,7 +158,7 @@ Robot166::Robot166(void) :
 	Priv_SetWriteFileAllowed(1);   	
 	
 	GetWatchdog().SetExpiration(5.0); // 5 seconds
-	while (!(Team166DispenserObject.MyTaskInitialized && 
+	while (!(Team166ArmObject.MyTaskInitialized && 
 			Team166DriveObject.MyTaskInitialized &&
 			Team166VisionObject.MyTaskInitialized &&
 			Team166SonarObject.MyTaskInitialized &&
@@ -165,7 +166,7 @@ Robot166::Robot166(void) :
 			Team166InertiaObject.MyTaskInitialized)) {
 		printf("Constructor is waiting %d %d %d %d %d..\n",
 				//printf("Constructor is waiting %d  %d %d %d %d..\n",
-				Team166DispenserObject.MyTaskInitialized,
+				Team166ArmObject.MyTaskInitialized,
 				Team166DriveObject.MyTaskInitialized,
 				Team166VisionObject.MyTaskInitialized,
 				Team166SonarObject.MyTaskInitialized,
@@ -281,24 +282,24 @@ int Robot166::GetAllianceSwitch(void) {
 
 
 /**
- * Dispenser command
+ * Arm command
  */
-void Robot166::SetDispenser(t_ConveyerDirection dir, float lift_motor, int girate_switch)
+void Robot166::SetArm(t_ConveyerDirection dir, float lift_motor, int girate_switch)
 {
 	// Set conveyer direction
-	semTake(DispLock, WAIT_FOREVER);
+	semTake(ArmLock, WAIT_FOREVER);
 	ConvDir = dir;
 	ConvLift = lift_motor;
 	ConvShake = girate_switch;
-	semGive(DispLock);
+	semGive(ArmLock);
 	
 	// Done
 	return;
 }
-void Robot166::GetDispenser(t_ConveyerDirection *dir, float *lift_motor,int *girate_switch)
+void Robot166::GetArm(t_ConveyerDirection *dir, float *lift_motor,int *girate_switch)
 {
 	
-	// Pick up the dispenser command
+	// Pick up the arm command
 	switch (RobotMode) {
 	case T166_OPERATOR: {
 			semTake(DSLock, WAIT_FOREVER);
@@ -318,11 +319,10 @@ void Robot166::GetDispenser(t_ConveyerDirection *dir, float *lift_motor,int *gir
 			break;
 		    }
 	default: {
-		semTake(DispLock, WAIT_FOREVER);
+		semTake(ArmLock, WAIT_FOREVER);
 		*dir = ConvDir;
 		*lift_motor = ConvLift;
-		*girate_switch = ConvShake;
-		semGive(DispLock);
+		semGive(ArmLock);
 		break;
 	    }
 	}
@@ -402,10 +402,10 @@ void Robot166::OperatorControl(void)
 		}
 		
 		// Each task needs to update for us to feed the watch dog.
-		if (Team166DispenserObject.MyWatchDog && 
+		if (Team166ArmObject.MyWatchDog && 
 				Team166DriveObject.MyWatchDog) {
 		    GetWatchdog().Feed();
-		    Team166DispenserObject.MyWatchDog = 0;
+		    Team166ArmObject.MyWatchDog = 0;
 		    Team166DriveObject.MyWatchDog = 0;
 		}
 		
