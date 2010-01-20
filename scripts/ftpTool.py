@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 #File:ftpSender.py
 import signal, getopt, time, re
 import sys, os, fnmatch
@@ -20,10 +19,10 @@ removeFlag = False
 #remoteDir = "~/test"
 
 filter = "*.png;*.dbg"
-hostname = "10.11.66.2"
+hostname = "10.1.66.2"
 username = "anonymous"
 password = "guest"
-remoteDir = "/pics"
+remoteDir = "/"
 
 #################################################
 # Main routine
@@ -154,6 +153,7 @@ def listFiles(root, patterns='*', singleLevel=False, yieldFolders=False):
     files.sort()
     for name in files:
       for pattern in patterns:
+        dprintf ("Testing file:%s against pattern:%s\n",name,pattern)
         if fnmatch.fnmatch(name,pattern):
 	  yield os.path.join(path,name)
 	  break
@@ -194,22 +194,24 @@ def getFiles(ftp):
     sys.exit(-1)
     
   for currentFile in fileList:
-    if fnmatch.fnmatch(currentFile,filter):
-      dprintf ("Processing file:%s\n",currentFile)
-      gFile = open(currentFile, "wb")
-      try:
-        ftp.retrbinary('RETR '+currentFile, gFile.write)
-      except Exception:
-        print "ERROR: Unable to GET file:",currentFile," EXITING..."
-        sys.exit(-1)
-      gFile.close()
-      
-      if (removeFlag==True):
+    patterns = filter.split(';')
+    for pattern in patterns:
+      if fnmatch.fnmatch(currentFile,pattern):
+        dprintf ("Processing file:%s\n",currentFile)
+        gFile = open(currentFile, "wb")
         try:
-          ftp.delete(currentFile)
+          ftp.retrbinary('RETR '+currentFile, gFile.write)
         except Exception:
-          print "ERROR: Unable to DELETE remote file:",currentFile," EXITING..."
+          print "ERROR: Unable to GET file:",currentFile," EXITING..."
           sys.exit(-1)
+        gFile.close()
+      
+        if (removeFlag==True):
+          try:
+            ftp.delete(currentFile)
+          except Exception:
+            print "ERROR: Unable to DELETE remote file:",currentFile," EXITING..."
+            sys.exit(-1)
 
       if (pause > 0): time.sleep(pause)
 
