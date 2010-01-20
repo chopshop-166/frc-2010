@@ -8,6 +8,7 @@
 #include "Arm166.h"
 #include "Team166Task.h"
 #include "Drive166.h"
+#include "Kicker166.h"
 #include "SensorTest166.h"
 #include "Inertia166.h"
 #include "Vision166.h"
@@ -26,7 +27,7 @@
 // Declare external tasks
 Team166Arm Team166ArmObject;
 Team166Drive Team166DriveObject;
-//Team166SensorTest Team166SensorTestObject;
+Team166Kicker Team166KickerObject;
 Team166Inertia Team166InertiaObject;
 Team166Vision Team166VisionObject;
 Team166Sonar Team166SonarObject;
@@ -162,16 +163,14 @@ Robot166::Robot166(void) :
 			Team166DriveObject.MyTaskInitialized &&
 			Team166VisionObject.MyTaskInitialized &&
 			Team166SonarObject.MyTaskInitialized &&
-//			Team166SensorTestObject.MyTaskInitialized &&
-			Team166InertiaObject.MyTaskInitialized)) {
+			Team166KickerObject.MyTaskInitialized)) {
 		printf("Constructor is waiting %d %d %d %d %d..\n",
 				//printf("Constructor is waiting %d  %d %d %d %d..\n",
 				Team166ArmObject.MyTaskInitialized,
 				Team166DriveObject.MyTaskInitialized,
 				Team166VisionObject.MyTaskInitialized,
 				Team166SonarObject.MyTaskInitialized,
-//				Team166SensorTestObject.MyTaskInitialized,
-				Team166InertiaObject.MyTaskInitialized);
+				Team166KickerObject.MyTaskInitialized);
 		Wait (0.100);
 	}
 	printf("All tasks we depend upon are up!\n");
@@ -402,11 +401,12 @@ void Robot166::OperatorControl(void)
 		}
 		
 		// Each task needs to update for us to feed the watch dog.
-		if (Team166ArmObject.MyWatchDog && 
+		if (Team166ArmObject.MyWatchDog && Team166KickerObject.MyWatchDog &&
 				Team166DriveObject.MyWatchDog) {
 		    GetWatchdog().Feed();
 		    Team166ArmObject.MyWatchDog = 0;
 		    Team166DriveObject.MyWatchDog = 0;
+		    Team166KickerObject.MyWatchDog = 0;
 		}
 		
 		// take a picture
