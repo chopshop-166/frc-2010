@@ -31,8 +31,8 @@ else
 MODE_DIR := NonDebug
 endif
 OBJ_DIR := .
-PRJ_ROOT_DIR := W:/Chopshop/chopshop10
-WS_ROOT_DIR := W:/
+PRJ_ROOT_DIR := W:/workspace/chopshop10
+WS_ROOT_DIR := W:/workspace
 
 
 
@@ -113,55 +113,59 @@ chopshop10/$(MODE_DIR)/% : LIBPATH =
 chopshop10/$(MODE_DIR)/% : LIBS = 
 chopshop10/$(MODE_DIR)/% : OBJ_DIR := chopshop10/$(MODE_DIR)
 
-chopshop10/$(MODE_DIR)/Objects/chopshop10/Arm166.o : W:/Chopshop/chopshop10/Arm166.cpp
+chopshop10/$(MODE_DIR)/Objects/chopshop10/Arm166.o : W:/workspace/chopshop10/Arm166.cpp
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-chopshop10/$(MODE_DIR)/Objects/chopshop10/Autonomous166.o : W:/Chopshop/chopshop10/Autonomous166.cpp
+chopshop10/$(MODE_DIR)/Objects/chopshop10/Autonomous166.o : W:/workspace/chopshop10/Autonomous166.cpp
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-chopshop10/$(MODE_DIR)/Objects/chopshop10/Drive166.o : W:/Chopshop/chopshop10/Drive166.cpp
+chopshop10/$(MODE_DIR)/Objects/chopshop10/Drive166.o : W:/workspace/chopshop10/Drive166.cpp
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-chopshop10/$(MODE_DIR)/Objects/chopshop10/Inertia166.o : W:/Chopshop/chopshop10/Inertia166.cpp
+chopshop10/$(MODE_DIR)/Objects/chopshop10/Inertia166.o : W:/workspace/chopshop10/Inertia166.cpp
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-chopshop10/$(MODE_DIR)/Objects/chopshop10/Kicker166.o : W:/Chopshop/chopshop10/Kicker166.cpp
+chopshop10/$(MODE_DIR)/Objects/chopshop10/Kicker166.o : W:/workspace/chopshop10/Kicker166.cpp
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-chopshop10/$(MODE_DIR)/Objects/chopshop10/MemoryLog166.o : W:/Chopshop/chopshop10/MemoryLog166.cpp
+chopshop10/$(MODE_DIR)/Objects/chopshop10/MemoryLog166.o : W:/workspace/chopshop10/MemoryLog166.cpp
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-chopshop10/$(MODE_DIR)/Objects/chopshop10/PIDControl166.o : W:/Chopshop/chopshop10/PIDControl166.cpp
+chopshop10/$(MODE_DIR)/Objects/chopshop10/PIDControl166.o : W:/workspace/chopshop10/PIDControl166.cpp
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-chopshop10/$(MODE_DIR)/Objects/chopshop10/PIDGyro.o : W:/Chopshop/chopshop10/PIDGyro.cpp
+chopshop10/$(MODE_DIR)/Objects/chopshop10/PIDGyro.o : W:/workspace/chopshop10/PIDGyro.cpp
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-chopshop10/$(MODE_DIR)/Objects/chopshop10/Robot166.o : W:/Chopshop/chopshop10/Robot166.cpp
+chopshop10/$(MODE_DIR)/Objects/chopshop10/Robot166.o : W:/workspace/chopshop10/Robot166.cpp
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-chopshop10/$(MODE_DIR)/Objects/chopshop10/SensorTest166.o : W:/Chopshop/chopshop10/SensorTest166.cpp
+chopshop10/$(MODE_DIR)/Objects/chopshop10/RobotCamera166.o : W:/workspace/chopshop10/RobotCamera166.cpp
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-chopshop10/$(MODE_DIR)/Objects/chopshop10/Sonar166.o : W:/Chopshop/chopshop10/Sonar166.cpp
+chopshop10/$(MODE_DIR)/Objects/chopshop10/SensorTest166.o : W:/workspace/chopshop10/SensorTest166.cpp
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-chopshop10/$(MODE_DIR)/Objects/chopshop10/Target166.o : W:/Chopshop/chopshop10/Target166.cpp
+chopshop10/$(MODE_DIR)/Objects/chopshop10/Sonar166.o : W:/workspace/chopshop10/Sonar166.cpp
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
-chopshop10/$(MODE_DIR)/Objects/chopshop10/Vision166.o : W:/Chopshop/chopshop10/Vision166.cpp
+chopshop10/$(MODE_DIR)/Objects/chopshop10/Target166.o : W:/workspace/chopshop10/Target166.cpp
+	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
+
+
+chopshop10/$(MODE_DIR)/Objects/chopshop10/Vision166.o : W:/workspace/chopshop10/Vision166.cpp
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
@@ -174,6 +178,7 @@ OBJECTS_chopshop10 = chopshop10/$(MODE_DIR)/Objects/chopshop10/Arm166.o \
 	 chopshop10/$(MODE_DIR)/Objects/chopshop10/PIDControl166.o \
 	 chopshop10/$(MODE_DIR)/Objects/chopshop10/PIDGyro.o \
 	 chopshop10/$(MODE_DIR)/Objects/chopshop10/Robot166.o \
+	 chopshop10/$(MODE_DIR)/Objects/chopshop10/RobotCamera166.o \
 	 chopshop10/$(MODE_DIR)/Objects/chopshop10/SensorTest166.o \
 	 chopshop10/$(MODE_DIR)/Objects/chopshop10/Sonar166.o \
 	 chopshop10/$(MODE_DIR)/Objects/chopshop10/Target166.o \
@@ -192,8 +197,8 @@ chopshop10/$(MODE_DIR)/chopshop10_clean :
 DEP_FILES := chopshop10/$(MODE_DIR)/Objects/chopshop10/Arm166.d chopshop10/$(MODE_DIR)/Objects/chopshop10/Autonomous166.d chopshop10/$(MODE_DIR)/Objects/chopshop10/Drive166.d \
 	 chopshop10/$(MODE_DIR)/Objects/chopshop10/Inertia166.d chopshop10/$(MODE_DIR)/Objects/chopshop10/Kicker166.d chopshop10/$(MODE_DIR)/Objects/chopshop10/MemoryLog166.d \
 	 chopshop10/$(MODE_DIR)/Objects/chopshop10/PIDControl166.d chopshop10/$(MODE_DIR)/Objects/chopshop10/PIDGyro.d chopshop10/$(MODE_DIR)/Objects/chopshop10/Robot166.d \
-	 chopshop10/$(MODE_DIR)/Objects/chopshop10/SensorTest166.d chopshop10/$(MODE_DIR)/Objects/chopshop10/Sonar166.d chopshop10/$(MODE_DIR)/Objects/chopshop10/Target166.d \
-	 chopshop10/$(MODE_DIR)/Objects/chopshop10/Vision166.d
+	 chopshop10/$(MODE_DIR)/Objects/chopshop10/RobotCamera166.d chopshop10/$(MODE_DIR)/Objects/chopshop10/SensorTest166.d chopshop10/$(MODE_DIR)/Objects/chopshop10/Sonar166.d \
+	 chopshop10/$(MODE_DIR)/Objects/chopshop10/Target166.d chopshop10/$(MODE_DIR)/Objects/chopshop10/Vision166.d
 -include $(DEP_FILES)
 
 

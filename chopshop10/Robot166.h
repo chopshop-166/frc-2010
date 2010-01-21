@@ -4,6 +4,7 @@
 #include "Team166Task.h"
 #include "Drive166.h"
 #include "Arm166.h"
+#include "Kicker166.h"
 #include "MemoryLog166.h"
 #include "Autonomous166.h"
 

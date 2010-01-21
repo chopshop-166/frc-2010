@@ -4,7 +4,6 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include "WPILib.h"
-#include "BaeUtilities.h"
 #include "Arm166.h"
 #include "Team166Task.h"
 #include "Drive166.h"
@@ -13,13 +12,7 @@
 #include "Inertia166.h"
 #include "Vision166.h"
 #include "Sonar166.h"
-
-
-// needed for Camera Init
-#include "AxisCamera.h" 
-#include "FrcError.h"
-#include "PCVideoServer.h"
-#include "VisionAPI.h"
+#include "RobotCamera166.h"
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
@@ -35,56 +28,6 @@ Team166Sonar Team166SonarObject;
 class Robot166;
 Robot166 *RobotHandle = 0;
 
-
-/** 
- * Pass to the camera the configuration string and store an image on the cRIO 
- * @param imageName stored on home directory of cRIO ( "/" )
- **/
-void TakeSnapshot(char* imageName)	
-{	
-	DPRINTF(LOG_DEBUG, "taking a SNAPSHOT ");
-	Image* cameraImage = frcCreateImage(IMAQ_IMAGE_HSL);
-	if (!cameraImage) {
-		DPRINTF (LOG_INFO,"frcCreateImage failed - errorcode %i",GetLastVisionError()); 
-	}
-	Wait(1.0);
-	if ( !GetImage (cameraImage,NULL) ) {
-		DPRINTF (LOG_INFO,"\nCamera Acquisition failed %i", GetLastVisionError());
-	} else { 
-		  if (!frcWriteImage(cameraImage, imageName) ) { 
-			  DPRINTF (LOG_INFO,"frcWriteImage failed - errorcode %i",GetLastVisionError());
-		  } else { 
-			  	dprintf (LOG_INFO,"\n>>>>> Saved image to %s", imageName);	
-				// always dispose of image objects when done
-				frcDispose(cameraImage);
-		  }
-	}
-}
-
-
-/** 
- * Pass to the camera the configuration string and store an image on the cRIO 
- * @param configString camera configuration string 
- **/
-void SetupCamera(char* configString)	
-{
-	StopCameraTask();	
-	ConfigureCamera(configString);
-	Wait(0.5);
-	/* start the CameraTask -keep this here for now, maybe move to Vision166 later  */
-	if (StartCameraTask(15, 0, k160x120, ROT_180) == -1) {
-		DPRINTF( LOG_ERROR,"Failed to spawn camera task; exiting. Error code %s", 
-				GetVisionErrorText(GetLastVisionError()) );
-	}
-	Wait(2.0);
-	/* this will take one picture and save it to a file
-	 */
-	DPRINTF(LOG_DEBUG, "taking a SNAPSHOT ");
-	Image* cameraImage = frcCreateImage(IMAQ_IMAGE_HSL);
-	if (!cameraImage) {
-		dprintf (LOG_INFO,"frcCreateImage failed - errorcode %i",GetLastVisionError()); 
-	}
-}
 
 /**
  * This is a demo program showing the use of the RobotBase class.
@@ -126,34 +69,11 @@ Robot166::Robot166(void) :
 	mlHead = 0;
 	
 	/* start the PCVideoServer to use the dashboard video */
-	//PCVideoServer pc;
-
-	/* read a configuration file and send it to the camera	 */
-	char *imageName = "166StartPic.png";
-	char* cameraConfigFile = "166Camera.txt"; 
-	char outputString[1024]; 
+	StartPCVideoServer();
 
 	/* start the CameraTask  */
-	if (StartCameraTask(15, 0, k160x120, ROT_180) == -1) {
-		DPRINTF( LOG_ERROR,"Failed to spawn camera task; exiting. Error code %s", 
-				GetVisionErrorText(GetLastVisionError()) );
-	}
+	StartCamera();
 
-	/* Calling processFile with 3rd argument 0 returns number of configuration lines */
-	int lineCountMax = processFile(cameraConfigFile, outputString,0);
-	if (lineCountMax == -1) {
-		DPRINTF (LOG_DEBUG, "error reading %s",cameraConfigFile);
-	} else {
-		for (int index = 1;index <= lineCountMax;index++)
-		{
-			/* calling processFile with line number returns that configuration line */
-			if (processFile(cameraConfigFile, outputString, index) != -1) {
-				DPRINTF (LOG_DEBUG, "OUTPUT STRING:%s\n",outputString);
-				SetupCamera(outputString);
-			}
-		}
-	}
-	TakeSnapshot(imageName);
 
 	/* allow writing to vxWorks target */
 	Priv_SetWriteFileAllowed(1);   	
