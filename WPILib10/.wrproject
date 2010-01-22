@@ -1384,9 +1384,9 @@
         </mapAttribute>
     </attributes>
     <buildtargets>
-        <buildtarget buildtool="Librarian" name="WPILib" passed="true" targetname="WPILib">
+        <buildtarget buildtool="Librarian" name="WPILib" passed="false" targetname="WPILib10">
             <contents>
-                <folder name="/WPILib" recursive="true"/>
+                <folder name="/WPILib10" recursive="true"/>
             </contents>
         </buildtarget>
     </buildtargets>
