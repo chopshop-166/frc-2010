@@ -18,7 +18,7 @@ removeFlag = False
 #password = "anyuserPassword"
 #remoteDir = "~/test"
 
-filter = "*.png;*.dbg"
+filter = "*.png;*.dbg;*.csv"
 hostname = "10.1.66.2"
 username = "anonymous"
 password = "guest"
