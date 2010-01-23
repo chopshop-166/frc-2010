@@ -1,6 +1,6 @@
 #include "WPILib.h"
 #include "Team166Task.h"
-#include "Lift166.h"
+#include "EBrake166.h"
 #include "MemoryLog166.h"
 #include "Robot166.h"
 #include "BaeUtilities.h"
@@ -12,6 +12,7 @@
 struct abuf166
 {
 	struct timespec tp;               // Time of snapshot
+	// update these values to be realistic
 	float x_acc;                     // accelarometer x value
 	float y_acc;					//  accelarometer y value
 	float acc_vector;
@@ -19,11 +20,11 @@ struct abuf166
 };
 
 //  Memory Log
-class LiftLog : public MemoryLog166
+class EBrakeLog : public MemoryLog166
 {
 public:
-	LiftLog() : MemoryLog166(128*1024, "lift") {return;};
-	~LiftLog() {return;};
+	EBrakeLog() : MemoryLog166(128*1024, "ebrake") {return;};
+	~EBrakeLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
 			FILE *outputFile);        // and then stored in this file
@@ -31,7 +32,7 @@ public:
 };
 
 // Write one buffer into memory
-unsigned int LiftLog::PutOne(float x_acc, float y_acc, float acc_vector)
+unsigned int EBrakeLog::PutOne(float x_acc, float y_acc, float acc_vector)
 {
 	struct abuf166 *ob;               // Output buffer
 	
@@ -51,7 +52,7 @@ unsigned int LiftLog::PutOne(float x_acc, float y_acc, float acc_vector)
 }
 
 // Format the next buffer for file output
-unsigned int LiftLog::DumpBuffer(char *nptr, FILE *ofile)
+unsigned int EBrakeLog::DumpBuffer(char *nptr, FILE *ofile)
 {
 	struct abuf166 *ab = (struct abuf166 *)nptr;
 	
@@ -64,28 +65,28 @@ unsigned int LiftLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-Team166Lift::Team166Lift(void)
+Team166EBrake::Team166EBrake(void)
 {
-	Start((char *)"166LiftTask");
+	Start((char *)"166EBrakeTask");
 	return;
 };
 	
 // task destructor
-Team166Lift::~Team166Lift(void)
+Team166EBrake::~Team166EBrake(void)
 {
 	return;
 };
 	
 // Main function of the task
-int Team166Lift::Main(int a2, int a3, int a4, int a5,
+int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {
 		
 	Robot166 *lHandle;            // Local handle
-	LiftLog sl;                   // log
+	EBrakeLog sl;                   // log
 	
 	// Let the world know we're in
-	DPRINTF(LOG_DEBUG,"In the 166 Lift task\n");
+	DPRINTF(LOG_DEBUG,"In the 166 EBrake task\n");
 		
 	// Indicate that we've now completed initialization
 	MyTaskInitialized = 1;
@@ -94,7 +95,7 @@ int Team166Lift::Main(int a2, int a3, int a4, int a5,
 	while (!Robot166::getInstance() ||
 	       ((Robot166::getInstance()->RobotMode != T166_AUTONOMOUS) &&
 	    	(Robot166::getInstance()->RobotMode != T166_OPERATOR))) {
-		Wait (0.050); // 50ms
+		Wait (1.0); // 1 second
 	}
 	MyTaskInitialized = 2;
 	lHandle = Robot166::getInstance();
@@ -103,15 +104,7 @@ int Team166Lift::Main(int a2, int a3, int a4, int a5,
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		
-		float lift_motor;                         // Lift motor direction/power
-		
-        // TODO: update this for real Lift functionality
-		int dir;
-        lHandle->GetLift(&dir, &lift_motor);   // Get the direction of the lift
-    			  //gives the values for the desired lift motor speed
-
-        // Should we log this value?
+		// do stuff
 		sl.PutOne(0, 0, 0);
 		MyWatchDog = 1;
 		Wait (0.01); // 100ms
