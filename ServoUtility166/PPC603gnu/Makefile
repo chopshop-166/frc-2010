@@ -31,8 +31,8 @@ else
 MODE_DIR := NonDebug
 endif
 OBJ_DIR := .
-PRJ_ROOT_DIR := C:/WindRiver/workspace/ServoUtility166
-WS_ROOT_DIR := C:/WindRiver/workspace
+PRJ_ROOT_DIR := W:/workspace/ServoUtility166
+WS_ROOT_DIR := W:/workspace
 
 
 
@@ -113,7 +113,11 @@ ServoUtility166/$(MODE_DIR)/% : LIBPATH =
 ServoUtility166/$(MODE_DIR)/% : LIBS = 
 ServoUtility166/$(MODE_DIR)/% : OBJ_DIR := ServoUtility166/$(MODE_DIR)
 
-OBJECTS_ServoUtility166 =
+ServoUtility166/$(MODE_DIR)/Objects/ServoUtility166/ServoUtility166.o : W:/workspace/ServoUtility166/ServoUtility166.cpp
+	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
+
+
+OBJECTS_ServoUtility166 = ServoUtility166/$(MODE_DIR)/Objects/ServoUtility166/ServoUtility166.o
 
 ServoUtility166/$(MODE_DIR)/ServoUtility166.out : $(OBJECTS_ServoUtility166)
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@";rm -f "$@";nmppc $(OBJECTS_ServoUtility166) $(IDE_LIBRARIES) | tclsh $(WIND_BASE)/host/resource/hutils/tcl/munch.tcl -c ppc > $(OBJ_DIR)/ctdt.c; $(TOOL_PATH)ccppc $(DEBUGFLAGS_Linker) $(CC_ARCH_SPEC) -fdollars-in-identifiers -Wall $(ADDED_CFLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES)  -o $(OBJ_DIR)/ctdt.o -c $(OBJ_DIR)/ctdt.c; $(TOOL_PATH)ccppc -r -nostdlib -Wl,-X -T $(WIND_BASE)/target/h/tool/gnu/ldscripts/link.OUT -o "$@" $(OBJ_DIR)/ctdt.o $(OBJECTS_ServoUtility166) $(IDE_LIBRARIES) $(LIBPATH) $(LIBS)  $(ADDED_LIBPATH) $(ADDED_LIBS) && if [ "$(EXPAND_DBG)" = "1" ]; then plink "$@";fi
@@ -124,6 +128,9 @@ _clean :: ServoUtility166/$(MODE_DIR)/ServoUtility166_clean
 
 ServoUtility166/$(MODE_DIR)/ServoUtility166_clean : 
 	$(TRACE_FLAG)if [ -d "ServoUtility166" ]; then cd "ServoUtility166"; rm -rf $(MODE_DIR); fi
+
+DEP_FILES := ServoUtility166/$(MODE_DIR)/Objects/ServoUtility166/ServoUtility166.d
+-include $(DEP_FILES)
 
 
 

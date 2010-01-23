@@ -25,9 +25,12 @@ Team166Inertia Team166InertiaObject;
 Team166Vision Team166VisionObject;
 Team166Sonar Team166SonarObject;
 
+// This links to the single instance of the Robot task
 class Robot166;
-Robot166 *RobotHandle = 0;
+static Robot166 *RobotHandle = 0;
 
+// This array points to tasks that have requested to be initialized
+static Team166Task *ActiveTasks[T166_MAXTASK + 1] = {0}; // List ends with a zero
 
 /**
  * This is a demo program showing the use of the RobotBase class.

@@ -18,6 +18,11 @@ typedef enum {T166_UNKNOWN=0, T166_CONSTRUCTOR, T166_AUTONOMOUS, T166_OPERATOR, 
 //
 typedef enum {T166_CB_UNKNOWN=0, T166_CB_FORWARD, T166_CB_BACKWARD, T166_CB_STILL} t_ConveyerDirection;
 
+//
+// Max tasks we support being started in Robot166
+//
+#define T166_MAXTASK (32)
+
 /**
  * This is a demo program showing the use of the RobotBase class.
  * The SimpleRobot class is the base of a robot application that will automatically call your
