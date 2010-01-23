@@ -1,15 +1,13 @@
-/********************************************************************************
-*  Project   		: FIRST Motor Controller/Chopshop 2009
+/*******************************************************************************
+*  Project   		: chopshop10 - 2010 Chopshop Robot Controller Code
 *  File Name  		: Target166.cpp        
-*  Contributors   	: ELF, EMF
-*  Creation Date 	      : January 12, 2008
-*  Revision History	: Source code & revision history maintained at sourceforge.WPI.edu   
+*  Owner		   	: Software Group (FIRST Chopshop Team 166)
+*  Creation Date	: January 18, 2010
+*  Revision History	: From Explorer with TortoiseSVN, Use "Show log" menu item
 *  File Description	: Tracking Routines for FIRST Vision API
-*/ 
+*******************************************************************************/ 
 /*----------------------------------------------------------------------------*/
-/*        Copyright (c) FIRST 2008.  All Rights Reserved.                     */
-/*  Open Source Software - may be modified and shared by FRC teams. The code  */
-/*  must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib. */
+/*  Copyright (c) MHS Chopshop Team 166, 2010.  All Rights Reserved.          */
 /*----------------------------------------------------------------------------*/
 
 #include "string.h"
