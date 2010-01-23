@@ -106,12 +106,12 @@ int Team166Arm::Main(int a2, int a3, int a4, int a5,
 		
 		t_ConveyerDirection cdir;                 // Agitator direction
 		float lift_motor;                         // Lift motor direction/power
-        int girate_switch;
+
 		// Strobe the sensors
 		
 		// Get the command we're asked to apply
         // TODO: update this for real ARM functionality
-        lHandle->GetArm(&cdir, &lift_motor,&girate_switch);   //gives the values for the conveyor direction and the desired lift motor speed
+        lHandle->GetArm(&cdir, &lift_motor);   //gives the values for the conveyor direction and the desired lift motor speed
         //("cdir = %u, lift_motor = %f\n", cdir, lift_motor);
         
         // Should we log this value?

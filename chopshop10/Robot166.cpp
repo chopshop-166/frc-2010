@@ -25,12 +25,9 @@ Team166Inertia Team166InertiaObject;
 Team166Vision Team166VisionObject;
 Team166Sonar Team166SonarObject;
 
-// This links to the single instance of the Robot task
 class Robot166;
-static Robot166 *RobotHandle = 0;
+Robot166 *RobotHandle = 0;
 
-// This array points to tasks that have requested to be initialized
-static Team166Task *ActiveTasks[T166_MAXTASK + 1] = {0}; // List ends with a zero
 
 /**
  * This is a demo program showing the use of the RobotBase class.
@@ -65,9 +62,6 @@ Robot166::Robot166(void) :
 	KickLock = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
 	JoyX = JoyY = 0.0;
 	dsHandle = DriverStation::GetInstance();
-    ConvDir = T166_CB_UNKNOWN;
-    ConvLift = 0.0;
-    ConvShake = 0;
 	RobotHandle = this;
 	mlHead = 0;
 	
@@ -206,16 +200,17 @@ int Robot166::GetAllianceSwitch(void) {
 /**
  * Arm command
  */
-void Robot166::SetKick()
+void Robot166::SetArm(t_ConveyerDirection dir, float lift_motor)
 {
-	// Set conveyer direction
 	semTake(ArmLock, WAIT_FOREVER);
+	// do stuff
+	
 	semGive(ArmLock);
 	
 	// Done
 	return;
 }
-void Robot166::GetKicker(spinkick)
+void Robot166::GetArm(t_ConveyerDirection *dir, float *lift_motor)
 {
 	
 	// Pick up the arm command
@@ -223,17 +218,22 @@ void Robot166::GetKicker(spinkick)
 	case T166_OPERATOR: {
 			semTake(DSLock, WAIT_FOREVER);
 
-
+			*lift_motor = -dispStick.GetY();	
 			semGive(DSLock);
 			if (dispStick.GetRawButton(2)==1) {
-                spinkick = !spinkick;
+				*dir = T166_CB_BACKWARD;
+			} else {
+				if (dispStick.GetButton(dispStick.kTriggerButton)) {
+					*dir = T166_CB_FORWARD;
+				} else {
+					*dir = T166_CB_STILL;
+				}
 			}
 			break;
 		    }
 	default: {
 		semTake(ArmLock, WAIT_FOREVER);
-		*dir = ConvDir;
-		*lift_motor = ConvLift;
+		// do stuff
 		semGive(ArmLock);
 		break;
 	    }
@@ -244,6 +244,38 @@ void Robot166::GetKicker(spinkick)
 }
 
 
+/**
+ * Kicker command
+ */
+void Robot166::SetKicker(float *kick_motor)
+{
+	// Turn on the kicker
+	switch (RobotMode) {
+	case T166_OPERATOR: {
+				semTake(DSLock, WAIT_FOREVER);
+				*kick_motor = -dispStick.GetY();	
+				semGive(DSLock);
+				break;
+			    }
+	default: {
+			semTake(KickLock, WAIT_FOREVER);
+			// do stuff
+			semGive(KickLock);
+			break;
+		    }
+	}
+	// Done
+	return;
+}
+void Robot166::GetKicker(float *kick_motor)
+{
+	semTake(KickLock, WAIT_FOREVER);
+	// do stuff
+	
+	semGive(KickLock);
+	// Done
+	return;
+}
 
 /**
  * Obtain battery voltage. Wrapper here ensures we do not collide with

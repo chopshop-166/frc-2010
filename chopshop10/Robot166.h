@@ -18,11 +18,6 @@ typedef enum {T166_UNKNOWN=0, T166_CONSTRUCTOR, T166_AUTONOMOUS, T166_OPERATOR, 
 //
 typedef enum {T166_CB_UNKNOWN=0, T166_CB_FORWARD, T166_CB_BACKWARD, T166_CB_STILL} t_ConveyerDirection;
 
-//
-// Max tasks we support being started in Robot166
-//
-#define T166_MAXTASK (32)
-
 /**
  * This is a demo program showing the use of the RobotBase class.
  * The SimpleRobot class is the base of a robot application that will automatically call your
@@ -52,8 +47,11 @@ private:
     SEM_ID DSLock;                            // Coordination of drive station interface
     SEM_ID ArmLock;                           // Arm lock
     SEM_ID KickLock;                          // Kicker lock
+    t_ConveyerDirection ConvDir;              // Conveyer direction
+    float ConvLift;                           // Conveyer motor lift
     DriverStation *dsHandle;                  // Driver Station handle
     MemoryLog166 *mlHead;                     // Memory log head
+    int ConvShake;
     autonomous166 steveautonomous;
     
 public:
@@ -65,9 +63,13 @@ public:
 	void GetJoyStick(float *x, float *y);	  // Get our virtual joystick
 	float GetBatteryVoltage(void);            // Get voltage of battery on robot
 	void SetArm(t_ConveyerDirection dir,// Set dispenser/agitator direction
-			float lift_motor, int girate_switch);                //
+			float lift_motor);                //
 	void GetArm(t_ConveyerDirection *dir, // Get the direction of the
-			float *lift_motor, int *girate_switch);               // Dispenser
+			float *lift_motor);               // Dispenser
+
+	void SetKicker(float *kick_motor);		// Set kicker moter
+	void GetKicker(float *kick_motor);		// Get kicker motor status
+	
 	void CameraDrive();             // Test routine for autonomous			
 	void RegisterLogger(MemoryLog166 *ml);    // Register memory logger
 	void DumpLoggers(int dnum);               // Dump all logs
