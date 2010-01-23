@@ -8,10 +8,13 @@
 #include "TankDrive166.h"
 #include "Kicker166.h"
 #include "SensorTest166.h"
-#include "Inertia166.h"
+//#include "Inertia166.h"
 #include "Vision166.h"
-#include "Sonar166.h"
+//#include "Sonar166.h"
 #include "RobotCamera166.h"
+#include "CANDrive166.h"
+#include "EBrake166.h"
+#include "HealthMon166.h"
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
@@ -23,9 +26,12 @@ Team166Task *Team166Task::ActiveTasks[T166_MAXTASK + 1] = {0};
 Team166Lift Team166LiftObject;
 Team166TankDrive Team166TankDriveObject;
 Team166Kicker Team166KickerObject;
-Team166Inertia Team166InertiaObject;
+//Team166Inertia Team166InertiaObject;
 Team166Vision Team166VisionObject;
-Team166Sonar Team166SonarObject;
+//Team166Sonar Team166SonarObject;
+Team166Vision Team166CANDriveObject;
+Team166Vision Team166EBrakeObject;
+Team166Vision Team166HealthMonObject;
 
 // This links to the single instance of the Robot task
 class Robot166;
