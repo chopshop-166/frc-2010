@@ -104,6 +104,17 @@
 #define T166_USB_STICK_2 (2)               
 
 
+//
+// Max tasks we support being started in Robot166
+//
+#define T166_MAXTASK (32)
+
+//
+// Count of times a particular task can fail to report its watchdog before
+// we start to display errors.
+//
+#define T166_WATCHDOG_MIN (3)
+
 class Team166Task
 {
 
@@ -111,12 +122,15 @@ class Team166Task
 public:
 	
 	// Constructor
-	Team166Task()
+	Team166Task(int IsEssential=1)
 	{
 		// Indicate we've never been spawned before
 		MyTaskId = 0;
 		MyTaskInitialized = 0;
 		MyWatchDog = 0;
+		MyTaskIsEssential = IsEssential;
+		MyName = 0;
+		MissedWatchDog = 0;
 	}
 	
 	// Destructor
@@ -136,6 +150,9 @@ public:
 			MyTaskInitialized = 0;
 		}
 
+		// Save the task name for later reference
+		MyName = tname;
+		
 		// Spawn a new task
 		MyTaskId = taskSpawn(tname, TEAM166TASK_K_PRIO, VX_FP_TASK,
 				TEAM166TASK_K_STACKSIZE, (FUNCPTR) Team166Task::MainJacket,
@@ -150,6 +167,19 @@ public:
 	static int MainJacket(void *this_p, int a2, int a3, int a4, int a5,
 					int a6, int a7, int a8, int a9, int a10)
 	{
+
+		int l;  // Local loop variable
+		
+		// Find the next available slot
+		for (l=0; l<T166_MAXTASK; l++)
+			if (!ActiveTasks[l])
+				break;
+		
+		// Do we have room for one more?
+		if (l != T166_MAXTASK) {
+			ActiveTasks[l] = (Team166Task *)this_p;
+		}
+
 		// Just daisy chain over to virtual main function
 		return (((Team166Task *)this_p)->Main(a2, a3, a4, a5, a6, a7, a8, a9, a10));
 	}
@@ -157,12 +187,73 @@ public:
 	// Each class needs to implement this Main function
 	virtual int Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10) = 0;
+	
+	// Check if all registered tasks are up
+	static int IfUp(void)
+	{
+		int l;  // Local loop variable
+
+		// Loop through all the slots and check each registered task
+		for (l=0; l<T166_MAXTASK; l++) {
+			
+			// If the task is registered but not initialized, we're not done
+			if ((ActiveTasks[l]) &&
+				 (!ActiveTasks[l]->MyTaskInitialized)) {
+				return (0);	
+			}
+		}
+		
+		// We're good
+		return (1);
+	}
+	
+	// Should we feed the watchdog?
+	static int FeedWatchDog(void)
+	{
+		
+		int l;  // Local loop variable
+		
+		// Loop through all the slots and check each registered task
+		for (l=0; l<T166_MAXTASK; l++) {
+			
+			// Is this a registered and essential task?
+			if ((ActiveTasks[l]) &&
+				 (ActiveTasks[l]->MyTaskIsEssential)) {
+				
+				// Yes. Has this task set its watchdog?
+				if (!ActiveTasks[l]->MyWatchDog) {
+					
+					// No. Tell caller at least one task is not ready
+					if (ActiveTasks[l]->MissedWatchDog++ > T166_WATCHDOG_MIN)
+						printf("Task '%s' has not reported its watchdog %d times in a row.\n", ActiveTasks[l]->MyName ? ActiveTasks[l]->MyName : "unknown", T166_WATCHDOG_MIN);
+					return (0);
+				}
+			}
+		}
+		
+		// If we get here they have all said we're good. Clear them and tell caller
+		for (l=0; l<T166_MAXTASK; l++)
+			if ((ActiveTasks[l]) &&
+				 (ActiveTasks[l]->MyTaskIsEssential)) {
+				ActiveTasks[l]->MyWatchDog = 0;
+				ActiveTasks[l]->MissedWatchDog = 0;				
+			}
+		return (1);
+	}
 
 // Data members
 public:
 	int MyTaskId;               // Id of our own task
 	int MyTaskInitialized;      // This task has been initialized
 	int MyWatchDog;             // Feeding my own watch dog
+	int MyTaskIsEssential;      // Flag indicating if this task is essential
+	char *MyName;               // Name of this task
+	int MissedWatchDog;         // Missed watchdog count
+	
+private:
+	
+	// This array points to tasks that have requested to be initialized
+	static Team166Task *ActiveTasks[T166_MAXTASK + 1];
 	
 };
 #endif // !defined(_TEAM166TASK_H)

@@ -16,6 +16,9 @@
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
 
+// List of tasks that have requested to come up
+Team166Task *Team166Task::ActiveTasks[T166_MAXTASK + 1] = {0};
+
 // Declare external tasks
 Team166Lift Team166LiftObject;
 Team166TankDrive Team166TankDriveObject;
@@ -24,9 +27,9 @@ Team166Inertia Team166InertiaObject;
 Team166Vision Team166VisionObject;
 Team166Sonar Team166SonarObject;
 
+// This links to the single instance of the Robot task
 class Robot166;
-Robot166 *RobotHandle = 0;
-
+static Robot166 *RobotHandle = 0;
 
 /**
  * This is a demo program showing the use of the RobotBase class.
@@ -74,19 +77,13 @@ Robot166::Robot166(void) :
 	/* allow writing to vxWorks target */
 	Priv_SetWriteFileAllowed(1);   	
 	
+	// Setup expiration for task watchdog.
 	GetWatchdog().SetExpiration(5.0); // 5 seconds
-	while (!(Team166LiftObject.MyTaskInitialized && 
-			Team166TankDriveObject.MyTaskInitialized &&
-			Team166VisionObject.MyTaskInitialized &&
-			Team166SonarObject.MyTaskInitialized &&
-			Team166KickerObject.MyTaskInitialized)) {
-		printf("Constructor is waiting %d %d %d %d %d..\n",
-				//printf("Constructor is waiting %d  %d %d %d %d..\n",
-				Team166LiftObject.MyTaskInitialized,
-				Team166TankDriveObject.MyTaskInitialized,
-				Team166VisionObject.MyTaskInitialized,
-				Team166SonarObject.MyTaskInitialized,
-				Team166KickerObject.MyTaskInitialized);
+
+	// Wait for all of our tasks to come up
+	printf("Getting ready to check if tasks are up");
+	while (!Team166Task::IfUp()) {
+		printf("Waiting for task(s) to come up..");
 		Wait (0.100);
 	}
 	printf("All tasks we depend upon are up!\n");
@@ -345,13 +342,8 @@ void Robot166::OperatorControl(void)
 		}
 		
 		// Each task needs to update for us to feed the watch dog.
-		if (Team166LiftObject.MyWatchDog && Team166KickerObject.MyWatchDog &&
-				Team166TankDriveObject.MyWatchDog) {
+		if (Team166Task::FeedWatchDog())
 		    GetWatchdog().Feed();
-		    Team166LiftObject.MyWatchDog = 0;
-		    Team166TankDriveObject.MyWatchDog = 0;
-		    Team166KickerObject.MyWatchDog = 0;
-		}
 		
 		// take a picture
 		if ( driveStick.GetRawButton(8) or driveStick.GetRawButton(9) 
