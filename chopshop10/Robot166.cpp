@@ -203,19 +203,16 @@ int Robot166::GetAllianceSwitch(void) {
 /**
  * Arm command
  */
-void Robot166::SetArm(t_ConveyerDirection dir, float lift_motor, int girate_switch)
+void Robot166::SetKick()
 {
 	// Set conveyer direction
 	semTake(ArmLock, WAIT_FOREVER);
-	ConvDir = dir;
-	ConvLift = lift_motor;
-	ConvShake = girate_switch;
 	semGive(ArmLock);
 	
 	// Done
 	return;
 }
-void Robot166::GetArm(t_ConveyerDirection *dir, float *lift_motor,int *girate_switch)
+void Robot166::GetKicker(spinkick)
 {
 	
 	// Pick up the arm command
@@ -223,17 +220,10 @@ void Robot166::GetArm(t_ConveyerDirection *dir, float *lift_motor,int *girate_sw
 	case T166_OPERATOR: {
 			semTake(DSLock, WAIT_FOREVER);
 
-			*lift_motor = -dispStick.GetY();	
-			*girate_switch = dispStick.GetRawButton(3);
+
 			semGive(DSLock);
 			if (dispStick.GetRawButton(2)==1) {
-				*dir = T166_CB_BACKWARD;
-			} else {
-				if (dispStick.GetButton(dispStick.kTriggerButton)) {
-					*dir = T166_CB_FORWARD;
-				} else {
-					*dir = T166_CB_STILL;
-				}
+                spinkick = !spinkick;
 			}
 			break;
 		    }

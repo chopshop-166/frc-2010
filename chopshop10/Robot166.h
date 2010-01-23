@@ -47,11 +47,8 @@ private:
     SEM_ID DSLock;                            // Coordination of drive station interface
     SEM_ID ArmLock;                           // Arm lock
     SEM_ID KickLock;                          // Kicker lock
-    t_ConveyerDirection ConvDir;              // Conveyer direction
-    float ConvLift;                           // Conveyer motor lift
     DriverStation *dsHandle;                  // Driver Station handle
     MemoryLog166 *mlHead;                     // Memory log head
-    int ConvShake;
     autonomous166 steveautonomous;
     
 public:

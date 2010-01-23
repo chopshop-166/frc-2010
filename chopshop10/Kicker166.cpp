@@ -104,20 +104,13 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 				
-		// Get the command we're asked to apply
-        // TODO: update this for real Kicker functionality
-        //lHandle->GetKicker(&cdir, &lift_motor,&girate_switch);   //gives the values for the conveyor direction and the desired lift motor speed
-        //("cdir = %u, lift_motor = %f\n", cdir, lift_motor);
-                //switch(cdir)                                     	//switch for the direction of the conveyor belt
-                //{
-                //	case T166_CB_BACKWARD:                        	  //when the direction given is backward...
-                //		break;											
-                //	case T166_CB_FORWARD: 								//when the direction given is forward...
-                //		break;
-                //	default:										//when no direction is given
-                //		lHandle->treadmill_victor.Set(NO_SPEED);				//set the treadmill victor speed to 0
-                //}           
-        
+        lHandle->GetKicker(spinkick);
+       	if (spinkick == true) {
+            lHandle->kicker_victor.Set(SPIN_SPEED);
+        }
+        else {
+            lHandle->kicker_victor.set(NO_SPEED);
+        }
         // Should we log this value?
 		sl.PutOne(0, 0, 0);
 		MyWatchDog = 1;

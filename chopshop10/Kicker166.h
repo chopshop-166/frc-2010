@@ -4,6 +4,8 @@
 #include "Robot166.h"
 
 #define NO_SPEED				 0    //speed to use when there is no input for the treadmill victor
+#define SPIN_SPEED    			 1    //speed used when kicker is spinning 
+bool spinkick = false 
 
 class Team166Kicker : public Team166Task
 {
