@@ -4,7 +4,6 @@
 #include <fcntl.h>
 #include <stdio.h>
 #include "WPILib.h"
-#include "Arm166.h"
 #include "Team166Task.h"
 #include "TankDrive166.h"
 #include "Kicker166.h"
