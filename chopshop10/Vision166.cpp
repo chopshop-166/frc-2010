@@ -38,6 +38,7 @@ Team166Vision::Team166Vision(void) :
 	alliance(BLUE)					// default alliance
 {		
 	// remember to use jumpers on the sidecar for the Servo PWMs
+	printf("Vision constructor\n");
 	horizontalServo = new Servo(T166_HORIZONTAL_SERVO_CHANNEL);  // create horizontal servo
 	verticalServo = new Servo(T166_VERTICAL_SERVO_CHANNEL);  // create vertical servo
 
@@ -387,7 +388,7 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 	while (!Robot166::getInstance() ||
 	       ((Robot166::getInstance()->RobotMode != T166_AUTONOMOUS) &&
 	    	(Robot166::getInstance()->RobotMode != T166_OPERATOR))) {
-		Wait (0.050); // 50ms
+		Wait (T166_TA_WAIT_LENGTH);
 	}
 	MyTaskInitialized = 2;
 

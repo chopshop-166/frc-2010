@@ -115,6 +115,11 @@
 //
 #define T166_WATCHDOG_MIN (3)
 
+//
+// Wait time in each task for getting into Autonomous or Teleoperated mode
+//
+#define T166_TA_WAIT_LENGTH (0.050) // 50ms
+
 class Team166Task
 {
 

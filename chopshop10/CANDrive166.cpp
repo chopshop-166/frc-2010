@@ -94,7 +94,7 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 	while (!Robot166::getInstance() ||
 	       ((Robot166::getInstance()->RobotMode != T166_AUTONOMOUS) &&
 	    	(Robot166::getInstance()->RobotMode != T166_OPERATOR))) {
-		Wait (0.050); // 50ms
+		Wait (T166_TA_WAIT_LENGTH);
 	}
 	MyTaskInitialized = 2;
 	lHandle = Robot166::getInstance();

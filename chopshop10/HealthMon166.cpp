@@ -94,7 +94,7 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 	while (!Robot166::getInstance() ||
 	       ((Robot166::getInstance()->RobotMode != T166_AUTONOMOUS) &&
 	    	(Robot166::getInstance()->RobotMode != T166_OPERATOR))) {
-		Wait (1.0); // 1 second
+		Wait (T166_TA_WAIT_LENGTH);
 	}
 	MyTaskInitialized = 2;
 	lHandle = Robot166::getInstance();
@@ -106,7 +106,7 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 		// do stuff
 		sl.PutOne(0, 0, 0);
 		MyWatchDog = 1;
-		Wait (0.01); // 100ms
+		Wait (1.0); // 1 second
 
 		// 
 	}
