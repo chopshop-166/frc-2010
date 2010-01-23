@@ -18,7 +18,7 @@
 #define DPRINTF if(false)dprintf
 
 // Declare external tasks
-Team166Arm Team166ArmObject;
+Team166Lift Team166LiftObject;
 Team166TankDrive Team166TankDriveObject;
 Team166Kicker Team166KickerObject;
 Team166Inertia Team166InertiaObject;
@@ -58,7 +58,7 @@ Robot166::Robot166(void) :
 	RobotMode = T166_CONSTRUCTOR;
 	JoyLock = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
 	DSLock = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
-	ArmLock = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
+	LiftLock = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
 	KickLock = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
 	JoyX = JoyY = 0.0;
 	dsHandle = DriverStation::GetInstance();
@@ -76,14 +76,14 @@ Robot166::Robot166(void) :
 	Priv_SetWriteFileAllowed(1);   	
 	
 	GetWatchdog().SetExpiration(5.0); // 5 seconds
-	while (!(Team166ArmObject.MyTaskInitialized && 
+	while (!(Team166LiftObject.MyTaskInitialized && 
 			Team166TankDriveObject.MyTaskInitialized &&
 			Team166VisionObject.MyTaskInitialized &&
 			Team166SonarObject.MyTaskInitialized &&
 			Team166KickerObject.MyTaskInitialized)) {
 		printf("Constructor is waiting %d %d %d %d %d..\n",
 				//printf("Constructor is waiting %d  %d %d %d %d..\n",
-				Team166ArmObject.MyTaskInitialized,
+				Team166LiftObject.MyTaskInitialized,
 				Team166TankDriveObject.MyTaskInitialized,
 				Team166VisionObject.MyTaskInitialized,
 				Team166SonarObject.MyTaskInitialized,
@@ -198,19 +198,19 @@ int Robot166::GetAllianceSwitch(void) {
 
 
 /**
- * Arm command
+ * Lift command
  */
-void Robot166::SetArm(t_ConveyerDirection dir, float lift_motor)
+void Robot166::SetLift(int dir, float lift_motor)
 {
-	semTake(ArmLock, WAIT_FOREVER);
+	semTake(LiftLock, WAIT_FOREVER);
 	// do stuff
 	
-	semGive(ArmLock);
+	semGive(LiftLock);
 	
 	// Done
 	return;
 }
-void Robot166::GetArm(t_ConveyerDirection *dir, float *lift_motor)
+void Robot166::GetLift(int *dir, float *lift_motor)
 {
 	
 	// Pick up the arm command
@@ -232,9 +232,9 @@ void Robot166::GetArm(t_ConveyerDirection *dir, float *lift_motor)
 			break;
 		    }
 	default: {
-		semTake(ArmLock, WAIT_FOREVER);
+		semTake(LiftLock, WAIT_FOREVER);
 		// do stuff
-		semGive(ArmLock);
+		semGive(LiftLock);
 		break;
 	    }
 	}
@@ -346,10 +346,10 @@ void Robot166::OperatorControl(void)
 		}
 		
 		// Each task needs to update for us to feed the watch dog.
-		if (Team166ArmObject.MyWatchDog && Team166KickerObject.MyWatchDog &&
+		if (Team166LiftObject.MyWatchDog && Team166KickerObject.MyWatchDog &&
 				Team166TankDriveObject.MyWatchDog) {
 		    GetWatchdog().Feed();
-		    Team166ArmObject.MyWatchDog = 0;
+		    Team166LiftObject.MyWatchDog = 0;
 		    Team166TankDriveObject.MyWatchDog = 0;
 		    Team166KickerObject.MyWatchDog = 0;
 		}

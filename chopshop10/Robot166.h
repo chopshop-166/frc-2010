@@ -3,7 +3,7 @@
 #include "WPILib.h"
 #include "Team166Task.h"
 #include "TankDrive166.h"
-#include "Arm166.h"
+#include "Lift166.h"
 #include "Kicker166.h"
 #include "MemoryLog166.h"
 #include "Autonomous166.h"
@@ -45,13 +45,12 @@ private:
 	float JoyX;                               // Joystick X position
 	float JoyY;                               // Joystick Y position
     SEM_ID DSLock;                            // Coordination of drive station interface
-    SEM_ID ArmLock;                           // Arm lock
+    SEM_ID LiftLock;                           // Arm lock
     SEM_ID KickLock;                          // Kicker lock
-    t_ConveyerDirection ConvDir;              // Conveyer direction
-    float ConvLift;                           // Conveyer motor lift
+    int LiftDir;            			      // Lift direction //FIX!
+    float LiftMotor;                          // Conveyer motor lift
     DriverStation *dsHandle;                  // Driver Station handle
     MemoryLog166 *mlHead;                     // Memory log head
-    int ConvShake;
     autonomous166 steveautonomous;
     
 public:
@@ -62,10 +61,9 @@ public:
 	void SetJoyStick(float x, float y);       // Set our virtual joystick
 	void GetJoyStick(float *x, float *y);	  // Get our virtual joystick
 	float GetBatteryVoltage(void);            // Get voltage of battery on robot
-	void SetArm(t_ConveyerDirection dir,// Set dispenser/agitator direction
-			float lift_motor);                //
-	void GetArm(t_ConveyerDirection *dir, // Get the direction of the
-			float *lift_motor);               // Dispenser
+	void SetLift(int speed,	float lift_motor);	// Set lift direction			                //
+	void GetLift(int *dir,    // Get the direction of the lift
+			float *lift_motor);            
 
 	void SetKicker(float *kick_motor);		// Set kicker moter
 	void GetKicker(float *kick_motor);		// Get kicker motor status
