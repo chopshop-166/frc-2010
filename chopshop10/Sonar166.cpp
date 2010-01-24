@@ -61,7 +61,7 @@ Team166Sonar::Team166Sonar(void)
 	// Initialize assorted fields
 	
 	// Start our task
-	Start((char *)"166SonarTask");	
+	Start((char *)"166SonarTask", 0.025);	
 };
 	
 // Sonar task destructor

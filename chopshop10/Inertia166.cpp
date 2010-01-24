@@ -64,7 +64,7 @@ Team166Inertia::Team166Inertia(void)
 	// Initialize assorted fields
 	
 	// Start our task
-	Start((char *)"166InertiaTask");	
+	Start((char *)"166InertiaTask", 0.100);	
 };
 	
 // Inertia task destructor
@@ -130,12 +130,9 @@ int Team166Inertia::Main(int a2, int a3, int a4, int a5,
 
 		// Should we log this value?
 		sl.PutOne(x_acc,y_acc, acc_vector);
-
-		//  printf("Current accelerometer values (in g): X=%f Y=%f, Vector=%f\n",
-		//  		x_acc, y_acc, acc_vector);
-
-		MyWatchDog = 1;
-		Wait (0.100); // 100ms
+		
+		// Wait for our next lap
+		WaitForNextLoop();
 	}
 	return (0);
 }

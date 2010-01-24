@@ -66,7 +66,7 @@ unsigned int LiftLog::DumpBuffer(char *nptr, FILE *ofile)
 // task constructor
 Team166Lift::Team166Lift(void)
 {
-	Start((char *)"166LiftTask");
+	Start((char *)"166LiftTask", 0.010);
 	return;
 };
 	
@@ -113,10 +113,9 @@ int Team166Lift::Main(int a2, int a3, int a4, int a5,
 
         // Should we log this value?
 		sl.PutOne(0, 0, 0);
-		MyWatchDog = 1;
-		Wait (0.01); // 100ms
-
-		// 
+		
+		// Wait for our next lap
+		WaitForNextLoop();		
 	}
 	return (0);
 	

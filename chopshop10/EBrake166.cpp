@@ -67,7 +67,7 @@ unsigned int EBrakeLog::DumpBuffer(char *nptr, FILE *ofile)
 // task constructor
 Team166EBrake::Team166EBrake(void)
 {
-	Start((char *)"166EBrakeTask");
+	Start((char *)"166EBrakeTask", 0.010);
 	return;
 };
 	
@@ -106,10 +106,9 @@ int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		// do stuff
 		sl.PutOne(0, 0, 0);
-		MyWatchDog = 1;
-		Wait (0.01); // 100ms
-
-		// 
+		
+		// Wait for our next lap
+		WaitForNextLoop();
 	}
 	return (0);
 	

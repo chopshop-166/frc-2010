@@ -77,7 +77,7 @@ Team166Vision::Team166Vision(void) :
 	greenSpec.luminance.maxValue = 255;
 
 	// Start our task
-	Start((char *)"166VisionTask");	
+	Start((char *)"166VisionTask", 0.050);	
 };
 	
 // Vision task destructor

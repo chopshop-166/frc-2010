@@ -66,7 +66,7 @@ unsigned int HealthMonLog::DumpBuffer(char *nptr, FILE *ofile)
 // task constructor
 Team166HealthMon::Team166HealthMon(void)
 {
-	Start((char *)"166HealthMonTask");
+	Start((char *)"166HealthMonTask", 1.0);
 	return;
 };
 	
@@ -105,10 +105,7 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		// do stuff
 		sl.PutOne(0, 0, 0);
-		MyWatchDog = 1;
-		Wait (1.0); // 1 second
-
-		// 
+		WaitForNextLoop();
 	}
 	return (0);
 	

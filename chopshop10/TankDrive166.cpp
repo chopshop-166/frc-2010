@@ -66,7 +66,7 @@ unsigned int TankDriveLog::DumpBuffer(char *nptr, FILE *ofile)
 // Arm task constructor
 Team166TankDrive::Team166TankDrive(void)
 {
-	Start((char *)"166TankDriveTask");
+	Start((char *)"166TankDriveTask", 0.005);
 	return;
 };
 	
@@ -109,9 +109,9 @@ int Team166TankDrive::Main(int a2, int a3, int a4, int a5,
         
         // Should we log this value?
 		sl.PutOne(0, 0, 0);
-		MyWatchDog = 1;
-		Wait (0.005); // 100ms
-
+		
+		// Wait for our next lap
+		WaitForNextLoop();		
 	}
 	return (0);
 	

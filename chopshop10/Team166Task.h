@@ -142,7 +142,7 @@ public:
 	virtual ~Team166Task() {return;};
 	
 	// General start routine; needs to be called by target constructor
-	int Start(char *tname)
+	int Start(char *tname, float loop_interval)
 	{
 		// Do we have a previous instance of this task?
 		if (MyTaskId) {
@@ -157,6 +157,9 @@ public:
 
 		// Save the task name for later reference
 		MyName = tname;
+		
+		// Capture the preferred loop time
+		MyLoopInterval = loop_interval;
 		
 		// Spawn a new task
 		MyTaskId = taskSpawn(tname, TEAM166TASK_K_PRIO, VX_FP_TASK,
@@ -193,6 +196,16 @@ public:
 	virtual int Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10) = 0;
 	
+	// Wait for next lap
+	void WaitForNextLoop(void)
+	{
+		
+		// Indicate that we've checked in
+		MyWatchDog = 1;
+		
+		// Just sleep the loop interval for now
+		Wait(MyLoopInterval);
+	}
 	// Check if all registered tasks are up
 	static int IfUp(void)
 	{
@@ -254,6 +267,7 @@ public:
 	int MyTaskIsEssential;      // Flag indicating if this task is essential
 	char *MyName;               // Name of this task
 	int MissedWatchDog;         // Missed watchdog count
+	float MyLoopInterval;       // Timing interval for loop
 	
 private:
 	

@@ -66,7 +66,7 @@ unsigned int KickerLog::DumpBuffer(char *nptr, FILE *ofile)
 // task constructor
 Team166Kicker::Team166Kicker(void)
 {
-	Start((char *)"166KickerTask");
+	Start((char *)"166KickerTask", 0.010);
 	return;
 };
 	
@@ -121,8 +121,9 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 
         // Should we log this value?
 		sl.PutOne(0, 0, 0);
-		MyWatchDog = 1;
-		Wait (0.010); // 100ms
+		
+		// Wait for our next lap
+		WaitForNextLoop();		
 	}
 	return (0);
 	

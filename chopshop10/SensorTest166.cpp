@@ -4,7 +4,7 @@
 // Sensor test constructor
 Team166SensorTest::Team166SensorTest(void)
 {
-	Start((char *)"166SensorTestTask");	
+	Start((char *)"166SensorTestTask", 0.100);	
 };
 	
 // Sensor test task destructor
@@ -83,8 +83,9 @@ int Team166SensorTest::Main(int a2, int a3, int a4, int a5,
         if (!(uidx % UMAX))
         	printf("Current Ultrasound value: %f\n", dist);
 #endif
-        MyWatchDog = 1;
-        Wait(0.1);
+		
+		// Wait for our next lap
+		WaitForNextLoop();		
 	}
 	return (0);
 }
