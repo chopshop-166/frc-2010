@@ -1,13 +1,16 @@
-/********************************************************************************
-*  Project   		: Chopshop 2009
-*  File Name  		: Vision166.h          
-*  Contributors   	: ELF, SJE
-*  Creation Date 	: February 2, 2008
-*  Revision History	: Source code & revision history maintained at code.google.com    
-*  File Description	: Header file for vision processing
-*/
+/*******************************************************************************
+*  Project   		: chopshop10 - 2010 Chopshop Robot Controller Code
+*  File Name  		: Vision166.h    
+*  Owner		   	: Software Group (FIRST Chopshop Team 166)
+*  Creation Date	: January 18, 2010
+*  Revision History	: From Explorer with TortoiseSVN, Use "Show log" menu item
+*  File Description	: Robot code header which handles vision of camera
+*******************************************************************************/ 
+/*----------------------------------------------------------------------------*/
+/*  Copyright (c) MHS Chopshop Team 166, 2010.  All Rights Reserved.          */
+/*----------------------------------------------------------------------------*/
 
-#if !defined(_VISION166_H)
+#ifndef _VISION166_H
 #define _VISION166_H
 
 #include "semLib.h"
@@ -20,12 +23,16 @@
 // WPILib include files for vision
 #include "TrackAPI.h" 
 
-// constants
+// Constants
 #define PI 3.14159265358979
+#define DEFAULT_VERTICAL_PAN_POSITION 0
+#define SERVO_DEADBBAND 0.005
+#define VISION_LOOP_TIME 0.050 // seconds
 
-/**
-  Team 166 vision task
-*/
+/*
+ * Team 166 Vision Class
+ * 
+ */
 class Team166Vision : public Team166Task
 {
 	
@@ -43,11 +50,12 @@ public:
 			int a6, int a7, int a8, int a9, int a10);	
 
 	// Accessors
-	bool IsTargetAcquired();
-	bool AcquireTarget();
+	bool IsTargetAcquired(void);
 	// Control
-	float GetBearing();
-	void SetVisionOn(bool);
+	float AngleToTarget(void);
+	void SetVisionActive(bool);
+	
+	
 // Private functions and attributes
 private:
 	Robot166 *lHandle;            // Local handle to  robot instance
@@ -55,21 +63,19 @@ private:
 	
 	ColorMode colorMode;
 	
-	bool targetAcquired;
-	bool visionActive;
-	bool staleFlag;
+	bool targetAcquired; // Target has been acquired since last run
+	bool visionActive; // Vision task should be looking for the target
+	bool staleFlag; 
 	
-	float bearing;
-	float defaultVerticalPosition;
-	float servoDeadband;
+	float bearing; // Angle to target
 	float tilt; 
 	
 	Servo horizontalServo;
 	Servo verticalServo;
 	
+	void IsTargetAccquired();
 	void SetServoPositions(float normalizedHorizontal, float normalizedVertical);
 	void AdjustServoPositions(float normDeltaHorizontal, float normDeltaVertical);
-	void DoServos(float servoHorizontal, float servoVertical);
-	//SecondColorPosition GetRelativePosition();
+	void _SetServoPositions(float servoHorizontal, float servoVertical);
 };
 #endif // !defined(_VISION166_H)

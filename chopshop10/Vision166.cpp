@@ -1,11 +1,15 @@
-/********************************************************************************
-*  Project   		: Chopshop 2009
-*  File Name  		: Vision166.cpp          
-*  Contributors   	: ELF JWG
-*  Creation Date 	: February 2, 2008
-*  Revision History	: Source code & revision history maintained at code.google.com    
-*  File Description	: Code for vision processing
-*/
+/*******************************************************************************
+*  Project   		: chopshop10 - 2010 Chopshop Robot Controller Code
+*  File Name  		: Vision166.cpp     
+*  Owner		   	: Software Group (FIRST Chopshop Team 166)
+*  Creation Date	: January 18, 2010
+*  Revision History	: From Explorer with TortoiseSVN, Use "Show log" menu item
+*  File Description	: Robot code which handles vision of camera
+*******************************************************************************/ 
+/*----------------------------------------------------------------------------*/
+/*  Copyright (c) MHS Chopshop Team 166, 2010.  All Rights Reserved.          */
+/*----------------------------------------------------------------------------*/
+
 #include "WPILib.h"
 #include <math.h>
 
@@ -20,6 +24,7 @@
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(true)dprintf
+
 /** ratio of horizontal image field of view (54 degrees) to horizontal servo (180) */
 #define HORIZONTAL_IMAGE_TO_SERVO_ADJUSTMENT 0.125   // this seems to work
 /** ratio of vertical image field of view (40.5 degrees) to vertical servo (180) */
@@ -30,8 +35,8 @@ Team166Vision::Team166Vision(void) :
 	bearing(0.0),					// current horizontal normalized servo position	
 	tilt(0.0),						// current vertical normalized servo position	
 	targetAcquired(false),			// target not acquired
-	defaultVerticalPosition(0),			// default vertial servo position
-	servoDeadband(0.005),			// pan flag to move if > this amount 
+	defaultVerticalPosition(DEFAULT_VERTICAL_PAN_POSITION),			// default vertial servo position
+	servoDeadband(SERVO_DEADBBAND),			// pan flag to move if > this amount 
 	colorMode(IMAQ_HSL), 			    // Color mode (RGB or HSL) for image processing	
 	horizontalServo(T166_HORIZONTAL_SERVO_CHANNEL),
 	verticalServo(T166_VERTICAL_SERVO_CHANNEL)
@@ -52,7 +57,7 @@ Team166Vision::~Team166Vision(void)
 	return;
 };
 
-/////////////// Control
+/////////////// Control methods
 
 /**
  * @brief Set vision processing on or off
@@ -60,8 +65,8 @@ Team166Vision::~Team166Vision(void)
  * 
  * @param onFlag if true, process images to find the target
  */
-void Team166Vision::SetVisionOn(bool onFlag) {
-	visionActive = onFlag;
+void Team166Vision::SetVisionActive(bool activeFlag) {
+	visionActive = activeFlag;
 }
 
 /**
@@ -70,7 +75,7 @@ void Team166Vision::SetVisionOn(bool onFlag) {
  * @param servoHorizontal Pan Position from 0.0 to 1.0.
  * @param servoVertical Tilt Position from 0.0 to 1.0.
  */
-void Team166Vision::DoServos(float servoHorizontal, float servoVertical)	{
+void Team166Vision::_SetServoPositions(float servoHorizontal, float servoVertical)	{
 	
 	float currentH = horizontalServo.Get();		
 	float currentV = verticalServo.Get();
@@ -101,7 +106,7 @@ void Team166Vision::DoServos(float servoHorizontal, float servoVertical)	{
 void Team166Vision::SetServoPositions(float normalizedHorizontal, float normalizedVertical)	{
 	float servoH = NormalizeToRange(normalizedHorizontal);
 	float servoV = NormalizeToRange(normalizedVertical);
-	DoServos(servoH, servoV);
+	_SetServoPositions(servoH, servoV);
 }	
 /**
  * @brief Adjust servo positions (0.0 to 1.0) translated from normalized values (-1.0 to 1.0). 
@@ -124,6 +129,7 @@ void Team166Vision::AdjustServoPositions(float normDeltaHorizontal, float normDe
 	float currentH = horizontalServo.Get();  //servo range
 	float normCurrentH = RangeToNormalized(currentH, 1);
 	float normDestH = normCurrentH + normDeltaHorizontal;	
+	
 	/* narrow range keep servo from going too far */
 	if (normDestH > 1.0) normDestH = 1.0;
 	if (normDestH < -1.0) normDestH = -1.0;		
@@ -132,6 +138,7 @@ void Team166Vision::AdjustServoPositions(float normDeltaHorizontal, float normDe
 	float currentV = verticalServo.Get();  //servo range
 	float normCurrentV = RangeToNormalized(currentV, 1);
 	float normDestV = normCurrentV + normDeltaVertical;	
+	
 	if (normDestV > 1.0) normDestV = 1.0;
 	if (normDestV < -1.0) normDestV = -1.0;
 	
@@ -141,7 +148,7 @@ void Team166Vision::AdjustServoPositions(float normDeltaHorizontal, float normDe
 	//float servoV = NormalizeToRange(normDestV, 0.2, 0.8);
 	float servoV = NormalizeToRange(normDestV);
 
-	DoServos(servoH, servoV);
+	_SetServoPositions(servoH, servoV);
 }
 
 // process images to find target, then pan the camera so we are looking at it
@@ -151,7 +158,7 @@ void Team166Vision::AdjustServoPositions(float normDeltaHorizontal, float normDe
  * 
  * @return bool Whether we found the target; copy of Team166Vision::targetAcquired
  */
-bool Team166Vision::AcquireTarget() {
+bool Team166Vision::IsTargetAcquired() {
 	return targetAcquired;
 }
 
@@ -177,7 +184,7 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 	while (!Robot166::getInstance() ||
 	       ((Robot166::getInstance()->RobotMode != T166_AUTONOMOUS) &&
 	    	(Robot166::getInstance()->RobotMode != T166_OPERATOR))) {
-		Wait (0.050);
+		Wait (VISION_LOOP_TIME);
 	}
 
 	// get handle to robot
@@ -186,24 +193,27 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 	
 	// set servos to start at center position
 	SetServoPositions(0.0, defaultVerticalPosition);
-					
+				
 	/* for controlling loop execution time */
-	float loopTime = 0.05;		// should be slightly slower than camera
 	double currentTime = GetTime();
-	double lastTime = currentTime;
+	double lastTime = currentTime; // holds the time the vision loop started
 	
     // General main loop (while in Autonomous or Tele mode)
 	DPRINTF("Vision task is getting ready...\n");
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 		   (lHandle->RobotMode == T166_OPERATOR)) 
 	{
+		/*
+		 * Main Vision code runs here
+		 */
+		
 		MyWatchDog = 1;		
 		if (visionActive) {
 			targetAcquired = AcquireTarget();		
 		}
 		SetServoPositions(lHandle->cameraStick.GetX(), lHandle->cameraStick.GetY());
-		if ( (loopTime > ElapsedTime(lastTime)) && !staleFlag) {
-			Wait( loopTime - ElapsedTime(lastTime) ); 
+		if ( (VISION_LOOP_TIME > ElapsedTime(lastTime)) && !staleFlag) {
+			Wait( VISION_LOOP_TIME - ElapsedTime(lastTime) ); 
 		}
 	}
 	return 0;
