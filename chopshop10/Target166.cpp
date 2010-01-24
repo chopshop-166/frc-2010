@@ -4,7 +4,7 @@
 *  Owner		   	: Software Group (FIRST Chopshop Team 166)
 *  Creation Date	: January 18, 2010
 *  Revision History	: From Explorer with TortoiseSVN, Use "Show log" menu item
-*  File Description	: Tracking Routines for FIRST Vision API
+*  File Description	: Robot code find target above goal
 *******************************************************************************/ 
 /*----------------------------------------------------------------------------*/
 /*  Copyright (c) MHS Chopshop Team 166, 2010.  All Rights Reserved.          */

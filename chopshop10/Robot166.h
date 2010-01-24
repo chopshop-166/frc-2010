@@ -1,3 +1,15 @@
+/*******************************************************************************
+*  Project   		: chopshop10 - 2010 Chopshop Robot Controller Code
+*  File Name  		: Robot166.h     
+*  Owner		   	: Software Group (FIRST Chopshop Team 166)
+*  Creation Date	: January 18, 2010
+*  Revision History	: From Explorer with TortoiseSVN, Use "Show log" menu item
+*  File Description	: Header for base class used in entire robot
+*******************************************************************************/ 
+/*----------------------------------------------------------------------------*/
+/*  Copyright (c) MHS Chopshop Team 166, 2010.  All Rights Reserved.          */
+/*----------------------------------------------------------------------------*/
+
 #if !defined(_ROBOT166_H)
 #define _ROBOT166_H
 #include "WPILib.h"

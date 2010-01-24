@@ -1,3 +1,15 @@
+/*******************************************************************************
+*  Project   		: chopshop10 - 2010 Chopshop Robot Controller Code
+*  File Name  		: PIDControl166.h     
+*  Owner		   	: Software Group (FIRST Chopshop Team 166)
+*  Creation Date	: January 18, 2010
+*  Revision History	: From Explorer with TortoiseSVN, Use "Show log" menu item
+*  File Description	: Header for robot code which controls the drive motors
+*******************************************************************************/ 
+/*----------------------------------------------------------------------------*/
+/*  Copyright (c) MHS Chopshop Team 166, 2010.  All Rights Reserved.          */
+/*----------------------------------------------------------------------------*/
+
 #ifndef PIDCONTROL166_H
 #define PIDCONTROL166_H
 
@@ -35,23 +47,10 @@ private:
 	//max and min Output set the limts on the speed values
 	float error, totalError, maxOutput, minOutput;
 
-	
-	
-	
-	
-
-	
 private:
 	Timer time;
-
 	
 };
-
-
-
-
-
-
 
 
 #endif // PIDCONTROL_H

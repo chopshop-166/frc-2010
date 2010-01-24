@@ -1,15 +1,13 @@
 /********************************************************************************
 *  Project   		: FIRST Motor Controller/Chopshop 2009
 *  File Name  		: Target166.h          
-*  Contributors   	: ELF
-*  Creation Date 	: January 12, 2008
-*  Revision History	: Source code & revision history maintained at sourceforge.WPI.edu    
-*  File Description	: Globally defined values for the FIRST Vision API
+*  Owner		   	: Software Group (FIRST Chopshop Team 166)
+*  Creation Date	: January 18, 2010
+*  Revision History	: From Explorer with TortoiseSVN, Use "Show log" menu item
+*  File Description	: Header for robot code find target above goal
 */
 /*----------------------------------------------------------------------------*/
-/*        Copyright (c) FIRST 2008.  All Rights Reserved.                     */
-/*  Open Source Software - may be modified and shared by FRC teams. The code  */
-/*  must be accompanied by the FIRST BSD license file in $(WIND_BASE)/WPILib. */
+/*  Copyright (c) MHS Chopshop Team 166, 2010.  All Rights Reserved.          */
 /*----------------------------------------------------------------------------*/
 
 #ifndef __TARGET_H__
