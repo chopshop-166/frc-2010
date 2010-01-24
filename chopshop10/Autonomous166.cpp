@@ -11,16 +11,18 @@
 /*----------------------------------------------------------------------------*/
 
 #include "Autonomous166.h"
+#include "Vision166.h"
 #include "Robot166.h"
 
 Autonomous166::Autonomous166() {
-	while(!( lHandle = Robot166::getInstance() ) || 
-			!( lHandle->IsAutonomous() )
+	while(!( Robot166::getInstance() ) || 
+			!( Robot166::getInstance()->IsAutonomous() )
 		  ) {
 		Wait(AUTONOMOUS_WAIT_TIME);
 	}
-	while(lHandle->IsAutonomous()) {
-		// Repeat Autonomous code loop here
-		Wait(AUTONOMOUS_WAIT_TIME);
-	}
+}
+void Autonomous166::Autonomous(void) {
+	// Called  by Robot166 Autonomous()
+	// Design as a loop
+	Wait(AUTONOMOUS_WAIT_TIME);
 }

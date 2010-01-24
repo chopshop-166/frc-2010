@@ -17,9 +17,8 @@
 #include "TankDrive166.h"
 #include "Lift166.h"
 #include "Kicker166.h"
-#include "MemoryLog166.h"
 #include "Autonomous166.h"
-
+#include "MemoryLog166.h"
 //
 // Robot modes
 //
@@ -41,6 +40,7 @@ class Robot166 : public SimpleRobot
 public:
 	Joystick driveStick;                      // joy stick for driving
 	Joystick dispStick;                       // Dispenser joy stick
+	Joystick cameraStick; 					  // Camera joy stick
     t_RobotMode RobotMode;                    // Robot mode
     Encoder lfEncoder;                        // Encoder for the Left Front
     Encoder rfEncoder;						  // Encoder for the Right Front
@@ -63,7 +63,7 @@ private:
     float LiftMotor;                          // Conveyer motor lift
     DriverStation *dsHandle;                  // Driver Station handle
     MemoryLog166 *mlHead;                     // Memory log head
-    autonomous166 steveautonomous;
+    Autonomous166 AutonomousObject;
     
 public:
 	Robot166(void);                           // Constructor

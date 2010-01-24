@@ -58,6 +58,7 @@ static Robot166 *RobotHandle = 0;
 Robot166::Robot166(void) :
 	driveStick(T166_USB_STICK_1),        // USB port for 1st stick
 	dispStick(T166_USB_STICK_2),        // USB port for 2nd stick
+	cameraStick(T166_USB_STICK_3),
 	lfEncoder(T166_ENC_LF_A, T166_ENC_LF_B, true), // Left Front encoder pins
 	rfEncoder(T166_ENC_RF_A, T166_ENC_RF_B, false), // Right Front encoder pins
 	lbEncoder(T166_ENC_LB_A, T166_ENC_LB_B, true), // Left Back encoder pins
@@ -66,8 +67,7 @@ Robot166::Robot166(void) :
 	treadmill_victor(T166_TREADMILL_MOTOR), // Victor controlling the treadmill
     limitswitch_top(TOP_LIMITSWITCH_DIGITAL_INPUT),  //top limit switch digital input
     limitswitch_bottom(BOTTOM_LIMITSWITCH_DIGITAL_INPUT), //bottom limit switch digital input 
-   
-    steveautonomous()
+    AutonomousObject()
 {
 	/* set up debug output: 
 	 * DEBUG_OFF, DEBUG_MOSTLY_OFF, DEBUG_SCREEN_ONLY, DEBUG_FILE_ONLY, DEBUG_SCREEN_AND_FILE  */
@@ -154,9 +154,9 @@ void Robot166::GetJoyStick(float *x, float *y)
 			    	swpos = 1;
 			    }
 				if(Team166VisionObject.IsTargetAcquired())
-					{
-						*x = Team166VisionObject.GetBearing();
-					}
+				{
+					*x = Team166VisionObject.GetBearing();
+				}
 				else
 					{
 						*x = driveStick.GetX();
@@ -326,7 +326,7 @@ void Robot166::Autonomous(void)
 	//DPRINTF(LOG_DEBUG,"autonomous\n");
 	RobotMode = T166_AUTONOMOUS;
 	GetWatchdog().SetEnabled(false);
-	steveautonomous.autonomous_main();
+	AutonomousObject.Autonomous();
 }
 
 /** 

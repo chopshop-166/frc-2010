@@ -106,7 +106,9 @@
 /** First stick is in USB port #1 */
 #define T166_USB_STICK_1 (1)                
 /** Second stick is in USB port #2 */
-#define T166_USB_STICK_2 (2)               
+#define T166_USB_STICK_2 (2)   
+/** Second stick is in USB port #2 */
+#define T166_USB_STICK_3 (3)   
 
 
 //

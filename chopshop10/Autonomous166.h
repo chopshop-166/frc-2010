@@ -10,12 +10,10 @@
 /*  Copyright (c) MHS Chopshop Team 166, 2010.  All Rights Reserved.          */
 /*----------------------------------------------------------------------------*/
 
-#ifndef autonomous_h
-#define autonomous_h
+#ifndef _AUTONOMOUS_H
+#define _AUTONOMOUS_H
 #include "MemoryLog166.h"
 #include "WPILib.h"
-#include "Robot166.h"
-#include "Autonomous166.h"
 #include "Timer.h"
 #include "BaeUtilities.h"
 #include "Vision166.h"
@@ -23,8 +21,6 @@
 
 extern Team166Vision Team166VisionObject;
 
-// To locally enable debug printing: set true, to disable false
-#define DPRINTF if(false)dprintf
 #define AUTONOMOUS_WAIT_TIME 0.050
 
 class Autonomous166
@@ -32,14 +28,7 @@ class Autonomous166
 	public:
 		Autonomous166(void);
 		~Autonomous166(void);
-	private:
-		Robot166 *lHandle;
-		DriverStation *dsHandle;
+		void Autonomous(void);
 };
 
-
-
-
-
 #endif
-

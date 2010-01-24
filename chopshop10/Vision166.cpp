@@ -11,10 +11,9 @@
 /*----------------------------------------------------------------------------*/
 
 #include "WPILib.h"
-#include <math.h>
-
-// 166 include files
 #include "Vision166.h"
+#include <math.h>
+#include "Robot166.h"
 
 // WPILib include files for vision
 #include "AxisCamera.h" 
@@ -35,8 +34,6 @@ Team166Vision::Team166Vision(void) :
 	bearing(0.0),					// current horizontal normalized servo position	
 	tilt(0.0),						// current vertical normalized servo position	
 	targetAcquired(false),			// target not acquired
-	defaultVerticalPosition(DEFAULT_VERTICAL_PAN_POSITION),			// default vertial servo position
-	servoDeadband(SERVO_DEADBBAND),			// pan flag to move if > this amount 
 	colorMode(IMAQ_HSL), 			    // Color mode (RGB or HSL) for image processing	
 	horizontalServo(T166_HORIZONTAL_SERVO_CHANNEL),
 	verticalServo(T166_VERTICAL_SERVO_CHANNEL)
@@ -81,12 +78,12 @@ void Team166Vision::_SetServoPositions(float servoHorizontal, float servoVertica
 	float currentV = verticalServo.Get();
 	
 	/* make sure the movement isn't too small */
-	if ( fabs(servoHorizontal - currentH) > servoDeadband ) {
+	if ( fabs(servoHorizontal - currentH) > SERVO_DEADBAND ) {
 		horizontalServo.Set( servoHorizontal );
 		/* save new normalized horizontal position */
 		bearing = RangeToNormalized(servoHorizontal, 1);
 	}
-	if ( fabs(servoVertical - currentV) > servoDeadband ) {
+	if ( fabs(servoVertical - currentV) > SERVO_DEADBAND ) {
 		// don't look straight up or down
 		if (servoVertical > 0.9) servoVertical = 0.9;
 		if (servoVertical < 0.1) servoVertical = 0.1;
@@ -168,11 +165,11 @@ bool Team166Vision::IsTargetAcquired() {
  * @return float Bearing -1.0 to 1.0
  */
 float Team166Vision::GetBearing() {
-	return 0;
+	return bearing;
 }
 
-bool Team166Vision::IsTargetAcquired() {
-	return targetAcquired;
+void Team166Vision::AcquireTarget() {
+	// Get the target
 }
 // Main function of the vision task
 int Team166Vision::Main(int a2, int a3, int a4, int a5,
@@ -188,11 +185,11 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 	}
 
 	// get handle to robot
-	lHandle = Robot166::getInstance();
-	dsHandle = DriverStation::GetInstance();
+	Robot166 *lHandle = Robot166::getInstance();
+	DriverStation *dsHandle = DriverStation::GetInstance();
 	
 	// set servos to start at center position
-	SetServoPositions(0.0, defaultVerticalPosition);
+	SetServoPositions(0.0, DEFAULT_VERTICAL_PAN_POSITION);
 				
 	/* for controlling loop execution time */
 	double currentTime = GetTime();
@@ -209,7 +206,8 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 		
 		MyWatchDog = 1;		
 		if (visionActive) {
-			targetAcquired = AcquireTarget();		
+			AcquireTarget();
+			targetAcquired = IsTargetAcquired();		
 		}
 		SetServoPositions(lHandle->cameraStick.GetX(), lHandle->cameraStick.GetY());
 		if ( (VISION_LOOP_TIME > ElapsedTime(lastTime)) && !staleFlag) {

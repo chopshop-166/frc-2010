@@ -15,7 +15,6 @@
 
 #include "semLib.h"
 #include "WPILib.h"
-#include "Robot166.h"
 #include "Team166Task.h"
 #include "MemoryLog166.h"
 #include "Target166.h" 
@@ -26,7 +25,7 @@
 // Constants
 #define PI 3.14159265358979
 #define DEFAULT_VERTICAL_PAN_POSITION 0
-#define SERVO_DEADBBAND 0.005
+#define SERVO_DEADBAND 0.005
 #define VISION_LOOP_TIME 0.050 // seconds
 
 /*
@@ -51,16 +50,14 @@ public:
 
 	// Accessors
 	bool IsTargetAcquired(void);
-	// Control
 	float AngleToTarget(void);
+	float GetBearing(void);
+	// Control
 	void SetVisionActive(bool);
 	
 	
 // Private functions and attributes
-private:
-	Robot166 *lHandle;            // Local handle to  robot instance
-	DriverStation *dsHandle;
-	
+private:	
 	ColorMode colorMode;
 	
 	bool targetAcquired; // Target has been acquired since last run
@@ -73,6 +70,7 @@ private:
 	Servo horizontalServo;
 	Servo verticalServo;
 	
+	void AcquireTarget();
 	void IsTargetAccquired();
 	void SetServoPositions(float normalizedHorizontal, float normalizedVertical);
 	void AdjustServoPositions(float normDeltaHorizontal, float normDeltaVertical);
