@@ -20,6 +20,10 @@ Team166Task::Team166Task(int IsEssential)
 	MyTaskIsEssential = IsEssential;
 	MyName = 0;
 	MissedWatchDog = 0;
+	exit_time.tv_sec = 0;	
+	exit_time.tv_nsec = 0;
+	last_print_sec = 0;
+	loop_calls = 0;
 };
 	
 // Destructor
@@ -29,7 +33,7 @@ Team166Task::~Team166Task()
 };
 	
 // General start routine; needs to be called by target constructor
-int Team166Task::Start(char *tname, float loop_interval)
+int Team166Task::Start(char *tname, unsigned int loop_interval)
 {
 	// Do we have a previous instance of this task?
 	if (MyTaskId) {
@@ -46,7 +50,11 @@ int Team166Task::Start(char *tname, float loop_interval)
 	MyName = tname;
 		
 	// Capture the preferred loop time
-	MyLoopInterval = loop_interval;
+	if (loop_interval >= 1000) {
+		MyLoopMs = 999 * 1000 * 1000; // Convert ms to ns
+	} else {
+		MyLoopMs = loop_interval * 1000 * 1000; // Convert ms to ns
+	}
 		
 	// Spawn a new task
 	MyTaskId = taskSpawn(tname, TEAM166TASK_K_PRIO, VX_FP_TASK,
@@ -100,6 +108,12 @@ void Team166Task::WaitForGoAhead(void)
 	}
 	MyTaskInitialized = 2;
 	
+	// Establish our start time
+	clock_gettime(CLOCK_REALTIME, &start_time);
+	
+	// And then the nano seconds left to the next full second
+	nano_left = (1000*1000*1000) - start_time.tv_nsec;
+	
 	// Done
 	return;
 };
@@ -108,11 +122,70 @@ void Team166Task::WaitForGoAhead(void)
 void Team166Task::WaitForNextLoop(void)
 {
 		
+	struct timespec current_time; // Time when we check again
+	struct timespec delta_time;   // Time when we check again
+	struct timespec non_sleep;    // Time not slept
+	struct timespec rundelta_time;// Time when we check again
+	
 	// Indicate that we've checked in
 	MyWatchDog = 1;
+	
+	// Get the current time
+	clock_gettime(CLOCK_REALTIME, &current_time);
+	
+	// Compute delta time since we started our loop
+	delta_time.tv_sec = current_time.tv_sec - start_time.tv_sec;
+	if (current_time.tv_nsec >= start_time.tv_nsec) {
+		delta_time.tv_nsec = current_time.tv_nsec - start_time.tv_nsec;
+	} else {
+		delta_time.tv_nsec = current_time.tv_nsec + nano_left;
+		delta_time.tv_sec--; // We do not care about this for our sleep
+	}
+	
+	// How far into this cycle have we run?
+	delta_time.tv_nsec = MyLoopMs - (delta_time.tv_nsec % MyLoopMs);
+	if ((unsigned int)delta_time.tv_nsec < half_tick)
+		  delta_time.tv_nsec = MyLoopMs;
+	delta_time.tv_sec = 0;
+	
+	// Enable task preemption
+	taskUnlock();
+	
+	// Figure out how long our task ran
+	if ((exit_time.tv_sec != 0) || (exit_time.tv_nsec)) {
+		rundelta_time.tv_sec = current_time.tv_sec - exit_time.tv_sec;
+		if (current_time.tv_nsec >= exit_time.tv_nsec) {
+			rundelta_time.tv_nsec = current_time.tv_nsec - exit_time.tv_nsec;
+		} else {
+			rundelta_time.tv_nsec = exit_time.tv_nsec + current_time.tv_nsec;
+			rundelta_time.tv_sec--; // We do not care about this for our sleep
+		}
 		
-	// Just sleep the loop interval for now
-	Wait(MyLoopInterval);
+		// Have we exceeded our run length?
+		if (rundelta_time.tv_sec || ((unsigned int)rundelta_time.tv_nsec > MyLoopMs))
+			OverRuns++;
+	} else {
+		rundelta_time.tv_sec = 0;
+		rundelta_time.tv_nsec = 0;
+		OverRuns = 0;
+	}
+	
+	// Next, wait for our time.
+	nanosleep((const struct timespec *)&delta_time, &non_sleep);
+	
+	// Get our exit time from this routine
+	clock_gettime(CLOCK_REALTIME, &exit_time);	
+	
+	// Display a log message once per seond
+	loop_calls++;
+	if (last_print_sec != current_time.tv_sec) {
+		last_print_sec = current_time.tv_sec;
+		printf("Task '%s' checking in after %u calls with %u over runs\n", MyName, loop_calls, OverRuns);
+		loop_calls = 0;
+	}
+	
+	// Disable task preemption so we get a clean run-burst
+	taskLock();
 };
 
 // Check if all registered tasks are up

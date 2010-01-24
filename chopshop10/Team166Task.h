@@ -140,7 +140,7 @@ public:
 	virtual ~Team166Task();
 	
 	// General start routine; needs to be called by target constructor
-	int Start(char *tname, float loop_interval);
+	int Start(char *tname, unsigned int loop_interval);
 	
 	// Jacket routine that leads into the actual Main routine of target
 	static int MainJacket(void *this_p, int a2, int a3, int a4, int a5,
@@ -171,6 +171,8 @@ public:
 	char *MyName;               // Name of this task
 	int MissedWatchDog;         // Missed watchdog count
 	float MyLoopInterval;       // Timing interval for loop
+	unsigned int MyLoopMs;      // Length of loop for this 
+	unsigned int OverRuns;      // Task over runs
 	
 private:
 	
@@ -181,5 +183,10 @@ private:
 	unsigned int crate;           // Clock rate
 	unsigned int half_tick;       // Length of a half tick
 	struct timespec start_time;   // Time when our logic starts		
+	unsigned int nano_left;       // Nano seconds left of second
+	struct timespec exit_time;    // Time when we left the wait call
+	unsigned int last_print_sec;  // Last second we printed out a log message
+	unsigned int loop_calls;      // Times we've been called to wait
+	
 };
 #endif // !defined(_TEAM166TASK_H)

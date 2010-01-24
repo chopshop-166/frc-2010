@@ -76,7 +76,7 @@ Team166Inertia::Team166Inertia(void)
 	// Initialize assorted fields
 	
 	// Start our task
-	Start((char *)"166InertiaTask", 0.100);	
+	Start((char *)"166InertiaTask", INERTIA_CYCLE_TIME);	
 };
 	
 // Inertia task destructor

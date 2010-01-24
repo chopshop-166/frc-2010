@@ -63,7 +63,7 @@ private:
     float LiftMotor;                          // Conveyer motor lift
     DriverStation *dsHandle;                  // Driver Station handle
     MemoryLog166 *mlHead;                     // Memory log head
-    Autonomous166 AutonomousObject;
+    Autonomous166 AutonomousObject;           // Autonomous control
     
 public:
 	Robot166(void);                           // Constructor

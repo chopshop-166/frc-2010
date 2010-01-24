@@ -78,7 +78,7 @@ unsigned int LiftLog::DumpBuffer(char *nptr, FILE *ofile)
 // task constructor
 Team166Lift::Team166Lift(void)
 {
-	Start((char *)"166LiftTask", 0.010);
+	Start((char *)"166LiftTask", LIFT_CYCLE_TIME);
 	return;
 };
 	

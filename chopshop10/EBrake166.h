@@ -17,9 +17,9 @@
 
 //
 // This constant defines how often we want this task to run in the form
-// of fractional seconds.
+// of miliseconds. Max allowed time is 999 miliseconds.
 //
-#define EBRAKE_CYCLE_TIME (0.010) // 10ms
+#define EBRAKE_CYCLE_TIME (10) // 10ms
 
 class Team166EBrake : public Team166Task
 {

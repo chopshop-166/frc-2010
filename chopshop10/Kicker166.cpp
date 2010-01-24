@@ -78,7 +78,7 @@ unsigned int KickerLog::DumpBuffer(char *nptr, FILE *ofile)
 // task constructor
 Team166Kicker::Team166Kicker(void)
 {
-	Start((char *)"166KickerTask", 0.010);
+	Start((char *)"166KickerTask", KICKER_CYCLE_TIME);
 	return;
 };
 	

@@ -16,7 +16,7 @@
 // Sensor test constructor
 Team166SensorTest::Team166SensorTest(void)
 {
-	Start((char *)"166SensorTestTask", 0.100);	
+	Start((char *)"166SensorTestTask", SENSORTEST_CYCLE_TIME);	
 };
 	
 // Sensor test task destructor

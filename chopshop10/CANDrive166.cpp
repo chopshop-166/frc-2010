@@ -78,7 +78,7 @@ unsigned int CANDriveLog::DumpBuffer(char *nptr, FILE *ofile)
 // task constructor
 Team166CANDrive::Team166CANDrive(void)
 {
-	Start((char *)"166CANDriveTask", 0.010);
+	Start((char *)"166CANDriveTask", CAN_CYCLE_TIME);
 	return;
 };
 	

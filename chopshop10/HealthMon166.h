@@ -15,6 +15,12 @@
 #include "WPILib.h"
 #include "Robot166.h"
 
+//
+// This constant defines how often we want this task to run in the form
+// of miliseconds. Max allowed time is 999 miliseconds.
+//
+#define HEALTHMON_CYCLE_TIME (999) // 999ms
+
 class Team166HealthMon : public Team166Task
 {
 	

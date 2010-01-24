@@ -17,6 +17,11 @@
 #include "semLib.h"
 
 //
+// This constant defines how often we want this task to run in the form
+// of miliseconds. Max allowed time is 999 miliseconds.
+//
+#define SENSORTEST_CYCLE_TIME (100) // 100ms
+//
 // This defines a sample sensor test task
 //
 class Team166SensorTest : public Team166Task

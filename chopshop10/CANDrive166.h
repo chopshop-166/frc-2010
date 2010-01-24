@@ -15,6 +15,13 @@
 #include "WPILib.h"
 #include "Robot166.h"
 
+//
+// This constant defines how often we want this task to run in the form
+// of miliseconds. Max allowed time is 999 miliseconds.
+//
+#define CAN_CYCLE_TIME (10) // 10ms
+
+
 #define NO_SPEED				 0    //speed to use when there is no input
 
 class Team166CANDrive : public Team166Task

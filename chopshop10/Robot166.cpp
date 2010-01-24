@@ -22,7 +22,7 @@
 #include "SensorTest166.h"
 //#include "Inertia166.h"
 #include "Vision166.h"
-//#include "Sonar166.h"
+#include "Sonar166.h"
 #include "RobotCamera166.h"
 #include "CANDrive166.h"
 #include "EBrake166.h"
@@ -40,10 +40,10 @@ Team166TankDrive Team166TankDriveObject;
 Team166Kicker Team166KickerObject;
 //Team166Inertia Team166InertiaObject;
 Team166Vision Team166VisionObject;
-//Team166Sonar Team166SonarObject;
-Team166Vision Team166CANDriveObject;
-Team166Vision Team166EBrakeObject;
-Team166Vision Team166HealthMonObject;
+Team166Sonar Team166SonarObject; // Stop gap to make Autonomous compile
+Team166CANDrive Team166CANDriveObject;
+Team166EBrake Team166EBrakeObject;
+Team166HealthMon Team166HealthMonObject;
 
 // This links to the single instance of the Robot task
 class Robot166;

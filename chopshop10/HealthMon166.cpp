@@ -78,7 +78,7 @@ unsigned int HealthMonLog::DumpBuffer(char *nptr, FILE *ofile)
 // task constructor
 Team166HealthMon::Team166HealthMon(void)
 {
-	Start((char *)"166HealthMonTask", 1.0);
+	Start((char *)"166HealthMonTask", HEALTHMON_CYCLE_TIME);
 	return;
 };
 	

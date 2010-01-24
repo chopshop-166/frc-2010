@@ -78,7 +78,7 @@ unsigned int TankDriveLog::DumpBuffer(char *nptr, FILE *ofile)
 // Arm task constructor
 Team166TankDrive::Team166TankDrive(void)
 {
-	Start((char *)"166TankDriveTask", 0.005);
+	Start((char *)"166TankDriveTask", TANKDRIVE_CYCLE_TIME);
 	return;
 };
 	
