@@ -1,3 +1,15 @@
+/*******************************************************************************
+*  Project   		: chopshop10 - 2010 Chopshop Robot Controller Code
+*  File Name  		: CANDrive166.h     
+*  Owner		   	: Software Group (FIRST Chopshop Team 166)
+*  Creation Date	: January 23, 2010
+*  Revision History	: From Explorer with TortoiseSVN, Use "Show log" menu item
+*  File Description	: Header for code which monitors jaguar return info
+*******************************************************************************/ 
+/*----------------------------------------------------------------------------*/
+/*  Copyright (c) MHS Chopshop Team 166, 2010.  All Rights Reserved.          */
+/*----------------------------------------------------------------------------*/
+
 #if !defined(_CANDRIVE166_H)
 #define _CANDRIVE166_H
 #include "WPILib.h"

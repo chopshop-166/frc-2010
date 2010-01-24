@@ -1,3 +1,15 @@
+/*******************************************************************************
+*  Project   		: chopshop10 - 2010 Chopshop Robot Controller Code
+*  File Name  		: EBrake166.cpp     
+*  Owner		   	: Software Group (FIRST Chopshop Team 166)
+*  Creation Date	: January 23, 2010
+*  Revision History	: From Explorer with TortoiseSVN, Use "Show log" menu item
+*  File Description	: Code which does electronic motor braking
+*******************************************************************************/ 
+/*----------------------------------------------------------------------------*/
+/*  Copyright (c) MHS Chopshop Team 166, 2010.  All Rights Reserved.          */
+/*----------------------------------------------------------------------------*/
+
 #include "WPILib.h"
 #include "Team166Task.h"
 #include "EBrake166.h"

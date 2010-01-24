@@ -1,11 +1,15 @@
-/********************************************************************************
-*  Project   		: Chopshop 2009
-*  File Name  		: Vision166.cpp          
-*  Contributors   	: ELF
-*  Creation Date 	: February 2, 2008
-*  Revision History	: Source code & revision history maintained at code.google.com    
-*  File Description	: Code for vision processing
-*/
+/*******************************************************************************
+*  Project   		: chopshop10 - 2010 Chopshop Robot Controller Code
+*  File Name  		: Vision166.cpp     
+*  Owner		   	: Software Group (FIRST Chopshop Team 166)
+*  Creation Date	: January 18, 2010
+*  Revision History	: From Explorer with TortoiseSVN, Use "Show log" menu item
+*  File Description	: Robot code which handles vision of camera
+*******************************************************************************/ 
+/*----------------------------------------------------------------------------*/
+/*  Copyright (c) MHS Chopshop Team 166, 2010.  All Rights Reserved.          */
+/*----------------------------------------------------------------------------*/
+
 #include "WPILib.h"
 #include <math.h>
 
