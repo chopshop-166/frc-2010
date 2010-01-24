@@ -97,19 +97,13 @@ int Team166Inertia::Main(int a2, int a3, int a4, int a5,
 	
 	// Let the world know we're in
 	printf("In the 166 intertia task\n");
-		
-	// Indicate that we've now completed initialization
-	MyTaskInitialized = 1;
-		
-	// Ensure we get into Autononmous or Tele Operasted mode
-	while (!Robot166::getInstance() ||
-	       ((Robot166::getInstance()->RobotMode != T166_AUTONOMOUS) &&
-	    	(Robot166::getInstance()->RobotMode != T166_OPERATOR))) {
-		Wait (T166_TA_WAIT_LENGTH);
-	}
-	MyTaskInitialized = 2;
+	
+	// Wait for Robot go-ahead (e.g. entering Autonomous or Tele-operated mode)
+	WaitForGoAhead();
+	
+	// Register our logger
 	lHandle = Robot166::getInstance();
-	lHandle->RegisterLogger(&sl);
+	lHandle->RegisterLogger(&sl);	
 	
 #if 1 // 2008 model
 	// Initialize 2008 Accelerometer (Analog Devices ADXL204)

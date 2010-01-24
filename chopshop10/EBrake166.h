@@ -3,6 +3,12 @@
 #include "WPILib.h"
 #include "Robot166.h"
 
+//
+// This constant defines how often we want this task to run in the form
+// of fractional seconds.
+//
+#define EBRAKE_CYCLE_TIME (0.010) // 10ms
+
 class Team166EBrake : public Team166Task
 {
 	

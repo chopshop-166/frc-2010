@@ -86,19 +86,13 @@ int Team166TankDrive::Main(int a2, int a3, int a4, int a5,
 	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 TankDrive task\n");
-		
-	// Indicate that we've now completed initialization
-	MyTaskInitialized = 1;
-		
-	// Ensure we get into Autononmous or Tele Operated mode
-	while (!Robot166::getInstance() ||
-	       ((Robot166::getInstance()->RobotMode != T166_AUTONOMOUS) &&
-	    	(Robot166::getInstance()->RobotMode != T166_OPERATOR))) {
-		Wait (T166_TA_WAIT_LENGTH);
-	}
-	MyTaskInitialized = 2;
+	
+	// Wait for Robot go-ahead (e.g. entering Autonomous or Tele-operated mode)
+	WaitForGoAhead();
+	
+	// Register our logger
 	lHandle = Robot166::getInstance();
-	lHandle->RegisterLogger(&sl);	
+	lHandle->RegisterLogger(&sl);
 		
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 

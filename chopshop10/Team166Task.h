@@ -10,6 +10,8 @@
 #if !defined(_TEAM166TASK_H)
 #define _TEAM166TASK_H
 #include "WPILib.h"
+#include <math.h>
+#include <sysLib.h>
 
 //
 // task (as in kernel task)
@@ -127,137 +129,33 @@ class Team166Task
 public:
 	
 	// Constructor
-	Team166Task(int IsEssential=1)
-	{
-		// Indicate we've never been spawned before
-		MyTaskId = 0;
-		MyTaskInitialized = 0;
-		MyWatchDog = 0;
-		MyTaskIsEssential = IsEssential;
-		MyName = 0;
-		MissedWatchDog = 0;
-	}
+	Team166Task(int IsEssential=1);
 	
 	// Destructor
-	virtual ~Team166Task() {return;};
+	virtual ~Team166Task();
 	
 	// General start routine; needs to be called by target constructor
-	int Start(char *tname, float loop_interval)
-	{
-		// Do we have a previous instance of this task?
-		if (MyTaskId) {
-			
-			// Yes. Get rid of it.
-			printf("Killing previous instance of task '%s' with id '0x%x'\n",
-					tname, MyTaskId);
-			taskDelete(MyTaskId);
-			MyTaskId = 0;
-			MyTaskInitialized = 0;
-		}
-
-		// Save the task name for later reference
-		MyName = tname;
-		
-		// Capture the preferred loop time
-		MyLoopInterval = loop_interval;
-		
-		// Spawn a new task
-		MyTaskId = taskSpawn(tname, TEAM166TASK_K_PRIO, VX_FP_TASK,
-				TEAM166TASK_K_STACKSIZE, (FUNCPTR) Team166Task::MainJacket,
-				(int)this, 0, 0, 0, 0, 0, 0, 0, 0, 0);
- 		printf("Task '%s' spawned with ID '0x%x'\n", tname, MyTaskId);
-		
-		//  Back to caller with the ID of the task we just spawned
-		return (MyTaskId);		
-	};
+	int Start(char *tname, float loop_interval);
 	
 	// Jacket routine that leads into the actual Main routine of target
 	static int MainJacket(void *this_p, int a2, int a3, int a4, int a5,
-					int a6, int a7, int a8, int a9, int a10)
-	{
-
-		int l;  // Local loop variable
-		
-		// Find the next available slot
-		for (l=0; l<T166_MAXTASK; l++)
-			if (!ActiveTasks[l])
-				break;
-		
-		// Do we have room for one more?
-		if (l != T166_MAXTASK) {
-			ActiveTasks[l] = (Team166Task *)this_p;
-		}
-
-		// Just daisy chain over to virtual main function
-		return (((Team166Task *)this_p)->Main(a2, a3, a4, a5, a6, a7, a8, a9, a10));
-	}
+					int a6, int a7, int a8, int a9, int a10);
 	
 	// Each class needs to implement this Main function
 	virtual int Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10) = 0;
 	
+	// Wait for Robot go-ahead
+	void WaitForGoAhead(void);
+	
 	// Wait for next lap
-	void WaitForNextLoop(void)
-	{
-		
-		// Indicate that we've checked in
-		MyWatchDog = 1;
-		
-		// Just sleep the loop interval for now
-		Wait(MyLoopInterval);
-	}
-	// Check if all registered tasks are up
-	static int IfUp(void)
-	{
-		int l;  // Local loop variable
+	void WaitForNextLoop(void);
 
-		// Loop through all the slots and check each registered task
-		for (l=0; l<T166_MAXTASK; l++) {
-			
-			// If the task is registered but not initialized, we're not done
-			if ((ActiveTasks[l]) &&
-				 (!ActiveTasks[l]->MyTaskInitialized)) {
-				return (0);	
-			}
-		}
-		
-		// We're good
-		return (1);
-	}
+	// Check if all registered tasks are up
+	static int IfUp(void);
 	
 	// Should we feed the watchdog?
-	static int FeedWatchDog(void)
-	{
-		
-		int l;  // Local loop variable
-		
-		// Loop through all the slots and check each registered task
-		for (l=0; l<T166_MAXTASK; l++) {
-			
-			// Is this a registered and essential task?
-			if ((ActiveTasks[l]) &&
-				 (ActiveTasks[l]->MyTaskIsEssential)) {
-				
-				// Yes. Has this task set its watchdog?
-				if (!ActiveTasks[l]->MyWatchDog) {
-					
-					// No. Tell caller at least one task is not ready
-					if (ActiveTasks[l]->MissedWatchDog++ > T166_WATCHDOG_MIN)
-						printf("Task '%s' has not reported its watchdog %d times in a row.\n", ActiveTasks[l]->MyName ? ActiveTasks[l]->MyName : "unknown", T166_WATCHDOG_MIN);
-					return (0);
-				}
-			}
-		}
-		
-		// If we get here they have all said we're good. Clear them and tell caller
-		for (l=0; l<T166_MAXTASK; l++)
-			if ((ActiveTasks[l]) &&
-				 (ActiveTasks[l]->MyTaskIsEssential)) {
-				ActiveTasks[l]->MyWatchDog = 0;
-				ActiveTasks[l]->MissedWatchDog = 0;				
-			}
-		return (1);
-	}
+	static int FeedWatchDog(void);
 
 // Data members
 public:
@@ -274,5 +172,9 @@ private:
 	// This array points to tasks that have requested to be initialized
 	static Team166Task *ActiveTasks[T166_MAXTASK + 1];
 	
+	// Used for time calculations
+	unsigned int crate;           // Clock rate
+	unsigned int half_tick;       // Length of a half tick
+	struct timespec start_time;   // Time when our logic starts		
 };
 #endif // !defined(_TEAM166TASK_H)
