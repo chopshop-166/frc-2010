@@ -1,11 +1,14 @@
-/********************************************************************************
-*  Project   		: Chopshop 2009
-*  File Name  		: Team166Task.h          
-*  Contributors   	: PSH
-*  Creation Date 	: February 6, 2008
-*  Revision History	: Source code & revision history maintained at code.google.com    
-*  File Description	: This file defines the high level and shared context for a Team 166
-*/
+/*******************************************************************************
+*  Project   		: chopshop10 - 2010 Chopshop Robot Controller Code
+*  File Name  		: Team166Task.h     
+*  Owner		   	: Software Group (FIRST Chopshop Team 166)
+*  Creation Date	: January 18, 2010
+*  Revision History	: From Explorer with TortoiseSVN, Use "Show log" menu item
+*  File Description	: Header for main robot task and global paramters
+*******************************************************************************/ 
+/*----------------------------------------------------------------------------*/
+/*  Copyright (c) MHS Chopshop Team 166, 2010.  All Rights Reserved.          */
+/*----------------------------------------------------------------------------*/
 
 #if !defined(_TEAM166TASK_H)
 #define _TEAM166TASK_H
