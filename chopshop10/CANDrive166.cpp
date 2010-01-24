@@ -12,8 +12,8 @@
 struct abuf166
 {
 	struct timespec tp;               // Time of snapshot
-	float x_acc;                     // accelarometer x value
-	float y_acc;					//  accelarometer y value
+	float x_acc;                     // accelerometer x value
+	float y_acc;					//  accelerometer y value
 	float acc_vector;
 	
 };
