@@ -26,3 +26,5 @@ void Autonomous166::Autonomous(void) {
 	// Design as a loop
 	Wait(AUTONOMOUS_WAIT_TIME);
 }
+
+Autonomous166::~Autonomous166(void) { return; }
