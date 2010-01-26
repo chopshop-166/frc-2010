@@ -15,15 +15,17 @@
 #include "Robot166.h"
 
 Autonomous166::Autonomous166() {
+	printf("Auto constructor\n");	
+}
+
+void Autonomous166::Autonomous(void) {
+	// Called  by Robot166 Autonomous()
+	// Design as a loop
 	while(!( Robot166::getInstance() ) || 
 			!( Robot166::getInstance()->IsAutonomous() )
 		  ) {
 		Wait(AUTONOMOUS_WAIT_TIME);
 	}
-}
-void Autonomous166::Autonomous(void) {
-	// Called  by Robot166 Autonomous()
-	// Design as a loop
 	Wait(AUTONOMOUS_WAIT_TIME);
 }
 
