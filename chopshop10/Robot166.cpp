@@ -66,8 +66,8 @@ Robot166::Robot166(void) :
 	lift_victor(T166_LIFT_MOTOR),       // Victor controlling the lift
 	treadmill_victor(T166_TREADMILL_MOTOR), // Victor controlling the treadmill
     limitswitch_top(TOP_LIMITSWITCH_DIGITAL_INPUT),  //top limit switch digital input
-    limitswitch_bottom(BOTTOM_LIMITSWITCH_DIGITAL_INPUT), //bottom limit switch digital input 
-    AutonomousObject()
+    limitswitch_bottom(BOTTOM_LIMITSWITCH_DIGITAL_INPUT) //bottom limit switch digital input 
+    //AutonomousObject()
 {
 	/* set up debug output: 
 	 * DEBUG_OFF, DEBUG_MOSTLY_OFF, DEBUG_SCREEN_ONLY, DEBUG_FILE_ONLY, DEBUG_SCREEN_AND_FILE  */
@@ -86,11 +86,12 @@ Robot166::Robot166(void) :
 	mlHead = 0;
 	
 	/* start the PCVideoServer to use the dashboard video */
+	DPRINTF(LOG_DEBUG, "StartPCVideoServer\n");
 	StartPCVideoServer();
 
 	/* start the CameraTask  */
+	DPRINTF(LOG_DEBUG, "StartCamera\n");
 	StartCamera();
-
 
 	/* allow writing to vxWorks target */
 	Priv_SetWriteFileAllowed(1);   	
@@ -104,11 +105,8 @@ Robot166::Robot166(void) :
 		printf("Waiting for task(s) to come up..");
 		Wait (0.100);
 	}
-	printf("All tasks we depend upon are up!\n");
-	
-	
+	printf("All tasks we depend upon are up!\n");	
 }
-
 
 
 void GetGains(float *g1, float *g2);    
@@ -323,10 +321,10 @@ float Robot166::GetBatteryVoltage(void)
  */
 void Robot166::Autonomous(void)
 {
-	//DPRINTF(LOG_DEBUG,"autonomous\n");
+	DPRINTF(LOG_DEBUG,"autonomous\n");
 	RobotMode = T166_AUTONOMOUS;
 	GetWatchdog().SetEnabled(false);
-	AutonomousObject.Autonomous();
+	//AutonomousObject.Autonomous();
 }
 
 /** 
