@@ -31,10 +31,10 @@
 	
 // Vision task constructor
 Team166Vision::Team166Vision(void) :
+	colorMode(IMAQ_HSL), 			    // Color mode (RGB or HSL) for image processing	
+	targetAcquired(false),			// target not acquired
 	bearing(0.0),					// current horizontal normalized servo position	
 	tilt(0.0),						// current vertical normalized servo position	
-	targetAcquired(false),			// target not acquired
-	colorMode(IMAQ_HSL), 			    // Color mode (RGB or HSL) for image processing	
 	horizontalServo(T166_HORIZONTAL_SERVO_CHANNEL),
 	verticalServo(T166_VERTICAL_SERVO_CHANNEL)
 {
@@ -45,7 +45,7 @@ Team166Vision::Team166Vision(void) :
 	SetDebugFlag ( DEBUG_SCREEN_ONLY  ) ;
 	
 	// Start our task
-	Start((char *)"166VisionTask", 0.050);	
+	Start((char *)"166VisionTask", 50);	
 };
 	
 // Vision task destructor

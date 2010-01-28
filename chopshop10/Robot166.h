@@ -19,6 +19,7 @@
 #include "Kicker166.h"
 #include "Autonomous166.h"
 #include "MemoryLog166.h"
+#include "Proxy166.h"
 //
 // Robot modes
 //
@@ -63,7 +64,6 @@ private:
     float LiftMotor;                          // Conveyer motor lift
     DriverStation *dsHandle;                  // Driver Station handle
     MemoryLog166 *mlHead;                     // Memory log head
-    Autonomous166 AutonomousObject;           // Autonomous control
     
 public:
 	Robot166(void);                           // Constructor
