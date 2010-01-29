@@ -186,7 +186,7 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 
 	// get handle to robot
 	Robot166 *lHandle = Robot166::getInstance();
-	DriverStation *dsHandle = DriverStation::GetInstance();
+	//DriverStation *dsHandle = DriverStation::GetInstance();
 	
 	// set servos to start at center position
 	SetServoPositions(0.0, DEFAULT_VERTICAL_PAN_POSITION);
