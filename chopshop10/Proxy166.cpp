@@ -58,7 +58,6 @@ float Proxy166::GetJoystickX(int joy_id) {
 float Proxy166::GetJoystickY(int joy_id) {
 	float value = 0;
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
-	printf("%i\n\n",joy_id);
 	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
 	value = Joysticks[joy_id].Y;
 	semGive(JoystickLocks[joy_id]);
