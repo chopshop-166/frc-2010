@@ -34,6 +34,11 @@ class Proxy166 : public Team166Task {
 		int GetGameMode(void);
 		int SetGameMode(int);
 		
+		Proxy166(void);
+		~Proxy166(void);
+		
+		Proxy166 *getInstance(void);
+		
 		virtual int Main(int a2, int a3, int a4, int a5,
 					int a6, int a7, int a8, int a9, int a10);
 		/*
@@ -41,6 +46,8 @@ class Proxy166 : public Team166Task {
 			During operator mode, set joystick values internally
 		*/
 	private:
+		static Proxy166* ProxyHandle;
+		
 		typedef struct ProxyJoystick {
 			float X,Y,Z;
 		};

@@ -13,6 +13,11 @@
 
 #include <semLib.h>
 #include "Proxy166.h"
+#include "Robot166.h"
+
+// This initializes the static pointer
+// It has to be declared outside the class
+Proxy166 *Proxy166::ProxyHandle = 0;
 
 void Proxy166::SetJoystickX(int joy_id, float value) {
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
@@ -74,12 +79,33 @@ int Proxy166::GetSwitch(int switch_id) {
 	return value;
 }
 
+Proxy166::Proxy166(void)
+{
+	ProxyHandle=this;
+	Start((char *)"166ProxyTask", 25);
+}
+
+Proxy166::~Proxy166(void)
+{
+	return;
+}
+
+Proxy166 *Proxy166::getInstance(void)
+{
+	return ProxyHandle;
+}
+
 int Proxy166::Main(	int a2, int a3, int a4, int a5,
 					int a6, int a7, int a8, int a9, int a10) {
 	MyTaskInitialized = 1;
 	
+	// For use with a logger if/when implemented
+	Robot166 *lHandle;
+	lHandle = Robot166::getInstance();
+	
 	while(MyTaskInitialized) {
 		// The task ends if it's not initialized
+		WaitForNextLoop();
 	}
 	
 	return 0;
