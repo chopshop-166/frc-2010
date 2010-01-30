@@ -118,13 +118,17 @@ int Team166TankDrive::Main(int a2, int a3, int a4, int a5,
 	MyTaskInitialized = 2;
 	lHandle = Robot166::getInstance();
 	lHandle->RegisterLogger(&sl);	
+	
+	int timer=0;
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		leftValue = proxy->GetJoystickY(0);
 		rightValue = proxy->GetJoystickY(1);
 		TankDrive(leftValue, rightValue);
-		printf("%f\t%f\n",leftValue,rightValue);
+		if( (++timer)%20 == 0 ) {
+			//printf("%f\t%f\n",leftValue,rightValue);
+		}
 		
         // Should we log this value?
 		sl.PutOne(0, 0, 0);
