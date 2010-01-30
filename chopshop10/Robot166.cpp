@@ -44,6 +44,7 @@ Team166Sonar Team166SonarObject; // Stop gap to make Autonomous compile
 Team166CANDrive Team166CANDriveObject;
 Team166EBrake Team166EBrakeObject;
 Team166HealthMon Team166HealthMonObject;
+Proxy166 Team166ProxyObject;
 
 // This links to the single instance of the Robot task
 class Robot166;
@@ -342,6 +343,10 @@ void Robot166::OperatorControl(void)
 	GetWatchdog().SetEnabled(true);
 	while (IsOperatorControl())
 	{
+		// While in the Robot166.cpp file, you can use Team166ProxyObject
+		Team166ProxyObject.SetJoystickY(0, driveStick.GetY());
+		Team166ProxyObject.SetJoystickY(1, dispStick.GetY());
+		
 		// Are we being disabled?
 		if (IsDisabled()) {
 			if (!has_been_disabled) {

@@ -1,21 +1,12 @@
-/*******************************************************************************
-*  Project   		: chopshop10 - 2010 Chopshop Robot Controller Code
-*  File Name  		: TankDrive166.cpp     
-*  Owner		   	: Software Group (FIRST Chopshop Team 166)
-*  Creation Date	: January 18, 2010
-*  Revision History	: From Explorer with TortoiseSVN, Use "Show log" menu item
-*  File Description	: Robot code which controls the new tank drive
-*******************************************************************************/ 
-/*----------------------------------------------------------------------------*/
-/*  Copyright (c) MHS Chopshop Team 166, 2010.  All Rights Reserved.          */
-/*----------------------------------------------------------------------------*/
-
 #include "WPILib.h"
 #include "Team166Task.h"
 #include "TankDrive166.h"
 #include "MemoryLog166.h"
 #include "Robot166.h"
 #include "BaeUtilities.h"
+#include "Joystick.h"
+#include "RobotDrive.h"
+#include "Proxy166.h"
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
@@ -42,6 +33,10 @@ public:
 	unsigned int PutOne(float x_acc, float y_acc, float acc_vector);     // Log the x and y values
 };
 
+class Team166Drive : public Team166Task
+{
+public:
+};
 // Write one buffer into memory
 unsigned int TankDriveLog::PutOne(float x_acc, float y_acc, float acc_vector)
 {
@@ -74,11 +69,12 @@ unsigned int TankDriveLog::DumpBuffer(char *nptr, FILE *ofile)
 	return (sizeof(struct abuf166));
 }
 
-
 // Arm task constructor
-Team166TankDrive::Team166TankDrive(void)
+Team166TankDrive::Team166TankDrive(void) :
+	RobotDrive(	(UINT32)T166_LEFT_FRONT_MOTOR_CHANNEL,
+				(UINT32)T166_RIGHT_FRONT_MOTOR_CHANNEL)
 {
-	Start((char *)"166TankDriveTask", TANKDRIVE_CYCLE_TIME);
+	Start((char *)"166TankDriveTask", 25);
 	return;
 };
 	
@@ -87,37 +83,64 @@ Team166TankDrive::~Team166TankDrive(void)
 {
 	return;
 };
-	
-// Main function of the arm task
+
+// Main function of the drive task
 int Team166TankDrive::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {
-		
+	float leftValue;
+	float rightValue;
 	Robot166 *lHandle;            // Local handle
 	TankDriveLog sl;                   // Arm log
 	
+	//Set up the proxy
+	Proxy166 *proxy;
+	proxy = proxy->getInstance();
+
+	/* Jerry, Ryan, Anthony Added this >>*/
+	/*
+	GenericHID leftStick;
+	GenericHID rightStick;
+ 	Jerry & Anthony's additions. */
+	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 TankDrive task\n");
-	
-	// Wait for Robot go-ahead (e.g. entering Autonomous or Tele-operated mode)
-	WaitForGoAhead();
-	
-	// Register our logger
-	lHandle = Robot166::getInstance();
-	lHandle->RegisterLogger(&sl);
 		
+	// Indicate that we've now completed initialization
+	MyTaskInitialized = 1;
+		
+	// Ensure we get into Autononmous or Tele Operated mode
+	while (!Robot166::getInstance() ||
+	       ((Robot166::getInstance()->RobotMode != T166_AUTONOMOUS) &&
+	    	(Robot166::getInstance()->RobotMode != T166_OPERATOR))) {
+		Wait (0.050); // 50ms
+	}
+	MyTaskInitialized = 2;
+	lHandle = Robot166::getInstance();
+	lHandle->RegisterLogger(&sl);	
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-				
-		// Get the command we're asked to apply
         // TODO: update this for real TankDrive functionality
+		//Jerry, Anthony, & Ryan. NEEDS TO DO THIS... 
+		leftValue = proxy->GetJoystickY(0);
+		rightValue = proxy->GetJoystickY(1);
+		TankDrive(leftValue, rightValue);
+		printf("%f\t%f\n",leftValue,rightValue);
+		/* More of Jerry, Ryan and Anthony */
+		
+		/* End our edits */
+		//Control left motor with joystick 1
+		//Control right motor with joystick 2
+		// It goes from -1 to 1
+		
+		
         
         // Should we log this value?
 		sl.PutOne(0, 0, 0);
-		
-		// Wait for our next lap
-		WaitForNextLoop();		
+		MyWatchDog = 1;
+		Wait (0.005); // 100ms
+
 	}
 	return (0);
 	
