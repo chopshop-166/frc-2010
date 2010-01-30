@@ -12,8 +12,17 @@
 
 
 #include <semLib.h>
+#include "wpilib.h"
 #include "Proxy166.h"
 #include "Robot166.h"
+
+ProxyJoystick::ProxyJoystick(void)
+{
+	X=Y=Z=0;
+	for(unsigned i=0;i<NUMBER_OF_JOY_BUTTONS;i++) {
+		button[i]=false;
+	}
+}
 
 // This initializes the static pointer
 // It has to be declared outside the class
@@ -49,6 +58,7 @@ float Proxy166::GetJoystickX(int joy_id) {
 float Proxy166::GetJoystickY(int joy_id) {
 	float value = 0;
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
+	printf("%i\n\n",joy_id);
 	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
 	value = Joysticks[joy_id].Y;
 	semGive(JoystickLocks[joy_id]);
@@ -79,9 +89,40 @@ int Proxy166::GetSwitch(int switch_id) {
 	return value;
 }
 
+ProxyJoystick Proxy166::GetJoystick(int joy_id)
+{
+	ProxyJoystick value;
+	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
+	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
+	value = Joysticks[joy_id];
+	semGive(JoystickLocks[joy_id]);
+	return value;
+}
+
+void Proxy166::SetJoystick(int joy_id, Joystick stick)
+{
+	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
+	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
+	Joysticks[joy_id].X = stick.GetX();
+	Joysticks[joy_id].Y = stick.GetY();
+	Joysticks[joy_id].Z = stick.GetZ();
+	for(unsigned i=0;i<NUMBER_OF_JOY_BUTTONS;i++) {
+		Joysticks[joy_id].button[i] = stick.GetRawButton(i);
+	}
+	semGive(JoystickLocks[joy_id]);
+}
+
 Proxy166::Proxy166(void)
 {
 	ProxyHandle=this;
+	for(unsigned i=0;i<NUMBER_OF_JOYSTICKS;i++) {
+		// Initializing semaphores for joysticks
+		JoystickLocks[i] = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
+	}
+	for(unsigned i=0;i<NUMBER_OF_SWITCHES;i++) {
+		// Initializing semaphores for joysticks
+		SwitchLocks[i] = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
+	}
 	Start((char *)"166ProxyTask", 25);
 }
 

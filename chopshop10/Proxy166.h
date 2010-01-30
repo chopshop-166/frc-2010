@@ -14,8 +14,15 @@
 #ifndef _PROXY166_H
 #define _PROXY166_H
 
-#define NUMBER_OF_JOYSTICKS 4
-#define NUMBER_OF_SWITCHES 10
+#define NUMBER_OF_JOYSTICKS (4)
+#define NUMBER_OF_SWITCHES (10)
+#define NUMBER_OF_JOY_BUTTONS (12)
+
+typedef struct ProxyJoystick {
+	float X,Y,Z;
+	bool button[NUMBER_OF_JOY_BUTTONS];
+	ProxyJoystick(void);
+};
 
 class Proxy166 : public Team166Task {
 	public:		
@@ -26,6 +33,8 @@ class Proxy166 : public Team166Task {
 		float GetJoystickX(int);
 		float GetJoystickY(int);
 		float GetJoystickZ(int);
+		ProxyJoystick GetJoystick(int);
+		void SetJoystick(int,Joystick);
 		
 		void SetSwitch(int, int);
 		
@@ -47,10 +56,6 @@ class Proxy166 : public Team166Task {
 		*/
 	private:
 		static Proxy166* ProxyHandle;
-		
-		typedef struct ProxyJoystick {
-			float X,Y,Z;
-		};
 		
 		ProxyJoystick Joysticks[NUMBER_OF_JOYSTICKS];
 		

@@ -121,25 +121,15 @@ int Team166TankDrive::Main(int a2, int a3, int a4, int a5,
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-        // TODO: update this for real TankDrive functionality
-		//Jerry, Anthony, & Ryan. NEEDS TO DO THIS... 
 		leftValue = proxy->GetJoystickY(0);
 		rightValue = proxy->GetJoystickY(1);
 		TankDrive(leftValue, rightValue);
 		printf("%f\t%f\n",leftValue,rightValue);
-		/* More of Jerry, Ryan and Anthony */
 		
-		/* End our edits */
-		//Control left motor with joystick 1
-		//Control right motor with joystick 2
-		// It goes from -1 to 1
-		
-		
-        
         // Should we log this value?
 		sl.PutOne(0, 0, 0);
 		MyWatchDog = 1;
-		Wait (0.005); // 100ms
+		Wait (0.05); // 50ms
 
 	}
 	return (0);

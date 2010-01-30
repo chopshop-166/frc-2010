@@ -10,6 +10,9 @@
 #include "WPILib.h"
 #include "Robot166.h"
 
+// To locally enable debug printing: set true, to disable false
+#define DPRINTF if(false)dprintf
+
 // Constructor
 Team166Task::Team166Task(int IsEssential)
 {	
@@ -60,7 +63,7 @@ int Team166Task::Start(char *tname, unsigned int loop_interval)
 	MyTaskId = taskSpawn(tname, TEAM166TASK_K_PRIO, VX_FP_TASK,
 				TEAM166TASK_K_STACKSIZE, (FUNCPTR) Team166Task::MainJacket,
 				(int)this, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-	printf("Task '%s' spawned with ID '0x%x'\n", tname, MyTaskId);
+	DPRINTF(LOG_DEBUG,"Task '%s' spawned with ID '0x%x'\n", tname, MyTaskId);
  		
 	// Figure out this board's tick size (in nano seconds)
 	crate = (1000 * 1000 * 1000) / sysClkRateGet();
@@ -180,7 +183,7 @@ void Team166Task::WaitForNextLoop(void)
 	loop_calls++;
 	if (last_print_sec != current_time.tv_sec) {
 		last_print_sec = current_time.tv_sec;
-		printf("Task '%s' checking in after %u calls with %u over runs\n", MyName, loop_calls, OverRuns);
+		DPRINTF(LOG_DEBUG,"Task '%s' checking in after %u calls with %u over runs\n", MyName, loop_calls, OverRuns);
 		loop_calls = 0;
 	}
 	
@@ -225,7 +228,7 @@ int Team166Task::FeedWatchDog(void)
 					
 				// No. Tell caller at least one task is not ready
 				if (ActiveTasks[l]->MissedWatchDog++ > T166_WATCHDOG_MIN)
-					printf("Task '%s' has not reported its watchdog %d times in a row.\n", ActiveTasks[l]->MyName ? ActiveTasks[l]->MyName : "unknown", T166_WATCHDOG_MIN);
+					DPRINTF(LOG_DEBUG,"Task '%s' has not reported its watchdog %d times in a row.\n", ActiveTasks[l]->MyName ? ActiveTasks[l]->MyName : "unknown", T166_WATCHDOG_MIN);
 				return (0);
 			}
 		}
