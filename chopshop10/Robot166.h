@@ -20,6 +20,7 @@
 #include "Autonomous166.h"
 #include "MemoryLog166.h"
 #include "Proxy166.h"
+#include "Banner166.h"
 //
 // Robot modes
 //

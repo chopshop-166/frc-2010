@@ -20,7 +20,7 @@
 #include "TankDrive166.h"
 #include "Kicker166.h"
 #include "SensorTest166.h"
-//#include "Inertia166.h"
+#include "Banner166.h"
 #include "Vision166.h"
 #include "Sonar166.h"
 #include "RobotCamera166.h"
@@ -38,7 +38,7 @@ Team166Task *Team166Task::ActiveTasks[T166_MAXTASK + 1] = {0};
 Team166Lift Team166LiftObject;
 Team166TankDrive Team166TankDriveObject;
 Team166Kicker Team166KickerObject;
-//Team166Inertia Team166InertiaObject;
+Team166Banner Team166BannerObject;
 Team166Vision Team166VisionObject;
 Team166Sonar Team166SonarObject; // Stop gap to make Autonomous compile
 Team166CANDrive Team166CANDriveObject;

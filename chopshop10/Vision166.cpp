@@ -196,7 +196,7 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 	double lastTime = currentTime; // holds the time the vision loop started
 	
     // General main loop (while in Autonomous or Tele mode)
-	DPRINTF("Vision task is getting ready...\n");
+	DPRINTF(LOG_DEBUG,"Vision task is getting ready...\n");
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 		   (lHandle->RobotMode == T166_OPERATOR)) 
 	{
