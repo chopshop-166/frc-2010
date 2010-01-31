@@ -74,7 +74,7 @@ Team166TankDrive::Team166TankDrive(void) :
 	RobotDrive(	(UINT32)T166_LEFT_FRONT_MOTOR_CHANNEL,
 				(UINT32)T166_RIGHT_FRONT_MOTOR_CHANNEL)
 {
-	Start((char *)"166TankDriveTask", 25);
+	Start((char *)"166TankDriveTask", TANK_CYCLE_TIME);
 	return;
 };
 	
@@ -92,11 +92,8 @@ int Team166TankDrive::Main(int a2, int a3, int a4, int a5,
 	float rightValue;
 	Robot166 *lHandle;            // Local handle
 	TankDriveLog sl;                   // Arm log
+	Proxy166 *proxy;				// Handle to data associated with the Proxy object
 	
-	//Set up the proxy
-	Proxy166 *proxy;
-	proxy = proxy->getInstance();
-
 	/* Jerry, Ryan, Anthony Added this >>*/
 	/*
 	GenericHID leftStick;
@@ -106,19 +103,16 @@ int Team166TankDrive::Main(int a2, int a3, int a4, int a5,
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 TankDrive task\n");
 		
-	// Indicate that we've now completed initialization
-	MyTaskInitialized = 1;
+	// Wait for Robot go-ahead (e.g. entering Autonomous or Tele-operated mode)
+	WaitForGoAhead();
 		
-	// Ensure we get into Autononmous or Tele Operated mode
-	while (!Robot166::getInstance() ||
-	       ((Robot166::getInstance()->RobotMode != T166_AUTONOMOUS) &&
-	    	(Robot166::getInstance()->RobotMode != T166_OPERATOR))) {
-		Wait (0.050); // 50ms
-	}
-	MyTaskInitialized = 2;
+	// Obtain access to the proxy object
+	proxy = Proxy166::getInstance();
+
+	// Register our logger
 	lHandle = Robot166::getInstance();
 	lHandle->RegisterLogger(&sl);	
-	
+
 	int timer=0;
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
@@ -126,15 +120,15 @@ int Team166TankDrive::Main(int a2, int a3, int a4, int a5,
 		leftValue = proxy->GetJoystickY(0);
 		rightValue = proxy->GetJoystickY(1);
 		TankDrive(leftValue, rightValue);
-		if( (++timer)%20 == 0 ) {
-			//printf("%f\t%f\n",leftValue,rightValue);
+		if(((++timer)%(1000 / TANK_CYCLE_TIME)) == 0 ) {
+			printf("%f\t%f\n",leftValue,rightValue);
 		}
 		
         // Should we log this value?
 		sl.PutOne(0, 0, 0);
-		MyWatchDog = 1;
-		Wait (0.05); // 50ms
-
+		
+		// Wait for our next lap
+		WaitForNextLoop();		
 	}
 	return (0);
 	

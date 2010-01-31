@@ -68,7 +68,7 @@ class Proxy166 : public Team166Task {
 		Proxy166(void);
 		~Proxy166(void);
 		
-		Proxy166 *getInstance(void);
+		static Proxy166 *getInstance(void);
 		
 		virtual int Main(int a2, int a3, int a4, int a5,
 					int a6, int a7, int a8, int a9, int a10);

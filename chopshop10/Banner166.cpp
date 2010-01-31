@@ -114,7 +114,9 @@ int Team166Banner::Main(int a2, int a3, int a4, int a5,
 		
         // Should we log this value?
 		sl.PutOne(0, 0, 0);
-			
+		
+		// Wait for our next lap
+		WaitForNextLoop();		
 	}
 	return (0);
 	
