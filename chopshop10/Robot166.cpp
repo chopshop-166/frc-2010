@@ -29,7 +29,7 @@
 #include "HealthMon166.h"
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(false)dprintf
+#define DPRINTF if(true)dprintf
 
 // List of tasks that have requested to come up
 Team166Task *Team166Task::ActiveTasks[T166_MAXTASK + 1] = {0};
@@ -85,10 +85,6 @@ Robot166::Robot166(void) :
 	dsHandle = DriverStation::GetInstance();
 	RobotHandle = this;
 	mlHead = 0;
-	
-	/* start the PCVideoServer to use the dashboard video */
-	DPRINTF(LOG_DEBUG, "StartPCVideoServer\n");
-	StartPCVideoServer();
 
 	/* start the CameraTask  */
 	DPRINTF(LOG_DEBUG, "StartCamera\n");
