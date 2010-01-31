@@ -33,12 +33,15 @@ class Proxy166 : public Team166Task {
 		float GetJoystickX(int);
 		float GetJoystickY(int);
 		float GetJoystickZ(int);
+		
 		ProxyJoystick GetJoystick(int);
 		void SetJoystick(int,Joystick);
 		
 		void SetSwitch(int, int);
-		
 		int GetSwitch(int);
+		
+		void SetButton(int,int,bool);
+		bool GetButton(int,bool);
 		
 		int GetGameMode(void);
 		int SetGameMode(int);

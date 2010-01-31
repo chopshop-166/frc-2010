@@ -50,25 +50,27 @@ void Proxy166::SetJoystickZ(int joy_id, float value) {
 float Proxy166::GetJoystickX(int joy_id) {
 	float value = 0;
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
-	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
+//	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
 	value = Joysticks[joy_id].X;
-	semGive(JoystickLocks[joy_id]);
+//	semGive(JoystickLocks[joy_id]);
 	return value;
 }
+
 float Proxy166::GetJoystickY(int joy_id) {
 	float value = 0;
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
-	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
+//	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
 	value = Joysticks[joy_id].Y;
-	semGive(JoystickLocks[joy_id]);
+//	semGive(JoystickLocks[joy_id]);
 	return value;
 }
+
 float Proxy166::GetJoystickZ(int joy_id) {
 	float value = 0;
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
-	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
+//	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
 	value = Joysticks[joy_id].Z;
-	semGive(JoystickLocks[joy_id]);
+//	semGive(JoystickLocks[joy_id]);
 	return value;
 }
 
@@ -82,9 +84,9 @@ void Proxy166::SetSwitch(int switch_id, int value) {
 int Proxy166::GetSwitch(int switch_id) {
 	int value = 0;
 	wpi_assert(switch_id < NUMBER_OF_SWITCHES && switch_id >= 0);
-	semTake(SwitchLocks[switch_id], WAIT_FOREVER);
+//	semTake(SwitchLocks[switch_id], WAIT_FOREVER);
 	value = Switches[switch_id];
-	semGive(SwitchLocks[switch_id]);
+//	semGive(SwitchLocks[switch_id]);
 	return value;
 }
 
@@ -92,9 +94,9 @@ ProxyJoystick Proxy166::GetJoystick(int joy_id)
 {
 	ProxyJoystick value;
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
-	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
+//	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
 	value = Joysticks[joy_id];
-	semGive(JoystickLocks[joy_id]);
+//	semGive(JoystickLocks[joy_id]);
 	return value;
 }
 
@@ -109,6 +111,24 @@ void Proxy166::SetJoystick(int joy_id, Joystick stick)
 		Joysticks[joy_id].button[i] = stick.GetRawButton(i);
 	}
 	semGive(JoystickLocks[joy_id]);
+}
+
+void Proxy166::SetButton(int joy_id, int button_id, bool newval)
+{
+	wpi_assert(joy_id < NUMBER_OF_JOY_BUTTONS && joy_id >= 0);
+	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
+	Joysticks[joy_id].buttons[button_id] = newval;
+	semGive(JoystickLocks[joy_id]);
+}
+
+bool Proxy166::GetButton(int joy_id, int button_id)
+{
+	bool button;
+	wpi_assert(joy_id < NUMBER_OF_JOY_BUTTONS && joy_id >= 0);
+//	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
+	button = Joysticks[joy_id].buttons[button_id];
+//	semGive(JoystickLocks[joy_id]);
+	return button;
 }
 
 Proxy166::Proxy166(void)
