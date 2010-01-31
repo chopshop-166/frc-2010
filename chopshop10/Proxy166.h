@@ -41,7 +41,7 @@ class Proxy166 : public Team166Task {
 		int GetSwitch(int);
 		
 		void SetButton(int,int,bool);
-		bool GetButton(int,bool);
+		bool GetButton(int,int);
 		
 		int GetGameMode(void);
 		int SetGameMode(int);
