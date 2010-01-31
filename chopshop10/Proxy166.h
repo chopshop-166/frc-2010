@@ -18,11 +18,30 @@
 #define NUMBER_OF_SWITCHES (10)
 #define NUMBER_OF_JOY_BUTTONS (12)
 
-typedef struct ProxyJoystick {
-	float X,Y,Z;
-	bool button[NUMBER_OF_JOY_BUTTONS];
-	ProxyJoystick(void);
+/**
+ * @brief Proxy Joystick class that will be returned if a full cached joystick is requested.
+ * 
+ * If Proxy1666::GetJoystick is called, then a full joystick should be returned. We don't want
+ * to have to set all the values of the Joystick class, though, so we return this simpler class
+ * with only 3 axes and some buttons. 
+ */
+class ProxyJoystick {
+	public:
+		float X;
+		float Y;
+		float Z;
+		bool button[NUMBER_OF_JOY_BUTTONS];
+		
+		ProxyJoystick(void);
 };
+
+/**
+ * @brief Proxy class to store cached values for joysticks and switches.
+ * 
+ * This class will store the cached values for joysticks and switches. It will also
+ * serve as a interface between the joysticks and switches, and any code that wants to 
+ * access them like Drive, Autonomous, etc. 
+ */
 
 class Proxy166 : public Team166Task {
 	public:		
@@ -53,18 +72,15 @@ class Proxy166 : public Team166Task {
 		
 		virtual int Main(int a2, int a3, int a4, int a5,
 					int a6, int a7, int a8, int a9, int a10);
-		/*
-			When Main is done, or invalid call, kills thread
-			During operator mode, set joystick values internally
-		*/
 	private:
+		/**
+		 * @brief The single instance handle to Proxy166.
+		 */
 		static Proxy166* ProxyHandle;
 		
 		ProxyJoystick Joysticks[NUMBER_OF_JOYSTICKS];
 		
 		int Switches[NUMBER_OF_SWITCHES];
-		
-		enum {gError, gAutonomous, gTeleoperated, gMax} GameMode; // Use this to get/set game mode
 		
 		SEM_ID JoystickLocks[NUMBER_OF_JOYSTICKS];
 		SEM_ID SwitchLocks[NUMBER_OF_SWITCHES];

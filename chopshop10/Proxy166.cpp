@@ -16,6 +16,9 @@
 #include "Proxy166.h"
 #include "Robot166.h"
 
+/**
+ * @brief Initializes the joystick axes to 0 and the buttons to unset.
+ */
 ProxyJoystick::ProxyJoystick(void)
 {
 	X=Y=Z=0;
@@ -24,22 +27,38 @@ ProxyJoystick::ProxyJoystick(void)
 	}
 }
 
-// This initializes the static pointer
-// It has to be declared outside the class
+// Initialiezs the ProxyHandle. 
 Proxy166 *Proxy166::ProxyHandle = 0;
 
+/**
+ * @brief Sets the cached X axis value of a joystick.
+ * @param joy_id Which joystick to set the cached X axis value for.
+ * @param value What to set the cached value as.
+ */
 void Proxy166::SetJoystickX(int joy_id, float value) {
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
 	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
 	Joysticks[joy_id].X = value;
 	semGive(JoystickLocks[joy_id]);
 }
+
+/**
+ * @brief Sets the cached Y axis value of a joystick.
+ * @param joy_id Which joystick to set the cached Y axis value for.
+ * @param value What to set the cached value as.
+ */
 void Proxy166::SetJoystickY(int joy_id, float value) {
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
 	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
 	Joysticks[joy_id].Y = value;
 	semGive(JoystickLocks[joy_id]);
 }
+
+/**
+ * @brief Sets the cached Z axis value of a joystick.
+ * @param joy_id Which joystick to set the cached Z axis value for.
+ * @param value What to set the cached value as.
+ */
 void Proxy166::SetJoystickZ(int joy_id, float value) {
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
 	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
@@ -47,6 +66,12 @@ void Proxy166::SetJoystickZ(int joy_id, float value) {
 	semGive(JoystickLocks[joy_id]);
 }
 
+
+/**
+ * @brief Gets the cached X axis value of a joystick.
+ * @param joy_id Which joystick to get the cached X axis value for.
+ * @return Float equal to the cached X axis value.
+ */
 float Proxy166::GetJoystickX(int joy_id) {
 	float value = 0;
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
@@ -56,6 +81,11 @@ float Proxy166::GetJoystickX(int joy_id) {
 	return value;
 }
 
+/**
+ * @brief Gets the cached Y axis value of a joystick.
+ * @param joy_id Which joystick to get the cached Y axis value for.
+ * @return Float equal to the cached Y axis value.
+ */
 float Proxy166::GetJoystickY(int joy_id) {
 	float value = 0;
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
@@ -65,6 +95,11 @@ float Proxy166::GetJoystickY(int joy_id) {
 	return value;
 }
 
+/**
+ * @brief Gets the cached Z axis value of a joystick.
+ * @param joy_id Which joystick to get the cached Z axis value for.
+ * @return Float equal to the cached Z axis value.
+ */
 float Proxy166::GetJoystickZ(int joy_id) {
 	float value = 0;
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
@@ -74,6 +109,12 @@ float Proxy166::GetJoystickZ(int joy_id) {
 	return value;
 }
 
+
+/**
+ * @brief Sets the cached value for a switch.
+ * @param switch_id Which switch to cache the value for.
+ * @param value The value to cache.
+ */
 void Proxy166::SetSwitch(int switch_id, int value) {
 	wpi_assert(switch_id < NUMBER_OF_SWITCHES && switch_id >= 0);
 	semTake(SwitchLocks[switch_id], WAIT_FOREVER);
@@ -81,6 +122,11 @@ void Proxy166::SetSwitch(int switch_id, int value) {
 	semGive(SwitchLocks[switch_id]);
 }
 
+/**
+ * @brief Gets a cached switch value.
+ * @param switch_id Which switch to retrieve the cached value of.
+ * @return The int value of the cached switch value.
+ */
 int Proxy166::GetSwitch(int switch_id) {
 	int value = 0;
 	wpi_assert(switch_id < NUMBER_OF_SWITCHES && switch_id >= 0);
@@ -90,6 +136,11 @@ int Proxy166::GetSwitch(int switch_id) {
 	return value;
 }
 
+/**
+ * @brief Gets a cached joystick value.
+ * @param joy_id Which joystick to retrieve the cached value of.
+ * @return ProxyJoystick object with the joystick axes values and buttons set.
+ */
 ProxyJoystick Proxy166::GetJoystick(int joy_id)
 {
 	ProxyJoystick value;
@@ -100,6 +151,12 @@ ProxyJoystick Proxy166::GetJoystick(int joy_id)
 	return value;
 }
 
+
+/**
+ * @brief Sets a cached joystick value.
+ * @param joy_id Which joystick to set the cached value for.
+ * @param stick A Joystick object with the X, Y, and Z axes set, as well as each of the buttons.
+ */
 void Proxy166::SetJoystick(int joy_id, Joystick stick)
 {
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
@@ -113,6 +170,12 @@ void Proxy166::SetJoystick(int joy_id, Joystick stick)
 	semGive(JoystickLocks[joy_id]);
 }
 
+/**
+ * @brief Sets the cache value of a button on a joystick.
+ * @param joy_id Which joystick to set the button status for.
+ * @param button_id Which button on the joystick to set the status for.
+ * @param newval What to set the button's value to.
+ */
 void Proxy166::SetButton(int joy_id, int button_id, bool newval)
 {
 	wpi_assert(joy_id < NUMBER_OF_JOY_BUTTONS && joy_id >= 0);
@@ -121,6 +184,12 @@ void Proxy166::SetButton(int joy_id, int button_id, bool newval)
 	semGive(JoystickLocks[joy_id]);
 }
 
+/**
+ * @brief Gets the cache value of a button on a joystick. 
+ * @param joy_id Which joystick to retrieve the button status for.
+ * @param button_id Which button on the joystick to retrieve the status for.
+ * @return The button's value
+ */
 bool Proxy166::GetButton(int joy_id, int button_id)
 {
 	bool button;
@@ -131,6 +200,9 @@ bool Proxy166::GetButton(int joy_id, int button_id)
 	return button;
 }
 
+/**
+ * @brief Initializes semaphores for joysticks and switches, and starts the Proxy166 task.
+ */
 Proxy166::Proxy166(void)
 {
 	ProxyHandle=this;
@@ -139,7 +211,7 @@ Proxy166::Proxy166(void)
 		JoystickLocks[i] = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
 	}
 	for(unsigned i=0;i<NUMBER_OF_SWITCHES;i++) {
-		// Initializing semaphores for joysticks
+		// Initializing semaphores for switches
 		SwitchLocks[i] = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
 	}
 	Start((char *)"166ProxyTask", 25);
@@ -149,12 +221,19 @@ Proxy166::~Proxy166(void)
 {
 	return;
 }
-
+/**
+ * @brief Gets the singleton instance of Proxy166.
+ * @return The instance of Proxy166
+ */
 Proxy166 *Proxy166::getInstance(void)
 {
 	return ProxyHandle;
 }
 
+/**
+ * @brief Main thread function for Proxy166.
+ * Runs forever, until MyTaskInitialized is false. 
+ */
 int Proxy166::Main(	int a2, int a3, int a4, int a5,
 					int a6, int a7, int a8, int a9, int a10) {
 	MyTaskInitialized = 1;
