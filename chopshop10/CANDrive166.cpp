@@ -16,6 +16,7 @@
 #include "MemoryLog166.h"
 #include "Robot166.h"
 #include "BaeUtilities.h"
+#include "Proxy166.h"
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
@@ -93,8 +94,15 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {
 		
-	Robot166 *lHandle;            // Local handle
-	CANDriveLog sl;                   // log
+	Robot166 *lHandle;                  // Local handle
+	CANDriveLog sl;                    // log
+	Proxy166 *proxy;				  //pointer to proxy	
+	proxy = proxy->getInstance();     
+	
+	
+	
+	printf("%f\n",proxy->GetJoystick(0).X);   //Calls proxy
+	
 	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 CANDrive task\n");
