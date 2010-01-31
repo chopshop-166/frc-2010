@@ -10,6 +10,7 @@
 #include "can_proto.h"
 #undef FIRST_FIRMWARE_VERSION
 #include "Utility.h"
+#include "Proxy166.h"
 
 #define swap16(x) ( (((x)>>8) &0x00FF) \
                   | (((x)<<8) &0xFF00) )
