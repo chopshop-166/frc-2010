@@ -40,4 +40,4 @@ public:
 			int a6, int a7, int a8, int a9, int a10);
 };
 
-#endif // !defined(_LIFT166)
+#endif // !defined(_BANNER166)

@@ -34,7 +34,7 @@ struct abuf166
 class BannerLog : public MemoryLog166
 {
 public:
-	BannerLog() : MemoryLog166(128*1024, "lift") {return;};
+	BannerLog() : MemoryLog166(128*1024, "banner") {return;};
 	~BannerLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
@@ -78,7 +78,7 @@ unsigned int BannerLog::DumpBuffer(char *nptr, FILE *ofile)
 // task constructor
 Team166Banner::Team166Banner(void)
 {
-	Start((char *)"166BannerTask", LIFT_CYCLE_TIME);
+	Start((char *)"166BannerTask", BANNER_CYCLE_TIME);
 	return;
 };
 	
