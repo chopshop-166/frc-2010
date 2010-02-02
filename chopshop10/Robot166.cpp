@@ -27,6 +27,7 @@
 #include "CANDrive166.h"
 #include "EBrake166.h"
 #include "HealthMon166.h"
+#include <math.h>
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(true)dprintf
@@ -57,9 +58,6 @@ static Robot166 *RobotHandle = 0;
  * the driver station or the field controls.
  */ 
 Robot166::Robot166(void) :
-	driveStick(T166_USB_STICK_1),        // USB port for 1st stick
-	dispStick(T166_USB_STICK_2),        // USB port for 2nd stick
-	cameraStick(T166_USB_STICK_3),
 	lfEncoder(T166_ENC_LF_A, T166_ENC_LF_B, true), // Left Front encoder pins
 	rfEncoder(T166_ENC_RF_A, T166_ENC_RF_B, false), // Right Front encoder pins
 	lbEncoder(T166_ENC_LB_A, T166_ENC_LB_B, true), // Left Back encoder pins
@@ -106,20 +104,7 @@ Robot166::Robot166(void) :
 }
 
 
-void GetGains(float *g1, float *g2);    
-/* **
- * Get the Throttle gain from both of the joy sticks
- */
-void Robot166::GetGains(float *g1, float *g2)
-{
-	// Lock 
-	semTake(DSLock, WAIT_FOREVER);
-	*g1 = driveStick.GetZ();
-	*g2 = dispStick.GetZ();
-	semGive(DSLock);
-	
-}
-
+#if 0
 /* **
  * Joy stick control. X and Y value are in range -1.0 to +1.0
  */
@@ -134,6 +119,8 @@ void Robot166::SetJoyStick(float x, float y)
 	// Done
 	return;
 }
+#endif
+#if 0
 void Robot166::GetJoyStick(float *x, float *y)
 {
     static int swpos=-1;
@@ -154,7 +141,8 @@ void Robot166::GetJoyStick(float *x, float *y)
 				}
 				else
 					{
-						*x = driveStick.GetX();
+					
+						//*x = driveStick.GetX();
 					}
 			}
 		else
@@ -181,6 +169,8 @@ void Robot166::GetJoyStick(float *x, float *y)
 	// Done
 	return;
 }
+#endif
+#if 0
 /* **
  * Get Alliance Switch
  */
@@ -204,8 +194,10 @@ int Robot166::GetAllianceSwitch(void) {
 		return 2;
 	}
 }
+#endif
 
-
+#if 0 
+// MOVE THIS TO LIFT TASK
 /**
  * Lift command
  */
@@ -251,8 +243,13 @@ void Robot166::GetLift(int *dir, float *lift_motor)
 	// Done
 	return;
 }
+#endif
+void Robot166::GetLift(int *dir, float *lift_motor) {
+	return;
+}
 
-
+#if 0
+// MOVE THIS TO KICKER TASK
 /**
  * Kicker command
  */
@@ -286,6 +283,7 @@ void Robot166::GetKicker(float *kick_motor)
 	return;
 }
 
+#endif
 /**
  * Obtain battery voltage. Wrapper here ensures we do not collide with
  * other tasks touching the drive station.
@@ -337,11 +335,27 @@ void Robot166::OperatorControl(void)
 	printf("Operator control\n");
 	RobotMode = T166_OPERATOR;
 	GetWatchdog().SetEnabled(true);
+	static int throttle = 0;
 	while (IsOperatorControl())
 	{
-		// While in the Robot166.cpp file, you can use Team166ProxyObject
-		Team166ProxyObject.SetJoystickY(0, driveStick.GetY());
-		Team166ProxyObject.SetJoystickY(1, dispStick.GetY());
+		throttle++;
+		if (throttle%10==0){
+			throttle = 0;
+			DPRINTF(LOG_DEBUG, 
+				"joy buttons %i %i %i %i %i %i %i %i %i %i %i\n", 
+				Team166ProxyObject.GetButton(1,1), 
+				Team166ProxyObject.GetButton(1,2),
+				Team166ProxyObject.GetButton(1,3), 
+				Team166ProxyObject.GetButton(1,4), 
+				Team166ProxyObject.GetButton(1,5),
+				Team166ProxyObject.GetButton(1,6), 
+				Team166ProxyObject.GetButton(1,7), 
+				Team166ProxyObject.GetButton(1,8),
+				Team166ProxyObject.GetButton(1,9),
+				Team166ProxyObject.GetButton(1,10),
+				Team166ProxyObject.GetButton(1,11)
+				);
+		}
 		
 		// Are we being disabled?
 		if (IsDisabled()) {
@@ -363,8 +377,10 @@ void Robot166::OperatorControl(void)
 		    GetWatchdog().Feed();
 		
 		// take a picture
-		if ( driveStick.GetRawButton(8) or driveStick.GetRawButton(9) 
-				or dispStick.GetRawButton(8) or dispStick.GetRawButton(9) ) {
+		//if ( driveStick.GetRawButton(8) or driveStick.GetRawButton(9) 
+		//		or dispStick.GetRawButton(8) or dispStick.GetRawButton(9) ) 
+		if (Team166ProxyObject.GetButton(1,8) or Team166ProxyObject.GetButton(1,9))
+		{
 			joystickImageCount++;
 			sprintf(imageName, "166_joystick_img_%03i.png", joystickImageCount);
 			TakeSnapshot(imageName);

@@ -40,9 +40,6 @@ typedef enum {T166_CB_UNKNOWN=0, T166_CB_FORWARD, T166_CB_BACKWARD, T166_CB_STIL
 class Robot166 : public SimpleRobot
 {
 public:
-	Joystick driveStick;                      // joy stick for driving
-	Joystick dispStick;                       // Dispenser joy stick
-	Joystick cameraStick; 					  // Camera joy stick
     t_RobotMode RobotMode;                    // Robot mode
     Encoder lfEncoder;                        // Encoder for the Left Front
     Encoder rfEncoder;						  // Encoder for the Right Front

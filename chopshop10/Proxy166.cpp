@@ -16,6 +16,9 @@
 #include "Proxy166.h"
 #include "Robot166.h"
 
+// To locally enable debug printing: set true, to disable false
+#define DPRINTF if(true)dprintf
+
 /**
  * @brief Initializes the joystick axes to 0 and the buttons to unset.
  */
@@ -203,7 +206,10 @@ bool Proxy166::GetButton(int joy_id, int button_id)
 /**
  * @brief Initializes semaphores for joysticks and switches, and starts the Proxy166 task.
  */
-Proxy166::Proxy166(void)
+Proxy166::Proxy166(void):
+	driveStickRight(T166_USB_STICK_1),        // USB port for 1st stick
+	driveStickLeft(T166_USB_STICK_2),        // USB port for 2nd stick
+	driveStickCopilot(T166_USB_STICK_3)
 {
 	ProxyHandle=this;
 	for(unsigned i=0;i<NUMBER_OF_JOYSTICKS;i++) {
@@ -241,8 +247,33 @@ int Proxy166::Main(	int a2, int a3, int a4, int a5,
 	// For use with a logger if/when implemented
 	Robot166 *lHandle;
 	lHandle = Robot166::getInstance();
-	
+	printf("in proxy\n");
 	while(MyTaskInitialized) {
+
+		SetJoystickX(1, driveStickRight.GetX());
+		SetJoystickY(1, driveStickRight.GetY());
+		SetJoystickZ(1, driveStickRight.GetZ());		
+		//Initialize each button
+		for (int i=1;i<=11;i++) {
+			SetButton(1, i, driveStickRight.GetRawButton(i));
+		}
+		
+		SetJoystickX(2, driveStickLeft.GetX());
+		SetJoystickY(2, driveStickLeft.GetY());
+		SetJoystickZ(2, driveStickLeft.GetZ());		
+		//Initialize each button
+		for (int i=1;i<=11;i++) {
+			SetButton(2, i, driveStickLeft.GetRawButton(i));
+		}
+
+		SetJoystickX(3, driveStickCopilot.GetX());
+		SetJoystickY(3, driveStickCopilot.GetY());
+		SetJoystickZ(3, driveStickCopilot.GetZ());		
+		//Initialize each button
+		for (int i=1;i<=11;i++) {
+			SetButton(3, i, driveStickCopilot.GetRawButton(i));
+		}
+
 		// The task ends if it's not initialized
 		WaitForNextLoop();
 	}

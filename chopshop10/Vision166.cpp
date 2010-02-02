@@ -209,7 +209,7 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 			AcquireTarget();
 			targetAcquired = IsTargetAcquired();		
 		}
-		SetServoPositions(lHandle->cameraStick.GetX(), lHandle->cameraStick.GetY());
+		//SetServoPositions(lHandle->cameraStick.GetX(), lHandle->cameraStick.GetY());
 		if ( (VISION_LOOP_TIME > ElapsedTime(lastTime)) && !staleFlag) {
 			Wait( VISION_LOOP_TIME - ElapsedTime(lastTime) ); 
 		}
