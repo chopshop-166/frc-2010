@@ -200,6 +200,12 @@ bool Proxy166::GetButton(int joy_id, int button_id)
 //	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
 	button = Joysticks[joy_id].button[button_id];
 //	semGive(JoystickLocks[joy_id]);
+
+	// TODO: make reset an optional calling parameter, but reset it by default
+	
+	// reset the button so actions are triggered only once
+	SetButton(joy_id, button_id, 0);
+	
 	return button;
 }
 
@@ -250,6 +256,11 @@ int Proxy166::Main(	int a2, int a3, int a4, int a5,
 	printf("in proxy\n");
 	while(MyTaskInitialized) {
 
+		//TODO: do this update of joystick values only in Operator Control mode
+		//TODO: add update of bottom joystick control
+		
+		//TODO: update DS Switch array
+		
 		SetJoystickX(1, driveStickRight.GetX());
 		SetJoystickY(1, driveStickRight.GetY());
 		SetJoystickZ(1, driveStickRight.GetZ());		
