@@ -27,7 +27,6 @@
 #include "CANDrive166.h"
 #include "EBrake166.h"
 #include "HealthMon166.h"
-#include <math.h>
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
@@ -104,72 +103,6 @@ Robot166::Robot166(void) :
 }
 
 
-#if 0
-/* **
- * Joy stick control. X and Y value are in range -1.0 to +1.0
- */
-void Robot166::SetJoyStick(float x, float y)
-{
-	// Set a new X/Y value
-	semTake(JoyLock, WAIT_FOREVER);
-	JoyX = x;
-	JoyY = y;
-	semGive(JoyLock);
-	
-	// Done
-	return;
-}
-#endif
-#if 0
-void Robot166::GetJoyStick(float *x, float *y)
-{
-    static int swpos=-1;
-    
-	// Pick up the X/Y value
-	switch (RobotMode) {
-	case T166_OPERATOR: {
-		semTake(DSLock, WAIT_FOREVER);
-		if(dsHandle->GetDigitalIn(DS_AUTOTRACKNG_SWITCH_INPUT))
-			{
-			    if (swpos != 1) {
-			    	printf("\n\nSwitch turned ON\n");
-			    	swpos = 1;
-			    }
-				if(Team166VisionObject.IsTargetAcquired())
-				{
-					*x = Team166VisionObject.GetBearing();
-				}
-				else
-					{
-					
-						//*x = driveStick.GetX();
-					}
-			}
-		else
-			{
-				if (swpos != 0) {
-					printf("\n\nSwitch turned OFF\n");
-					swpos = 0;
-				}
-				*x = driveStick.GetX();
-			}
-		*y = -driveStick.GetY();		
-		semGive(DSLock);
-		break;
-	    }
-	default: {
-		semTake(JoyLock, WAIT_FOREVER);
-		*x = JoyX;
-		*y = JoyY;
-		semGive(JoyLock);
-		break;
-	    }
-	}
-	
-	// Done
-	return;
-}
-#endif
 #if 0
 /* **
  * Get Alliance Switch
@@ -376,9 +309,7 @@ void Robot166::OperatorControl(void)
 		if (Team166Task::FeedWatchDog())
 		    GetWatchdog().Feed();
 		
-		// take a picture
-		//if ( driveStick.GetRawButton(8) or driveStick.GetRawButton(9) 
-		//		or dispStick.GetRawButton(8) or dispStick.GetRawButton(9) ) 
+		// take a picture 
 		if (Team166ProxyObject.GetButton(1,8) or Team166ProxyObject.GetButton(1,9))
 		{
 			joystickImageCount++;
