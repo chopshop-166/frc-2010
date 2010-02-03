@@ -1,0 +1,218 @@
+/*******************************************************************************
+*  Project   		: chopshop10 - 2010 Chopshop Robot Controller Code
+*  File Name  		: Vision166.cpp     
+*  Owner		   	: Software Group (FIRST Chopshop Team 166)
+*  Creation Date	: January 18, 2010
+*  Revision History	: From Explorer with TortoiseSVN, Use "Show log" menu item
+*  File Description	: Robot code which handles vision of camera
+*******************************************************************************/ 
+/*----------------------------------------------------------------------------*/
+/*  Copyright (c) MHS Chopshop Team 166, 2010.  All Rights Reserved.          */
+/*----------------------------------------------------------------------------*/
+
+#include "WPILib.h"
+#include "Vision166.h"
+#include <math.h>
+#include "Robot166.h"
+
+// WPILib include files for vision
+#include "AxisCamera.h" 
+#include "BaeUtilities.h"
+#include "FrcError.h"
+#include "Target166.h"
+
+// To locally enable debug printing: set true, to disable false
+#define DPRINTF if(true)dprintf
+
+/** ratio of horizontal image field of view (54 degrees) to horizontal servo (180) */
+#define HORIZONTAL_IMAGE_TO_SERVO_ADJUSTMENT 0.125   // this seems to work
+/** ratio of vertical image field of view (40.5 degrees) to vertical servo (180) */
+#define VERTICAL_IMAGE_TO_SERVO_ADJUSTMENT 0.125	    // this seems to work
+	
+// Vision task constructor
+Team166Vision::Team166Vision(void) :
+	colorMode(IMAQ_HSL), 			    // Color mode (RGB or HSL) for image processing	
+	targetAcquired(false),			// target not acquired
+	bearing(0.0),					// current horizontal normalized servo position	
+	tilt(0.0),						// current vertical normalized servo position	
+	horizontalServo(T166_HORIZONTAL_SERVO_CHANNEL),
+	verticalServo(T166_VERTICAL_SERVO_CHANNEL)
+{
+
+	/* set up debug output: 
+	 * DEBUG_OFF, DEBUG_MOSTLY_OFF, DEBUG_SCREEN_ONLY, DEBUG_FILE_ONLY, DEBUG_SCREEN_AND_FILE 
+	 */
+	SetDebugFlag ( DEBUG_SCREEN_ONLY  ) ;
+	
+	// Start our task
+	Start((char *)"166VisionTask", 50);	
+};
+	
+// Vision task destructor
+Team166Vision::~Team166Vision(void)
+{		
+	return;
+};
+
+/////////////// Control methods
+
+/**
+ * @brief Set vision processing on or off
+ * If off, the main loop just idles and monitors this flag
+ * 
+ * @param onFlag if true, process images to find the target
+ */
+void Team166Vision::SetVisionActive(bool activeFlag) {
+	visionActive = activeFlag;
+}
+
+/**
+ * Set servo positions (0.0 to 1.0) 
+ * 
+ * @param servoHorizontal Pan Position from 0.0 to 1.0.
+ * @param servoVertical Tilt Position from 0.0 to 1.0.
+ */
+void Team166Vision::_SetServoPositions(float servoHorizontal, float servoVertical)	{
+	
+	float currentH = horizontalServo.Get();		
+	float currentV = verticalServo.Get();
+	
+	/* make sure the movement isn't too small */
+	if ( fabs(servoHorizontal - currentH) > SERVO_DEADBAND ) {
+		horizontalServo.Set( servoHorizontal );
+		/* save new normalized horizontal position */
+		bearing = RangeToNormalized(servoHorizontal, 1);
+	}
+	if ( fabs(servoVertical - currentV) > SERVO_DEADBAND ) {
+		// don't look straight up or down
+		if (servoVertical > 0.9) servoVertical = 0.9;
+		if (servoVertical < 0.1) servoVertical = 0.1;
+		
+		verticalServo.Set( servoVertical );
+		/* save new normalized vertical position */
+		tilt = RangeToNormalized(servoVertical, 1);
+	}
+}	
+
+/**
+ * Set servo positions (0.0 to 1.0) translated from normalized values (-1.0 to 1.0). 
+ * 
+ * @param normalizedHorizontal Pan Position from -1.0 to 1.0.
+ * @param normalizedVertical Tilt Position from -1.0 to 1.0.
+ */
+void Team166Vision::SetServoPositions(float normalizedHorizontal, float normalizedVertical)	{
+	float servoH = NormalizeToRange(normalizedHorizontal);
+	float servoV = NormalizeToRange(normalizedVertical);
+	_SetServoPositions(servoH, servoV);
+}	
+/**
+ * @brief Adjust servo positions (0.0 to 1.0) translated from normalized values (-1.0 to 1.0). 
+ * Inputs are normalized values from an image with field of view 
+ * horizontal 54 degrees/vertical 40.5 degrees. This value is 
+ * multiplied by a factor to correspond to the 180 degree H/V 
+ * range of the servo. 
+ * 
+ * @param normalizedHorizontal Pan adjustment from -1.0 to 1.0.
+ * @param normalizedVertical Tilt adjustment from -1.0 to 1.0.
+ */
+void Team166Vision::AdjustServoPositions(float normDeltaHorizontal, float normDeltaVertical)	{
+			
+	//NORMALIZED
+	/* adjust for the fact that servo overshoots based on image input */
+	normDeltaHorizontal *= HORIZONTAL_IMAGE_TO_SERVO_ADJUSTMENT;
+	normDeltaVertical *= VERTICAL_IMAGE_TO_SERVO_ADJUSTMENT;
+	
+	/* compute horizontal goal */
+	float currentH = horizontalServo.Get();  //servo range
+	float normCurrentH = RangeToNormalized(currentH, 1);
+	float normDestH = normCurrentH + normDeltaHorizontal;	
+	
+	/* narrow range keep servo from going too far */
+	if (normDestH > 1.0) normDestH = 1.0;
+	if (normDestH < -1.0) normDestH = -1.0;		
+
+	/* compute vertical goal */
+	float currentV = verticalServo.Get();  //servo range
+	float normCurrentV = RangeToNormalized(currentV, 1);
+	float normDestV = normCurrentV + normDeltaVertical;	
+	
+	if (normDestV > 1.0) normDestV = 1.0;
+	if (normDestV < -1.0) normDestV = -1.0;
+	
+	//SERVO RANGE
+	/* convert input to servo range */
+	float servoH = NormalizeToRange(normDestH);
+	//float servoV = NormalizeToRange(normDestV, 0.2, 0.8);
+	float servoV = NormalizeToRange(normDestV);
+
+	_SetServoPositions(servoH, servoV);
+}
+
+// process images to find target, then pan the camera so we are looking at it
+/*
+ * @brief Processes images to find a target, then pans the camera so that 
+ * 		we are looking at the target. 
+ * 
+ * @return bool Whether we found the target; copy of Team166Vision::targetAcquired
+ */
+bool Team166Vision::IsTargetAcquired() {
+	return targetAcquired;
+}
+
+/*
+ * @brief Returns a float -1.0 to 1.0 returning our position relative to start.
+ * 
+ * @return float Bearing -1.0 to 1.0
+ */
+float Team166Vision::GetBearing() {
+	return bearing;
+}
+
+void Team166Vision::AcquireTarget() {
+	// Get the target
+}
+// Main function of the vision task
+int Team166Vision::Main(int a2, int a3, int a4, int a5,
+			int a6, int a7, int a8, int a9, int a10)
+{
+	// Indicate that we've now completed initialization
+	MyTaskInitialized = 1;
+	// Ensure we get into Autononmous or Tele Operasted mode
+	while (!Robot166::getInstance() ||
+	       ((Robot166::getInstance()->RobotMode != T166_AUTONOMOUS) &&
+	    	(Robot166::getInstance()->RobotMode != T166_OPERATOR))) {
+		Wait (VISION_LOOP_TIME);
+	}
+
+	// get handle to robot
+	Robot166 *lHandle = Robot166::getInstance();
+	//DriverStation *dsHandle = DriverStation::GetInstance();
+	
+	// set servos to start at center position
+	SetServoPositions(0.0, DEFAULT_VERTICAL_PAN_POSITION);
+				
+	/* for controlling loop execution time */
+	double currentTime = GetTime();
+	double lastTime = currentTime; // holds the time the vision loop started
+	
+    // General main loop (while in Autonomous or Tele mode)
+	DPRINTF(LOG_DEBUG,"Vision task is getting ready...\n");
+	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
+		   (lHandle->RobotMode == T166_OPERATOR)) 
+	{
+		/*
+		 * Main Vision code runs here
+		 */
+		
+		MyWatchDog = 1;		
+		if (visionActive) {
+			AcquireTarget();
+			targetAcquired = IsTargetAcquired();		
+		}
+		//SetServoPositions(lHandle->cameraStick.GetX(), lHandle->cameraStick.GetY());
+		if ( (VISION_LOOP_TIME > ElapsedTime(lastTime)) && !staleFlag) {
+			Wait( VISION_LOOP_TIME - ElapsedTime(lastTime) ); 
+		}
+	}
+	return 0;
+}
