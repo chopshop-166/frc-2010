@@ -29,7 +29,7 @@
 #include "HealthMon166.h"
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(false)dprintf
+#define DPRINTF if(true)dprintf
 
 // List of tasks that have requested to come up
 Team166Task *Team166Task::ActiveTasks[T166_MAXTASK + 1] = {0};
@@ -85,7 +85,7 @@ Robot166::Robot166(void) :
 
 	/* start the CameraTask  */
 	DPRINTF(LOG_DEBUG, "StartCamera\n");
-	StartCamera();
+	//StartCamera();
 
 	/* allow writing to vxWorks target */
 	Priv_SetWriteFileAllowed(1);   	
@@ -275,7 +275,7 @@ void Robot166::OperatorControl(void)
 		if (throttle%10==0){
 			throttle = 0;
 			DPRINTF(LOG_DEBUG, 
-				"joy buttons %i %i %i %i %i %i %i %i %i %i %i\n", 
+				"joy1 buttons %i %i %i %i %i %i %i %i %i %i %i\n", 
 				Team166ProxyObject.GetButton(1,1), 
 				Team166ProxyObject.GetButton(1,2),
 				Team166ProxyObject.GetButton(1,3), 
@@ -287,6 +287,20 @@ void Robot166::OperatorControl(void)
 				Team166ProxyObject.GetButton(1,9),
 				Team166ProxyObject.GetButton(1,10),
 				Team166ProxyObject.GetButton(1,11)
+				);
+			DPRINTF(LOG_DEBUG, 
+				"joy2 buttons %i %i %i %i %i %i %i %i %i %i %i\n", 
+				Team166ProxyObject.GetButton(2,1), 
+				Team166ProxyObject.GetButton(2,2),
+				Team166ProxyObject.GetButton(2,3), 
+				Team166ProxyObject.GetButton(2,4), 
+				Team166ProxyObject.GetButton(2,5),
+				Team166ProxyObject.GetButton(2,6), 
+				Team166ProxyObject.GetButton(2,7), 
+				Team166ProxyObject.GetButton(2,8),
+				Team166ProxyObject.GetButton(2,9),
+				Team166ProxyObject.GetButton(2,10),
+				Team166ProxyObject.GetButton(2,11)
 				);
 		}
 		

@@ -85,8 +85,8 @@ class Proxy166 : public Team166Task {
 		SEM_ID JoystickLocks[NUMBER_OF_JOYSTICKS];
 		SEM_ID SwitchLocks[NUMBER_OF_SWITCHES];
 
-		Joystick driveStickRight;     // joy stick for driving
 		Joystick driveStickLeft;      // joy stick for driving
+		Joystick driveStickRight;     // joy stick for driving
 		Joystick driveStickCopilot;	  // Camera / copilot joy stick
 };
 

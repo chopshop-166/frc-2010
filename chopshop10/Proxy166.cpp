@@ -19,6 +19,16 @@
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
 
+float LimitJoy(float value) {
+	if(value>=1) {
+		return 1;
+	} else if(value<=-1) {
+		return -1;
+	} else {
+		return value;
+	}
+}
+
 /**
  * @brief Initializes the joystick axes to 0 and the buttons to unset.
  */
@@ -41,7 +51,7 @@ Proxy166 *Proxy166::ProxyHandle = 0;
 void Proxy166::SetJoystickX(int joy_id, float value) {
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
 	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
-	Joysticks[joy_id].X = value;
+	Joysticks[joy_id].X = -LimitJoy(value);
 	semGive(JoystickLocks[joy_id]);
 }
 
@@ -53,7 +63,7 @@ void Proxy166::SetJoystickX(int joy_id, float value) {
 void Proxy166::SetJoystickY(int joy_id, float value) {
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
 	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
-	Joysticks[joy_id].Y = value;
+	Joysticks[joy_id].Y = -LimitJoy(value);
 	semGive(JoystickLocks[joy_id]);
 }
 
@@ -65,7 +75,7 @@ void Proxy166::SetJoystickY(int joy_id, float value) {
 void Proxy166::SetJoystickZ(int joy_id, float value) {
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
 	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
-	Joysticks[joy_id].Z = value;
+	Joysticks[joy_id].Z = -LimitJoy(value);
 	semGive(JoystickLocks[joy_id]);
 }
 
@@ -164,9 +174,9 @@ void Proxy166::SetJoystick(int joy_id, Joystick stick)
 {
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
 	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
-	Joysticks[joy_id].X = stick.GetX();
-	Joysticks[joy_id].Y = stick.GetY();
-	Joysticks[joy_id].Z = stick.GetZ();
+	Joysticks[joy_id].X = -stick.GetX();
+	Joysticks[joy_id].Y = -stick.GetY();
+	Joysticks[joy_id].Z = -stick.GetZ();
 	for(unsigned i=0;i<NUMBER_OF_JOY_BUTTONS;i++) {
 		Joysticks[joy_id].button[i] = stick.GetRawButton(i);
 	}
@@ -213,8 +223,8 @@ bool Proxy166::GetButton(int joy_id, int button_id)
  * @brief Initializes semaphores for joysticks and switches, and starts the Proxy166 task.
  */
 Proxy166::Proxy166(void):
-	driveStickRight(T166_USB_STICK_1),        // USB port for 1st stick
-	driveStickLeft(T166_USB_STICK_2),        // USB port for 2nd stick
+	driveStickLeft(T166_USB_STICK_1),        // USB port for 1st stick
+	driveStickRight(T166_USB_STICK_2),        // USB port for 2nd stick
 	driveStickCopilot(T166_USB_STICK_3)
 {
 	ProxyHandle=this;

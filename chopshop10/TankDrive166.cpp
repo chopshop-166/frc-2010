@@ -111,14 +111,14 @@ int Team166TankDrive::Main(int a2, int a3, int a4, int a5,
 
 	// Register our logger
 	lHandle = Robot166::getInstance();
-	lHandle->RegisterLogger(&sl);	
+	lHandle->RegisterLogger(&sl);
 
 	int timer=0;
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		leftValue = proxy->GetJoystickY(0);
-		rightValue = proxy->GetJoystickY(1);
+		leftValue = proxy->GetJoystickY(1);
+		rightValue = proxy->GetJoystickY(2);
 		TankDrive(leftValue, rightValue);
 		if(((++timer)%(1000 / TANK_CYCLE_TIME)) == 0 ) {
 			printf("%f\t%f\n",leftValue,rightValue);
