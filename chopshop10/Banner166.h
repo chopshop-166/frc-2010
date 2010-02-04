@@ -20,6 +20,7 @@
 // of miliseconds. Max allowed time is 999 miliseconds.
 //
 #define BANNER_CYCLE_TIME (10) // 10ms
+#define TEAM_166_BANNER_PWM (10)
 
 
 #define NO_SPEED				 0    //speed to use when there is no input for the victor
@@ -38,6 +39,9 @@ public:
 	// Main function of the task
 	virtual int Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10);
+	
+private:
+	DigitalInput BannerSensor;
 };
 
-#endif // !defined(_BANNER166)
+#endif // !defined(_BANNER_166)

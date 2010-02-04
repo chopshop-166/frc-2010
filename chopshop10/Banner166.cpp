@@ -76,7 +76,7 @@ unsigned int BannerLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-Team166Banner::Team166Banner(void)
+Team166Banner::Team166Banner(void):	BannerSensor(TEAM_166_BANNER_PWM)
 {
 	Start((char *)"166BannerTask", BANNER_CYCLE_TIME);
 	return;
@@ -92,6 +92,7 @@ Team166Banner::~Team166Banner(void)
 int Team166Banner::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {
+		
 		
 	Robot166 *lHandle;            // Local handle
 	BannerLog sl;                   // log
@@ -110,8 +111,13 @@ int Team166Banner::Main(int a2, int a3, int a4, int a5,
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		
-		DPRINTF(LOG_DEBUG,"BANNER HERE");
-		
+		static int throttle = 0;
+		throttle++;
+		if (throttle%10==0){
+				throttle = 0;
+				DPRINTF(LOG_DEBUG,"Channel: %i Value: %i",BannerSensor.GetChannel(),BannerSensor.Get());
+				}
+				
         // Should we log this value?
 		sl.PutOne(0, 0, 0);
 		
