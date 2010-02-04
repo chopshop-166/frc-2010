@@ -95,6 +95,8 @@ int Team166Lift::Main(int a2, int a3, int a4, int a5,
 		
 	Robot166 *lHandle;            // Local handle
 	LiftLog sl;                   // log
+	Proxy166 *proxy;
+	float joystickY;
 	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 Lift task\n");
@@ -105,6 +107,9 @@ int Team166Lift::Main(int a2, int a3, int a4, int a5,
 	// Register our logger
 	lHandle = Robot166::getInstance();
 	lHandle->RegisterLogger(&sl);	
+	
+	proxy=Proxy166::getInstance();
+
 		
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
@@ -116,6 +121,9 @@ int Team166Lift::Main(int a2, int a3, int a4, int a5,
 		int dir;
         lHandle->GetLift(&dir, &lift_motor);   // Get the direction of the lift
     			  //gives the values for the desired lift motor speed
+        joystickY = proxy->GetJoystickY(2)
+        
+        
 
         // Should we log this value?
 		sl.PutOne(0, 0, 0);
