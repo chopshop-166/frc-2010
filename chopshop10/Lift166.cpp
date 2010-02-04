@@ -76,7 +76,7 @@ unsigned int LiftLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-Team166Lift::Team166Lift(void)
+Team166Lift::Team166Lift(void): lift_jag(7)
 {
 	Start((char *)"166LiftTask", LIFT_CYCLE_TIME);
 	return;
@@ -109,27 +109,29 @@ int Team166Lift::Main(int a2, int a3, int a4, int a5,
 	lHandle->RegisterLogger(&sl);	
 	
 	proxy=Proxy166::getInstance();
-
+	
+	int printstop=0;
 		
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		
-		float lift_motor;                         // Lift motor direction/power
 		
         // TODO: update this for real Lift functionality
-		int dir;
-        lHandle->GetLift(&dir, &lift_motor);   // Get the direction of the lift
+//		int dir;
+//        lHandle->GetLift(&dir, &lift_motor);   // Get the direction of the lift
     			  //gives the values for the desired lift motor speed
-        joystickY = proxy->GetJoystickY(2)
-        
-        
+        joystickY = proxy->GetJoystickY(3);
+        if(((++printstop)%10)==0) {
+        	DPRINTF(LOG_DEBUG, joystickY);
+        }
+        lift_jag.Set(joystickY);
 
         // Should we log this value?
 		sl.PutOne(0, 0, 0);
 		
 		// Wait for our next lap
-		WaitForNextLoop();		
+		WaitForNextLoop();
 	}
 	return (0);
 	
