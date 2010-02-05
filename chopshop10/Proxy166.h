@@ -37,6 +37,7 @@ class ProxyJoystick {
 		float X;
 		float Y;
 		float Z;
+		float throttle;
 		bool button[NUMBER_OF_JOY_BUTTONS];
 		
 		ProxyJoystick(void);
@@ -67,10 +68,13 @@ class Proxy166 : public Team166Task {
 		int GetSwitch(int);
 		
 		void SetButton(int,int,bool);
-		bool GetButton(int,int);
+		bool GetButton(int,int,bool=true);
 		
-		int GetGameMode(void);
-		int SetGameMode(int);
+		void SetThrottle(int,float);
+		float GetThrottle(int);
+
+		void SetTrigger(int,bool);
+		bool GetTrigger(int,bool=true);
 		
 		Proxy166(void);
 		~Proxy166(void);

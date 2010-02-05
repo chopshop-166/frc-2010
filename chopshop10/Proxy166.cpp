@@ -167,6 +167,7 @@ void Proxy166::SetJoystick(int joy_id, Joystick & stick)
 	Joysticks[joy_id].X = stick.GetX();
 	Joysticks[joy_id].Y = stick.GetY();
 	Joysticks[joy_id].Z = stick.GetZ();
+	Joysticks[joy_id].throttle = stick.GetThrottle();
 	for(unsigned i=0;i<NUMBER_OF_JOY_BUTTONS;i++) {
 		Joysticks[joy_id].button[i] = stick.GetRawButton(i);
 	}
@@ -193,20 +194,53 @@ void Proxy166::SetButton(int joy_id, int button_id, bool newval)
  * @param button_id Which button on the joystick to retrieve the status for.
  * @return The button's value
  */
-bool Proxy166::GetButton(int joy_id, int button_id)
+bool Proxy166::GetButton(int joy_id, int button_id, bool reset)
 {
 	bool button;
 	wpi_assert(joy_id < NUMBER_OF_JOY_BUTTONS && joy_id >= 0);
 //	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
 	button = Joysticks[joy_id].button[button_id];
 //	semGive(JoystickLocks[joy_id]);
-
-	// TODO: make reset an optional calling parameter, but reset it by default
 	
 	// reset the button so actions are triggered only once
-	SetButton(joy_id, button_id, 0);
-	
+	if (reset) {
+		SetButton(joy_id, button_id, 0);
+	}
 	return button;
+}
+
+/**
+ * @brief Sets the cache value of a joystick throttle.
+ * @param joy_id Which joystick to set the throttle status for.
+ * @param newval What to set the value to.
+ */
+void Proxy166::SetThrottle(int joy_id, float newval) { Joysticks[joy_id].throttle=newval; }
+
+/**
+ * @brief Gets the cache value of a throttle on a joystick. 
+ * @param joy_id Which joystick to retrieve the throttle status for.
+ * @return The button's value
+ */
+float Proxy166::GetThrottle(int joy_id) {	return Joysticks[joy_id].throttle; }
+
+/**
+ * @brief Sets the cache value of the trigger (button 1) on a joystick.
+ * @param joy_id Which joystick to set the trigger status for.
+ * @param newval What to set the value to.
+ */
+void Proxy166::SetTrigger(int joy_id, bool newval) { SetButton(joy_id, 1, newval); }
+/**
+ * @brief Gets the cache value of the trigger (button 1) of a joystick. 
+ * @param joy_id Which joystick to retrieve the trigger status for.
+ * @return The last read current value
+ */
+bool Proxy166::GetTrigger(int joy_id, bool reset) { 
+	bool bid = GetButton(joy_id,1); 
+	// reset the button so actions are triggered only once
+	if (reset) {
+		SetButton(joy_id, 1, 0);
+	}
+	return bid;
 }
 
 /**
