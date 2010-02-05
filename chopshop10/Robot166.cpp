@@ -40,7 +40,7 @@ Team166TankDrive Team166TankDriveObject;
 Team166Kicker Team166KickerObject;
 Team166Banner Team166BannerObject;
 Team166Vision Team166VisionObject;
-Team166Sonar Team166SonarObject; // Stop gap to make Autonomous compile
+Team166Sonar Team166SonarObject; 
 Team166CANDrive Team166CANDriveObject;
 Team166EBrake Team166EBrakeObject;
 Team166HealthMon Team166HealthMonObject;
@@ -62,10 +62,8 @@ Robot166::Robot166(void) :
 	lbEncoder(T166_ENC_LB_A, T166_ENC_LB_B, true), // Left Back encoder pins
 	rbEncoder(T166_ENC_RB_A, T166_ENC_RB_B, false), // Right Back encoder pins
 	lift_victor(T166_LIFT_MOTOR),       // Victor controlling the lift
-	treadmill_victor(T166_TREADMILL_MOTOR), // Victor controlling the treadmill
     limitswitch_top(TOP_LIMITSWITCH_DIGITAL_INPUT),  //top limit switch digital input
     limitswitch_bottom(BOTTOM_LIMITSWITCH_DIGITAL_INPUT) //bottom limit switch digital input 
-    //AutonomousObject()
 {
 	/* set up debug output: 
 	 * DEBUG_OFF, DEBUG_MOSTLY_OFF, DEBUG_SCREEN_ONLY, DEBUG_FILE_ONLY, DEBUG_SCREEN_AND_FILE  */
@@ -102,121 +100,6 @@ Robot166::Robot166(void) :
 	printf("All tasks we depend upon are up!\n");	
 }
 
-
-#if 0
-/* **
- * Get Alliance Switch
- */
-int Robot166::GetAllianceSwitch(void) {
-	bool switchOn;
-//printf("ROBOTMODE=%i", RobotMode\n);
-	switch (RobotMode) {
-	case T166_OPERATOR: 
-	case T166_AUTONOMOUS:
-		semTake(DSLock, WAIT_FOREVER);		
-		switchOn = dsHandle->GetDigitalIn(DS_ALLIANCE_SWITCH_INPUT);	
-		semGive(DSLock);
-		
-		if (switchOn) {
-			return 1;
-		} else {
-			return 0;
-		}
-		break;
-	default:
-		return 2;
-	}
-}
-#endif
-
-#if 0 
-// MOVE THIS TO LIFT TASK
-/**
- * Lift command
- */
-void Robot166::SetLift(int dir, float lift_motor)
-{
-	semTake(LiftLock, WAIT_FOREVER);
-	// do stuff
-	
-	semGive(LiftLock);
-	
-	// Done
-	return;
-}
-void Robot166::GetLift(int *dir, float *lift_motor)
-{
-	
-	// Pick up the arm command
-	switch (RobotMode) {
-	case T166_OPERATOR: {
-			semTake(DSLock, WAIT_FOREVER);
-
-			*lift_motor = -dispStick.GetY();	
-			semGive(DSLock);
-			if (dispStick.GetRawButton(2)==1) {
-				*dir = T166_CB_BACKWARD;
-			} else {
-				if (dispStick.GetButton(dispStick.kTriggerButton)) {
-					*dir = T166_CB_FORWARD;
-				} else {
-					*dir = T166_CB_STILL;
-				}
-			}
-			break;
-		    }
-	default: {
-		semTake(LiftLock, WAIT_FOREVER);
-		// do stuff
-		semGive(LiftLock);
-		break;
-	    }
-	}
-	
-	// Done
-	return;
-}
-#endif
-void Robot166::GetLift(int *dir, float *lift_motor) {
-	return;
-}
-
-#if 0
-// MOVE THIS TO KICKER TASK
-/**
- * Kicker command
- */
-void Robot166::SetKicker(float *kick_motor)
-{
-	// Turn on the kicker
-	switch (RobotMode) {
-	case T166_OPERATOR: {
-				semTake(DSLock, WAIT_FOREVER);
-				*kick_motor = -dispStick.GetY();	
-				semGive(DSLock);
-				break;
-			    }
-	default: {
-			semTake(KickLock, WAIT_FOREVER);
-			// do stuff
-			semGive(KickLock);
-			break;
-		    }
-	}
-	// Done
-	return;
-}
-void Robot166::GetKicker(float *kick_motor)
-{
-	semTake(KickLock, WAIT_FOREVER);
-	// do stuff
-	
-	semGive(KickLock);
-	// Done
-	return;
-}
-
-#endif
 /**
  * Obtain battery voltage. Wrapper here ensures we do not collide with
  * other tasks touching the drive station.
@@ -252,7 +135,7 @@ void Robot166::Autonomous(void)
 	DPRINTF(LOG_DEBUG,"autonomous\n");
 	RobotMode = T166_AUTONOMOUS;
 	GetWatchdog().SetEnabled(false);
-	//AutonomousObject.Autonomous();
+	//Autonomous166();
 }
 
 /** 
@@ -268,12 +151,12 @@ void Robot166::OperatorControl(void)
 	printf("Operator control\n");
 	RobotMode = T166_OPERATOR;
 	GetWatchdog().SetEnabled(true);
-	static int throttle = 0;
+	static int print_throttle = 0;
 	while (IsOperatorControl())
 	{
-		throttle++;
-		if (throttle%10==0){
-			throttle = 0;
+		print_throttle++;
+		if (print_throttle%30==0){
+			print_throttle = 0;
 			DPRINTF(LOG_DEBUG, 
 				"joy1 buttons %i %i %i %i %i %i %i %i %i %i %i\n", 
 				Team166ProxyObject.GetButton(1,1), 
@@ -301,6 +184,20 @@ void Robot166::OperatorControl(void)
 				Team166ProxyObject.GetButton(2,9),
 				Team166ProxyObject.GetButton(2,10),
 				Team166ProxyObject.GetButton(2,11)
+				);
+			DPRINTF(LOG_DEBUG, 
+				"joy3 buttons %i %i %i %i %i %i %i %i %i %i %i\n", 
+				Team166ProxyObject.GetButton(3,1), 
+				Team166ProxyObject.GetButton(3,2),
+				Team166ProxyObject.GetButton(3,3), 
+				Team166ProxyObject.GetButton(3,4), 
+				Team166ProxyObject.GetButton(3,5),
+				Team166ProxyObject.GetButton(3,6), 
+				Team166ProxyObject.GetButton(3,7), 
+				Team166ProxyObject.GetButton(3,8),
+				Team166ProxyObject.GetButton(3,9),
+				Team166ProxyObject.GetButton(3,10),
+				Team166ProxyObject.GetButton(3,11)
 				);
 		}
 		

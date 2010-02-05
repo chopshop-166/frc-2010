@@ -46,7 +46,6 @@ public:
     Encoder lbEncoder;						  // Encoder for the Left Back
     Encoder rbEncoder;						  // Encoder for the Right Back
 	Victor lift_victor;                       // Victor controlling the lift
-    Victor treadmill_victor;                  // Victor controlling the treadmill
     DigitalInput limitswitch_top;             //the first of two limit switches on the high end of the lifter
     DigitalInput limitswitch_bottom;          //the first of two limit switches on the bottom end of the lifter
     
@@ -58,8 +57,6 @@ private:
     SEM_ID DSLock;                            // Coordination of drive station interface
     SEM_ID LiftLock;                           // Arm lock
     SEM_ID KickLock;                          // Kicker lock
-    int LiftDir;            			      // Lift direction //FIX!
-    float LiftMotor;                          // Conveyer motor lift
     DriverStation *dsHandle;                  // Driver Station handle
     MemoryLog166 *mlHead;                     // Memory log head
     
@@ -68,21 +65,10 @@ public:
 	void Autonomous(void);                    // Method called by WPI when we're in autonomous mode
 	void OperatorControl(void);               // Method called by WPI when we're in operator control mode
 	static Robot166 *getInstance(void);       // Get pointer to our Robot166 instance
-	void SetJoyStick(float x, float y);       // Set our virtual joystick
-	void GetJoyStick(float *x, float *y);	  // Get our virtual joystick
 	float GetBatteryVoltage(void);            // Get voltage of battery on robot
-	void SetLift(int speed,	float lift_motor);	// Set lift direction			                //
-	void GetLift(int *dir,    // Get the direction of the lift
-			float *lift_motor);            
-
-	void SetKicker(float *kick_motor);		// Set kicker moter
-	void GetKicker(float *kick_motor);		// Get kicker motor status
-	
-	void CameraDrive();             // Test routine for autonomous			
+			
 	void RegisterLogger(MemoryLog166 *ml);    // Register memory logger
 	void DumpLoggers(int dnum);               // Dump all logs
-	void GetGains(float *g1, float *g2);      // Pick up joystick gains
-	int GetAllianceSwitch(void);    		  // Get Alliance Switch
 	
 };
 
