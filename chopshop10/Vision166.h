@@ -19,8 +19,11 @@
 #include "MemoryLog166.h"
 #include "Target166.h" 
 
+
 // WPILib include files for vision
 #include "TrackAPI.h" 
+#include "Vision/AxisCamera2010.h"
+#include "Vision/HSLImage.h"
 
 // Constants
 #define PI 3.14159265358979
@@ -55,6 +58,7 @@ public:
 	// Control
 	void SetVisionActive(bool);
 	
+	ColorImage *GetImage();
 	
 // Private functions and attributes
 private:	
@@ -69,6 +73,8 @@ private:
 	
 	Servo horizontalServo;
 	Servo verticalServo;
+	
+	AxisCamera &camera;
 	
 	void AcquireTarget();
 	void IsTargetAccquired();

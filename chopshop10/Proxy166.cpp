@@ -19,16 +19,6 @@
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
 
-float LimitJoy(float value) {
-	if(value>=1) {
-		return 1;
-	} else if(value<=-1) {
-		return -1;
-	} else {
-		return value;
-	}
-}
-
 /**
  * @brief Initializes the joystick axes to 0 and the buttons to unset.
  */
@@ -51,7 +41,7 @@ Proxy166 *Proxy166::ProxyHandle = 0;
 void Proxy166::SetJoystickX(int joy_id, float value) {
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
 	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
-	Joysticks[joy_id].X = -LimitJoy(value);
+	Joysticks[joy_id].X = value;
 	semGive(JoystickLocks[joy_id]);
 }
 
@@ -63,7 +53,7 @@ void Proxy166::SetJoystickX(int joy_id, float value) {
 void Proxy166::SetJoystickY(int joy_id, float value) {
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
 	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
-	Joysticks[joy_id].Y = -LimitJoy(value);
+	Joysticks[joy_id].Y = value;
 	semGive(JoystickLocks[joy_id]);
 }
 
@@ -75,7 +65,7 @@ void Proxy166::SetJoystickY(int joy_id, float value) {
 void Proxy166::SetJoystickZ(int joy_id, float value) {
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
 	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
-	Joysticks[joy_id].Z = -LimitJoy(value);
+	Joysticks[joy_id].Z = value;
 	semGive(JoystickLocks[joy_id]);
 }
 
@@ -170,13 +160,13 @@ ProxyJoystick Proxy166::GetJoystick(int joy_id)
  * @param joy_id Which joystick to set the cached value for.
  * @param stick A Joystick object with the X, Y, and Z axes set, as well as each of the buttons.
  */
-void Proxy166::SetJoystick(int joy_id, Joystick stick)
+void Proxy166::SetJoystick(int joy_id, Joystick & stick)
 {
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
 	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
-	Joysticks[joy_id].X = -stick.GetX();
-	Joysticks[joy_id].Y = -stick.GetY();
-	Joysticks[joy_id].Z = -stick.GetZ();
+	Joysticks[joy_id].X = stick.GetX();
+	Joysticks[joy_id].Y = stick.GetY();
+	Joysticks[joy_id].Z = stick.GetZ();
 	for(unsigned i=0;i<NUMBER_OF_JOY_BUTTONS;i++) {
 		Joysticks[joy_id].button[i] = stick.GetRawButton(i);
 	}
@@ -223,8 +213,8 @@ bool Proxy166::GetButton(int joy_id, int button_id)
  * @brief Initializes semaphores for joysticks and switches, and starts the Proxy166 task.
  */
 Proxy166::Proxy166(void):
-	driveStickLeft(T166_USB_STICK_1),        // USB port for 1st stick
-	driveStickRight(T166_USB_STICK_2),        // USB port for 2nd stick
+	driveStickRight(T166_USB_STICK_1),        // USB port for 1st stick
+	driveStickLeft(T166_USB_STICK_2),        // USB port for 2nd stick
 	driveStickCopilot(T166_USB_STICK_3)
 {
 	ProxyHandle=this;
@@ -253,48 +243,52 @@ Proxy166 *Proxy166::getInstance(void)
 }
 
 /**
+ * @brief Gets the cached image.
+ * @return The cached image.
+ */
+ColorImage *Proxy166::GetImage() {
+	return image;
+}
+
+/**
+ * @brief Sets the cached image.
+ */
+void Proxy166::SetImage(ColorImage *img) {
+	image = img;
+}
+
+
+/**
+ * @brief Deletes the cached image.
+ */
+void Proxy166::DeleteImage() {
+	delete image;
+}
+
+/**
  * @brief Main thread function for Proxy166.
  * Runs forever, until MyTaskInitialized is false. 
+ * 
+ * @todo Add update of bottom joystick control.
+ * @todo Update DS switch array
  */
 int Proxy166::Main(	int a2, int a3, int a4, int a5,
 					int a6, int a7, int a8, int a9, int a10) {
 	MyTaskInitialized = 1;
-	
+	DPRINTF(LOG_DEBUG, "Proxy166 main task entered.");
 	// For use with a logger if/when implemented
-	Robot166 *lHandle;
-	lHandle = Robot166::getInstance();
-	printf("in proxy\n");
-	while(MyTaskInitialized) {
-
-		//TODO: do this update of joystick values only in Operator Control mode
-		//TODO: add update of bottom joystick control
-		
-		//TODO: update DS Switch array
-		
-		SetJoystickX(1, driveStickRight.GetX());
-		SetJoystickY(1, driveStickRight.GetY());
-		SetJoystickZ(1, driveStickRight.GetZ());		
-		//Initialize each button
-		for (int i=1;i<=11;i++) {
-			SetButton(1, i, driveStickRight.GetRawButton(i));
+	Robot166 *lHandle = NULL;
+	while( ( lHandle = Robot166::getInstance() ) == NULL) {
+		Wait(0.05);
+	}
+	while(MyTaskInitialized) {	
+		while(!(lHandle->IsOperatorControl())) {
+			Wait(0.05);
 		}
+		SetJoystick(1, driveStickRight);
+		SetJoystick(2, driveStickLeft);
+		SetJoystick(3, driveStickCopilot);
 		
-		SetJoystickX(2, driveStickLeft.GetX());
-		SetJoystickY(2, driveStickLeft.GetY());
-		SetJoystickZ(2, driveStickLeft.GetZ());		
-		//Initialize each button
-		for (int i=1;i<=11;i++) {
-			SetButton(2, i, driveStickLeft.GetRawButton(i));
-		}
-
-		SetJoystickX(3, driveStickCopilot.GetX());
-		SetJoystickY(3, driveStickCopilot.GetY());
-		SetJoystickZ(3, driveStickCopilot.GetZ());		
-		//Initialize each button
-		for (int i=1;i<=11;i++) {
-			SetButton(3, i, driveStickCopilot.GetRawButton(i));
-		}
-
 		// The task ends if it's not initialized
 		WaitForNextLoop();
 	}

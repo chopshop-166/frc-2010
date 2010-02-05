@@ -14,12 +14,13 @@
 #include "Vision166.h"
 #include <math.h>
 #include "Robot166.h"
+#include <vector>
 
 // WPILib include files for vision
-#include "AxisCamera.h" 
+#include "Vision/AxisCamera2010.h" 
 #include "BaeUtilities.h"
 #include "FrcError.h"
-#include "Target166.h"
+#include "Target.h"
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(true)dprintf
@@ -36,7 +37,8 @@ Team166Vision::Team166Vision(void) :
 	bearing(0.0),					// current horizontal normalized servo position	
 	tilt(0.0),						// current vertical normalized servo position	
 	horizontalServo(T166_HORIZONTAL_SERVO_CHANNEL),
-	verticalServo(T166_VERTICAL_SERVO_CHANNEL)
+	verticalServo(T166_VERTICAL_SERVO_CHANNEL),
+	camera(AxisCamera::getInstance())
 {
 
 	/* set up debug output: 
@@ -171,6 +173,11 @@ float Team166Vision::GetBearing() {
 void Team166Vision::AcquireTarget() {
 	// Get the target
 }
+ColorImage *Team166Vision::GetImage() {
+	ColorImage *result = NULL;
+	result = camera.GetImage();
+	return result;
+}
 // Main function of the vision task
 int Team166Vision::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
@@ -183,9 +190,11 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 	    	(Robot166::getInstance()->RobotMode != T166_OPERATOR))) {
 		Wait (VISION_LOOP_TIME);
 	}
+	
 
 	// get handle to robot
 	Robot166 *lHandle = Robot166::getInstance();
+	Proxy166 *pHandle = Proxy166::getInstance();
 	//DriverStation *dsHandle = DriverStation::GetInstance();
 	
 	// set servos to start at center position
@@ -197,8 +206,9 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 	
     // General main loop (while in Autonomous or Tele mode)
 	DPRINTF(LOG_DEBUG,"Vision task is getting ready...\n");
-	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
-		   (lHandle->RobotMode == T166_OPERATOR)) 
+	int timer = 0;
+	while (lHandle->IsOperatorControl() || 
+		   lHandle->IsAutonomous()) 
 	{
 		/*
 		 * Main Vision code runs here
@@ -209,6 +219,20 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 			AcquireTarget();
 			targetAcquired = IsTargetAcquired();		
 		}
+		if(timer % 5 == 0)
+			DPRINTF(LOG_DEBUG, "Joy [x= %f ] [y= %f ]\n", 
+					pHandle->GetJoystickX(3), 
+					pHandle->GetJoystickY(3)
+			);
+		if(camera.freshImage()) {
+			pHandle->DeleteImage();
+		}
+		pHandle->SetImage(GetImage());
+		SetServoPositions(pHandle->GetJoystickX(3), pHandle->GetJoystickY(3));
+		
+		vector<Target> targets = Target::FindCircularTargets(pHandle->GetImage());
+		
+		
 		//SetServoPositions(lHandle->cameraStick.GetX(), lHandle->cameraStick.GetY());
 		if ( (VISION_LOOP_TIME > ElapsedTime(lastTime)) && !staleFlag) {
 			Wait( VISION_LOOP_TIME - ElapsedTime(lastTime) ); 

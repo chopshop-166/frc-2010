@@ -19,6 +19,7 @@ void StartPCVideoServer();
 void StartCamera();
 void TakeSnapshot(char* imageName);
 void SetupCamera(ResolutionT res, RotationT rot);
+void DriveTowardsTarget();
 
 //extern AxisCamera camera166;
 

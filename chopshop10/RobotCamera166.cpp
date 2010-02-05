@@ -97,4 +97,7 @@ void SetupCamera(ResolutionT res, RotationT rot)
 	Wait(2.0);
 }
 
+void DriveTowardsTarget() {
+	
+}
 
