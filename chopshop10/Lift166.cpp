@@ -18,7 +18,7 @@
 #include "BaeUtilities.h"
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(false)dprintf
+#define DPRINTF if(true)dprintf
 
 // Sample in memory buffer
 struct abuf166
@@ -123,7 +123,7 @@ int Team166Lift::Main(int a2, int a3, int a4, int a5,
     			  //gives the values for the desired lift motor speed
         joystickY = proxy->GetJoystickY(3);
         if(((++printstop)%10)==0) {
-        	DPRINTF(LOG_DEBUG, joystickY);
+        	DPRINTF(LOG_DEBUG, "Joystick Y: %d", joystickY);
         }
         lift_jag.Set(joystickY);
 
