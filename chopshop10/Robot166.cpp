@@ -157,54 +157,25 @@ void Robot166::OperatorControl(void)
 	static int print_throttle = 0;
 	while (IsOperatorControl())
 	{
-		print_throttle++;
-		if (print_throttle%30==0){
+		if (((++print_throttle)%30)==0){
 			print_throttle = 0;
-			DPRINTF(LOG_DEBUG, 
-				"joy1 butns %i %i %i %i %i %i %i %i %i %i %i TH:%f", 
-				Team166ProxyObject.GetButton(1,1), 
-				Team166ProxyObject.GetButton(1,2),
-				Team166ProxyObject.GetButton(1,3), 
-				Team166ProxyObject.GetButton(1,4), 
-				Team166ProxyObject.GetButton(1,5),
-				Team166ProxyObject.GetButton(1,6), 
-				Team166ProxyObject.GetButton(1,7), 
-				Team166ProxyObject.GetButton(1,8),
-				Team166ProxyObject.GetButton(1,9),
-				Team166ProxyObject.GetButton(1,10),
-				Team166ProxyObject.GetButton(1,11),
-				Team166ProxyObject.GetThrottle(1)				
+			for (int i=1; i=3; i++) {
+				DPRINTF(LOG_DEBUG, 
+				"joy%i butns %i %i %i %i %i %i %i %i %i %i %i TH:%f", i,
+				Team166ProxyObject.GetButton(i,1), 
+				Team166ProxyObject.GetButton(i,2),
+				Team166ProxyObject.GetButton(i,3), 
+				Team166ProxyObject.GetButton(i,4), 
+				Team166ProxyObject.GetButton(i,5),
+				Team166ProxyObject.GetButton(i,6), 
+				Team166ProxyObject.GetButton(i,7), 
+				Team166ProxyObject.GetButton(i,8),
+				Team166ProxyObject.GetButton(i,9),
+				Team166ProxyObject.GetButton(i,10),
+				Team166ProxyObject.GetButton(i,11),
+				Team166ProxyObject.GetThrottle(i)				
 				);
-			DPRINTF(LOG_DEBUG, 
-				"joy2 butns %i %i %i %i %i %i %i %i %i %i %i TH:%f", 
-				Team166ProxyObject.GetButton(2,1), 
-				Team166ProxyObject.GetButton(2,2),
-				Team166ProxyObject.GetButton(2,3), 
-				Team166ProxyObject.GetButton(2,4), 
-				Team166ProxyObject.GetButton(2,5),
-				Team166ProxyObject.GetButton(2,6), 
-				Team166ProxyObject.GetButton(2,7), 
-				Team166ProxyObject.GetButton(2,8),
-				Team166ProxyObject.GetButton(2,9),
-				Team166ProxyObject.GetButton(2,10),
-				Team166ProxyObject.GetButton(2,11),
-				Team166ProxyObject.GetThrottle(2)
-				);
-			DPRINTF(LOG_DEBUG, 
-				"joy3 butns %i %i %i %i %i %i %i %i %i %i %i TH:%f", 
-				Team166ProxyObject.GetButton(3,1), 
-				Team166ProxyObject.GetButton(3,2),
-				Team166ProxyObject.GetButton(3,3), 
-				Team166ProxyObject.GetButton(3,4), 
-				Team166ProxyObject.GetButton(3,5),
-				Team166ProxyObject.GetButton(3,6), 
-				Team166ProxyObject.GetButton(3,7), 
-				Team166ProxyObject.GetButton(3,8),
-				Team166ProxyObject.GetButton(3,9),
-				Team166ProxyObject.GetButton(3,10),
-				Team166ProxyObject.GetButton(3,11),
-				Team166ProxyObject.GetThrottle(3)
-				);
+			}
 		}
 		
 		// Are we being disabled?
