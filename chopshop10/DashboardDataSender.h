@@ -4,6 +4,7 @@
 #include "WPILib.h"
 #include <vector>
 #include "Target.h"
+#include "Robot166.h"
 
 /**
  * This class is just an example of one way you could organize the data that you want
@@ -22,10 +23,11 @@ public:
 	DashboardDataSender();
 	void sendIOPortData();
 	void sendVisionData(double joyStickX,
-					double gyroAngle,
-					double gyroRate,
-					double targetX,
-					vector<Target> targets);
+						double gyroAngle,
+						double gyroRate,
+						double targetX,
+						vector<Target> targets);
+	float sendCANData(CANJaguar jag);
 private:
 	Timer *visionTimer;
 	Timer *IOTimer;

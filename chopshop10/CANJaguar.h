@@ -5,11 +5,13 @@
 #include "SpeedController.h"
 #include "PIDOutput.h"
 #include <vxWorks.h>
+#include "Robot166.h"
+
 
 /**
  * Luminary Micro Jaguar Speed Control
  */
-class CANJaguar : public SpeedController, public PIDOutput
+class CANJaguar : public SpeedController, public PIDOutput 
 {
 public:
 	typedef enum {kPercentVoltage, kSpeed, kPosition, kCurrent} ControlMode;
@@ -18,6 +20,7 @@ public:
 
 	explicit CANJaguar(UINT8 deviceNumber, ControlMode controlMode = kPercentVoltage);
 	virtual ~CANJaguar();
+	float SendCANData();
 
 	// SpeedController interface
 	float Get();

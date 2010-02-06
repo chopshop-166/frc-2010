@@ -2,7 +2,6 @@
 
 
 
-#include "WPILib.h"
 #include "CANJaguar.h"
 #include "ChipObject/NiRioStatus.h"
 #include "JaguarCANDriver.h"
@@ -10,7 +9,9 @@
 #include "can_proto.h"
 #undef FIRST_FIRMWARE_VERSION
 #include "Utility.h"
-#include "Proxy166.h"
+#include "Robot166.h"
+#include "DashboardDataSender.h"
+#include "WPILib.h"
 
 #define swap16(x) ( (((x)>>8) &0x00FF) \
                   | (((x)<<8) &0xFF00) )
@@ -24,6 +25,7 @@
 /**
  * Common initialization code called by all constructors.
  */
+
 void CANJaguar::InitJaguar()
 {
 	if (m_deviceNumber < 1 || m_deviceNumber > 63)
@@ -33,7 +35,7 @@ void CANJaguar::InitJaguar()
 	UINT32 fwVer = GetFirmwareVersion();
 	if (fwVer >= 3330 || fwVer < 85)
 	{
-		wpi_assertCleanStatus(kRIOStatusVersionMismatch);
+		wpi_assert(kRIOStatusVersionMismatch);
 		return;
 	}
 	switch (m_controlMode)
@@ -123,6 +125,7 @@ float CANJaguar::Get()
 	default:
 		return 0.0;
 	}
+	
 }
 
 /**
