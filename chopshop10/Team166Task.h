@@ -69,7 +69,8 @@
 #define T166_EBRAKE_LIMIT_TOP (7)           // EBrake top limit
 #define T166_EBRAKE_LIMIT_BOTTOM (8)        // Brake bottom limit
 
-#define T166_KICKER_LIMIT_SWITCH (10)		// Kicker limit switch
+#define T166_KICKER_LIMIT_SWITCH (9)		// Kicker limit switch
+#define T166_BANNER_SENSOR_DIGITAL_INPUT (10)	// Banner Sensor
 
 #define TOP_LIMITSWITCH_DIGITAL_INPUT    (13)  //top limit switch for lift
 #define BOTTOM_LIMITSWITCH_DIGITAL_INPUT (14)  //bottom limit switch for lift
@@ -90,9 +91,7 @@
 /** channel for the Horizontal Servo */    
 #define T166_HORIZONTAL_SERVO_CHANNEL (8)     
 /** channel for the Vertical Servo */    
-#define T166_VERTICAL_SERVO_CHANNEL (9)   
-/** channel for the Banner Sensor */    
-#define T166_BANNER_SENSOR_CHANNEL (10)
+#define T166_VERTICAL_SERVO_CHANNEL (9)  
 
 //
 // USB port layout
