@@ -20,7 +20,6 @@
 // of miliseconds. Max allowed time is 999 miliseconds.
 //
 #define BANNER_CYCLE_TIME (10) // 10ms
-#define TEAM_166_BANNER_PWM (10)
 
 
 #define NO_SPEED				 0    //speed to use when there is no input for the victor

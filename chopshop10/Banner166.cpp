@@ -76,7 +76,7 @@ unsigned int BannerLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-Team166Banner::Team166Banner(void):	BannerSensor(TEAM_166_BANNER_PWM)
+Team166Banner::Team166Banner(void):	BannerSensor(T166_BANNER_SENSOR_CHANNEL)
 {
 	Start((char *)"166BannerTask", BANNER_CYCLE_TIME);
 	return;
