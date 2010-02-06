@@ -28,9 +28,7 @@
 /**
  * @brief Proxy Joystick class that will be returned if a full cached joystick is requested.
  * 
- * If Proxy1666::GetJoystick is called, then a full joystick should be returned. We don't want
- * to have to set all the values of the Joystick class, though, so we return this simpler class
- * with only 3 axes and some buttons. 
+ * If Proxy1666::GetJoystick is called, then a full joystick should be returned. 
  */
 class ProxyJoystick {
 	public:
@@ -63,8 +61,6 @@ class Proxy166 : public Team166Task {
 		float GetJoystickY(int);
 		float GetJoystickZ(int);
 		
-		ProxyJoystick GetJoystick(int);
-		
 		// driver station switches
 		void SetSwitch(int, int);
 		int GetSwitch(int);
@@ -80,7 +76,9 @@ class Proxy166 : public Team166Task {
 		// joystick trigger (same as switch #1)
 		void SetTrigger(int,bool);
 		bool GetTrigger(int,bool=true);
-		
+
+		// internal representation of joystick as a whole
+		ProxyJoystick GetJoystick(int);
 
 		// Proxy access for camera image
 		ColorImage* GetImage();
@@ -103,7 +101,7 @@ class Proxy166 : public Team166Task {
 		 * @brief The single instance handle to Proxy166.
 		 */
 		static Proxy166* ProxyHandle;
-
+		
 		// internal method to get values from real joystick
 		void SetJoystick(int,Joystick&);
 		

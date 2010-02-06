@@ -23,7 +23,7 @@
 #include "Target.h"
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(true)dprintf
+#define DPRINTF if(false)dprintf
 
 /** ratio of horizontal image field of view (54 degrees) to horizontal servo (180) */
 #define HORIZONTAL_IMAGE_TO_SERVO_ADJUSTMENT 0.125   // this seems to work
