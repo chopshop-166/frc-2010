@@ -191,6 +191,7 @@ void Proxy166::SetButton(int joy_id, int button_id, bool newval)
  * @brief Gets the cache value of a button on a joystick. 
  * @param joy_id Which joystick to retrieve the button status for.
  * @param button_id Which button on the joystick to retrieve the status for.
+ * @param reset Whether to reset the button's value after being called.
  * @return The button's value
  */
 bool Proxy166::GetButton(int joy_id, int button_id, bool reset)
@@ -213,14 +214,24 @@ bool Proxy166::GetButton(int joy_id, int button_id, bool reset)
  * @param joy_id Which joystick to set the throttle status for.
  * @param newval What to set the value to.
  */
-void Proxy166::SetThrottle(int joy_id, float newval) { Joysticks[joy_id].throttle=newval; }
+void Proxy166::SetThrottle(int joy_id, float newval) {
+	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
+	//semTake(JoystickLocks[switch_id], WAIT_FOREVER);
+	Joysticks[joy_id].throttle=newval;
+	//semGive(JoystickLocks[switch_id]);
+}
 
 /**
  * @brief Gets the cache value of a throttle on a joystick. 
  * @param joy_id Which joystick to retrieve the throttle status for.
  * @return The button's value
  */
-float Proxy166::GetThrottle(int joy_id) {	return Joysticks[joy_id].throttle; }
+float Proxy166::GetThrottle(int joy_id) {
+	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
+	//semTake(JoystickLocks[switch_id], WAIT_FOREVER);
+	return Joysticks[joy_id].throttle;
+	//semGive(JoystickLocks[switch_id]);
+}
 
 /**
  * @brief Sets the cache value of the trigger (button 1) on a joystick.
@@ -231,6 +242,7 @@ void Proxy166::SetTrigger(int joy_id, bool newval) { SetButton(joy_id, 1, newval
 /**
  * @brief Gets the cache value of the trigger (button 1) of a joystick. 
  * @param joy_id Which joystick to retrieve the trigger status for.
+ * @param reset Whether to reset the button's value after being called.
  * @return The last read current value
  */
 bool Proxy166::GetTrigger(int joy_id, bool reset) { 
