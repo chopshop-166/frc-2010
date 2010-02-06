@@ -244,6 +244,17 @@ bool Proxy166::GetTrigger(int joy_id, bool reset) {
 }
 
 /**
+ * @brief Sets the cache value of the banner sensor.
+ * @param newval What to set the value to.
+ */
+void Proxy166::SetBannerProxy(int newval) { BannerProxy = newval; }
+/**
+ * @brief Gets the cache value of the banner sensor. 
+ * @return The last value set by the banner sensor task
+ */
+int Proxy166::GetBannerProxy() { return BannerProxy; }
+
+/**
  * @brief Initializes semaphores for joysticks and switches, and starts the Proxy166 task.
  */
 Proxy166::Proxy166(void):
@@ -252,6 +263,8 @@ Proxy166::Proxy166(void):
 	driveStickCopilot(T166_USB_STICK_3)
 {
 	ProxyHandle=this;
+	// initialize memory for banner
+	BannerProxy = 0;
 	for(unsigned i=0;i<NUMBER_OF_JOYSTICKS;i++) {
 		// Initializing semaphores for joysticks
 		JoystickLocks[i] = semBCreate(SEM_Q_PRIORITY, SEM_FULL);

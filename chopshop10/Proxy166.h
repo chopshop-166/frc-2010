@@ -54,6 +54,7 @@ class ProxyJoystick {
 
 class Proxy166 : public Team166Task {
 	public:		
+		// joystick axes
 		void SetJoystickX(int, float);  
 		void SetJoystickY(int, float);
 		void SetJoystickZ(int, float);
@@ -64,41 +65,59 @@ class Proxy166 : public Team166Task {
 		
 		ProxyJoystick GetJoystick(int);
 		
+		// driver station switches
 		void SetSwitch(int, int);
 		int GetSwitch(int);
 		
+		// joystick buttons
 		void SetButton(int,int,bool);
 		bool GetButton(int,int,bool=true);
 		
+		// joystick throttle
 		void SetThrottle(int,float);
 		float GetThrottle(int);
 
+		// joystick trigger (same as switch #1)
 		void SetTrigger(int,bool);
 		bool GetTrigger(int,bool=true);
 		
-		Proxy166(void);
-		~Proxy166(void);
-		
+
+		// Proxy access for camera image
 		ColorImage* GetImage();
 		void SetImage(ColorImage*);
 		void DeleteImage();
+
+		// Proxy access for banner sensor
+		void SetBannerProxy(int);
+		int GetBannerProxy();
+
+		Proxy166(void);
+		~Proxy166(void);
 		
 		static Proxy166 *getInstance(void);
 		
 		virtual int Main(int a2, int a3, int a4, int a5,
 					int a6, int a7, int a8, int a9, int a10);
 	private:
-		void SetJoystick(int,Joystick&);
 		/**
 		 * @brief The single instance handle to Proxy166.
 		 */
 		static Proxy166* ProxyHandle;
+
+		// internal method to get values from real joystick
+		void SetJoystick(int,Joystick&);
 		
+		// proxy storage for camera image
 		ColorImage *image;
 		
-		ProxyJoystick Joysticks[NUMBER_OF_JOYSTICKS];
-		
+		// proxy storage for banner sensor value
+		int BannerProxy;
+
+		// proxy storage for driver station switches
 		int Switches[NUMBER_OF_SWITCHES];
+		
+		// proxy storage for driver station joysticks
+		ProxyJoystick Joysticks[NUMBER_OF_JOYSTICKS];
 		
 		SEM_ID JoystickLocks[NUMBER_OF_JOYSTICKS];
 		SEM_ID SwitchLocks[NUMBER_OF_SWITCHES];
