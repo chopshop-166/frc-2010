@@ -20,10 +20,8 @@
 // of miliseconds. Max allowed time is 999 miliseconds.
 //
 #define KICKER_CYCLE_TIME (10) // 10ms
+#define KICKER_RELOAD_WAIT (20) //Wait 
 
-
-#define NO_SPEED				 0    //speed to use when there is no input for the treadmill victor
-#define SPIN_SPEED    			 1    //speed used when kicker is spinning 
 
 class Team166Kicker : public Team166Task
 {
@@ -39,6 +37,13 @@ public:
 	// Main function of the task
 	virtual int Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10);
+
+private:
+	bool Cocked;
+	bool Firing;
+	Jaguar Kicker_jag;
+	DigitalInput Kicker_Limit_Switch;
+	bool Kick(bool Cocked, bool Firing);
 };
 
 #endif // !defined(_KICKER166)

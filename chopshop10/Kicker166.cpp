@@ -16,9 +16,10 @@
 #include "MemoryLog166.h"
 #include "Robot166.h"
 #include "BaeUtilities.h"
+#include "Proxy166.h"
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(false)dprintf
+#define DPRINTF if(true)dprintf
 
 // Sample in memory buffer
 struct abuf166
@@ -76,10 +77,19 @@ unsigned int KickerLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-Team166Kicker::Team166Kicker(void)
+Team166Kicker::Team166Kicker(void): Kicker_jag(T166_KICKER_CHANNEL),
+	Kicker_Limit_Switch(T166_KICKER_LIMIT_SWITCH)
 {
 	Start((char *)"166KickerTask", KICKER_CYCLE_TIME);
-	return;
+	if (Kicker_Limit_Switch.Get() == 1)
+	{
+		Cocked = true;
+	}
+	else if (Kicker_Limit_Switch.Get() == 0)
+	{
+		Cocked = false;
+	}
+	Firing = false;
 };
 	
 // task destructor
@@ -87,12 +97,13 @@ Team166Kicker::~Team166Kicker(void)
 {
 	return;
 };
-	
+
+
 // Main function of the task
 int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {
-		
+	Proxy166 *proxy;	//Get handle for joystick
 	Robot166 *lHandle;            // Local handle
 	KickerLog sl;                   // Arm log
 	
@@ -105,25 +116,49 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 	// Register our logger
 	lHandle = Robot166::getInstance();
 	lHandle->RegisterLogger(&sl);	
+	
+	int printstop=0;
+	int kickwait=0;
+	
+	// Get handle to main Proxy166
+	proxy = Proxy166::getInstance();
 		
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-			
-		// Get the command we're asked to apply
-        // TODO: update this for real Kicker functionality
-        //lHandle->GetKicker(&cdir, &lift_motor);   //gives the values for the conveyor direction and the desired lift motor speed
-        //("cdir = %u, lift_motor = %f\n", cdir, lift_motor);
-                //switch(cdir)                                     	//switch for the direction of the conveyor belt
-                //{
-                //	case T166_CB_BACKWARD:                        	  //when the direction given is backward...
-                //		break;											
-                //	case T166_CB_FORWARD: 								//when the direction given is forward...
-                //		break;
-                //	default:										//when no direction is given
-                //		lHandle->treadmill_victor.Set(NO_SPEED);				//set the treadmill victor speed to 0
-                //}           
-        
+
+		Cocked = Kicker_Limit_Switch.Get();
+		if(proxy->GetButton(3,1) == true)
+		{
+			if (Firing == false)
+			{	
+				if(Cocked == true)
+				{
+					if(((++printstop)%20)==0) {
+						DPRINTF(LOG_DEBUG, "Kicking");
+					}
+					Kicker_jag.Set(1);
+					Firing = true;
+				}	
+				Cocked = false;
+				kickwait = 0;
+			}
+		}
+		if (Cocked == false && Firing == false)
+		 {
+			if(((++printstop)%20)==0) {
+				DPRINTF(LOG_DEBUG, "Reloading kicker.");		
+				printstop = 0;
+			}
+			if(((++kickwait)%KICKER_RELOAD_WAIT) == 0)
+			{
+				if(Kicker_Limit_Switch.Get() == 0)
+				{
+					Kicker_jag.Set(1);
+				}	
+				Cocked = true;
+			}
+		 }
 
         // Should we log this value?
 		sl.PutOne(0, 0, 0);

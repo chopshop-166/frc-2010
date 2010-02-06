@@ -16,9 +16,11 @@
 #include "MemoryLog166.h"
 #include "Robot166.h"
 #include "BaeUtilities.h"
+#include "Proxy166.h"
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
+
 
 // Sample in memory buffer
 struct abuf166
@@ -77,10 +79,20 @@ unsigned int EBrakeLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-Team166EBrake::Team166EBrake(void)
+Team166EBrake::Team166EBrake(void): Ebrake_Spike(T166_EBRAKE_CHANNEL),
+  Ebrake_Limit_Top(T166_EBRAKE_LIMIT_TOP),
+  Ebrake_Limit_Bottom(T166_EBRAKE_LIMIT_BOTTOM)
 {
 	Start((char *)"166EBrakeTask", EBRAKE_CYCLE_TIME);
-	return;
+	if (Ebrake_Limit_Top.Get() == true)
+	{
+		Limit_Upper = true;
+	}
+	else if (Ebrake_Limit_Bottom.Get() == true)
+	{
+		Limit_Lower = true;
+	}
+		return;
 };
 	
 // task destructor
@@ -89,11 +101,12 @@ Team166EBrake::~Team166EBrake(void)
 	return;
 };
 	
+
 // Main function of the task
 int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {
-		
+	Proxy166 *proxy;	//Get handle for joystick
 	Robot166 *lHandle;            // Local handle
 	EBrakeLog sl;                   // log
 	
@@ -103,14 +116,42 @@ int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 	// Wait for Robot go-ahead (e.g. entering Autonomous or Tele-operated mode)
 	WaitForGoAhead();
 	
+	proxy = Proxy166::getInstance();
 	// Register our logger
 	lHandle = Robot166::getInstance();
-	lHandle->RegisterLogger(&sl);	
+	lHandle->RegisterLogger(&sl);
+	
+	unsigned printstop=0;
 		
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
+		//printf("Code running\n");
 		// do stuff
+		Limit_Upper = Ebrake_Limit_Top.Get();
+		Limit_Lower = Ebrake_Limit_Bottom.Get();
+		if(((++printstop)%20)==0) {
+			DPRINTF(LOG_DEBUG, "%d", Limit_Lower);
+		}
+		if ((proxy->GetButton(1,1) == true) || (proxy->GetButton(2,1) == true))
+        {
+			if(Limit_Lower == false)
+			{
+				if(((++printstop)%20)==0) {
+					DPRINTF(LOG_DEBUG, "Lowering");
+					printstop=0;
+				}
+				Ebrake_Spike.Set(Relay::kForward);
+			}
+		}	
+		if (Limit_Upper == false)
+		{
+			if(((++printstop)%20)==0) {
+				DPRINTF(LOG_DEBUG, "%d", Limit_Upper);
+				printstop=0;
+			}
+			Ebrake_Spike.Set(Relay::kReverse);
+		}
 		sl.PutOne(0, 0, 0);
 		
 		// Wait for our next lap
