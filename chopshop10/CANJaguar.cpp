@@ -1,7 +1,3 @@
-
-
-
-
 #include "CANJaguar.h"
 #include "ChipObject/NiRioStatus.h"
 #include "JaguarCANDriver.h"

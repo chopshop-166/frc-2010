@@ -18,6 +18,7 @@
 #include "Team166Task.h"
 #include "MemoryLog166.h"
 #include "Target166.h" 
+#include "Target.h"
 
 
 // WPILib include files for vision
@@ -28,8 +29,18 @@
 // Constants
 #define PI 3.14159265358979
 #define DEFAULT_VERTICAL_PAN_POSITION 0
-#define SERVO_DEADBAND 0.005
+
+/** ratio of horizontal image field of view (54 degrees) to horizontal servo (180) */
+#define HORIZONTAL_IMAGE_TO_SERVO_ADJUSTMENT (54.0/180.0)   // this seems to work
+/** ratio of vertical image field of view (40.5 degrees) to vertical servo (180) */
+#define VERTICAL_IMAGE_TO_SERVO_ADJUSTMENT (40.5/180.0)	    // this seems to work
+
+#define SERVO_DEADBAND 0.1
 #define VISION_LOOP_TIME 0.050 // seconds
+#define SCORE_MINIMUM 0.01
+#define SCORE_GOOD 0.4
+
+class DashboardDataSender;
 
 /*
  * Team 166 Vision Class
@@ -55,8 +66,9 @@ public:
 	bool IsTargetAcquired(void);
 	float AngleToTarget(void);
 	float GetBearing(void);
+	int IsActive(void);
 	// Control
-	void SetVisionActive(bool);
+	void SetActive(bool);
 	
 	ColorImage *GetImage();
 	
@@ -74,9 +86,9 @@ private:
 	Servo horizontalServo;
 	Servo verticalServo;
 	
-	AxisCamera &camera;
+	DashboardDataSender *dds;
 	
-	void AcquireTarget();
+	void AcquireTarget(vector<Target>&);
 	void IsTargetAccquired();
 	void SetServoPositions(float normalizedHorizontal, float normalizedVertical);
 	void AdjustServoPositions(float normDeltaHorizontal, float normDeltaVertical);

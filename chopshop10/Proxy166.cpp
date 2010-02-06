@@ -17,7 +17,7 @@
 #include "Robot166.h"
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(false)dprintf
+#define DPRINTF if(true)dprintf
 
 /**
  * @brief Initializes the joystick axes to 0 and the buttons to unset.
@@ -26,7 +26,7 @@ ProxyJoystick::ProxyJoystick(void)
 {
 	X=Y=Z=0;
 	for(unsigned i=0;i<NUMBER_OF_JOY_BUTTONS;i++) {
-		button[i]=false;
+		button[i]=press_count[i]=track_press_count[i]=false;
 	}
 }
 
@@ -282,6 +282,7 @@ Proxy166::Proxy166(void):
 	for(unsigned i=0;i<NUMBER_OF_JOYSTICKS;i++) {
 		// Initializing semaphores for joysticks
 		JoystickLocks[i] = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
+		Joysticks[i] = ProxyJoystick();
 	}
 	for(unsigned i=0;i<NUMBER_OF_SWITCHES;i++) {
 		// Initializing semaphores for switches
@@ -326,6 +327,53 @@ void Proxy166::DeleteImage() {
 	delete image;
 }
 
+
+/**
+ * @brief Gets the pending amount of times a button was pressed and released since last call.
+ * @param joystick_id Which joystick to check
+ * @param button_id Which button on the joystick to check
+ * @return How many times the button was pressed and released since last call.
+ */
+int Proxy166::GetPendingCount(int joystick_id, int button_id) {
+	wpi_assert(joystick_id < NUMBER_OF_JOYSTICKS && joystick_id >= 0);
+	wpi_assert(button_id < NUMBER_OF_JOY_BUTTONS && button_id >= 0);
+	wpi_assert(Joysticks[joystick_id].track_press_count[button_id]);
+	
+	int press_count = Joysticks[joystick_id].press_count[button_id];
+	Joysticks[joystick_id].press_count[button_id] = 0;
+	return press_count;
+}
+
+/**
+ * @brief Register a button to track the number of times it was pressed.
+ * @param joystick_id Which joystick to track a button on
+ * @param button_idd Which button on the joystick to track
+ */
+void Proxy166::RegisterCounter(int joystick_id, int button_id) {
+	wpi_assert(joystick_id < NUMBER_OF_JOYSTICKS && joystick_id >= 0);
+	wpi_assert(button_id < NUMBER_OF_JOY_BUTTONS && button_id >= 0);
+	
+	Joysticks[joystick_id].track_press_count[button_id] = 1;
+}
+
+/**
+ * @brief Unregister a button to track the number of times it was pressed.
+ * @param joystick_id Which joystick to track a button on
+ * @param button_idd Which button on the joystick to track
+ */
+void Proxy166::UnregisterCounter(int joystick_id, int button_id) {
+	wpi_assert(joystick_id < NUMBER_OF_JOYSTICKS && joystick_id >= 0);
+	wpi_assert(button_id < NUMBER_OF_JOY_BUTTONS && button_id >= 0);
+	
+	Joysticks[joystick_id].track_press_count[button_id] = 0;
+}
+
+bool Proxy166::IsRegistered(int joystick_id, int button_id) {
+	wpi_assert(joystick_id < NUMBER_OF_JOYSTICKS && joystick_id >= 0);
+	wpi_assert(button_id < NUMBER_OF_JOY_BUTTONS && button_id >= 0);
+	
+	return Joysticks[joystick_id].track_press_count[button_id];
+}
 /**
  * @brief Main thread function for Proxy166.
  * Runs forever, until MyTaskInitialized is false. 
@@ -344,11 +392,33 @@ int Proxy166::Main(	int a2, int a3, int a4, int a5,
 
 	while(MyTaskInitialized) {
 		// In autonomous, the Autonomous166 task will update relevant values
+		
+		bool old_buttons[NUMBER_OF_JOYSTICKS][NUMBER_OF_JOY_BUTTONS];
+		for(int joy_id = 0;joy_id < NUMBER_OF_JOYSTICKS;joy_id++) {
+			for(int button_id = 0;button_id < NUMBER_OF_JOY_BUTTONS; button_id++) {
+				old_buttons[joy_id][button_id] = GetButton(joy_id, button_id);
+			}
+		}
 		if(lHandle->IsOperatorControl()) {
 			SetJoystick(1, driveStickRight);
 			SetJoystick(2, driveStickLeft);
 			SetJoystick(3, driveStickCopilot);
 		}
+		/* Loop through each button on each joystick, and check whether its state has changed
+		 * (GetButton(...) != old_joysticks[...]) means that the state has changed since the last loop ran
+		 * If the button has been released (GetButton(...) == 0) and it was changed, increment the press count.
+		 */
+		
+		for(int joy_id = 0;joy_id < NUMBER_OF_JOYSTICKS;joy_id++) {
+			for(int button_id = 0;button_id < NUMBER_OF_JOY_BUTTONS; button_id++) {
+				if(IsRegistered(joy_id, button_id)) {
+					if(GetButton(joy_id, button_id) == 0 && GetButton(joy_id, button_id) != old_buttons[joy_id][button_id]) {
+						Joysticks[joy_id].press_count[button_id]++;
+					}
+				}
+			}
+		}
+		
 		
 		// The task ends if it's not initialized
 		WaitForNextLoop();

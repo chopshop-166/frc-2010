@@ -154,6 +154,8 @@ public:
 	
 	// Should we feed the watchdog?
 	static int FeedWatchDog(void);
+	
+	static void PrintInactive(void);
 
 // Data members
 public:

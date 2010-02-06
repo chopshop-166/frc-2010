@@ -209,6 +209,22 @@ int Team166Task::IfUp(void)
 	// We're good
 	return (1);
 };
+
+void Team166Task::PrintInactive(void) {
+	int last_id = 0;
+	for(int x = 0;x<T166_MAXTASK;x++) {
+		if(ActiveTasks[x])
+			last_id = x;
+		else
+			break;
+	}
+	for(int x = 0;x<T166_MAXTASK;x++) {
+		if ((ActiveTasks[x]) &&
+					 (!ActiveTasks[x]->MyTaskInitialized)) {
+			printf("%s%c",  ActiveTasks[x]->MyName, (x == last_id ? '\0' : ' '));
+		}
+	}
+}
 	
 // Should we feed the watchdog?
 int Team166Task::FeedWatchDog(void)

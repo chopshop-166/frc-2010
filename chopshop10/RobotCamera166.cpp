@@ -42,7 +42,7 @@ void StartCamera()
 	//camera166 = AxisCamera::getInstance();
 	camera166 = &AxisCamera::getInstance();
 	if ( !camera166->isInstance() ) {
-		DPRINTF( LOG_ERROR,"Failed to spawn camera task; exiting. Error code %s", 
+		DPRINTF( LOG_DEBUG,"Failed to spawn camera task; exiting. Error code %s", 
 				GetVisionErrorText(GetLastVisionError()) );	
 	} else {
         SetupCamera(resolution, rotation);
@@ -65,7 +65,6 @@ void TakeSnapshot(char* imageName)
 	if (!cameraImage) {
 		DPRINTF (LOG_INFO,"frcCreateImage failed - errorcode %i",GetLastVisionError()); 
 	}
-	Wait(1.0);
 	
 	if ( !camera166->GetImage(cameraImage) ) {
 		DPRINTF (LOG_INFO,"\nImage Acquisition from camera failed %i", GetLastVisionError());
@@ -94,7 +93,6 @@ void SetupCamera(ResolutionT res, RotationT rot)
 {
 	camera166->writeResolution(res);
 	camera166->writeRotation(rot);
-	Wait(2.0);
 }
 
 void DriveTowardsTarget() {

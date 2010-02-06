@@ -15,20 +15,18 @@
 #include <math.h>
 #include "Robot166.h"
 #include <vector>
+#include "RobotCamera166.h"
 
 // WPILib include files for vision
 #include "Vision/AxisCamera2010.h" 
 #include "BaeUtilities.h"
 #include "FrcError.h"
+#include "nivision.h"
 #include "Target.h"
+#include "DashboardDataSender.h"
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
-
-/** ratio of horizontal image field of view (54 degrees) to horizontal servo (180) */
-#define HORIZONTAL_IMAGE_TO_SERVO_ADJUSTMENT 0.125   // this seems to work
-/** ratio of vertical image field of view (40.5 degrees) to vertical servo (180) */
-#define VERTICAL_IMAGE_TO_SERVO_ADJUSTMENT 0.125	    // this seems to work
 	
 // Vision task constructor
 Team166Vision::Team166Vision(void) :
@@ -38,9 +36,8 @@ Team166Vision::Team166Vision(void) :
 	tilt(0.0),						// current vertical normalized servo position	
 	horizontalServo(T166_HORIZONTAL_SERVO_CHANNEL),
 	verticalServo(T166_VERTICAL_SERVO_CHANNEL),
-	camera(AxisCamera::getInstance())
+	dds(DashboardDataSender::getInstance())
 {
-
 	/* set up debug output: 
 	 * DEBUG_OFF, DEBUG_MOSTLY_OFF, DEBUG_SCREEN_ONLY, DEBUG_FILE_ONLY, DEBUG_SCREEN_AND_FILE 
 	 */
@@ -64,8 +61,12 @@ Team166Vision::~Team166Vision(void)
  * 
  * @param onFlag if true, process images to find the target
  */
-void Team166Vision::SetVisionActive(bool activeFlag) {
+void Team166Vision::SetActive(bool activeFlag) {
 	visionActive = activeFlag;
+}
+
+int Team166Vision::IsActive(void) {
+	return visionActive;
 }
 
 /**
@@ -170,73 +171,89 @@ float Team166Vision::GetBearing() {
 	return bearing;
 }
 
-void Team166Vision::AcquireTarget() {
-	// Get the target
+void Team166Vision::AcquireTarget(vector<Target> & matches) {
+	if(matches.size() > 0 && matches[0].m_score > SCORE_MINIMUM) {
+		// Sorted by score; 0 is highest score
+		/*
+		
+		float delta_x = HORIZONTAL_IMAGE_TO_SERVO_ADJUSTMENT * matches[0].m_xPos * 0.5;
+		float delta_y = VERTICAL_IMAGE_TO_SERVO_ADJUSTMENT * matches[0].m_yPos * 0.5;
+		
+		float x = horizontalServo.Get() + delta_x;
+		float y = verticalServo.Get() + delta_y;
+		
+		if(timer++ % (int)(1000.0 / 50.0) == 0)
+			DPRINTF(LOG_DEBUG, "Target [x=%f] [y=%f]\nServo Goal [x=%f] [y=%f]\nCurrent Servo [x=%f] [y=%f]\n",
+					matches[0].m_xPos,
+					matches[0].m_yPos,
+					x, y, 
+					horizontalServo.Get(),
+					verticalServo.Get()
+			);
+		*/
+	}
 }
 ColorImage *Team166Vision::GetImage() {
 	ColorImage *result = NULL;
-	result = camera.GetImage();
+	if(camera166 != NULL)
+		result = camera166->GetImage();
 	return result;
 }
 // Main function of the vision task
 int Team166Vision::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
-{
-	// Indicate that we've now completed initialization
+{	
+	// Ensure we get into Autononmous or Teleoperated mode
+	while(!Robot166::getInstance())
+		Wait(VISION_LOOP_TIME);
+	
+	DPRINTF(LOG_DEBUG, "Vision task initializing the camera...\n");
+	StartCamera();
 	MyTaskInitialized = 1;
-	// Ensure we get into Autononmous or Tele Operasted mode
+	
 	while (!Robot166::getInstance() ||
 	       ((Robot166::getInstance()->RobotMode != T166_AUTONOMOUS) &&
 	    	(Robot166::getInstance()->RobotMode != T166_OPERATOR))) {
 		Wait (VISION_LOOP_TIME);
 	}
+	if(!(camera166->isInstance())) {
+		SetActive(false);
+	}
+	else
+		SetActive(true);
+	DPRINTF(LOG_DEBUG, "Vision task has initialized the camera. Running loop...\n");
 	
-
 	// get handle to robot
 	Robot166 *lHandle = Robot166::getInstance();
 	Proxy166 *pHandle = Proxy166::getInstance();
-	//DriverStation *dsHandle = DriverStation::GetInstance();
 	
-	// set servos to start at center position
 	SetServoPositions(0.0, DEFAULT_VERTICAL_PAN_POSITION);
-				
-	/* for controlling loop execution time */
-	double currentTime = GetTime();
-	double lastTime = currentTime; // holds the time the vision loop started
-	
-    // General main loop (while in Autonomous or Tele mode)
-	DPRINTF(LOG_DEBUG,"Vision task is getting ready...\n");
-	int timer = 0;
-	while (lHandle->IsOperatorControl() || 
-		   lHandle->IsAutonomous()) 
+	while ((lHandle->IsOperatorControl() || 
+		   lHandle->IsAutonomous()))
 	{
-		/*
-		 * Main Vision code runs here
-		 */
+	//DriverStation *dsHandle = DriverStation::GetInstance();
 		
-		MyWatchDog = 1;		
-		if (visionActive) {
-			AcquireTarget();
-			targetAcquired = IsTargetAcquired();		
-		}
-		if(timer % 5 == 0)
-			DPRINTF(LOG_DEBUG, "Joy [x= %f ] [y= %f ]\n", 
-					pHandle->GetJoystickX(3), 
-					pHandle->GetJoystickY(3)
-			);
-		if(camera.freshImage()) {
+		// set servos to start at center position
+		
+	    // General main loop (while in Autonomous or Tele mode)
+		int timer = 0;
+		
+		MyWatchDog = 1;	
+		if(IsActive()) {
+			pHandle->SetImage(GetImage());
+			vector<Target> matches = Target::FindCircularTargets(pHandle->GetImage());
+			AcquireTarget(matches);
+			dds->sendVisionData(0.0, 0.0, 0.0, matches[0].m_xPos / matches[0].m_xMax, matches);
+			
+			
 			pHandle->DeleteImage();
 		}
-		pHandle->SetImage(GetImage());
-		SetServoPositions(pHandle->GetJoystickX(3), pHandle->GetJoystickY(3));
-		
-		vector<Target> targets = Target::FindCircularTargets(pHandle->GetImage());
-		
-		
-		//SetServoPositions(lHandle->cameraStick.GetX(), lHandle->cameraStick.GetY());
-		if ( (VISION_LOOP_TIME > ElapsedTime(lastTime)) && !staleFlag) {
-			Wait( VISION_LOOP_TIME - ElapsedTime(lastTime) ); 
+		if(!(camera166->isInstance())) {
+			SetActive(false);
 		}
+		else
+			SetActive(true);
+		WaitForNextLoop();
 	}
 	return 0;
 }

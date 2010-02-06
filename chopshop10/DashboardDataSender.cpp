@@ -2,6 +2,11 @@
 #include "Timer.h"
 #include "Robot166.h"
 
+DashboardDataSender *DashboardDataSender::getInstance() {
+	if(instance == NULL)
+		instance = new DashboardDataSender;
+	return instance;
+}
 /**
  * Send data to the dashboard.
  * This class sends two types of data to the dashboard program:
@@ -9,6 +14,7 @@
  * 2. Camera tracking data so the dashboard can annotate the video stream with
  *    target information.
  */
+DashboardDataSender *DashboardDataSender::instance = 0;
 DashboardDataSender::DashboardDataSender()
 {
 	// these timers make sure that the data is not sent to the dashboard more
@@ -17,6 +23,7 @@ DashboardDataSender::DashboardDataSender()
 	visionTimer = new Timer();
 	IOTimer->Start();
 	visionTimer->Start();
+	instance = this;
 }
 
 /**

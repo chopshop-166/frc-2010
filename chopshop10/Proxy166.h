@@ -37,6 +37,8 @@ class ProxyJoystick {
 		float Z;
 		float throttle;
 		bool button[NUMBER_OF_JOY_BUTTONS];
+		int press_count[NUMBER_OF_JOY_BUTTONS];
+		bool track_press_count[NUMBER_OF_JOY_BUTTONS];
 		
 		ProxyJoystick(void);
 		static ProxyJoystick Copy(Joystick input);
@@ -68,6 +70,11 @@ class Proxy166 : public Team166Task {
 		// joystick buttons
 		void SetButton(int,int,bool);
 		bool GetButton(int,int,bool=true);
+		
+		void RegisterCounter(int,int);
+		void UnregisterCounter(int,int);
+		int GetPendingCount(int,int);
+		bool IsRegistered(int,int);
 		
 		// joystick throttle
 		void SetThrottle(int,float);

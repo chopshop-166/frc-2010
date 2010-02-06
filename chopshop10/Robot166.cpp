@@ -97,7 +97,9 @@ Robot166::Robot166(void) :
 	// Wait for all of our tasks to come up
 	printf("Getting ready to check if tasks are up");
 	while (!Team166Task::IfUp()) {
-		printf("Waiting for task(s) to come up..");
+		printf("Waiting for task(s) to come up: ");
+		Team166Task::PrintInactive();
+		printf("\n");
 		Wait (0.100);
 	}
 	printf("All tasks we depend upon are up!\n");	

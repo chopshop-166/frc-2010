@@ -21,6 +21,6 @@ void TakeSnapshot(char* imageName);
 void SetupCamera(ResolutionT res, RotationT rot);
 void DriveTowardsTarget();
 
-//extern AxisCamera camera166;
+extern AxisCamera *camera166;
 
 #endif // !defined(_ROBOTCAMERA166_H)
