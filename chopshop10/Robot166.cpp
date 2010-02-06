@@ -29,7 +29,7 @@
 #include "HealthMon166.h"
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(true)dprintf
+#define DPRINTF if(false)dprintf
 
 // List of tasks that have requested to come up
 Team166Task *Team166Task::ActiveTasks[T166_MAXTASK + 1] = {0};
@@ -158,7 +158,7 @@ void Robot166::OperatorControl(void)
 		if (print_throttle%30==0){
 			print_throttle = 0;
 			DPRINTF(LOG_DEBUG, 
-				"joy1 buttons %i %i %i %i %i %i %i %i %i %i %i THR:%i", 
+				"joy1 butns %i %i %i %i %i %i %i %i %i %i %i TH:%f", 
 				Team166ProxyObject.GetButton(1,1), 
 				Team166ProxyObject.GetButton(1,2),
 				Team166ProxyObject.GetButton(1,3), 
@@ -173,7 +173,7 @@ void Robot166::OperatorControl(void)
 				Team166ProxyObject.GetThrottle(1)				
 				);
 			DPRINTF(LOG_DEBUG, 
-				"joy2 buttons %i %i %i %i %i %i %i %i %i %i %i THR:%i", 
+				"joy2 butns %i %i %i %i %i %i %i %i %i %i %i TH:%f", 
 				Team166ProxyObject.GetButton(2,1), 
 				Team166ProxyObject.GetButton(2,2),
 				Team166ProxyObject.GetButton(2,3), 
@@ -188,7 +188,7 @@ void Robot166::OperatorControl(void)
 				Team166ProxyObject.GetThrottle(2)
 				);
 			DPRINTF(LOG_DEBUG, 
-				"joy3 buttons %i %i %i %i %i %i %i %i %i %i %i THR:%i", 
+				"joy3 butns %i %i %i %i %i %i %i %i %i %i %i TH:%f", 
 				Team166ProxyObject.GetButton(3,1), 
 				Team166ProxyObject.GetButton(3,2),
 				Team166ProxyObject.GetButton(3,3), 
