@@ -57,11 +57,11 @@ static Robot166 *RobotHandle = 0;
  * the driver station or the field controls.
  */ 
 Robot166::Robot166(void) :
-	lfEncoder(T166_ENC_LF_A, T166_ENC_LF_B, true), // Left Front encoder pins
-	rfEncoder(T166_ENC_RF_A, T166_ENC_RF_B, false), // Right Front encoder pins
-	lbEncoder(T166_ENC_LB_A, T166_ENC_LB_B, true), // Left Back encoder pins
-	rbEncoder(T166_ENC_RB_A, T166_ENC_RB_B, false), // Right Back encoder pins
-	lift_victor(T166_LIFT_MOTOR),       // Victor controlling the lift
+	//lfEncoder(T166_ENC_LF_A, T166_ENC_LF_B, true), // Left Front encoder pins
+	//rfEncoder(T166_ENC_RF_A, T166_ENC_RF_B, false), // Right Front encoder pins
+	//lbEncoder(T166_ENC_LB_A, T166_ENC_LB_B, true), // Left Back encoder pins
+	//rbEncoder(T166_ENC_RB_A, T166_ENC_RB_B, false), // Right Back encoder pins
+	//lift_victor(T166_LIFT_MOTOR),       // Victor controlling the lift
     limitswitch_top(TOP_LIMITSWITCH_DIGITAL_INPUT),  //top limit switch digital input
     limitswitch_bottom(BOTTOM_LIMITSWITCH_DIGITAL_INPUT) //bottom limit switch digital input 
 {

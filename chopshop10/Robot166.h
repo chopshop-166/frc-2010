@@ -41,11 +41,11 @@ class Robot166 : public SimpleRobot
 {
 public:
     t_RobotMode RobotMode;                    // Robot mode
-    Encoder lfEncoder;                        // Encoder for the Left Front
-    Encoder rfEncoder;						  // Encoder for the Right Front
-    Encoder lbEncoder;						  // Encoder for the Left Back
-    Encoder rbEncoder;						  // Encoder for the Right Back
-	Victor lift_victor;                       // Victor controlling the lift
+    //Encoder lfEncoder;                        // Encoder for the Left Front
+    //Encoder rfEncoder;						  // Encoder for the Right Front
+    //Encoder lbEncoder;						  // Encoder for the Left Back
+    //Encoder rbEncoder;						  // Encoder for the Right Back
+	//Victor lift_victor;                       // Victor controlling the lift
     DigitalInput limitswitch_top;             //the first of two limit switches on the high end of the lifter
     DigitalInput limitswitch_bottom;          //the first of two limit switches on the bottom end of the lifter
     
