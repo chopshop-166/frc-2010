@@ -101,7 +101,7 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 	
 	
 	
-	printf("%f\n",proxy->GetJoystick(0).X);   //Calls proxy
+	dprintf("%f\n",proxy->GetJoystick(0).X);   //Calls proxy
 	
 	
 	// Let the world know we're in
