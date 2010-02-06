@@ -78,9 +78,9 @@ void Proxy166::SetJoystickZ(int joy_id, float value) {
 float Proxy166::GetJoystickX(int joy_id) {
 	float value = 0;
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
-//	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
+	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
 	value = Joysticks[joy_id].X;
-//	semGive(JoystickLocks[joy_id]);
+	semGive(JoystickLocks[joy_id]);
 	return value;
 }
 
@@ -92,9 +92,9 @@ float Proxy166::GetJoystickX(int joy_id) {
 float Proxy166::GetJoystickY(int joy_id) {
 	float value = 0;
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
-//	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
+	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
 	value = Joysticks[joy_id].Y;
-//	semGive(JoystickLocks[joy_id]);
+	semGive(JoystickLocks[joy_id]);
 	return value;
 }
 
@@ -106,9 +106,9 @@ float Proxy166::GetJoystickY(int joy_id) {
 float Proxy166::GetJoystickZ(int joy_id) {
 	float value = 0;
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
-//	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
+	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
 	value = Joysticks[joy_id].Z;
-//	semGive(JoystickLocks[joy_id]);
+	semGive(JoystickLocks[joy_id]);
 	return value;
 }
 
@@ -133,9 +133,9 @@ void Proxy166::SetSwitch(int switch_id, int value) {
 int Proxy166::GetSwitch(int switch_id) {
 	int value = 0;
 	wpi_assert(switch_id < NUMBER_OF_SWITCHES && switch_id >= 0);
-//	semTake(SwitchLocks[switch_id], WAIT_FOREVER);
+	semTake(SwitchLocks[switch_id], WAIT_FOREVER);
 	value = Switches[switch_id];
-//	semGive(SwitchLocks[switch_id]);
+	semGive(SwitchLocks[switch_id]);
 	return value;
 }
 
@@ -148,9 +148,9 @@ ProxyJoystick Proxy166::GetJoystick(int joy_id)
 {
 	ProxyJoystick value;
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
-//	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
+	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
 	value = Joysticks[joy_id];
-//	semGive(JoystickLocks[joy_id]);
+	semGive(JoystickLocks[joy_id]);
 	return value;
 }
 
@@ -198,9 +198,9 @@ bool Proxy166::GetButton(int joy_id, int button_id, bool reset)
 {
 	bool button;
 	wpi_assert(joy_id < NUMBER_OF_JOY_BUTTONS && joy_id >= 0);
-//	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
+	semTake(JoystickLocks[joy_id], WAIT_FOREVER);
 	button = Joysticks[joy_id].button[button_id];
-//	semGive(JoystickLocks[joy_id]);
+	semGive(JoystickLocks[joy_id]);
 	
 	// reset the button so actions are triggered only once
 	if (reset) {
@@ -303,7 +303,6 @@ void Proxy166::DeleteImage() {
  * @brief Main thread function for Proxy166.
  * Runs forever, until MyTaskInitialized is false. 
  * 
- * @todo Add update of bottom joystick control.
  * @todo Update DS switch array
  */
 int Proxy166::Main(	int a2, int a3, int a4, int a5,
@@ -316,12 +315,13 @@ int Proxy166::Main(	int a2, int a3, int a4, int a5,
 		Wait(0.05);
 	}
 	while(MyTaskInitialized) {	
-		while(!(lHandle->IsOperatorControl())) {
-			Wait(0.05);
+		// In autonomous, the Autonomous166 task will update relevant values
+		while(lHandle->IsOperatorControl()) {
+			SetJoystick(1, driveStickRight);
+			SetJoystick(2, driveStickLeft);
+			SetJoystick(3, driveStickCopilot);
+			WaitForNextLoop();
 		}
-		SetJoystick(1, driveStickRight);
-		SetJoystick(2, driveStickLeft);
-		SetJoystick(3, driveStickCopilot);
 		
 		// The task ends if it's not initialized
 		WaitForNextLoop();

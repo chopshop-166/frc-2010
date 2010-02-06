@@ -59,26 +59,22 @@
 //
 // Digital Pin layout
 //
-#if 0
-#define T166_ENC_LF_A (1)                   // Left front wheel encoder; channel A
-#define T166_ENC_LF_B (2)                   // Left front wheel encoder; channel B
-#define T116_ENC_LF_I (3)					// Left front wheel encoder; Index Channel
+#define T166_ENC_LB_A (1)                   // Left Back wheel encoder; channel A
+#define T166_ENC_LB_B (2)                   // Left Back wheel encoder; channel B
+#define T116_ENC_LB_I (3)					// Left Back wheel encoder; Index Channel
 
-#define T166_ENC_RF_A (4)                   // Right front wheel encoder; channel A
-#define T166_ENC_RF_B (5)                   // Right front wheel encoder; channel B
-#define T116_ENC_RF_I (6)					// Right front wheel encoder; Index Channel
-#endif
+#define T166_ENC_RB_A (4)                  // Right Back wheel encoder; channel A
+#define T166_ENC_RB_B (5)                  // Right Back wheel encoder; channel B
+#define T116_ENC_RB_I (6)					// Right Back wheel encoder; Index Channel
 
-#define T166_ENC_LB_A (7)                   // Left Back wheel encoder; channel A
-#define T166_ENC_LB_B (8)                   // Left Back wheel encoder; channel B
-#define T116_ENC_LB_I (9)					// Left Back wheel encoder; Index Channel
+#define T166_ENC_EBRAKE_A (7)               // EBrake encoder; channel A
+#define T166_ENC_EBRAKE_B (8)               // EBrake encoder; channel B
+#define T166_ENC_EBRAKE_I (9)               // EBrake encoder; index channel
 
-#define T166_ENC_RB_A (10)                  // Right Back wheel encoder; channel A
-#define T166_ENC_RB_B (11)                  // Right Back wheel encoder; channel B
-#define T116_ENC_RB_I (12)					// Right Back wheel encoder; Index Channel
+#define T166_KICKER_LIMIT_SWITCH (10)		// Kicker limit switch
 
-#define TOP_LIMITSWITCH_DIGITAL_INPUT    (13)  //top limit switch 
-#define BOTTOM_LIMITSWITCH_DIGITAL_INPUT (14)  //bottom limit switch
+#define TOP_LIMITSWITCH_DIGITAL_INPUT    (13)  //top limit switch for lift
+#define BOTTOM_LIMITSWITCH_DIGITAL_INPUT (14)  //bottom limit switch for lift
 
 #define DS_ALLIANCE_SWITCH_INPUT          (1)  // Driver station switch for alliance
 #define DS_AUTOTRACKNG_SWITCH_INPUT       (2)  // Driver station switch for auto tracking
