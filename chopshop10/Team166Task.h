@@ -67,9 +67,8 @@
 #define T166_ENC_RB_B (5)                  // Right Back wheel encoder; channel B
 #define T116_ENC_RB_I (6)					// Right Back wheel encoder; Index Channel
 
-#define T166_ENC_EBRAKE_A (7)               // EBrake encoder; channel A
-#define T166_ENC_EBRAKE_B (8)               // EBrake encoder; channel B
-#define T166_ENC_EBRAKE_I (9)               // EBrake encoder; index channel
+#define T166_EBRAKE_LIMIT_TOP (7)           // EBrake top limit
+#define T166_EBRAKE_LIMIT_BOTTOM (8)        // Brake bottom limit
 
 #define T166_KICKER_LIMIT_SWITCH (10)		// Kicker limit switch
 
