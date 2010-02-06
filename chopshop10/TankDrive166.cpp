@@ -93,13 +93,6 @@ int Team166TankDrive::Main(int a2, int a3, int a4, int a5,
 	Robot166 *lHandle;            // Local handle
 	TankDriveLog sl;                   // Arm log
 	Proxy166 *proxy;				// Handle to data associated with the Proxy object
-	
-	/* Jerry, Ryan, Anthony Added this >>*/
-	/*
-	GenericHID leftStick;
-	GenericHID rightStick;
- 	Jerry & Anthony's additions. */
-	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 TankDrive task\n");
 		
@@ -112,16 +105,17 @@ int Team166TankDrive::Main(int a2, int a3, int a4, int a5,
 	// Register our logger
 	lHandle = Robot166::getInstance();
 	lHandle->RegisterLogger(&sl);
-
-	int timer=0;
+	
+	unsigned timer=0;
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		leftValue = proxy->GetJoystickY(1);
 		rightValue = proxy->GetJoystickY(2);
 		TankDrive(leftValue, rightValue);
+
 		if(((++timer)%(1000 / TANK_CYCLE_TIME)) == 0 ) {
-			printf("%f\t%f\n",leftValue,rightValue);
+			DPRINTF(LOG_DEBUG,"%f\t%f",leftValue,rightValue);
 		}
 		
         // Should we log this value?

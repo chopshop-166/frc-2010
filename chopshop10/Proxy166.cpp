@@ -329,13 +329,13 @@ int Proxy166::Main(	int a2, int a3, int a4, int a5,
 	while( ( lHandle = Robot166::getInstance() ) == NULL) {
 		Wait(0.05);
 	}
-	while(MyTaskInitialized) {	
+
+	while(MyTaskInitialized) {
 		// In autonomous, the Autonomous166 task will update relevant values
-		while(lHandle->IsOperatorControl()) {
+		if(lHandle->IsOperatorControl()) {
 			SetJoystick(1, driveStickRight);
 			SetJoystick(2, driveStickLeft);
 			SetJoystick(3, driveStickCopilot);
-			WaitForNextLoop();
 		}
 		
 		// The task ends if it's not initialized

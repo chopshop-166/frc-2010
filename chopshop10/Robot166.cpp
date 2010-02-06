@@ -29,12 +29,13 @@
 #include "HealthMon166.h"
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(true)dprintf
+#define DPRINTF if(false)dprintf
 
 // List of tasks that have requested to come up
 Team166Task *Team166Task::ActiveTasks[T166_MAXTASK + 1] = {0};
 
 // Declare external tasks
+Proxy166 Team166ProxyObject; // This task has to always be started first or it'll error
 Team166Lift Team166LiftObject;
 Team166TankDrive Team166TankDriveObject;
 Team166Kicker Team166KickerObject;
@@ -44,7 +45,6 @@ Team166Sonar Team166SonarObject;
 Team166CANDrive Team166CANDriveObject;
 Team166EBrake Team166EBrakeObject;
 Team166HealthMon Team166HealthMonObject;
-Proxy166 Team166ProxyObject;
 
 // This links to the single instance of the Robot task
 class Robot166;
@@ -158,7 +158,7 @@ void Robot166::OperatorControl(void)
 		if (print_throttle%30==0){
 			print_throttle = 0;
 			DPRINTF(LOG_DEBUG, 
-				"joy1 buttons %i %i %i %i %i %i %i %i %i %i %i\n", 
+				"joy1 buttons %i %i %i %i %i %i %i %i %i %i %i", 
 				Team166ProxyObject.GetButton(1,1), 
 				Team166ProxyObject.GetButton(1,2),
 				Team166ProxyObject.GetButton(1,3), 
@@ -172,7 +172,7 @@ void Robot166::OperatorControl(void)
 				Team166ProxyObject.GetButton(1,11)
 				);
 			DPRINTF(LOG_DEBUG, 
-				"joy2 buttons %i %i %i %i %i %i %i %i %i %i %i\n", 
+				"joy2 buttons %i %i %i %i %i %i %i %i %i %i %i", 
 				Team166ProxyObject.GetButton(2,1), 
 				Team166ProxyObject.GetButton(2,2),
 				Team166ProxyObject.GetButton(2,3), 
@@ -186,7 +186,7 @@ void Robot166::OperatorControl(void)
 				Team166ProxyObject.GetButton(2,11)
 				);
 			DPRINTF(LOG_DEBUG, 
-				"joy3 buttons %i %i %i %i %i %i %i %i %i %i %i\n", 
+				"joy3 buttons %i %i %i %i %i %i %i %i %i %i %i", 
 				Team166ProxyObject.GetButton(3,1), 
 				Team166ProxyObject.GetButton(3,2),
 				Team166ProxyObject.GetButton(3,3), 
