@@ -21,6 +21,7 @@
 #include "MemoryLog166.h"
 #include "Proxy166.h"
 #include "Banner166.h"
+#include "CANJaguar.h"
 //
 // Robot modes
 //
