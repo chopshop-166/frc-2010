@@ -1,13 +1,14 @@
 #include "CANJaguar.h"
+
+#include "ChipObject/NiRio.h"
 #include "ChipObject/NiRioStatus.h"
+#include "CANJaguar.h"
 #include "JaguarCANDriver.h"
 #define FIRST_FIRMWARE_VERSION
 #include "can_proto.h"
 #undef FIRST_FIRMWARE_VERSION
 #include "Utility.h"
-#include "Robot166.h"
-#include "DashboardDataSender.h"
-#include "WPILib.h"
+#include "Proxy166.h"
 
 #define swap16(x) ( (((x)>>8) &0x00FF) \
                   | (((x)<<8) &0xFF00) )
@@ -21,7 +22,6 @@
 /**
  * Common initialization code called by all constructors.
  */
-
 void CANJaguar::InitJaguar()
 {
 	if (m_deviceNumber < 1 || m_deviceNumber > 63)
@@ -73,6 +73,7 @@ void CANJaguar::Set(float outputValue)
 	UINT8 dataBuffer[8];
 	UINT8 dataSize;
 
+
 	switch(m_controlMode)
 	{
 	case kPercentVoltage:
@@ -121,7 +122,6 @@ float CANJaguar::Get()
 	default:
 		return 0.0;
 	}
-	
 }
 
 /**
