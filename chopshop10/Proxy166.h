@@ -25,6 +25,12 @@
 #define NUMBER_OF_SWITCHES (10)
 #define NUMBER_OF_JOY_BUTTONS (12)
 
+//
+// This constant defines how often we want this task to run in the form
+// of miliseconds. Max allowed time is 999 miliseconds.
+//
+#define PROXY_CYCLE_TIME (25) // 25ms
+
 /**
  * @brief Proxy Joystick class that will be returned if a full cached joystick is requested.
  * 
@@ -88,10 +94,14 @@ class Proxy166 : public Team166Task {
 		ProxyJoystick GetJoystick(int);
 
 		// Proxy access for camera image
-		ColorImage* GetImage();
-		void SetImage(ColorImage*);
-		void DeleteImage();
+		ColorImage* GetImage(void);
+		void SetImage(ColorImage *);
+		void DeleteImage(void);
 
+		// Set/Get methods for sonar distance
+		void SetSonarDistance(float dist);
+		float GetSonarDistance(void);
+		
 		// Proxy access for banner sensor
 		void SetBannerProxy(int);
 		int GetBannerProxy();
@@ -117,6 +127,9 @@ class Proxy166 : public Team166Task {
 		
 		// proxy storage for banner sensor value
 		int BannerProxy;
+		
+		// Distance in inches to the object in front of the sonar
+		float SonarDistance;
 
 		// proxy storage for driver station switches
 		int Switches[NUMBER_OF_SWITCHES];

@@ -288,7 +288,12 @@ Proxy166::Proxy166(void):
 		// Initializing semaphores for switches
 		SwitchLocks[i] = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
 	}
-	Start((char *)"166ProxyTask", 25);
+	
+	// Set the initial distance
+	SonarDistance = 0.0;
+	
+	// Start the actual task
+	Start((char *)"166ProxyTask", PROXY_CYCLE_TIME);
 }
 
 Proxy166::~Proxy166(void)
@@ -374,6 +379,25 @@ bool Proxy166::IsRegistered(int joystick_id, int button_id) {
 	
 	return Joysticks[joystick_id].track_press_count[button_id];
 }
+
+/**
+ * @brief Set distance from sonar object in front of it
+ * @param Distance in inches
+ */
+void Proxy166::SetSonarDistance(float dist)
+{
+	
+	SonarDistance = dist;
+}
+
+/**
+ * @brief Obtain distance seen by the sonar task
+ */
+float Proxy166::GetSonarDistance(void)
+{
+	return (SonarDistance);
+}
+
 /**
  * @brief Main thread function for Proxy166.
  * Runs forever, until MyTaskInitialized is false. 
@@ -382,17 +406,22 @@ bool Proxy166::IsRegistered(int joystick_id, int button_id) {
  */
 int Proxy166::Main(	int a2, int a3, int a4, int a5,
 					int a6, int a7, int a8, int a9, int a10) {
-	MyTaskInitialized = 1;
-	DPRINTF(LOG_DEBUG, "Proxy166 main task entered.");
-	// For use with a logger if/when implemented
-	Robot166 *lHandle = NULL;
-	while( ( lHandle = Robot166::getInstance() ) == NULL) {
-		Wait(0.05);
-	}
 
-	while(MyTaskInitialized) {
-		// In autonomous, the Autonomous166 task will update relevant values
+	Robot166 *lHandle;            // Local handle
+
+	DPRINTF(LOG_DEBUG, "Proxy166 main task entered.");
+	
+	// Wait for Robot go-ahead (e.g. entering Autonomous or Tele-operated mode)
+	WaitForGoAhead();
+	
+	// Register our logger
+	lHandle = Robot166::getInstance();
+
+   // General main loop (while in Autonomous or Tele mode)
+	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
+			(lHandle->RobotMode == T166_OPERATOR)) {
 		
+	    // In autonomous, the Autonomous166 task will update relevant values
 		bool old_buttons[NUMBER_OF_JOYSTICKS][NUMBER_OF_JOY_BUTTONS];
 		for(int joy_id = 0;joy_id < NUMBER_OF_JOYSTICKS;joy_id++) {
 			for(int button_id = 0;button_id < NUMBER_OF_JOY_BUTTONS; button_id++) {
@@ -418,7 +447,6 @@ int Proxy166::Main(	int a2, int a3, int a4, int a5,
 				}
 			}
 		}
-		
 		
 		// The task ends if it's not initialized
 		WaitForNextLoop();

@@ -177,7 +177,8 @@ private:
 	// Used for time calculations
 	unsigned int crate;           // Clock rate
 	unsigned int half_tick;       // Length of a half tick
-	struct timespec start_time;   // Time when our logic starts		
+	struct timespec start_time;   // Time when our logic starts
+	struct timespec next_checkin; // Time when we're expected to checkin next
 	unsigned int nano_left;       // Nano seconds left of second
 	struct timespec exit_time;    // Time when we left the wait call
 	unsigned int last_print_sec;  // Last second we printed out a log message

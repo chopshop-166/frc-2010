@@ -83,14 +83,28 @@ Team166Sonar::~Team166Sonar(void)
 };
 	
 // Main function of the Sonar task
+//
+// This is now we compute the distance in inches.
+//
+//  1. The A/D converter can handle -10V to +10V using a signed 12 bit value.
+//     This means that each value increment represents 20/4096V
+//  2. The Sonar input is 5V
+//  3. The sonar output is 5/512 per inch.
+//  4. The data collecting loop maintains a ring of the UMAX most recent values
+//     and then computes a rolling average.
+//  5. The value distance can be obtained by:
+//     RollingAvg * ((20 / 4096) / (5 / 512)) = RollingAvg / 2.
+//
 int Team166Sonar::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {
 
 	Robot166 *lHandle;            // Local handle
+	Proxy166 *pHandle;            // Proxy handle
 	AnalogChannel ac(T166_US_MOD, T166_US_DIST); // Ultrasound sensor
 	SonarLog sl;                  // Sonar log
-#define UMAX (10)                 // Window size for rolling average		
+#define UMAX (20)                 // Window size for rolling average
+	INT16 utmp;                   // Temporary ultransound value
 	INT16 uval[UMAX];             // Ultrasound value
 	int uidx = 0;                 // Index into array
 	int al;                       // Average distance loop
@@ -109,21 +123,46 @@ int Team166Sonar::Main(int a2, int a3, int a4, int a5,
 	lHandle = Robot166::getInstance();
 	lHandle->RegisterLogger(&sl);
 	
+	// Get a handle to the proxy object
+	pHandle = Proxy166::getInstance();
+	
 	printf("Sonar task is getting ready...\n");
 
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		
-        // Pick up Ultrasound values
-        uval[(uidx++ % UMAX)] = ac.GetValue();
+        // Pick up A/D converter's value of Ultrasound (12 bits for -10V to +10V)
+		utmp =  ac.GetValue(); // -2047 - + 2047
+#if 0
+        if (!(cc % 40))
+        	printf("Value org: %d\n", utmp);
+#endif
+		
+		// If the value is below acceptable range, assume minimum value
+		if (utmp < 0) {  // Below 0/0V?
+			utmp = 0;    // Yes, set to 0.0V
+		} else {
+			if (utmp >= 512) // 2.5V or greater?
+				utmp = 512;
+		}
+
+		// Bring this into the average rung buffer
+        uval[(uidx++ % UMAX)] = utmp;
         
-        // Compute an average
+        // Add all the values we've seen together (so that we can compute an average)
         aavg = 0;
         for (al=0; al<UMAX; al++)
         	aavg += uval[al];
-        distance = (((aavg / UMAX) * (20.0 / 4.096)) / 10.0) * 2.54;
         
+        // Compute the distance in inches. See comments above.
+        distance = (aavg / (UMAX * 2.0));
+        pHandle->SetSonarDistance(distance);
+#if 0
+        // Display a log message
+        if (!(cc++ % 40))
+        	printf("Value: %u, Distance: %f\n", utmp, distance);
+#endif   	
 		// Should we log this value?
         sl.PutOne(distance);
 		

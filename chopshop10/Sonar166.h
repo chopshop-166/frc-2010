@@ -20,7 +20,7 @@
 // This constant defines how often we want this task to run in the form
 // of miliseconds. Max allowed time is 999 miliseconds.
 //
-#define SONAR_CYCLE_TIME (25) // 25ms
+#define SONAR_CYCLE_TIME (10) // 10ms
 
 //
 // This defines our sonar task

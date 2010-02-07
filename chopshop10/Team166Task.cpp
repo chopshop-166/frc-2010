@@ -1,3 +1,4 @@
+
 /********************************************************************************
 *  Project   		: Chopshop 2009
 *  File Name  		: Team166Task.h          
@@ -27,6 +28,7 @@ Team166Task::Team166Task(int IsEssential)
 	exit_time.tv_nsec = 0;
 	last_print_sec = 0;
 	loop_calls = 0;
+	OverRuns = 0;
 };
 	
 // Destructor
@@ -170,7 +172,6 @@ void Team166Task::WaitForNextLoop(void)
 	} else {
 		rundelta_time.tv_sec = 0;
 		rundelta_time.tv_nsec = 0;
-		OverRuns = 0;
 	}
 	
 	// Next, wait for our time.
