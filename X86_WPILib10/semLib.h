@@ -49,6 +49,41 @@ extern STATUS 	  semTake 	(SEM_ID semId, int timeout);
 extern STATUS 	  semClose	(SEM_ID semId);
 extern STATUS 	  semUnlink	(const char * name);
 
+extern int     sysClkRateGet ();
+
+#define CLOCK_REALTIME			0x0 /* system wide realtime clock */
+
+ 
+ 
+#if !defined(_DEFINED_timer_t) && !defined(_TIMER_T)
+#define _DEFINED_timer_t
+#define _TIMER_T
+struct __timer;
+typedef struct __timer *timer_t;
+#endif /* !defined(_DEFINED_timer_t) */
+ 
+//#ifndef _TIME_T
+//#define _TIME_T
+//typedef unsigned long time_t;
+//#endif  /* _TIME_T */
+//typedef long int time_t;
+typedef unsigned long clockid_t;
+
+ 
+ 
+#ifndef _DEFINED_struct_timespec
+#define _DEFINED_struct_timespec
+struct timespec
+    {
+    long tv_sec; //time_t tv_sec;
+    long tv_nsec;
+    };
+#endif /* _DEFINED_struct_timespec */
+extern int 	timer_gettime (timer_t timerid, struct itimerspec *value);
+extern int  clock_gettime (clockid_t clock_id, struct timespec *tp);
+
+extern int      nanosleep (const struct timespec *rqtp, struct timespec *rmtp);
+
 
 
 #endif //_X86_SEMLIB_H

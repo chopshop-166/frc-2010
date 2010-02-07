@@ -64,7 +64,18 @@ extern STATUS	taskUnsafe	(void);
 extern STATUS taskKill(int,int);
 
 typedef struct {char data[32];} REG_SET;
-extern STATUS taskRegsGet     (int tid, REG_SET * pRegs);
+
+//extern int      taskIdListGet   (int idList [ ], int maxTasks);
+//extern STATUS   taskStatusString (int tid, char * pString);
+//extern STATUS   taskOptionsString (int tid, char * pString);
+extern STATUS   taskRegsGet     (int tid, REG_SET * pRegs);
+//extern STATUS   taskRegsSet     (int tid, REG_SET * pRegs);
+//extern void     taskRegsShow    (int tid);
+//extern void *   taskStackAllot  (int tid, unsigned nBytes);
+//extern void     taskShowInit    (void);
+//extern STATUS   taskShow        (int tid, int level);
+extern STATUS   taskLock        (void);
+extern STATUS   taskUnlock      (void);
 
 #endif //_X86_TASKLIB_H
 

@@ -15,6 +15,8 @@
 #ifndef _X86_VXWORKS_H
 #define _X86_VXWORKS_H
 
+#include <stdlib.h>
+
 typedef unsigned long long UINT64;
 typedef unsigned int UINT32;
 typedef unsigned short UINT16;
