@@ -59,14 +59,14 @@ static Robot166 *RobotHandle = 0;
  * Autonomous and OperatorControl methods at the right time as controlled by the switches on
  * the driver station or the field controls.
  */ 
-Robot166::Robot166(void) :
+Robot166::Robot166(void) 
 	//lfEncoder(T166_ENC_LF_A, T166_ENC_LF_B, true), // Left Front encoder pins
 	//rfEncoder(T166_ENC_RF_A, T166_ENC_RF_B, false), // Right Front encoder pins
 	//lbEncoder(T166_ENC_LB_A, T166_ENC_LB_B, true), // Left Back encoder pins
 	//rbEncoder(T166_ENC_RB_A, T166_ENC_RB_B, false), // Right Back encoder pins
 	//lift_victor(T166_LIFT_MOTOR),       // Victor controlling the lift
-    limitswitch_top(TOP_LIMITSWITCH_DIGITAL_INPUT),  //top limit switch digital input
-    limitswitch_bottom(BOTTOM_LIMITSWITCH_DIGITAL_INPUT) //bottom limit switch digital input 
+    //limitswitch_top(TOP_LIMITSWITCH_DIGITAL_INPUT),  //top limit switch digital input
+    //limitswitch_bottom(BOTTOM_LIMITSWITCH_DIGITAL_INPUT) //bottom limit switch digital input 
 {
 	/* set up debug output: 
 	 * DEBUG_OFF, DEBUG_MOSTLY_OFF, DEBUG_SCREEN_ONLY, DEBUG_FILE_ONLY, DEBUG_SCREEN_AND_FILE  */
@@ -81,12 +81,25 @@ Robot166::Robot166(void) :
 	KickLock = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
 	JoyX = JoyY = 0.0;
 	dsHandle = DriverStation::GetInstance();
+	dsHandleLCD = DriverStationLCD::GetInstance();
 	RobotHandle = this;
 	mlHead = 0;
 
 	/* start the CameraTask  */
 	DPRINTF(LOG_DEBUG, "StartCamera\n");
 	//StartCamera();
+	
+	// update DS
+	//dsHandleLCD->Printf(DriverStationLCD::kUser_Line1,1,"Hello(1) %d",12345);
+	//dsHandleLCD->Printf(DriverStationLCD::kUser_Line2,1,"Hello(2) %d",12345);
+	//dsHandleLCD->Printf(DriverStationLCD::kUser_Line3,1,"Hello(3) %d",12345);
+	//dsHandleLCD->Printf(DriverStationLCD::kUser_Line4,1,"Hello(4) %d",12345);
+	//dsHandleLCD->Printf(DriverStationLCD::kUser_Line5,1,"Hello(5) %d",12345);
+	//dsHandleLCD->Printf(DriverStationLCD::kUser_Line6,1,"Hello(6) %d",12345);
+	//dsHandleLCD->Printf(DriverStationLCD::kUser_Line1,1,"GoodBye(1) %d",12345);
+	//dsHandleLCD->Printf(DriverStationLCD::kUser_Line2,20,"Hello(2.20) %d",12345);
+	DriverStationDisplay("Starting 166 Robot");
+	dsHandleLCD->UpdateLCD();
 
 	/* allow writing to vxWorks target */
 	Priv_SetWriteFileAllowed(1);   	
@@ -252,6 +265,41 @@ void Robot166::DumpLoggers(int dnum)
 		// Advance to the next log
 		ml = ml->mlNext;
 	}
+}
+
+/**
+ * Send text to DS LCD display
+ */
+int Robot166::DriverStationDisplay(char* dsTextString)
+{ 
+	static char *strings[6] = {"","","","","",""};
+	static int linenum=0;
+	dsHandleLCD->Printf(DriverStationLCD::kUser_Line1,1,"                     ");
+	dsHandleLCD->Printf(DriverStationLCD::kUser_Line2,1,"                     ");
+	dsHandleLCD->Printf(DriverStationLCD::kUser_Line3,1,"                     ");
+	dsHandleLCD->Printf(DriverStationLCD::kUser_Line4,1,"                     ");
+	dsHandleLCD->Printf(DriverStationLCD::kUser_Line5,1,"                     ");
+	dsHandleLCD->Printf(DriverStationLCD::kUser_Line6,1,"                     ");
+	if (linenum > 5){
+		strings[0]=strings[1];
+		strings[1]=strings[2];
+		strings[2]=strings[3];
+		strings[3]=strings[4];
+		strings[4]=strings[5];
+		strings[5]=dsTextString;
+	}
+	else
+	{
+		strings[linenum]=dsTextString;
+		linenum++;
+	}
+	dsHandleLCD->Printf(DriverStationLCD::kUser_Line1,1,strings[0]);
+	dsHandleLCD->Printf(DriverStationLCD::kUser_Line2,1,strings[1]);
+	dsHandleLCD->Printf(DriverStationLCD::kUser_Line3,1,strings[2]);
+	dsHandleLCD->Printf(DriverStationLCD::kUser_Line4,1,strings[3]);
+	dsHandleLCD->Printf(DriverStationLCD::kUser_Line5,1,strings[4]);
+	dsHandleLCD->Printf(DriverStationLCD::kUser_Line6,1,strings[5]);
+	return linenum;
 }
 
 START_ROBOT_CLASS(Robot166);

@@ -47,8 +47,8 @@ public:
     //Encoder lbEncoder;						  // Encoder for the Left Back
     //Encoder rbEncoder;						  // Encoder for the Right Back
 	//Victor lift_victor;                       // Victor controlling the lift
-    DigitalInput limitswitch_top;             //the first of two limit switches on the high end of the lifter
-    DigitalInput limitswitch_bottom;          //the first of two limit switches on the bottom end of the lifter
+    //DigitalInput limitswitch_top;             //the first of two limit switches on the high end of the lifter
+    //DigitalInput limitswitch_bottom;          //the first of two limit switches on the bottom end of the lifter
     
     
 private:
@@ -56,9 +56,10 @@ private:
 	float JoyX;                               // Joystick X position
 	float JoyY;                               // Joystick Y position
     SEM_ID DSLock;                            // Coordination of drive station interface
-    SEM_ID LiftLock;                           // Arm lock
+    SEM_ID LiftLock;                          // LIft lock
     SEM_ID KickLock;                          // Kicker lock
     DriverStation *dsHandle;                  // Driver Station handle
+    DriverStationLCD *dsHandleLCD;            // Driver Station display handle
     MemoryLog166 *mlHead;                     // Memory log head
     
 public:
@@ -70,6 +71,7 @@ public:
 			
 	void RegisterLogger(MemoryLog166 *ml);    // Register memory logger
 	void DumpLoggers(int dnum);               // Dump all logs
+	int DriverStationDisplay (char*);		  // Display text on DS
 	
 };
 
