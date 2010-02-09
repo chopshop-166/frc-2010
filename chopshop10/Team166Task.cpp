@@ -230,7 +230,8 @@ void Team166Task::PrintStats(void) {
 			printf("%s%s",  ActiveTasks[x]->MyName, (x == last_id ? "" : ", "));
 		}
 	}
-	printf("\n");
+	if(printed)
+		printf("\n");
 }
 
 void Team166Task::PrintInactive(void) {
