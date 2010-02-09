@@ -26,7 +26,7 @@ ProxyJoystick::ProxyJoystick(void)
 {
 	X=Y=Z=0;
 	for(unsigned i=0;i<NUMBER_OF_JOY_BUTTONS;i++) {
-		button[i]=press_count[i]=track_press_count[i]=false;
+		button[i]=false;
 	}
 }
 
@@ -233,6 +233,23 @@ float Proxy166::GetThrottle(int joy_id) {
 	//semGive(JoystickLocks[switch_id]);
 }
 
+
+/**
+ * @brief Set distance from sonar object in front of it
+ * @param Distance in inches
+ */
+void Proxy166::SetSonarDistance(float dist) {
+	
+	SonarDistance = dist;
+}
+
+/**
+ * @brief Obtain distance seen by the sonar task
+ */
+float Proxy166::GetSonarDistance(void) {
+	return (SonarDistance);
+}
+
 /**
  * @brief Sets the cache value of the trigger (button 1) on a joystick.
  * @param joy_id Which joystick to set the trigger status for.
@@ -333,6 +350,7 @@ void Proxy166::DeleteImage() {
 }
 
 
+
 /**
  * @brief Gets the pending amount of times a button was pressed and released since last call.
  * @param joystick_id Which joystick to check
@@ -342,11 +360,18 @@ void Proxy166::DeleteImage() {
 int Proxy166::GetPendingCount(int joystick_id, int button_id) {
 	wpi_assert(joystick_id < NUMBER_OF_JOYSTICKS && joystick_id >= 0);
 	wpi_assert(button_id < NUMBER_OF_JOY_BUTTONS && button_id >= 0);
-	wpi_assert(Joysticks[joystick_id].track_press_count[button_id]);
 	
-	int press_count = Joysticks[joystick_id].press_count[button_id];
-	Joysticks[joystick_id].press_count[button_id] = 0;
-	return press_count;
+	if(tracker.size() == 0)
+		wpi_assertWithMessage(false, "Tried to fetch pending count for a non-registered button.");
+	vector<int>::iterator it = tracker.begin();
+	while((it+=3) != tracker.end())
+	{
+		if(*it == joystick_id && *(it+1) == button_id) {
+			return *(it+2);
+		}
+	}
+	wpi_assertWithMessage(false, "Tried to fetch pending count for a non-registered button.");
+	return 0;
 }
 
 /**
@@ -358,7 +383,18 @@ void Proxy166::RegisterCounter(int joystick_id, int button_id) {
 	wpi_assert(joystick_id < NUMBER_OF_JOYSTICKS && joystick_id >= 0);
 	wpi_assert(button_id < NUMBER_OF_JOY_BUTTONS && button_id >= 0);
 	
-	Joysticks[joystick_id].track_press_count[button_id] = 1;
+	if(tracker.size() != 0) {
+		vector<int>::iterator it = tracker.begin();
+		while((it+=3) != tracker.end())
+		{
+			if(*it == joystick_id && *(it+1) == button_id) {
+				return;
+			}
+		}
+	}
+	tracker.push_back(joystick_id);
+	tracker.push_back(button_id);
+	tracker.push_back(0);
 }
 
 /**
@@ -370,32 +406,31 @@ void Proxy166::UnregisterCounter(int joystick_id, int button_id) {
 	wpi_assert(joystick_id < NUMBER_OF_JOYSTICKS && joystick_id >= 0);
 	wpi_assert(button_id < NUMBER_OF_JOY_BUTTONS && button_id >= 0);
 	
-	Joysticks[joystick_id].track_press_count[button_id] = 0;
+	if(tracker.size() == 0)
+		return;
+	vector<int>::iterator it = tracker.begin();
+	while((it+=3) != tracker.end())
+	{
+		if(*it == joystick_id && *(it+1) == button_id) {
+			tracker.erase(it, it+2);
+		}
+	}
 }
 
 bool Proxy166::IsRegistered(int joystick_id, int button_id) {
 	wpi_assert(joystick_id < NUMBER_OF_JOYSTICKS && joystick_id >= 0);
 	wpi_assert(button_id < NUMBER_OF_JOY_BUTTONS && button_id >= 0);
 	
-	return Joysticks[joystick_id].track_press_count[button_id];
-}
-
-/**
- * @brief Set distance from sonar object in front of it
- * @param Distance in inches
- */
-void Proxy166::SetSonarDistance(float dist)
-{
-	
-	SonarDistance = dist;
-}
-
-/**
- * @brief Obtain distance seen by the sonar task
- */
-float Proxy166::GetSonarDistance(void)
-{
-	return (SonarDistance);
+	if(tracker.size() == 0)
+		return false;
+	vector<int>::iterator it = tracker.begin();
+	while((it+=3) != tracker.end())
+	{
+		if(*it == joystick_id && *(it+1) == button_id) {
+			return true;
+		}
+	}
+	return false;
 }
 
 /**
@@ -407,50 +442,28 @@ float Proxy166::GetSonarDistance(void)
 int Proxy166::Main(	int a2, int a3, int a4, int a5,
 					int a6, int a7, int a8, int a9, int a10) {
 
-	Robot166 *lHandle;            // Local handle
-
-	DPRINTF(LOG_DEBUG, "Proxy166 main task entered.");
-	
-	// Wait for Robot go-ahead (e.g. entering Autonomous or Tele-operated mode)
-	WaitForGoAhead();
-	
-	// Register our logger
-	lHandle = Robot166::getInstance();
-
-   // General main loop (while in Autonomous or Tele mode)
-	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
-			(lHandle->RobotMode == T166_OPERATOR)) {
-		
-	    // In autonomous, the Autonomous166 task will update relevant values
-		bool old_buttons[NUMBER_OF_JOYSTICKS][NUMBER_OF_JOY_BUTTONS];
-		for(int joy_id = 0;joy_id < NUMBER_OF_JOYSTICKS;joy_id++) {
-			for(int button_id = 0;button_id < NUMBER_OF_JOY_BUTTONS; button_id++) {
-				old_buttons[joy_id][button_id] = GetButton(joy_id, button_id);
-			}
+	Robot166 *lHandle = NULL;
+		while( ( lHandle = Robot166::getInstance() ) == NULL) {
+			Wait(0.05);
 		}
-		if(lHandle->IsOperatorControl()) {
-			SetJoystick(1, driveStickRight);
-			SetJoystick(2, driveStickLeft);
-			SetJoystick(3, driveStickCopilot);
-		}
-		/* Loop through each button on each joystick, and check whether its state has changed
-		 * (GetButton(...) != old_joysticks[...]) means that the state has changed since the last loop ran
-		 * If the button has been released (GetButton(...) == 0) and it was changed, increment the press count.
-		 */
+		WaitForGoAhead();
 		
-		for(int joy_id = 0;joy_id < NUMBER_OF_JOYSTICKS;joy_id++) {
-			for(int button_id = 0;button_id < NUMBER_OF_JOY_BUTTONS; button_id++) {
-				if(IsRegistered(joy_id, button_id)) {
-					if(GetButton(joy_id, button_id) == 0 && GetButton(joy_id, button_id) != old_buttons[joy_id][button_id]) {
-						Joysticks[joy_id].press_count[button_id]++;
-					}
+		ProxyJoystick old_sticks[NUMBER_OF_JOYSTICKS];
+		//Timer debugTimer;
+		//debugTimer.Start();
+		while(MyTaskInitialized) {
+			// In autonomous, the Autonomous166 task will update relevant values
+			if(lHandle->IsOperatorControl()) {
+				for(int x = 0;x<NUMBER_OF_JOYSTICKS;x++) {
+					old_sticks[x] = GetJoystick(x);
 				}
+				SetJoystick(1, driveStickRight);
+				SetJoystick(2, driveStickLeft);
+				SetJoystick(3, driveStickCopilot);
 			}
+			// The task ends if it's not initialized
+			WaitForNextLoop();
 		}
 		
-		// The task ends if it's not initialized
-		WaitForNextLoop();
-	}
-	
-	return 0;
+		return 0;
 }

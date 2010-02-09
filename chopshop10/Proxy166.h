@@ -43,8 +43,6 @@ class ProxyJoystick {
 		float Z;
 		float throttle;
 		bool button[NUMBER_OF_JOY_BUTTONS];
-		int press_count[NUMBER_OF_JOY_BUTTONS];
-		bool track_press_count[NUMBER_OF_JOY_BUTTONS];
 		
 		ProxyJoystick(void);
 		static ProxyJoystick Copy(Joystick input);
@@ -139,6 +137,13 @@ class Proxy166 : public Team166Task {
 		
 		SEM_ID JoystickLocks[NUMBER_OF_JOYSTICKS];
 		SEM_ID SwitchLocks[NUMBER_OF_SWITCHES];
+		
+		/**
+		 * A tuple of ints. For every tracked button, there is three
+		 * ints in this tuple: first, the joystick number, second, the button number,
+		 * and third, the number of times it has been pressed.
+		 */
+		vector<int> tracker;
 
 		Joystick driveStickRight;     // joy stick for driving
 		Joystick driveStickLeft;      // joy stick for driving
