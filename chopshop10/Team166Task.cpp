@@ -219,10 +219,14 @@ void Team166Task::PrintStats(void) {
 		else
 			break;
 	}
-	printf("Tasks not feeding the watchdog: ");
+	bool printed = false;
 	for(int x = 0;x<T166_MAXTASK;x++) {
 		if ((ActiveTasks[x]) &&
 					 (!ActiveTasks[x]->MyWatchDog)) {
+			if(!printed) {
+				printed = true;
+				printf("Tasks not feeding the watchdog: ");
+			}
 			printf("%s%s",  ActiveTasks[x]->MyName, (x == last_id ? "" : ", "));
 		}
 	}
