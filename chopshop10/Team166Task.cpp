@@ -12,7 +12,7 @@
 #include "Robot166.h"
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(false)dprintf
+#define DPRINTF if(true)dprintf
 
 // Constructor
 Team166Task::Team166Task(int IsEssential)
@@ -184,7 +184,7 @@ void Team166Task::WaitForNextLoop(void)
 	loop_calls++;
 	if (last_print_sec != current_time.tv_sec) {
 		last_print_sec = current_time.tv_sec;
-		DPRINTF(LOG_DEBUG,"Task '%s' checking in after %u calls with %u over runs\n", MyName, loop_calls, OverRuns);
+		//DPRINTF(LOG_DEBUG,"Task '%s' checking in after %u calls with %u over runs\n", MyName, loop_calls, OverRuns);
 		loop_calls = 0;
 	}
 	
@@ -210,6 +210,24 @@ int Team166Task::IfUp(void)
 	// We're good
 	return (1);
 };
+
+void Team166Task::PrintStats(void) {
+	int last_id = 0;
+	for(int x = 0;x<T166_MAXTASK;x++) {
+		if(ActiveTasks[x])
+			last_id = x;
+		else
+			break;
+	}
+	printf("Tasks not feeding the watchdog: ");
+	for(int x = 0;x<T166_MAXTASK;x++) {
+		if ((ActiveTasks[x]) &&
+					 (!ActiveTasks[x]->MyWatchDog)) {
+			printf("%s%s",  ActiveTasks[x]->MyName, (x == last_id ? "" : ", "));
+		}
+	}
+	printf("\n");
+}
 
 void Team166Task::PrintInactive(void) {
 	int last_id = 0;

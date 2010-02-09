@@ -166,32 +166,17 @@ void Robot166::OperatorControl(void)
 	int joystickImageCount = 0;
 	char imageName[80]; 
 	
+	Timer debugTimer;
+	debugTimer.Start();
+	
 	printf("Operator control\n");
 	RobotMode = T166_OPERATOR;
 	GetWatchdog().SetEnabled(true);
 	static int print_throttle = 0;
 	while (IsOperatorControl())
 	{
-		if (((++print_throttle)%30)==0){
-			print_throttle = 0;
-			for (int i=1; i=3; i++) {
-				DPRINTF(LOG_DEBUG, 
-				"joy%i butns %i %i %i %i %i %i %i %i %i %i %i TH:%f", i,
-				Team166ProxyObject.GetButton(i,1), 
-				Team166ProxyObject.GetButton(i,2),
-				Team166ProxyObject.GetButton(i,3), 
-				Team166ProxyObject.GetButton(i,4), 
-				Team166ProxyObject.GetButton(i,5),
-				Team166ProxyObject.GetButton(i,6), 
-				Team166ProxyObject.GetButton(i,7), 
-				Team166ProxyObject.GetButton(i,8),
-				Team166ProxyObject.GetButton(i,9),
-				Team166ProxyObject.GetButton(i,10),
-				Team166ProxyObject.GetButton(i,11),
-				Team166ProxyObject.GetThrottle(i)				
-				);
-			}
-		}
+		if(debugTimer.HasPeriodPassed(0.5))
+			Team166Task::PrintStats();
 		
 		// Are we being disabled?
 		if (IsDisabled()) {

@@ -148,7 +148,8 @@ public:
 	
 	// Wait for next lap
 	void WaitForNextLoop(void);
-
+	
+	static void Team166Task::PrintStats(void);
 	// Check if all registered tasks are up
 	static int IfUp(void);
 	
