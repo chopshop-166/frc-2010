@@ -79,6 +79,7 @@ unsigned int HealthMonLog::DumpBuffer(char *nptr, FILE *ofile)
 Team166HealthMon::Team166HealthMon(void)
 {
 	Start((char *)"166HealthMonTask", HEALTHMON_CYCLE_TIME);
+	MyTaskIsEssential=false;
 	return;
 };
 	
