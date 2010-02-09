@@ -44,7 +44,7 @@ Team166CANDrive Team166CANDriveObject;
 Team166Lift Team166LiftObject;
 Team166Kicker Team166KickerObject;
 Team166Banner Team166BannerObject;
-Team166Vision Team166VisionObject;
+//Team166Vision Team166VisionObject;
 Team166Sonar Team166SonarObject; 
 Team166EBrake Team166EBrakeObject;
 Team166HealthMon Team166HealthMonObject;
