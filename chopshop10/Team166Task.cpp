@@ -268,7 +268,8 @@ int Team166Task::FeedWatchDog(void)
 					
 				// No. Tell caller at least one task is not ready
 				if (ActiveTasks[l]->MissedWatchDog++ > T166_WATCHDOG_MIN)
-					DPRINTF(LOG_DEBUG,"Task '%s' has not reported its watchdog %d times in a row.\n", ActiveTasks[l]->MyName ? ActiveTasks[l]->MyName : "unknown", T166_WATCHDOG_MIN);
+					//DPRINTF(LOG_DEBUG,"Task '%s' has not reported its watchdog %d times in a row.\n", ActiveTasks[l]->MyName ? ActiveTasks[l]->MyName : "unknown", T166_WATCHDOG_MIN);
+					printf("Task '%s' has not reported its watchdog %d times in a row.\n", ActiveTasks[l]->MyName ? ActiveTasks[l]->MyName : "unknown", T166_WATCHDOG_MIN);
 				return (0);
 			}
 		}

@@ -91,7 +91,17 @@
 /** channel for the Horizontal Servo */    
 #define T166_HORIZONTAL_SERVO_CHANNEL (8)     
 /** channel for the Vertical Servo */    
-#define T166_VERTICAL_SERVO_CHANNEL (9)  
+#define T166_VERTICAL_SERVO_CHANNEL (9) 
+
+//
+// CAN bus layout
+//
+/** channel for the BLACKJAG Motor */
+#define T166_BLACK_JAG_CAN (2)
+/** channel for the Left Motor */
+#define T166_LEFT_MOTOR_CAN (3)
+/** channel for the Right Motor */
+#define T166_RIGHT_MOTOR_CAN (4)
 
 //
 // USB port layout
