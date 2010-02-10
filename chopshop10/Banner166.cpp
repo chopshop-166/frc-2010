@@ -16,6 +16,7 @@
 #include "MemoryLog166.h"
 #include "Robot166.h"
 #include "BaeUtilities.h"
+#include "Proxy166.h"
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
@@ -24,8 +25,8 @@
 struct abuf166
 {
 	struct timespec tp;               // Time of snapshot
-	float x_acc;                     // accelarometer x value
-	float y_acc;					//  accelarometer y value
+	float T166_BANNER_VALUE;          // banner value 1 or 0
+	float y_acc;					//  accelerometer y value
 	float acc_vector;
 	
 };
@@ -39,11 +40,11 @@ public:
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
 			FILE *outputFile);        // and then stored in this file
-	unsigned int PutOne(float x_acc, float y_acc, float acc_vector);     // Log the x and y values
+	unsigned int PutOne(float T166_BANNER_VALUE, float y_acc, float acc_vector);     // Log the x and y values
 };
 
 // Write one buffer into memory
-unsigned int BannerLog::PutOne(float x_acc, float y_acc, float acc_vector)
+unsigned int BannerLog::PutOne(float T166_BANNER_VALUE, float y_acc, float acc_vector)
 {
 	struct abuf166 *ob;               // Output buffer
 	
@@ -52,7 +53,7 @@ unsigned int BannerLog::PutOne(float x_acc, float y_acc, float acc_vector)
 		
 		// Fill it in.
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
-		ob->x_acc = x_acc;
+		ob->T166_BANNER_VALUE = T166_BANNER_VALUE;
 		ob->y_acc = y_acc;
 		ob->acc_vector = acc_vector;
 		return (sizeof(struct abuf166));
@@ -68,7 +69,7 @@ unsigned int BannerLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct abuf166 *ab = (struct abuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %f, %f, %f\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->x_acc, ab->y_acc, ab->acc_vector);
+	fprintf(ofile, "%u, %u, %f, %f, %f\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->T166_BANNER_VALUE, ab->y_acc, ab->acc_vector);
 	
 	// Done
 	return (sizeof(struct abuf166));
@@ -92,8 +93,9 @@ Team166Banner::~Team166Banner(void)
 int Team166Banner::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {
-		
-		
+	Proxy166 *MyProxy;
+	MyProxy = MyProxy->getInstance();
+	UINT32 CurrentBannerValue;
 	Robot166 *lHandle;            // Local handle
 	BannerLog sl;                   // log
 	
@@ -111,15 +113,23 @@ int Team166Banner::Main(int a2, int a3, int a4, int a5,
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		
+		CurrentBannerValue = BannerSensor.Get();
+	
+		
 		static int throttle = 0;
 		throttle++;
 		if (throttle%10==0){
 				throttle = 0;
-				DPRINTF(LOG_DEBUG,"Channel: %i Value: %i",BannerSensor.GetChannel(),BannerSensor.Get());
-				}
+				DPRINTF(LOG_DEBUG,"Channel: %i Value: %i",
+						BannerSensor.GetChannel(),CurrentBannerValue);
 				
+				}	
+		
+		MyProxy->SetBannerProxy(CurrentBannerValue);
+		
+		
         // Should we log this value?
-		sl.PutOne(0, 0, 0);
+		sl.PutOne(BannerSensor.Get(), 0, 0);
 		
 		// Wait for our next lap
 		WaitForNextLoop();		
