@@ -21,16 +21,18 @@
 //
 #define CAN_CYCLE_TIME (10) // 10ms
 
-
 #define NO_SPEED				 0    //speed to use when there is no input
 
 class Team166CANDrive : public Team166Task
 {
+	CANJaguar blackJag,leftJag,rightJag;
 	
 public:
 	
 	// task constructor
 	Team166CANDrive(void);
+	
+	void CANDrive(float,float);
 
 	// task destructor
 	virtual ~Team166CANDrive(void);
