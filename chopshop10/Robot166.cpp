@@ -153,7 +153,7 @@ void Robot166::Autonomous(void)
 	DPRINTF(LOG_DEBUG,"autonomous\n");
 	RobotMode = T166_AUTONOMOUS;
 	GetWatchdog().SetEnabled(false);
-	//Autonomous166();
+	Autonomous166().Autonomous();
 }
 
 /** 

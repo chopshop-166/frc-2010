@@ -93,8 +93,7 @@ Team166Banner::~Team166Banner(void)
 int Team166Banner::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {
-	Proxy166 *MyProxy;
-	MyProxy = MyProxy->getInstance();
+	Proxy166 *proxy;				// Handle to proxy
 	UINT32 CurrentBannerValue;
 	Robot166 *lHandle;            // Local handle
 	BannerLog sl;                   // log
@@ -108,6 +107,9 @@ int Team166Banner::Main(int a2, int a3, int a4, int a5,
 	// Register our logger
 	lHandle = Robot166::getInstance();
 	lHandle->RegisterLogger(&sl);	
+	
+	// Register the proxy
+	proxy = Proxy166::getInstance();
 		
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
@@ -125,11 +127,11 @@ int Team166Banner::Main(int a2, int a3, int a4, int a5,
 				
 				}	
 		
-		MyProxy->SetBannerProxy(CurrentBannerValue);
+		proxy->SetBannerProxy(CurrentBannerValue);
 		
 		
         // Should we log this value?
-		sl.PutOne(BannerSensor.Get(), 0, 0);
+		sl.PutOne(CurrentBannerValue, 0, 0);
 		
 		// Wait for our next lap
 		WaitForNextLoop();		
