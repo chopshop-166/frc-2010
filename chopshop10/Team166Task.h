@@ -33,38 +33,17 @@
 #define T166_ANALOG_MODULE_2 (2)
 
 // first analog module
-//#define T166_CURRENT_SENSOR_MOD (T166_ANALOG_MODULE_1)         // Module for current sensors
-//#define T166_CURRENT_SENSOR_LB (1)          // Current sensor Left Back
-//#define T166_CURRENT_SENSOR_RB (2)          // Current sensor Right Back
-//#define T166_GYRO_MOD (T166_ANALOG_MODULE_1)// Gyro module
-//#define T166_GYRO_TWIST (5)                 // Twist
-//#define T166_GYRO_TEMP (6)                  // Temperature
 #define T166_US_MOD (T166_ANALOG_MODULE_1)  // Ultrasound module
 #define T166_US_DIST (7)                    // Ultrasound distance pin
 #define T166_BAT_MOD (T166_ANALOG_MODULE_1) // Module for battery sensor
 #define T166_BAT_VOLT (8)                   // Channel for battery voltage
 
-#if 0
-// second analog module //2009 code
-#define T166_ACCEL_MOD (T166_ANALOG_MODULE_2)// Accelerometer module
-#define T166_ACCEL_X (1)                    // X-Axis for acccelerometer
-#define T166_ACCEL_Y (2)                    // Y-Axis for acccelerometer
-#define T166_ACCEL_Z (3)                    // Z-Axis for acccelerometer (currently not used)
-#define T166_POT_MOD (T166_ANALOG_MODULE_2)	// Mod for the pot 
-#define T166_POT_CHANNEL (6)				// Channel for the pot
-#endif
-
-
 //
 // Digital Pin layout
 //
-#define T166_ENC_LB_A (1)                   // Left Back wheel encoder; channel A
-#define T166_ENC_LB_B (2)                   // Left Back wheel encoder; channel B
-#define T116_ENC_LB_I (3)					// Left Back wheel encoder; Index Channel
-
-#define T166_ENC_RB_A (4)                  // Right Back wheel encoder; channel A
-#define T166_ENC_RB_B (5)                  // Right Back wheel encoder; channel B
-#define T116_ENC_RB_I (6)					// Right Back wheel encoder; Index Channel
+#define T166_ENC_INCL_A (1)             // Inclinometer encoder; channel A
+#define T166_ENC_INCL_B (2)             // Inclinometer encoder; channel B
+#define T116_ENC_INCL_I (3)		        // Inclinometer encoder; Index Channel/
 
 #define T166_EBRAKE_LIMIT_TOP (7)           // EBrake top limit
 #define T166_EBRAKE_LIMIT_BOTTOM (8)        // Brake bottom limit
@@ -112,7 +91,6 @@
 #define T166_USB_STICK_2 (2)   
 /** Second stick is in USB port #2 */
 #define T166_USB_STICK_3 (3)   
-
 
 //
 // Max tasks we support being started in Robot166
