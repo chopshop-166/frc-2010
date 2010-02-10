@@ -1,5 +1,3 @@
-#include "CANJaguar.h"
-
 #include "ChipObject/NiRio.h"
 #include "ChipObject/NiRioStatus.h"
 #include "CANJaguar.h"
@@ -107,7 +105,7 @@ float CANJaguar::Get()
 		messageID = LM_API_VOLT_SET | m_deviceNumber;
 		// Sending set with no data is a request for the last set
 		sendMessage(messageID, NULL, 0);
-		receiveMessage(&messageID, dataBuffer, &dataSize);
+		receiveMessage(RX_PERCENTVOLT, &messageID, dataBuffer, &dataSize);
 		if (dataSize == sizeof(INT16))
 		{
 			INT16 replyValue = *((INT16*)dataBuffer);
@@ -192,12 +190,17 @@ void CANJaguar::sendMessage(UINT32 messageID, const UINT8 *data, UINT8 dataSize)
  * @param dataSize Indicates how much data was received
  * @param timeout Specify how long to wait for a message (in seconds)
  */
-void CANJaguar::receiveMessage(UINT32 *messageID, UINT8 *data, UINT8 *dataSize, float timeout)
+void CANJaguar::receiveMessage(receiveMessage_t messageType, UINT32 *messageID, UINT8 *data, UINT8 *dataSize, float timeout)
 {
 	INT32 status = 0;
 	FRC_NetworkCommunication_JaguarCANDriver_receiveMessage(messageID, data, dataSize,
 			(UINT32)(timeout * 1000), &status);
 	wpi_assertCleanStatus(status);
+	if (status) {
+		printf("Caller: %u\n", messageType);
+	} else {
+		printf("OK: Caller: %u\n", messageType);
+	}
 }
 
 /**
@@ -213,7 +216,7 @@ float CANJaguar::GetBusVoltage()
 
 	messageID = LM_API_STATUS_VOLTBUS | m_deviceNumber;
 	sendMessage(messageID, NULL, 0);
-	receiveMessage(&messageID, dataBuffer, &dataSize);
+	receiveMessage(RX_BUSVOLTAGE, &messageID, dataBuffer, &dataSize);
 	if (dataSize == sizeof(INT16))
 	{
 		return swap16(*((INT16*)dataBuffer)) / 256.0;
@@ -236,7 +239,7 @@ float CANJaguar::GetOutputVoltage()
 	// Read the bus voltage first so we can return units of volts
 	messageID = LM_API_STATUS_VOLTBUS | m_deviceNumber;
 	sendMessage(messageID, NULL, 0);
-	receiveMessage(&messageID, dataBuffer, &dataSize);
+	receiveMessage(RX_OUTPUTVOLTAGE, &messageID, dataBuffer, &dataSize);
 	if (dataSize == sizeof(INT16))
 	{
 		busVoltage = swap16(*((INT16*)dataBuffer)) / 256.0;
@@ -244,7 +247,7 @@ float CANJaguar::GetOutputVoltage()
 		// Then read the volt out which is in percentage of bus voltage units.
 		messageID = LM_API_STATUS_VOLTOUT | m_deviceNumber;
 		sendMessage(messageID, NULL, 0);
-		receiveMessage(&messageID, dataBuffer, &dataSize);
+		receiveMessage(RX_OUTPUTVOLTAGE, &messageID, dataBuffer, &dataSize);
 		if (dataSize == sizeof(INT16))
 		{
 			return busVoltage * (INT16)swap16(*((INT16*)dataBuffer)) / 32767.0;
@@ -266,7 +269,7 @@ float CANJaguar::GetOutputCurrent()
 
 	messageID = LM_API_STATUS_CURRENT | m_deviceNumber;
 	sendMessage(messageID, NULL, 0);
-	receiveMessage(&messageID, dataBuffer, &dataSize);
+	receiveMessage(RX_OUTPUTCURRENT, &messageID, dataBuffer, &dataSize);
 	if (dataSize == sizeof(INT16))
 	{
 		return swap16(*((INT16*)dataBuffer)) / 256.0;
@@ -287,7 +290,7 @@ float CANJaguar::GetTemperature()
 
 	messageID = LM_API_STATUS_TEMP | m_deviceNumber;
 	sendMessage(messageID, NULL, 0);
-	receiveMessage(&messageID, dataBuffer, &dataSize);
+	receiveMessage(RX_TEMPERATURE, &messageID, dataBuffer, &dataSize);
 	if (dataSize == sizeof(INT16))
 	{
 		return swap16(*((INT16*)dataBuffer)) / 256.0;
@@ -308,7 +311,7 @@ double CANJaguar::GetPosition()
 
 	messageID = LM_API_STATUS_POS | m_deviceNumber;
 	sendMessage(messageID, NULL, 0);
-	receiveMessage(&messageID, dataBuffer, &dataSize);
+	receiveMessage(RX_POSITION, &messageID, dataBuffer, &dataSize);
 	if (dataSize == sizeof(INT32))
 	{
 		return swap32(*((INT32*)dataBuffer)) / 65536.0;
@@ -329,7 +332,7 @@ double CANJaguar::GetSpeed()
 
 	messageID = LM_API_STATUS_SPD | m_deviceNumber;
 	sendMessage(messageID, NULL, 0);
-	receiveMessage(&messageID, dataBuffer, &dataSize);
+	receiveMessage(RX_SPEED, &messageID, dataBuffer, &dataSize);
 	if (dataSize == sizeof(INT32))
 	{
 		return swap32(*((INT32*)dataBuffer)) / 65536.0;
@@ -350,7 +353,7 @@ bool CANJaguar::GetForwardLimitOK()
 
 	messageID = LM_API_STATUS_LIMIT | m_deviceNumber;
 	sendMessage(messageID, NULL, 0);
-	receiveMessage(&messageID, dataBuffer, &dataSize);
+	receiveMessage(RX_FORWARDLIMOK, &messageID, dataBuffer, &dataSize);
 	if (dataSize == sizeof(UINT8))
 	{
 		return (*((UINT8*)dataBuffer) & kForwardLimit) != 0;
@@ -371,7 +374,7 @@ bool CANJaguar::GetReverseLimitOK()
 
 	messageID = LM_API_STATUS_LIMIT | m_deviceNumber;
 	sendMessage(messageID, NULL, 0);
-	receiveMessage(&messageID, dataBuffer, &dataSize);
+	receiveMessage(RX_REVERSELIMOK, &messageID, dataBuffer, &dataSize);
 	if (dataSize == sizeof(UINT8))
 	{
 		return (*((UINT8*)dataBuffer) & kReverseLimit) != 0;
@@ -392,7 +395,7 @@ UINT16 CANJaguar::GetFaults()
 
 	messageID = LM_API_STATUS_FAULT | m_deviceNumber;
 	sendMessage(messageID, NULL, 0);
-	receiveMessage(&messageID, dataBuffer, &dataSize);
+	receiveMessage(RX_FAULTS, &messageID, dataBuffer, &dataSize);
 	if (dataSize == sizeof(UINT16))
 	{
 		return swap16(*((UINT16*)dataBuffer));
@@ -416,7 +419,7 @@ bool CANJaguar::GetPowerCycled()
 
 	messageID = LM_API_STATUS_POWER | m_deviceNumber;
 	sendMessage(messageID, NULL, 0);
-	receiveMessage(&messageID, dataBuffer, &dataSize);
+	receiveMessage(RX_POWERCYCLED, &messageID, dataBuffer, &dataSize);
 	if (dataSize == sizeof(UINT8))
 	{
 		bool powerCycled = *((UINT8*)dataBuffer) != 0;
@@ -438,7 +441,7 @@ UINT32 CANJaguar::GetFirmwareVersion()
 
 	messageID = CAN_MSGID_API_FIRMVER | m_deviceNumber;
 	sendMessage(messageID, NULL, 0);
-	receiveMessage(&messageID, dataBuffer, &dataSize);
+	receiveMessage(RX_FIRMWARE, &messageID, dataBuffer, &dataSize);
 	if (dataSize == sizeof(UINT32))
 	{
 		return *((UINT32*)dataBuffer);
