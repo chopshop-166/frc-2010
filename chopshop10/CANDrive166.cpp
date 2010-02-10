@@ -17,6 +17,7 @@
 #include "Robot166.h"
 #include "BaeUtilities.h"
 #include "Proxy166.h"
+#include "CANJaguar.h"
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
@@ -77,10 +78,15 @@ unsigned int CANDriveLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-Team166CANDrive::Team166CANDrive(void)
+Team166CANDrive::Team166CANDrive(void):
+	blackJag(T166_BLACK_JAG_CAN),
+	leftJag(T166_LEFT_MOTOR_CAN),
+	rightJag(T166_RIGHT_MOTOR_CAN)
 {
+	DPRINTF(LOG_DEBUG, "Black Jag");
 	Start((char *)"166CANDriveTask", CAN_CYCLE_TIME);
 	return;
+
 };
 	
 // task destructor
@@ -88,6 +94,11 @@ Team166CANDrive::~Team166CANDrive(void)
 {
 	return;
 };
+void Team166CANDrive::CANDrive(float leftValue, float rightValue)
+{
+	leftJag.Set(leftValue);
+	rightJag.Set(-rightValue);
+}
 	
 // Main function of the task
 int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
@@ -99,24 +110,32 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 	Proxy166 *proxy;				  //pointer to proxy	
 	proxy = proxy->getInstance();     
 	
-	
-	
-	dprintf(LOG_DEBUG,"%f\n",proxy->GetJoystick(0).X);   //Calls proxy
-	
+	int printstop=0;
 	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 CANDrive task\n");
-		
+
 	// Wait for Robot go-ahead (e.g. entering Autonomous or Tele-operated mode)
 	WaitForGoAhead();
 	
 	// Register our logger
 	lHandle = Robot166::getInstance();
-	lHandle->RegisterLogger(&sl);	
+	lHandle->RegisterLogger(&sl);
+	printf("CANDrive is ready.\n");
+	
+	float leftValue, rightValue;
 
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
+		leftValue = proxy->GetJoystickY(1);
+		rightValue = proxy->GetJoystickY(2);
+		CANDrive(leftValue, rightValue);
+		if(((++printstop)%20)==0){
+			DPRINTF(LOG_DEBUG, "Left Jaguar: %f : %f : %f",leftJag.GetBusVoltage(), leftJag.GetOutputVoltage(), leftJag.GetOutputCurrent(), leftJag.GetTemperature() );
+			DPRINTF(LOG_DEBUG, "Right Jaguar: %f : %f : %f",rightJag.GetBusVoltage(), rightJag.GetOutputVoltage(), rightJag.GetOutputCurrent(), rightJag.GetTemperature() );
+		}
+		
 		// do stuff
 		sl.PutOne(0, 0, 0);
 		
