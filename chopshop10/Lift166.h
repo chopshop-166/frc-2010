@@ -41,6 +41,8 @@ public:
 private:
 	
 	Jaguar lift_jag;
+//	DigitalInput Lift_TOP_Limit_Switch;
+	DigitalInput Lift_BOTTOM_Limit_Switch;
 	
 };
 

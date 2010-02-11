@@ -18,14 +18,16 @@
 #include "BaeUtilities.h"
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(false)dprintf
+#define DPRINTF if(true)dprintf
+
+int limit;
 
 // Sample in memory buffer
 struct abuf166
 {
-	struct timespec tp;               // Time of snapshot
-	float x_acc;                     // accelarometer x value
-	float y_acc;					//  accelarometer y value
+	struct timespec tp;              // Time of snapshot
+	float x_acc;                     // accelerometer x value
+	float y_acc;					 // accelerometer y value
 	float acc_vector;
 	
 };
@@ -66,7 +68,6 @@ unsigned int LiftLog::PutOne(float x_acc, float y_acc, float acc_vector)
 unsigned int LiftLog::DumpBuffer(char *nptr, FILE *ofile)
 {
 	struct abuf166 *ab = (struct abuf166 *)nptr;
-	
 	// Output the data into the file
 	fprintf(ofile, "%u, %u, %f, %f, %f\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->x_acc, ab->y_acc, ab->acc_vector);
 	
@@ -76,7 +77,7 @@ unsigned int LiftLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-Team166Lift::Team166Lift(void): lift_jag(7)
+Team166Lift::Team166Lift(void): lift_jag(T166_LIFT_CHANNEL), Lift_BOTTOM_Limit_Switch(BOTTOM_LIMITSWITCH_DIGITAL_INPUT)
 {
 	Start((char *)"166LiftTask", LIFT_CYCLE_TIME);
 	return;
@@ -117,15 +118,31 @@ int Team166Lift::Main(int a2, int a3, int a4, int a5,
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		
 		
-        // TODO: update this for real Lift functionality
+        // Some code that doesn't do anything:
 //		int dir;
 //        lHandle->GetLift(&dir, &lift_motor);   // Get the direction of the lift
     			  //gives the values for the desired lift motor speed
-        joystickY = proxy->GetJoystickY(3);
+//	if (proxy->GetSwitch())
+		if (proxy->GetButton(3,2,false)){
+			limit = Lift_BOTTOM_Limit_Switch.Get();
+            DPRINTF(LOG_DEBUG,"Limit Switch: %d", limit);
+			if (Lift_BOTTOM_Limit_Switch.Get()==1){
+				lift_jag.Set(0);
+				}
+	        else{
+	        	DPRINTF(LOG_DEBUG,"Button pushed: now in LIFT mode.\n");
+	        	joystickY = proxy->GetJoystickY(3);
+	        	lift_jag.Set(joystickY);
+	        	}
+		}
+		else{
+			lift_jag.Set(0);
+		}
         if(((++printstop)%10)==0) {
-        	DPRINTF(LOG_DEBUG, "Joystick Y: %d", joystickY);
+        	joystickY = proxy->GetJoystickY(3);
+        	DPRINTF(LOG_DEBUG, "Joystick Y: %f", joystickY);
+        	
         }
-        lift_jag.Set(joystickY);
 
         // Should we log this value?
 		sl.PutOne(0, 0, 0);

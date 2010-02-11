@@ -51,16 +51,17 @@
 #define T166_KICKER_LIMIT_SWITCH (9)		// Kicker limit switch
 #define T166_BANNER_SENSOR_DIGITAL_INPUT (10)	// Banner Sensor
 
-#define TOP_LIMITSWITCH_DIGITAL_INPUT    (13)  //top limit switch for lift
+//#define TOP_LIMITSWITCH_DIGITAL_INPUT    (13)  //top limit switch for lift
+		//this limit switch is probably no longer needed
 #define BOTTOM_LIMITSWITCH_DIGITAL_INPUT (14)  //bottom limit switch for lift
 
 //
 // PWM layout
 //
 /** channel for the Left Motor */
-#define T166_LEFT_BACK_MOTOR_CHANNEL (1)  
+#define T166_LEFT_BACK_MOTOR_CHANNEL (1)
 /** channel for the Right Motor */   
-#define T166_RIGHT_BACK_MOTOR_CHANNEL (2)  
+#define T166_RIGHT_BACK_MOTOR_CHANNEL (2)
 /** channel for the Kicker Motor */
 #define T166_KICKER_CHANNEL (5)   
 /** channel for the E-Brake Motor */    
