@@ -173,6 +173,8 @@ void Robot166::OperatorControl(void)
 	RobotMode = T166_OPERATOR;
 	GetWatchdog().SetEnabled(true);
 	static int print_throttle = 0;
+	DriverStationDisplay("Teleoperated Enabled.");
+		dsHandleLCD->UpdateLCD();
 	while (IsOperatorControl())
 	{
 		if(debugTimer.HasPeriodPassed(0.5))
@@ -182,6 +184,8 @@ void Robot166::OperatorControl(void)
 		if (IsDisabled()) {
 			if (!has_been_disabled) {
 				has_been_disabled = 1;
+				DriverStationDisplay("Dumping Memory Log...");
+					dsHandleLCD->UpdateLCD();
 				if (dnum < 10) {
 				    printf("Dumping log files...\n");
 				    DumpLoggers(dnum);
