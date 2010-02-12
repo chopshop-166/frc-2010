@@ -22,6 +22,7 @@
 #include "Proxy166.h"
 #include "Banner166.h"
 #include "CANJaguar.h"
+#include "Inclinometer.h"
 //
 // Robot modes
 //

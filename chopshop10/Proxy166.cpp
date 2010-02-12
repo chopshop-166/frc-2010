@@ -281,9 +281,17 @@ void Proxy166::SetBannerProxy(int newval) { BannerProxy = newval; }
  * @return The last value set by the banner sensor task
  */
 int Proxy166::GetBannerProxy() { return BannerProxy; }
-
 /**
  * @brief Initializes semaphores for joysticks and switches, and starts the Proxy166 task.
+ */
+void Proxy166::SetInclinometerProxy(int newval) { InclinometerProxy = newval; }
+/**
+ * @brief Gets the cache value of the Inclinometer.
+ * @return The last value set by the Inclinometer task.
+ */
+int Proxy166::GetInclinometerProxy() { return InclinometerProxy; }
+/**
+ * @brief Initializes semaphors for joysticks and switches, and starts the Proxy166 task.
  */
 Proxy166::Proxy166(void):
 	driveStickRight(T166_USB_STICK_1),        // USB port for 1st stick
