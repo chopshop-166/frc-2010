@@ -29,13 +29,16 @@
 // Constants
 #define PI 3.14159265358979
 #define DEFAULT_VERTICAL_PAN_POSITION 0
+#define CAMERA_SPAWN_TRY_WAIT 0.5 // seconds to wait for each thread
+#define CAMERA_SPAWN_WAIT_MAX 20.0 // seconds to wait for the camera to come up. 
 
 /** ratio of horizontal image field of view (54 degrees) to horizontal servo (180) */
 #define HORIZONTAL_IMAGE_TO_SERVO_ADJUSTMENT (54.0/180.0)   // this seems to work
 /** ratio of vertical image field of view (40.5 degrees) to vertical servo (180) */
 #define VERTICAL_IMAGE_TO_SERVO_ADJUSTMENT (40.5/180.0)	    // this seems to work
+#define DAMPING_FACTOR 0.75
 
-#define SERVO_DEADBAND 0.1
+#define SERVO_DEADBAND 0.01
 #define VISION_LOOP_TIME 0.050 // seconds
 #define SCORE_MINIMUM 0.01
 #define SCORE_GOOD 0.4
@@ -70,6 +73,8 @@ public:
 	// Control
 	void SetActive(bool);
 	
+	void TryStartCamera(bool);
+	
 	ColorImage *GetImage();
 	
 // Private functions and attributes
@@ -88,7 +93,9 @@ private:
 	
 	DashboardDataSender *dds;
 	
-	void AcquireTarget(vector<Target>&);
+	static int _StartCameraThreadFunc(void *this_p,int a2, int a3, int a4, int a5,
+			int a6, int a7, int a8, int a9, int a10);
+	void AcquireTarget(vector<Target>&,float,float);
 	void IsTargetAccquired();
 	void SetServoPositions(float normalizedHorizontal, float normalizedVertical);
 	void AdjustServoPositions(float normDeltaHorizontal, float normDeltaVertical);

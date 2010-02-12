@@ -21,7 +21,7 @@
 #include "nivision.h" 
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(true)dprintf
+#define DPRINTF if(false)dprintf
 
 // Create storage space for camera
 AxisCamera *camera166 = 0;

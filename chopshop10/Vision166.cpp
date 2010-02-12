@@ -26,7 +26,7 @@
 #include "DashboardDataSender.h"
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(false)dprintf
+#define DPRINTF if(true)dprintf
 	
 // Vision task constructor
 Team166Vision::Team166Vision(void) :
@@ -44,7 +44,7 @@ Team166Vision::Team166Vision(void) :
 	SetDebugFlag ( DEBUG_SCREEN_ONLY  ) ;
 	
 	// Start our task
-	Start((char *)"166VisionTask", 50);	
+	Start((char *)"166VisionTask", 100);	
 };
 	
 // Vision task destructor
@@ -171,26 +171,40 @@ float Team166Vision::GetBearing() {
 	return bearing;
 }
 
-void Team166Vision::AcquireTarget(vector<Target> & matches) {
+void Team166Vision::AcquireTarget(vector<Target> & matches, float prev_servo_x, float prev_servo_y) {
+	static Timer *debug; // Persistent (but local) debug timer
+	
+	// These are persistent so that we don't have to keep re-alocating them.
+	static float delta_x;
+	static float delta_y;
+	static float servo_x;
+	static float servo_y;
+	static float x;
+	static float y;
+	
+	if(NULL == debug) { 
+		debug = new Timer;
+		debug->Start();
+	}
 	if(matches.size() > 0 && matches[0].m_score > SCORE_MINIMUM) {
-		// Sorted by score; 0 is highest score
-		/*
+		delta_x = HORIZONTAL_IMAGE_TO_SERVO_ADJUSTMENT * matches[0].m_xPos * 0.75;
+		delta_y = VERTICAL_IMAGE_TO_SERVO_ADJUSTMENT * matches[0].m_yPos * 0.75;
 		
-		float delta_x = HORIZONTAL_IMAGE_TO_SERVO_ADJUSTMENT * matches[0].m_xPos * 0.5;
-		float delta_y = VERTICAL_IMAGE_TO_SERVO_ADJUSTMENT * matches[0].m_yPos * 0.5;
+		servo_x = horizontalServo.Get();
+		servo_y = verticalServo.Get();
 		
-		float x = horizontalServo.Get() + delta_x;
-		float y = verticalServo.Get() + delta_y;
+		x = 0.5 - (NormalizeToRange(servo_x, -1.0, 1.0) + delta_x);
+		y = 0.5 - (NormalizeToRange(servo_y, -1.0, 1.0) + delta_y);
 		
-		if(timer++ % (int)(1000.0 / 50.0) == 0)
-			DPRINTF(LOG_DEBUG, "Target [x=%f] [y=%f]\nServo Goal [x=%f] [y=%f]\nCurrent Servo [x=%f] [y=%f]\n",
-					matches[0].m_xPos,
-					matches[0].m_yPos,
-					x, y, 
-					horizontalServo.Get(),
-					verticalServo.Get()
-			);
-		*/
+		x *= -1.0;
+		y *= -1.0;
+		
+		SetServoPositions(x, y);
+		
+		if(debug->HasPeriodPassed(0.5)) {
+			debug->Reset();
+			DPRINTF(LOG_DEBUG, "Sx %f\tSy %f\n", x, y);
+		}
 	}
 }
 ColorImage *Team166Vision::GetImage() {
@@ -203,57 +217,80 @@ ColorImage *Team166Vision::GetImage() {
 int Team166Vision::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {	
-	// Ensure we get into Autononmous or Teleoperated mode
-	while(!Robot166::getInstance())
-		Wait(VISION_LOOP_TIME);
+	Robot166 *lHandle = Robot166::getInstance();
 	
 	DPRINTF(LOG_DEBUG, "Vision task initializing the camera...\n");
-	StartCamera();
-	MyTaskInitialized = 1;
-	
-	while (!Robot166::getInstance() ||
-	       ((Robot166::getInstance()->RobotMode != T166_AUTONOMOUS) &&
-	    	(Robot166::getInstance()->RobotMode != T166_OPERATOR))) {
-		Wait (VISION_LOOP_TIME);
-	}
-	if(!(camera166->isInstance())) {
-		SetActive(false);
-	}
-	else
-		SetActive(true);
-	DPRINTF(LOG_DEBUG, "Vision task has initialized the camera. Running loop...\n");
-	
-	// get handle to robot
-	Robot166 *lHandle = Robot166::getInstance();
-	Proxy166 *pHandle = Proxy166::getInstance();
+	TryStartCamera(false);
+	DPRINTF(LOG_DEBUG, "Waiting for autonomous or operator control...\n");
+	WaitForGoAhead();
 	
 	SetServoPositions(0.0, DEFAULT_VERTICAL_PAN_POSITION);
+	
+	Proxy166 *pHandle = Proxy166::getInstance();
+	
+	Timer debugTimer;
+	debugTimer.Start();
+	
+	vector<Target> matches;
+	ColorImage *img;
+	
+	static float prev_servo_x = 0.0, prev_servo_y = DEFAULT_VERTICAL_PAN_POSITION;
 	while ((lHandle->IsOperatorControl() || 
 		   lHandle->IsAutonomous()))
 	{
-	//DriverStation *dsHandle = DriverStation::GetInstance();
-		
-		// set servos to start at center position
-		
-	    // General main loop (while in Autonomous or Tele mode)
-		int timer = 0;
-		
-		MyWatchDog = 1;	
 		if(IsActive()) {
-			pHandle->SetImage(GetImage());
-			vector<Target> matches = Target::FindCircularTargets(pHandle->GetImage());
-			AcquireTarget(matches);
+			img = GetImage();
+			pHandle->SetImage(img);
+			matches = Target::FindCircularTargets(img);
+			AcquireTarget(matches, prev_servo_x, prev_servo_y);
 			dds->sendVisionData(0.0, 0.0, 0.0, matches[0].m_xPos / matches[0].m_xMax, matches);
-			
-			
+			//DPRINTF(LOG_DEBUG, "HzS = %f ; VlS = %f\n", horizontalServo.Get(), verticalServo.Get())			
+			//SetServoPositions(pHandle->GetJoystickY(3), pHandle->GetJoystickX(3));
 			pHandle->DeleteImage();
 		}
-		if(!(camera166->isInstance())) {
-			SetActive(false);
+		if(debugTimer.HasPeriodPassed(0.5)) {
+			debugTimer.Reset();
 		}
-		else
-			SetActive(true);
-		WaitForNextLoop();
+		
+		WaitForNextLoop();		
 	}
 	return 0;
+}
+
+int Team166Vision::_StartCameraThreadFunc(void *this_p,int a2, int a3, int a4, int a5,
+		int a6, int a7, int a8, int a9, int a10) {
+	StartCamera();
+	if(AxisCamera::getInstance().isInstance()) {
+		Team166VisionObject.SetActive(true);
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+void Team166Vision::TryStartCamera(bool long_wait) {
+	int id = -1;
+	Timer threadTimer;
+	threadTimer.Start();
+	
+	Timer cameraTimer;
+	cameraTimer.Start();
+	do {
+		if(id != -1 && threadTimer.HasPeriodPassed(CAMERA_SPAWN_TRY_WAIT)) {
+			// Already ran at least once; restart old thread
+			taskRestart(id);
+			threadTimer.Reset();
+			DPRINTF(LOG_DEBUG, "Restarting VisionSpawner...\n");
+		}
+		else if (id == -1) {
+			DPRINTF(LOG_DEBUG, "Starting VisionSpawner...\n");
+			id = taskSpawn((char*)"VisionSpawner", 90, VX_FP_TASK, 5000, (FUNCPTR) _StartCameraThreadFunc,0,0,0,0,0,0,0,0,0,0);
+		}
+	} while(
+			false == IsActive() && !cameraTimer.HasPeriodPassed(CAMERA_SPAWN_WAIT_MAX)
+	);
+	if(IsActive())
+		DPRINTF(LOG_DEBUG, "Started camera.\n");
+	else
+		DPRINTF(LOG_DEBUG, "Gave up on starting camera.\n");
 }
