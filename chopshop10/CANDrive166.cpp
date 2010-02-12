@@ -76,6 +76,18 @@ unsigned int CANDriveLog::DumpBuffer(char *nptr, FILE *ofile)
 	return (sizeof(struct abuf166));
 }
 
+// Initializes the ProxyHandle. 
+Team166CANDrive *Team166CANDrive::CANDriveHandle = 0;
+
+/**
+ * @brief Gets the singleton instance of Proxy166.
+ * @return The instance of Proxy166
+ */
+Team166CANDrive *Team166CANDrive::getInstance(void)
+{
+	return CANDriveHandle;
+}
+
 
 // task constructor
 Team166CANDrive::Team166CANDrive(void):
@@ -84,6 +96,7 @@ Team166CANDrive::Team166CANDrive(void):
 	rightJag(T166_RIGHT_MOTOR_CAN)
 {
 	DPRINTF(LOG_DEBUG, "Black Jag");
+	CANDriveHandle=this;
 	Start((char *)"166CANDriveTask", CAN_CYCLE_TIME);
 	return;
 

@@ -37,9 +37,17 @@ public:
 	// task destructor
 	virtual ~Team166CANDrive(void);
 
+	// get handle
+	static Team166CANDrive *getInstance(void);
+	
 	// Main function of the task
 	virtual int Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10);
+private:
+	/**
+	 * @brief The single instance handle
+	 */
+	static Team166CANDrive* CANDriveHandle;
 };
 
 #endif // !defined(_CANDRIVE166)
