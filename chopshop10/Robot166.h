@@ -23,6 +23,7 @@
 #include "Banner166.h"
 #include "CANJaguar.h"
 #include "Inclinometer.h"
+#define DASHBOARD_BUFFER_MAX (21)
 //
 // Robot modes
 //
