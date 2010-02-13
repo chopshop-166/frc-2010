@@ -14,6 +14,8 @@
 #include "BaeUtilities.h"
 #include <string.h>
 #include <stdlib.h>
+#include <dirent.h>
+#include <stat.h>
 #include "MemoryLog166.h"
 
 
@@ -89,7 +91,7 @@ int MemoryLog166::DumpToFile(int dnum)
 	
 	// Create the output file
 	Factual[sizeof(Factual) - 1] = 0;
-	snprintf(Factual, sizeof(Factual) - 1, "%s%d.csv", FileName, dnum);
+	snprintf(Factual, sizeof(Factual) - 1, "%s__%d.csv", FileName, dnum);
 	if (ofile = fopen(Factual, "w")) {
 	
 		// Enter loop to dump out the data into the file
@@ -114,4 +116,157 @@ int MemoryLog166::DumpToFile(int dnum)
 	
 	// Back to caller
 	return (0);
+}
+
+// Determine generation of a particular file
+int MemoryLog166::DetermineGen(char *fname)
+{
+	
+	size_t nl;                    // Length of filename string
+	int generation = -1;          // Generation number
+	int digits_seen;              // Digits we've seen so far
+	size_t nl_temp;               // Temnporary offset within file name
+		
+	// Is this possibly a log file that we wrote?
+	nl = strlen(fname);
+	if ((nl > 4) && (!strcmp(".csv", &fname[nl - 4]))) {
+			
+		// Might be. At least it ends with ".csv". Digits before that?
+		generation = 0;
+		digits_seen = 0;
+		nl_temp = nl - 5;
+		while (fname[nl_temp] >= '0' && fname[nl_temp] <= '9') {
+			generation *= 10;
+			generation += (fname[nl_temp] - '0');
+			digits_seen++;
+				if (!nl_temp--) {
+					generation = -1;
+					break;
+				}
+		}
+
+		// Still possibly Ok?
+		if ((generation >= 0) && (digits_seen)) {
+				
+			// At least one digit and we've got space for a '__'?
+			if ((!digits_seen) || (nl_temp <= 2) ||
+					(fname[nl_temp--] != '_') ||
+					(fname[nl_temp--] != '_'))
+					
+				// No.
+				generation = -1;
+			}
+	}
+	
+	// Done, back to caller with generation
+	return (generation);
+}
+
+// Determine hi/low generation values for log-files
+void MemoryLog166::DetermineLogHiLow(int *hi, int *lo, size_t *tspace)
+{
+
+	DIR *dhandle;                 // Handle to directory
+	struct dirent *de;            // Next file we're examining
+	struct stat se;               // File information block
+	int generation;               // Generation number
+	int highest_gen = -1;         // Highest generation we know about
+	int lowest_gen = 0x7fffffff;  // Lowest generation we know about
+	size_t total_space = 0;       // Total space (bytes) of files
+
+	// Open the current working directory
+	dhandle = opendir(".");
+	
+	// Walk through the complete list of files in this directory
+	while ((de = readdir(dhandle))) {
+
+		// Get possible generation number
+		generation = DetermineGen(de->d_name);
+
+		// If this is a generation, display it
+		if (generation >= 0) {
+
+			// Collect status information about the file
+			stat(de->d_name, &se);
+			
+			// Add space used
+			total_space += se.st_size;
+			
+			// Is this generation lower than what we've seen?
+			if (generation < lowest_gen)
+				lowest_gen = generation;
+				
+			// Is this the highest generation we've seen?
+			if (generation > highest_gen)
+				highest_gen = generation;
+		}
+	}
+	
+	// Done, close it
+	closedir(dhandle);
+	
+	// Done
+	*tspace = total_space;
+	*hi = highest_gen;
+	*lo = lowest_gen;
+	return;
+}
+
+// Trim a generation of logfiles
+void MemoryLog166::TrimGeneration(int gen)
+{
+	
+	DIR *dhandle;                 // Handle to directory
+	struct dirent *de;            // Next file we're examining
+	int generation;               // Generation number
+
+	// Open the current working directory
+	dhandle = opendir(".");
+	
+	// Walk through the complete list of files in this directory
+	while ((de = readdir(dhandle))) {
+
+		// Get possible generation number
+		generation = DetermineGen(de->d_name);
+
+		// Is this the generation we're looking for?
+		if (gen == generation) {
+			
+			// Yes. Get rid of the file
+			remove(de->d_name);
+		}
+	}
+	
+	// Done, close it
+	closedir(dhandle);
+	
+	// Done
+	return;
+}
+
+// Prune the log files down to a aggregate size
+int MemoryLog166::PruneLogs(size_t maxsize)
+{
+	int lo;         // Low generation number
+	int hi;         // High generation number
+	size_t lsize;   // Combined size of logs
+	
+	// Enter loop to trim things down
+	while (1) {
+		
+		// Determine how many generations we have out there and their size
+		DetermineLogHiLow(&hi, &lo, &lsize);
+		printf("Logfiles. High Gen=%d, Low Gen=%d, Total space: %u\n", hi, lo, lsize);
+		
+		// Are we ok for space?
+		if (lsize <= maxsize)
+			break; // Yes.
+		
+		// Trim low generation
+		printf("Trimming log generation %d...\n", lo);
+		TrimGeneration(lo);
+	}
+	
+	// Done
+	return (hi);
 }

@@ -78,6 +78,9 @@ Robot166::Robot166(void)
 	dsHandleLCD = DriverStationLCD::GetInstance();
 	RobotHandle = this;
 	mlHead = 0;
+	
+	// Trim log files down to 16MB
+	maxLogId = MemoryLog166::PruneLogs(16*1024*1024);
 
 	// update DS
 	//dsHandleLCD->Printf(DriverStationLCD::kUser_Line1,1,"Hello(1) %d",12345);
@@ -151,7 +154,6 @@ void Robot166::Autonomous(void)
 void Robot166::OperatorControl(void)
 {
 	int has_been_disabled = 0;
-	static int dnum = 0;
 	int joystickImageCount = 0;
 	char imageName[80]; 
 	
@@ -173,13 +175,11 @@ void Robot166::OperatorControl(void)
 			if (!has_been_disabled) {
 				has_been_disabled = 1;
 				DriverStationDisplay("Dumping Memory Log...");
-					dsHandleLCD->UpdateLCD();
-				if (dnum < 10) {
-				    printf("Dumping log files...\n");
-				    DumpLoggers(dnum);
-				    printf("Logfiles dumped!\n");
-				    dnum++;
-				}
+				dsHandleLCD->UpdateLCD();
+			    printf("Dumping log files...\n");
+			    DumpLoggers(maxLogId);
+			    printf("Logfiles dumped!\n");
+			    maxLogId++;
 			}
 			Wait (0.5);
 			continue;

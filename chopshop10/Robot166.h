@@ -63,6 +63,7 @@ private:
     DriverStation *dsHandle;                  // Driver Station handle
     DriverStationLCD *dsHandleLCD;            // Driver Station display handle
     MemoryLog166 *mlHead;                     // Memory log head
+    int maxLogId;                             // Max log file id
     
 public:
 	Robot166(void);                           // Constructor
