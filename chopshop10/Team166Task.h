@@ -82,6 +82,8 @@
 #define T166_LEFT_MOTOR_CAN (3)
 /** channel for the Right Motor */
 #define T166_RIGHT_MOTOR_CAN (4)
+/** channel for the Lift Winch Motor */
+#define T166_LIFT_MOTOR_CAN (5)
 
 //
 // USB port layout
