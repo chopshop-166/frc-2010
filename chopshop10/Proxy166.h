@@ -108,6 +108,10 @@ class Proxy166 : public Team166Task {
 		void SetInclinometer(int);
 		int GetInclinometer();
 
+		// Proxy access for Ebrake
+		void SetEbrake(bool);
+		bool GetEbrake();
+		
 		Proxy166(void);
 		~Proxy166(void);
 		
@@ -155,6 +159,9 @@ class Proxy166 : public Team166Task {
 
 		// Distance in inches to the object in front of the sonar
 		float SonarDistance;
+		
+		//proxy storage for state of ebrake
+		bool EbrakeDown;
 };
 
 #endif

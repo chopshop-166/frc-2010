@@ -152,6 +152,12 @@ int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 			}
 			Ebrake_Spike.Set(Relay::kReverse);
 		}
+		if (Limit_Lower == true) {
+			proxy->SetEbrake(true);
+		}
+		else if (Limit_Upper == true) {
+			proxy->SetEbrake(false);
+		}
 		sl.PutOne(0, 0, 0);
 		
 		// Wait for our next lap

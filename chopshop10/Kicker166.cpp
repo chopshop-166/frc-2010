@@ -19,7 +19,7 @@
 #include "Proxy166.h"
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(true)dprintf
+#define DPRINTF if(false)dprintf
 
 // Sample in memory buffer
 struct abuf166
