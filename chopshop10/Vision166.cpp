@@ -232,16 +232,18 @@ ColorImage *Team166Vision::GetImage() {
 int Team166Vision::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {	
-	Robot166 *lHandle = Robot166::getInstance();
+	Robot166 *lHandle;
+	Proxy166 *pHandle;
 	
 	DPRINTF(LOG_DEBUG, "Vision task initializing the camera...\n");
 	TryStartCamera(false);
 	DPRINTF(LOG_DEBUG, "Waiting for autonomous or operator control...\n");
 	WaitForGoAhead();
 	
-	SetServoPositions(0.0, DEFAULT_VERTICAL_PAN_POSITION);
+	lHandle = Robot166::getInstance();
+	pHandle = Proxy166::getInstance();
 	
-	Proxy166 *pHandle = Proxy166::getInstance();
+	SetServoPositions(0.0, DEFAULT_VERTICAL_PAN_POSITION);
 	
 	Timer debugTimer;
 	debugTimer.Start();
