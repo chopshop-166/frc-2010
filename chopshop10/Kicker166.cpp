@@ -147,7 +147,7 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 		if (Cocked == false && Firing == false)
 		 {
 			if(((++printstop)%20)==0) {
-				DPRINTF(LOG_DEBUG, "Reloading kicker.");		
+				//DPRINTF(LOG_DEBUG, "Reloading kicker.");		
 				printstop = 0;
 			}
 			if(((++kickwait)%KICKER_RELOAD_WAIT) == 0)

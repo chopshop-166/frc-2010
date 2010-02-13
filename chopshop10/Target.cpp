@@ -16,7 +16,7 @@ static EllipseDescriptor ellipseDescriptor = {
 										};
 
 static CurveOptions curveOptions = {	IMAQ_NORMAL_IMAGE,	// extractionMode
-										100, 				// threshold
+										60, 				// threshold
 										IMAQ_NORMAL, 		// filterSize
 										25, 				// minLength
 										15, 				// rowStepSize 

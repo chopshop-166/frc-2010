@@ -43,6 +43,8 @@
 #define SCORE_MINIMUM 0.01
 #define SCORE_GOOD 0.4
 
+#define DISTORTION_DELTA_MAX 0.25
+
 class DashboardDataSender;
 
 /*
@@ -95,7 +97,7 @@ private:
 	
 	static int _StartCameraThreadFunc(void *this_p,int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10);
-	void AcquireTarget(vector<Target>&,float,float);
+	void AcquireTarget(vector<Target>&,float&,float&);
 	void IsTargetAccquired();
 	void SetServoPositions(float normalizedHorizontal, float normalizedVertical);
 	void AdjustServoPositions(float normDeltaHorizontal, float normDeltaVertical);

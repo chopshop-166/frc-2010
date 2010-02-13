@@ -171,7 +171,7 @@ float Team166Vision::GetBearing() {
 	return bearing;
 }
 
-void Team166Vision::AcquireTarget(vector<Target> & matches, float prev_servo_x, float prev_servo_y) {
+void Team166Vision::AcquireTarget(vector<Target> & matches, float & prev_servo_x, float & prev_servo_y) {
 	static Timer *debug; // Persistent (but local) debug timer
 	
 	// These are persistent so that we don't have to keep re-alocating them.
@@ -179,16 +179,19 @@ void Team166Vision::AcquireTarget(vector<Target> & matches, float prev_servo_x, 
 	static float delta_y;
 	static float servo_x;
 	static float servo_y;
+	static float delta_servo_x;
+	static float delta_servo_y;
 	static float x;
 	static float y;
+	static float distortion;
 	
 	if(NULL == debug) { 
 		debug = new Timer;
 		debug->Start();
 	}
-	if(matches.size() > 0 && matches[0].m_score > SCORE_MINIMUM) {
-		delta_x = HORIZONTAL_IMAGE_TO_SERVO_ADJUSTMENT * matches[0].m_xPos * 0.75;
-		delta_y = VERTICAL_IMAGE_TO_SERVO_ADJUSTMENT * matches[0].m_yPos * 0.75;
+	if(matches.size() > 0 && (1 - (matches[0].m_majorRadius / matches[0].m_minorRadius)) < DISTORTION_DELTA_MAX && matches[0].m_score > SCORE_MINIMUM) {
+		delta_x = HORIZONTAL_IMAGE_TO_SERVO_ADJUSTMENT * matches[0].m_xPos * 1.000;
+		delta_y = VERTICAL_IMAGE_TO_SERVO_ADJUSTMENT * matches[0].m_yPos * 1.000;
 		
 		servo_x = horizontalServo.Get();
 		servo_y = verticalServo.Get();
@@ -199,11 +202,19 @@ void Team166Vision::AcquireTarget(vector<Target> & matches, float prev_servo_x, 
 		x *= -1.0;
 		y *= -1.0;
 		
+		delta_x = fabs(matches[0].m_xPos);
+		delta_y = fabs(matches[0].m_yPos);
+		
+		delta_servo_x = prev_servo_x - x;
+		delta_servo_y = prev_servo_y - y;
+		
 		SetServoPositions(x, y);
+		prev_servo_x = x;
+		prev_servo_y = y;
 		
 		if(debug->HasPeriodPassed(0.5)) {
 			debug->Reset();
-			DPRINTF(LOG_DEBUG, "Sx %f\tSy %f\n", x, y);
+			DPRINTF(LOG_DEBUG, "DSx %f DSy %f\n", delta_servo_x, delta_servo_y);
 		}
 	}
 }
