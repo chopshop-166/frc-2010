@@ -19,7 +19,7 @@
 #include "Proxy166.h"
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(false)dprintf
+#define DPRINTF if(true)dprintf
 
 // Sample in memory buffer
 struct abuf166
@@ -79,16 +79,10 @@ unsigned int KickerLog::DumpBuffer(char *nptr, FILE *ofile)
 // task constructor
 Team166Kicker::Team166Kicker(void): Kicker_jag(T166_KICKER_CHANNEL),
 	Kicker_Limit_Switch(T166_KICKER_LIMIT_SWITCH)
+//	Kick_timer()
 {
 	Start((char *)"166KickerTask", KICKER_CYCLE_TIME);
-	if (Kicker_Limit_Switch.Get() == 1)
-	{
-		Cocked = true;
-	}
-	else if (Kicker_Limit_Switch.Get() == 0)
-	{
-		Cocked = false;
-	}
+	Cocked = Kicker_Limit_Switch.Get();
 	Firing = false;
 };
 	
@@ -116,55 +110,46 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 	// Register our logger
 	lHandle = Robot166::getInstance();
 	lHandle->RegisterLogger(&sl);	
-	
-	int printstop=0;
-	int kickwait=0;
-	
+
+
 	// Get handle to main Proxy166
 	proxy = Proxy166::getInstance();
-		
+	
+	int printstop=0;
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-
+		
+		// Get limit switch value
 		Cocked = Kicker_Limit_Switch.Get();
-		if(proxy->GetButton(3,1) == true)
+		
+		if ((++printstop)%(1000/KICKER_CYCLE_TIME)==0)
 		{
-			if (Firing == false)
-			{	
-				if(Cocked == true)
-				{
-					if(((++printstop)%20)==0) {
-						DPRINTF(LOG_DEBUG, "Kicking");
-					}
-					Kicker_jag.Set(1);
-					Firing = true;
-				}	
-				Cocked = false;
-				kickwait = 0;
-			}
+			DPRINTF(LOG_DEBUG, "%d, %d", Cocked, proxy->GetButton(3,1));
 		}
-		if (Cocked == false && Firing == false)
-		 {
-			if(((++printstop)%20)==0) {
-				//DPRINTF(LOG_DEBUG, "Reloading kicker.");		
-				printstop = 0;
-			}
-			if(((++kickwait)%KICKER_RELOAD_WAIT) == 0)
-			{
-				if(Kicker_Limit_Switch.Get() == 0)
-				{
-					Kicker_jag.Set(1);
-				}	
-				Cocked = true;
-			}
-		 }
+		//Is the kicker cocked, is the trigger pressed?
+		if ((proxy->GetButton(3,1) == true) || Cocked == false)
+		{
+
+			// Move motor till limit not pressed
+			Kicker_jag.Set(1);
+			
+		    // Should we log this value?
+			sl.PutOne(0, 0, 0);
+				
+			// Wait for our next lap
+			WaitForNextLoop();
+			continue;
+		}
+		
+		//Stop motor when the limit switch is pressed
+		Kicker_jag.Set(0); 
 
         // Should we log this value?
 		sl.PutOne(0, 0, 0);
 		
 		// Wait for our next lap
-		WaitForNextLoop();		
+		WaitForNextLoop();
 	}
 	return (0);
 	

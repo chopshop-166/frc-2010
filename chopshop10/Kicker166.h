@@ -43,7 +43,7 @@ private:
 	bool Firing;
 	Jaguar Kicker_jag;
 	DigitalInput Kicker_Limit_Switch;
-	bool Kick(bool Cocked, bool Firing);
+
 };
 
 #endif // !defined(_KICKER166)
