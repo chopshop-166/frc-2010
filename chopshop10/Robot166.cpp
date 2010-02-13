@@ -37,7 +37,7 @@ Team166Task *Team166Task::ActiveTasks[T166_MAXTASK + 1] = {0};
 
 // Declare external tasks
 Proxy166 Team166ProxyObject; // This task has to always be started first or it'll error
-#if 1
+#if 0
 Team166TankDrive Team166TankDriveObject;
 #else
 Team166CANDrive Team166CANDriveObject;
@@ -89,7 +89,6 @@ Robot166::Robot166(void)
 	//dsHandleLCD->Printf(DriverStationLCD::kUser_Line1,1,"GoodBye(1) %d",12345);
 	//dsHandleLCD->Printf(DriverStationLCD::kUser_Line2,20,"Hello(2.20) %d",12345);
 	DriverStationDisplay("Starting 166 Robot");
-	dsHandleLCD->UpdateLCD();
 
 	/* allow writing to vxWorks target */
 	Priv_SetWriteFileAllowed(1);   	
@@ -250,34 +249,49 @@ void Robot166::DumpLoggers(int dnum)
  */
 int Robot166::DriverStationDisplay(char* dsTextString)
 { 
-	static char *strings[6] = {"","","","","",""};
-	static int linenum=0;
+	static char *string1;
+	static char *string2;
+	static char *string3;
+	static char *string4;
+	static char *string5;
+	static char *string6;
+	static bool init=true;
+	if(init) {
+		//Initializes it first call.
+		string1=new char [21];
+		string2=new char [21];
+		string3=new char [21];
+		string4=new char [21];
+		string5=new char [21];
+		string6=new char [21];
+		init=false;
+	}
+	//Clears the current values on the Dashboard.
+	
 	dsHandleLCD->Printf(DriverStationLCD::kUser_Line1,1,"                     ");
 	dsHandleLCD->Printf(DriverStationLCD::kUser_Line2,1,"                     ");
 	dsHandleLCD->Printf(DriverStationLCD::kUser_Line3,1,"                     ");
 	dsHandleLCD->Printf(DriverStationLCD::kUser_Line4,1,"                     ");
 	dsHandleLCD->Printf(DriverStationLCD::kUser_Line5,1,"                     ");
 	dsHandleLCD->Printf(DriverStationLCD::kUser_Line6,1,"                     ");
-	if (linenum > 5){
-		strings[0]=strings[1];
-		strings[1]=strings[2];
-		strings[2]=strings[3];
-		strings[3]=strings[4];
-		strings[4]=strings[5];
-		strings[5]=dsTextString;
-	}
-	else
-	{
-		strings[linenum]=dsTextString;
-		linenum++;
-	}
-	dsHandleLCD->Printf(DriverStationLCD::kUser_Line1,1,strings[0]);
-	dsHandleLCD->Printf(DriverStationLCD::kUser_Line2,1,strings[1]);
-	dsHandleLCD->Printf(DriverStationLCD::kUser_Line3,1,strings[2]);
-	dsHandleLCD->Printf(DriverStationLCD::kUser_Line4,1,strings[3]);
-	dsHandleLCD->Printf(DriverStationLCD::kUser_Line5,1,strings[4]);
-	dsHandleLCD->Printf(DriverStationLCD::kUser_Line6,1,strings[5]);
-	return linenum;
+
+	//Clears line to make room for next output.
+	strcpy(string1,string2);
+	strcpy(string2,string3);
+	strcpy(string3,string4);
+	strcpy(string4,string5);
+	strcpy(string5,string6);
+	strcpy(string6,dsTextString);
+	
+	//Outputs each line back onto the station.	
+	dsHandleLCD->Printf(DriverStationLCD::kUser_Line1,1,string1);
+	dsHandleLCD->Printf(DriverStationLCD::kUser_Line2,1,string2);
+	dsHandleLCD->Printf(DriverStationLCD::kUser_Line3,1,string3);
+	dsHandleLCD->Printf(DriverStationLCD::kUser_Line4,1,string4);
+	dsHandleLCD->Printf(DriverStationLCD::kUser_Line5,1,string5);
+	dsHandleLCD->Printf(DriverStationLCD::kUser_Line6,1,string6);
+	dsHandleLCD->UpdateLCD();
+	return 0;
 }
 
 START_ROBOT_CLASS(Robot166);

@@ -16,7 +16,7 @@
 #include "Robot166.h"
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(true)dprintf
+#define DPRINTF if(false)dprintf
 
 Autonomous166::Autonomous166() {
 	printf("Autonomous constructor\n");	
@@ -25,16 +25,23 @@ Autonomous166::Autonomous166() {
 void Autonomous166::Autonomous(void) {
 	// Called  by Robot166 Autonomous()
 	// Design as a loop
+	
+	// Create and register proxy handle
 	Proxy166 *proxy;
 	while( (proxy = Proxy166::getInstance()) == NULL ) {}
 	DPRINTF(LOG_DEBUG,"Autonomous Proxy handle set!");
-	while(!( Robot166::getInstance() ) || 
-			!( Robot166::getInstance()->IsAutonomous() )
+	
+	// Create and register the local robot handle
+	Robot166 *lHandle;
+	while(!( lHandle = Robot166::getInstance() ) || 
+			!( lHandle->IsAutonomous() )
 		  ) {
 		Wait(AUTONOMOUS_WAIT_TIME);
 	}
-	while( Robot166::getInstance()->IsAutonomous() ) {
-		DPRINTF(LOG_DEBUG,"%d",proxy->GetBannerProxy());
+
+	
+	while( lHandle->IsAutonomous() ) {
+		DPRINTF(LOG_DEBUG, "Banner: %d", proxy->GetBannerProxy());
 		Wait(AUTONOMOUS_WAIT_TIME);
 	}
 }
