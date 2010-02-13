@@ -163,7 +163,7 @@ bool Team166Vision::IsTargetAcquired() {
 }
 
 /*
- * @brief Returns a float -1.0 to 1.0 returning our position relative to start.
+ * @brief Returns a float -1.0 to 1.0 returning the target's relative position to the front right corner of the robot. 
  * 
  * @return float Bearing -1.0 to 1.0
  */
@@ -183,13 +183,14 @@ void Team166Vision::AcquireTarget(vector<Target> & matches, float & prev_servo_x
 	static float delta_servo_y;
 	static float x;
 	static float y;
-	static float distortion;
 	
 	if(NULL == debug) { 
 		debug = new Timer;
 		debug->Start();
 	}
 	if(matches.size() > 0 && (1 - (matches[0].m_majorRadius / matches[0].m_minorRadius)) < DISTORTION_DELTA_MAX && matches[0].m_score > SCORE_MINIMUM) {
+		targetAcquired = 1;
+		
 		delta_x = HORIZONTAL_IMAGE_TO_SERVO_ADJUSTMENT * matches[0].m_xPos * 1.000;
 		delta_y = VERTICAL_IMAGE_TO_SERVO_ADJUSTMENT * matches[0].m_yPos * 1.000;
 		
@@ -211,6 +212,9 @@ void Team166Vision::AcquireTarget(vector<Target> & matches, float & prev_servo_x
 		SetServoPositions(x, y);
 		prev_servo_x = x;
 		prev_servo_y = y;
+		
+		bearing = 90.0 + (x * 90.0);
+		
 		
 		if(debug->HasPeriodPassed(0.5)) {
 			debug->Reset();

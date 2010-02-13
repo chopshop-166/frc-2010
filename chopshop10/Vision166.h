@@ -69,7 +69,6 @@ public:
 
 	// Accessors
 	bool IsTargetAcquired(void);
-	float AngleToTarget(void);
 	float GetBearing(void);
 	int IsActive(void);
 	// Control
