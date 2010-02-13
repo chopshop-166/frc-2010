@@ -73,7 +73,7 @@ class Proxy166 : public Team166Task {
 		
 		// joystick buttons
 		void SetButton(int,int,bool);
-		bool GetButton(int,int,bool=true);
+		bool GetButton(int,int,bool=false);
 		
 		void RegisterCounter(int,int);
 		void UnregisterCounter(int,int);
@@ -86,7 +86,7 @@ class Proxy166 : public Team166Task {
 
 		// joystick trigger (same as switch #1)
 		void SetTrigger(int,bool);
-		bool GetTrigger(int,bool=true);
+		bool GetTrigger(int,bool=false);
 
 		// internal representation of joystick as a whole
 		ProxyJoystick GetJoystick(int);
@@ -101,12 +101,12 @@ class Proxy166 : public Team166Task {
 		float GetSonarDistance(void);
 		
 		// Proxy access for banner sensor
-		void SetBannerProxy(int);
-		int GetBannerProxy();
+		void SetBanner(int);
+		int GetBanner();
 		
 		// Proxy access for inclinometer
-		void SetInclinometerProxy(int);
-		int GetInclinometerProxy();
+		void SetInclinometer(int);
+		int GetInclinometer();
 
 		Proxy166(void);
 		~Proxy166(void);
@@ -126,15 +126,6 @@ class Proxy166 : public Team166Task {
 		
 		// proxy storage for camera image
 		ColorImage *image;
-		
-		// proxy storage for banner sensor value
-		int BannerProxy;
-		
-		//proxy storage for inclinometer value
-		int InclinometerProxy;
-		
-		// Distance in inches to the object in front of the sonar
-		float SonarDistance;
 
 		// proxy storage for driver station switches
 		int Switches[NUMBER_OF_SWITCHES];
@@ -155,6 +146,15 @@ class Proxy166 : public Team166Task {
 		Joystick driveStickRight;     // joy stick for driving
 		Joystick driveStickLeft;      // joy stick for driving
 		Joystick driveStickCopilot;	  // Camera / copilot joy stick
+		
+		// proxy storage for banner sensor value
+		int Banner;
+		
+		//proxy storage for inclinometer value
+		int Inclinometer;
+
+		// Distance in inches to the object in front of the sonar
+		float SonarDistance;
 };
 
 #endif

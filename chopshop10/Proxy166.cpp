@@ -17,7 +17,7 @@
 #include "Robot166.h"
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(false)dprintf
+#define DPRINTF if(true)dprintf
 
 /**
  * @brief Initializes the joystick axes to 0 and the buttons to unset.
@@ -76,8 +76,8 @@ void Proxy166::SetJoystickZ(int joy_id, float value) {
  * @return Float equal to the cached X axis value.
  */
 float Proxy166::GetJoystickX(int joy_id) {
-	float value = 0;
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
+	float value = 0;
 	//semTake(JoystickLocks[joy_id], WAIT_FOREVER);
 	value = Joysticks[joy_id].X;
 	//semGive(JoystickLocks[joy_id]);
@@ -90,8 +90,8 @@ float Proxy166::GetJoystickX(int joy_id) {
  * @return Float equal to the cached Y axis value.
  */
 float Proxy166::GetJoystickY(int joy_id) {
-	float value = 0;
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
+	float value = 0;
 	//semTake(JoystickLocks[joy_id], WAIT_FOREVER);
 	value = Joysticks[joy_id].Y;
 	//semGive(JoystickLocks[joy_id]);
@@ -104,8 +104,8 @@ float Proxy166::GetJoystickY(int joy_id) {
  * @return Float equal to the cached Z axis value.
  */
 float Proxy166::GetJoystickZ(int joy_id) {
-	float value = 0;
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
+	float value = 0;
 	//semTake(JoystickLocks[joy_id], WAIT_FOREVER);
 	value = Joysticks[joy_id].Z;
 	//semGive(JoystickLocks[joy_id]);
@@ -131,8 +131,8 @@ void Proxy166::SetSwitch(int switch_id, int value) {
  * @return The int value of the cached switch value.
  */
 int Proxy166::GetSwitch(int switch_id) {
-	int value = 0;
 	wpi_assert(switch_id < NUMBER_OF_SWITCHES && switch_id >= 0);
+	int value = 0;
 	//semTake(SwitchLocks[switch_id], WAIT_FOREVER);
 	value = Switches[switch_id];
 	//semGive(SwitchLocks[switch_id]);
@@ -146,8 +146,8 @@ int Proxy166::GetSwitch(int switch_id) {
  */
 ProxyJoystick Proxy166::GetJoystick(int joy_id)
 {
-	ProxyJoystick value;
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
+	ProxyJoystick value;
 	//semTake(JoystickLocks[joy_id], WAIT_FOREVER);
 	value = Joysticks[joy_id];
 	//semGive(JoystickLocks[joy_id]);
@@ -196,8 +196,8 @@ void Proxy166::SetButton(int joy_id, int button_id, bool newval)
  */
 bool Proxy166::GetButton(int joy_id, int button_id, bool reset)
 {
-	bool button;
 	wpi_assert(joy_id < NUMBER_OF_JOY_BUTTONS && joy_id >= 0);
+	bool button;
 	//semTake(JoystickLocks[joy_id], WAIT_FOREVER);
 	button = Joysticks[joy_id].button[button_id];
 	//semGive(JoystickLocks[joy_id]);
@@ -239,7 +239,6 @@ float Proxy166::GetThrottle(int joy_id) {
  * @param Distance in inches
  */
 void Proxy166::SetSonarDistance(float dist) {
-	
 	SonarDistance = dist;
 }
 
@@ -247,7 +246,7 @@ void Proxy166::SetSonarDistance(float dist) {
  * @brief Obtain distance seen by the sonar task
  */
 float Proxy166::GetSonarDistance(void) {
-	return (SonarDistance);
+	return SonarDistance;
 }
 
 /**
@@ -255,7 +254,10 @@ float Proxy166::GetSonarDistance(void) {
  * @param joy_id Which joystick to set the trigger status for.
  * @param newval What to set the value to.
  */
-void Proxy166::SetTrigger(int joy_id, bool newval) { SetButton(joy_id, 1, newval); }
+void Proxy166::SetTrigger(int joy_id, bool newval) { 
+	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
+	SetButton(joy_id, 1, newval); 
+}
 /**
  * @brief Gets the cache value of the trigger (button 1) of a joystick. 
  * @param joy_id Which joystick to retrieve the trigger status for.
@@ -263,6 +265,7 @@ void Proxy166::SetTrigger(int joy_id, bool newval) { SetButton(joy_id, 1, newval
  * @return The last read current value
  */
 bool Proxy166::GetTrigger(int joy_id, bool reset) { 
+	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
 	bool bid = GetButton(joy_id,1); 
 	// reset the button so actions are triggered only once
 	if (reset) {
@@ -275,32 +278,42 @@ bool Proxy166::GetTrigger(int joy_id, bool reset) {
  * @brief Sets the cache value of the banner sensor.
  * @param newval What to set the value to.
  */
-void Proxy166::SetBannerProxy(int newval) { BannerProxy = newval; }
+void Proxy166::SetBanner(int newval) { 
+	Banner = newval; 
+}
 /**
  * @brief Gets the cache value of the banner sensor. 
  * @return The last value set by the banner sensor task
  */
-int Proxy166::GetBannerProxy() { return BannerProxy; }
+int Proxy166::GetBanner() { 
+	return Banner; 
+}
 /**
  * @brief Initializes semaphores for joysticks and switches, and starts the Proxy166 task.
  */
-void Proxy166::SetInclinometerProxy(int newval) { InclinometerProxy = newval; }
+void Proxy166::SetInclinometer(int newval) { 
+	Inclinometer = newval; 
+}
 /**
  * @brief Gets the cache value of the Inclinometer.
  * @return The last value set by the Inclinometer task.
  */
-int Proxy166::GetInclinometerProxy() { return InclinometerProxy; }
+int Proxy166::GetInclinometer() { 
+	return Inclinometer; 
+}
 /**
  * @brief Initializes semaphors for joysticks and switches, and starts the Proxy166 task.
  */
 Proxy166::Proxy166(void):
 	driveStickRight(T166_USB_STICK_1),        // USB port for 1st stick
 	driveStickLeft(T166_USB_STICK_2),        // USB port for 2nd stick
-	driveStickCopilot(T166_USB_STICK_3)
+	driveStickCopilot(T166_USB_STICK_3),
+	Banner(0),
+	Inclinometer(0),
+	SonarDistance(0.0)
 {
-	ProxyHandle=this;
+	ProxyHandle = this;
 	// initialize memory for banner
-	BannerProxy = 0;
 	// note use of semaphores are commented out for now
 	// they are not required for atomic actions 
 	// and they appeared to be causing tasks to crash
@@ -315,7 +328,6 @@ Proxy166::Proxy166(void):
 	}
 	
 	// Set the initial distance
-	SonarDistance = 0.0;
 	
 	// Start the actual task
 	Start((char *)"166ProxyTask", PROXY_CYCLE_TIME);
@@ -372,11 +384,12 @@ int Proxy166::GetPendingCount(int joystick_id, int button_id) {
 	if(tracker.size() == 0)
 		wpi_assertWithMessage(false, "Tried to fetch pending count for a non-registered button.");
 	vector<int>::iterator it = tracker.begin();
-	while((it+=3) != tracker.end())
+	while(it != tracker.end())
 	{
 		if(*it == joystick_id && *(it+1) == button_id) {
 			return *(it+2);
 		}
+		it += 3;
 	}
 	wpi_assertWithMessage(false, "Tried to fetch pending count for a non-registered button.");
 	return 0;
@@ -441,6 +454,12 @@ bool Proxy166::IsRegistered(int joystick_id, int button_id) {
 	return false;
 }
 
+void DumpJoystick(ProxyJoystick j) {
+	for(int x = 0;x<=NUMBER_OF_JOY_BUTTONS;x++) {
+		printf("[%d=%d] ", x, j.button[x]);
+	}
+	printf("\n");
+}
 /**
  * @brief Main thread function for Proxy166.
  * Runs forever, until MyTaskInitialized is false. 
@@ -451,27 +470,50 @@ int Proxy166::Main(	int a2, int a3, int a4, int a5,
 					int a6, int a7, int a8, int a9, int a10) {
 
 	Robot166 *lHandle = NULL;
-		while( ( lHandle = Robot166::getInstance() ) == NULL) {
-			Wait(0.05);
-		}
-		WaitForGoAhead();
-		
-		ProxyJoystick old_sticks[NUMBER_OF_JOYSTICKS];
-		//Timer debugTimer;
-		//debugTimer.Start();
-		while(MyTaskInitialized) {
-			// In autonomous, the Autonomous166 task will update relevant values
-			if(lHandle->IsOperatorControl()) {
-				for(int x = 0;x<NUMBER_OF_JOYSTICKS;x++) {
-					old_sticks[x] = GetJoystick(x);
-				}
-				SetJoystick(1, driveStickRight);
-				SetJoystick(2, driveStickLeft);
-				SetJoystick(3, driveStickCopilot);
+	while( ( lHandle = Robot166::getInstance() ) == NULL) {
+		Wait(0.05);
+	}
+	WaitForGoAhead();
+	
+	Timer debugTimer;
+	debugTimer.Start();
+	RegisterCounter(3, 2);
+	RegisterCounter(3, 1);
+	
+	ProxyJoystick old_sticks[NUMBER_OF_JOYSTICKS+1];
+	//Timer debugTimer;
+	//debugTimer.Start();
+	while(MyTaskInitialized) {
+		// In autonomous, the Autonomous166 task will update relevant values
+		if(lHandle->IsOperatorControl()) {
+			for(int x = 0;x<NUMBER_OF_JOYSTICKS;x++) {
+				old_sticks[x] = GetJoystick(x);
 			}
-			// The task ends if it's not initialized
-			WaitForNextLoop();
+			SetJoystick(1, driveStickRight);
+			SetJoystick(2, driveStickLeft);
+			SetJoystick(3, driveStickCopilot);
+			
+			vector<int>::iterator it = tracker.begin();
+			while(it != tracker.end()) {
+				int joy_id = *it;
+				int button_id = *(it+1);
+				
+				bool old_button = old_sticks[joy_id].button[button_id];
+				bool new_button = GetButton(joy_id, button_id);
+				
+				if(old_button == 1 && new_button == 0) {
+					// The button was previously pressed, but is now released
+					(*(it+2))++; // Increase the counter
+				}
+				
+				DPRINTF(LOG_DEBUG, "%d.%d %d\n", joy_id, button_id, GetPendingCount(joy_id, button_id));
+				
+				it += 3;
+			}
 		}
-		
-		return 0;
+		// The task ends if it's not initialized
+		WaitForNextLoop();
+	}
+	
+	return 0;
 }

@@ -26,7 +26,7 @@
 #include "DashboardDataSender.h"
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(true)dprintf
+#define DPRINTF if(false)dprintf
 	
 // Vision task constructor
 Team166Vision::Team166Vision(void) :
@@ -191,8 +191,8 @@ void Team166Vision::AcquireTarget(vector<Target> & matches, float & prev_servo_x
 	if(matches.size() > 0 && (1 - (matches[0].m_majorRadius / matches[0].m_minorRadius)) < DISTORTION_DELTA_MAX && matches[0].m_score > SCORE_MINIMUM) {
 		targetAcquired = 1;
 		
-		delta_x = HORIZONTAL_IMAGE_TO_SERVO_ADJUSTMENT * matches[0].m_xPos * 1.000;
-		delta_y = VERTICAL_IMAGE_TO_SERVO_ADJUSTMENT * matches[0].m_yPos * 1.000;
+		delta_x = HORIZONTAL_IMAGE_TO_SERVO_ADJUSTMENT * matches[0].m_xPos * 0.875;
+		delta_y = VERTICAL_IMAGE_TO_SERVO_ADJUSTMENT * matches[0].m_yPos * 0.875;
 		
 		servo_x = horizontalServo.Get();
 		servo_y = verticalServo.Get();

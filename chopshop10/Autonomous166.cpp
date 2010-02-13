@@ -38,10 +38,8 @@ void Autonomous166::Autonomous(void) {
 		  ) {
 		Wait(AUTONOMOUS_WAIT_TIME);
 	}
-
-	
 	while( lHandle->IsAutonomous() ) {
-		DPRINTF(LOG_DEBUG, "Banner: %d", proxy->GetBannerProxy());
+		DPRINTF(LOG_DEBUG,"Banner: %d",proxy->GetBanner());
 		Wait(AUTONOMOUS_WAIT_TIME);
 	}
 }
