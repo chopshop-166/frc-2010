@@ -506,7 +506,7 @@ int Proxy166::Main(	int a2, int a3, int a4, int a5,
 					(*(it+2))++; // Increase the counter
 				}
 				
-				DPRINTF(LOG_DEBUG, "%d.%d %d\n", joy_id, button_id, GetPendingCount(joy_id, button_id));
+				//DPRINTF(LOG_DEBUG, "%d.%d %d\n", joy_id, button_id, GetPendingCount(joy_id, button_id));
 				
 				it += 3;
 			}
