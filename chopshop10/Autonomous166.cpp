@@ -16,30 +16,151 @@
 #include "Robot166.h"
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(false)dprintf
+#define DPRINTF if(true)dprintf
 
 Autonomous166::Autonomous166() {
-	printf("Autonomous constructor\n");	
+	
 }
 
 void Autonomous166::Autonomous(void) {
 	// Called  by Robot166 Autonomous()
-	// Design as a loop
+	
+	// Create and register the local robot handle
+	Robot166 *lHandle;
+	while( !(lHandle = Robot166::getInstance())
+			&& !( lHandle->IsAutonomous() )
+	) {
+		Wait(AUTONOMOUS_WAIT_TIME);
+	}
+	State state = sSetup;
 	
 	// Create and register proxy handle
 	Proxy166 *proxy;
 	while( (proxy = Proxy166::getInstance()) == NULL ) {}
-	DPRINTF(LOG_DEBUG,"Autonomous Proxy handle set!");
+
+	// Dashboard output buffer
+	char* buffer = new char[DASHBOARD_BUFFER_MAX];
 	
-	// Create and register the local robot handle
-	Robot166 *lHandle;
-	while(!( lHandle = Robot166::getInstance() ) || 
-			!( lHandle->IsAutonomous() )
-		  ) {
-		Wait(AUTONOMOUS_WAIT_TIME);
-	}
+	// Counter for retreat timer
+	unsigned long retreatcounter = 0;
+	
+	// Number of times kicked
+	unsigned short kicked = 0;
+	
+	// Sensor storage data
+	int banner;
+	float sonar;
+	
+	// Starting location. 1 is nearest, 3 is furthest from our goals
+	const unsigned short loc = DriverStation::GetInstance()->GetLocation();
+	sprintf(buffer,"Location: %d", loc);
+	lHandle->DriverStationDisplay(buffer);
+	
+	// As long as Autonomous is running, go through the states
 	while( lHandle->IsAutonomous() ) {
-		DPRINTF(LOG_DEBUG,"Banner: %d",proxy->GetBanner());
+		// Reset sensors
+		banner = proxy->GetBanner();
+		sonar = proxy->GetSonarDistance();
+		
+		switch(state) {
+		
+		// Our robot isn't finished setting up
+		case sSetup:
+			state = sSearching;
+			lHandle->DriverStationDisplay("Scanning for ball.");
+			break;
+			
+		// We don't have a ball in our possession yet
+		case sSearching:
+			if(banner) {
+				state = sRetreating;
+				lHandle->DriverStationDisplay("Line sensed!");
+				retreatcounter = AUTONOMOUS_RETREAT_TIME;
+				break;
+			}
+			if( sonar < SONAR_NEAR ) {
+				state = sBallHeld;
+				lHandle->DriverStationDisplay("Ball captured");
+				break;
+			}
+			proxy->SetJoystickY(1,0.25);
+			proxy->SetJoystickY(2,0.25);
+			break;
+			
+		// We have a ball in our possession
+		case sBallHeld:
+			if( sonar >= SONAR_NEAR ) {
+				state = sSearching;
+				lHandle->DriverStationDisplay("Scanning for ball.");
+			}
+			if(banner) {
+				state = sRetreating;
+				lHandle->DriverStationDisplay("Line sensed!");
+				retreatcounter = AUTONOMOUS_RETREAT_TIME;
+				break;
+			}
+			proxy->SetJoystickY(1,0);
+			proxy->SetJoystickY(2,0);
+			break;
+			
+		// We have a ball and are aligned with the goal
+		case sPoised:
+			// Tell the kicker to kick
+			proxy->SetButton(3,1,true);
+			// Check whether we've kicked all the balls in the area
+			if( ++kicked == loc ) {
+				if( loc == 3 ) { // Furthest zone from goal
+					state = sGuarding;
+					lHandle->DriverStationDisplay("Guarding goal");
+				} else {
+					state = sDodging;
+					lHandle->DriverStationDisplay("Moving out of the way");
+				}
+			} else {
+				state = sSearching;
+				lHandle->DriverStationDisplay("Scanning for ball.");
+			}
+			break;
+			
+		// Getting out of the way after we take all of our shots
+		case sDodging:
+			if( --retreatcounter != 0 ) {
+				proxy->SetJoystickY(1, 1);
+				proxy->SetJoystickY(2, -1);
+			} else {
+				state = sResting;
+				lHandle->DriverStationDisplay("ZZZZZZZZZZ");
+			}
+			break;
+			
+		// Going back to defend the goal
+		case sGuarding:
+			proxy->SetJoystickY(1,-0.75);
+			proxy->SetJoystickY(2,-0.75);
+			break;
+			
+		// Wait for the end of Autonomous
+		case sResting:
+			proxy->SetJoystickY(1,0);
+			proxy->SetJoystickY(2,0);
+			break;
+		case sRetreating:
+#if 1
+			retreatcounter = 1;
+#endif
+			if( --retreatcounter != 0 ) {
+				proxy->SetJoystickY(1,-1);
+				proxy->SetJoystickY(2,-0.75);
+			} else {
+				state = sResting;
+				lHandle->DriverStationDisplay("ZZZZZZZZZZ");
+			}
+			break;
+		default:
+			state = sResting;
+			lHandle->DriverStationDisplay("ZZZZZZZZZZ");
+			break;
+		}
 		Wait(AUTONOMOUS_WAIT_TIME);
 	}
 }

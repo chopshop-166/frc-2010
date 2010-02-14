@@ -102,15 +102,19 @@ class Proxy166 : public Team166Task {
 		
 		// Proxy access for banner sensor
 		void SetBanner(int);
-		int GetBanner();
+		int GetBanner(void);
 		
 		// Proxy access for inclinometer
 		void SetInclinometer(int);
-		int GetInclinometer();
+		int GetInclinometer(void);
 
 		// Proxy access for Ebrake
 		void SetEbrake(bool);
-		bool GetEbrake();
+		bool GetEbrake(void);
+
+		// Proxy access for camera bearing
+		void SetCameraBearing(float);
+		float GetCameraBearing(void);
 		
 		Proxy166(void);
 		~Proxy166(void);
@@ -162,6 +166,9 @@ class Proxy166 : public Team166Task {
 		
 		//proxy storage for state of ebrake
 		bool EbrakeDown;
+		
+		//proxy storage for camera bearing
+		float CameraBearing;
 };
 
 #endif

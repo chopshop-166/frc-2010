@@ -301,6 +301,7 @@ void Proxy166::SetInclinometer(int newval) {
 int Proxy166::GetInclinometer() { 
 	return Inclinometer; 
 }
+
 /**
  * @brief Sets the value of the Ebrake
  * @param down state of the ebrake
@@ -318,6 +319,22 @@ bool Proxy166::GetEbrake() {
 }
 
 /**
+ * @brief Sets the Camera Bearing
+ * @param down current camera bearing
+ */
+void Proxy166::SetCameraBearing(float bearing) {
+	CameraBearing = bearing;
+}
+
+/**
+ * @brief Gets the state of the CameraBearing
+ * @return The current camera bearing
+ */
+float Proxy166::GetCameraBearing() {
+	return CameraBearing;
+}
+
+/**
  * @brief Initializes semaphors for joysticks and switches, and starts the Proxy166 task.
  */
 Proxy166::Proxy166(void):
@@ -326,7 +343,8 @@ Proxy166::Proxy166(void):
 	driveStickCopilot(T166_USB_STICK_3),
 	Banner(0),
 	Inclinometer(0),
-	SonarDistance(0.0)
+	SonarDistance(0.0),
+	CameraBearing(90)
 {
 	ProxyHandle = this;
 	// initialize memory for banner

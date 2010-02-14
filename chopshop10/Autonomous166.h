@@ -17,18 +17,31 @@
 #include "Timer.h"
 #include "BaeUtilities.h"
 #include "Vision166.h"
+#include "Robot166.h"
 #include <math.h>
 
 extern Team166Vision Team166VisionObject;
 
-#define AUTONOMOUS_WAIT_TIME 0.050
+#define AUTONOMOUS_WAIT_TIME (0.050)
+#define SONAR_NEAR (12.5)
+#define AUTONOMOUS_RETREAT_TIME (20)
 
 class Autonomous166
 {
-	public:
-		Autonomous166(void);
-		~Autonomous166(void);
-		void Autonomous(void);
+public:
+	typedef enum State {
+		sSetup=0,
+		sSearching=1,
+		sBallHeld=2,
+		sPoised=3,
+		sDodging=4,
+		sGuarding=5,
+		sResting=6,
+		sRetreating=7
+	};
+	Autonomous166(void);
+	~Autonomous166(void);
+	void Autonomous(void);
 };
 
 #endif

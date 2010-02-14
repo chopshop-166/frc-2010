@@ -34,7 +34,7 @@
 #define DPRINTF if(false)dprintf
 
 // Are we using the CAN bus?
-#define UsingCan (0)
+#define UsingCan (1)
 
 // List of tasks that have requested to come up
 Team166Task *Team166Task::ActiveTasks[T166_MAXTASK + 1] = {0};
@@ -47,7 +47,7 @@ Team166CANDrive Team166CANDriveObject;
 Team166TankDrive Team166TankDriveObject;
 #endif
 
-#if UsingCan
+#if 0
 Team166LiftCan Team166LiftCanObject;
 #else
 Team166Lift Team166LiftObject;
@@ -93,14 +93,6 @@ Robot166::Robot166(void)
 	maxLogId = MemoryLog166::PruneLogs(16*1024*1024);
 
 	// update DS
-	//dsHandleLCD->Printf(DriverStationLCD::kUser_Line1,1,"Hello(1) %d",12345);
-	//dsHandleLCD->Printf(DriverStationLCD::kUser_Line2,1,"Hello(2) %d",12345);
-	//dsHandleLCD->Printf(DriverStationLCD::kUser_Line3,1,"Hello(3) %d",12345);
-	//dsHandleLCD->Printf(DriverStationLCD::kUser_Line4,1,"Hello(4) %d",12345);
-	//dsHandleLCD->Printf(DriverStationLCD::kUser_Line5,1,"Hello(5) %d",12345);
-	//dsHandleLCD->Printf(DriverStationLCD::kUser_Line6,1,"Hello(6) %d",12345);
-	//dsHandleLCD->Printf(DriverStationLCD::kUser_Line1,1,"GoodBye(1) %d",12345);
-	//dsHandleLCD->Printf(DriverStationLCD::kUser_Line2,20,"Hello(2.20) %d",12345);
 	DriverStationDisplay("Starting 166 Robot");
 
 	/* allow writing to vxWorks target */
