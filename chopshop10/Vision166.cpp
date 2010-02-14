@@ -17,7 +17,6 @@
 #include <vector>
 #include "RobotCamera166.h"
 
-// WPILib include files for vision
 #include "Vision/AxisCamera2010.h" 
 #include "BaeUtilities.h"
 #include "FrcError.h"
@@ -25,10 +24,8 @@
 #include "Target.h"
 #include "DashboardDataSender.h"
 
-// To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
-	
-// Vision task constructor
+
 Team166Vision::Team166Vision(void) :
 	colorMode(IMAQ_HSL), 			    // Color mode (RGB or HSL) for image processing	
 	targetAcquired(false),			// target not acquired
@@ -46,14 +43,11 @@ Team166Vision::Team166Vision(void) :
 	// Start our task
 	Start((char *)"166VisionTask", 100);	
 };
-	
-// Vision task destructor
+
 Team166Vision::~Team166Vision(void)
 {		
 	return;
 };
-
-/////////////// Control methods
 
 /**
  * @brief Set vision processing on or off
@@ -151,7 +145,6 @@ void Team166Vision::AdjustServoPositions(float normDeltaHorizontal, float normDe
 	_SetServoPositions(servoH, servoV);
 }
 
-// process images to find target, then pan the camera so we are looking at it
 /*
  * @brief Processes images to find a target, then pans the camera so that 
  * 		we are looking at the target. 
@@ -228,12 +221,12 @@ ColorImage *Team166Vision::GetImage() {
 		result = camera166->GetImage();
 	return result;
 }
-// Main function of the vision task
 int Team166Vision::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {	
 	Robot166 *lHandle;
 	Proxy166 *pHandle;
+	SetActive(false);
 	
 	DPRINTF(LOG_DEBUG, "Vision task initializing the camera...\n");
 	TryStartCamera(false);

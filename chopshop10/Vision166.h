@@ -57,36 +57,40 @@ class Team166Vision : public Team166Task
 // Public functions and attributes
 public:
 	
-	// Vision task constructor
 	Team166Vision(void);
 	
-	// Vision task destructor
 	virtual ~Team166Vision(void);
 	
-	// Main function of the vision task
+	//! Main function of the Vision task
 	virtual int Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10);	
 
-	// Accessors
+	//! Whether or not the target has been acquired
 	bool IsTargetAcquired(void);
+	//! The bearing in degrees to the angle. 
 	float GetBearing(void);
+	//! Whether the camera is no or off
 	int IsActive(void);
-	// Control
+	//! Controls the output of Team166Vision::IsActive()
 	void SetActive(bool);
-	
+	//! Tries to start the camera using threads
 	void TryStartCamera(bool);
-	
+	//! Captures an image from the camera
 	ColorImage *GetImage();
 	
 // Private functions and attributes
 private:	
 	ColorMode colorMode;
 	
-	bool targetAcquired; // Target has been acquired since last run
-	bool visionActive; // Vision task should be looking for the target
+	//! Target has been acquired since last run
+	bool targetAcquired; 
+	//! Whether the vision task should perform vision processing
+	bool visionActive;
+	//! Whether the image ( Proxy166::GetImage() ) is new or not. 
 	bool staleFlag; 
-	
-	float bearing; // Angle to target
+	//! Angle horizontally to the target
+	float bearing;
+	//! Angle vertically to the target
 	float tilt; 
 	
 	Servo horizontalServo;
@@ -94,8 +98,11 @@ private:
 	
 	DashboardDataSender *dds;
 	
+	//! Main function of the thread, spawned in TryStartCamera.
+	//! Calls StartCamera() which will hang the calling thread if it fails.
 	static int _StartCameraThreadFunc(void *this_p,int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10);
+	
 	void AcquireTarget(vector<Target>&,float&,float&);
 	void IsTargetAccquired();
 	void SetServoPositions(float normalizedHorizontal, float normalizedVertical);
