@@ -21,7 +21,7 @@
 #define DPRINTF if(false)dprintf
 
 
-// Sample in memory buffer
+//! Sample in memory buffer
 struct abuf166
 {
 	struct timespec tp;              // Time of snapshot
@@ -31,7 +31,7 @@ struct abuf166
 	
 };
 
-//  Memory Log
+//!  Memory Log
 class LiftLog : public MemoryLog166
 {
 public:
@@ -43,15 +43,15 @@ public:
 	unsigned int PutOne(float x_acc, float y_acc, float acc_vector);     // Log the x and y values
 };
 
-// Write one buffer into memory
+//! Write one buffer into memory
 unsigned int LiftLog::PutOne(float x_acc, float y_acc, float acc_vector)
 {
 	struct abuf166 *ob;               // Output buffer
 	
-	// Get output buffer
+	//! Get output buffer
 	if ((ob = (struct abuf166 *)GetNextBuffer(sizeof(struct abuf166)))) {
 		
-		// Fill it in.
+		//! Fill it in.
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
 		ob->x_acc = x_acc;
 		ob->y_acc = y_acc;
@@ -59,15 +59,15 @@ unsigned int LiftLog::PutOne(float x_acc, float y_acc, float acc_vector)
 		return (sizeof(struct abuf166));
 	}
 	
-	// Did not get a buffer. Return a zero length
+	//! Did not get a buffer. Return a zero length
 	return (0);
 }
 
-// Format the next buffer for file output
+//! Format the next buffer for file output
 unsigned int LiftLog::DumpBuffer(char *nptr, FILE *ofile)
 {
 	struct abuf166 *ab = (struct abuf166 *)nptr;
-	// Output the data into the file
+	//! Output the data into the file
 	fprintf(ofile, "%u, %u, %f, %f, %f\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->x_acc, ab->y_acc, ab->acc_vector);
 	
 	// Done
@@ -98,13 +98,13 @@ int Team166Lift::Main(int a2, int a3, int a4, int a5,
 	Proxy166 *proxy;
 	float joystickY;
 	
-	// Let the world know we're in
+	//! Let the world know we're in Lift Task
 	DPRINTF(LOG_DEBUG,"In the 166 Lift task\n");
 	
-	// Wait for Robot go-ahead (e.g. entering Autonomous or Tele-operated mode)
+	//! Wait for Robot go-ahead (e.g. entering Autonomous or Tele-operated mode)
 	WaitForGoAhead();
 	
-	// Register our logger
+	//! Register our logger
 	lHandle = Robot166::getInstance();
 	lHandle->RegisterLogger(&sl);	
 	
@@ -113,7 +113,7 @@ int Team166Lift::Main(int a2, int a3, int a4, int a5,
 	int printstop=0;
 	int limit;
 
-    // General main loop (while in Autonomous or Tele mode)
+    //! General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		
