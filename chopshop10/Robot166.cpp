@@ -59,6 +59,7 @@ Team166Vision Team166VisionObject;
 Team166Sonar Team166SonarObject; 
 Team166EBrake Team166EBrakeObject;
 Team166HealthMon Team166HealthMonObject;
+Team166Inclinometer Team166InclinometerObject;
 
 // This links to the single instance of the Robot task
 class Robot166;

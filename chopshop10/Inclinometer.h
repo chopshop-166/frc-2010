@@ -19,7 +19,8 @@
 // This constant defines how often we want this task to run in the form
 // of miliseconds. Max allowed time is 999 miliseconds.
 //
-#define INCLINOMETER_CYCLE_TIME (10) // 10ms
+
+#define INCLINOMETER_CYCLE_TIME (100) // 100ms
 
 
 #define NO_SPEED				 0    //speed to use when there is no input for the victor
@@ -40,8 +41,7 @@ public:
 			int a6, int a7, int a8, int a9, int a10);
 	
 private:
-	DigitalInput InclinometerA;
-	DigitalInput InclinometerB;
+	Encoder Inclinometer;
 };
 
 #endif // !defined(_INCLINOMETER_166)

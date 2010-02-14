@@ -18,7 +18,7 @@
 #include "BaeUtilities.h"
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(true)dprintf
+#define DPRINTF if(false)dprintf
 
 // Sample in memory buffer
 struct abuf166
@@ -34,7 +34,7 @@ struct abuf166
 class InclinometerLog : public MemoryLog166
 {
 public:
-	InclinometerLog() : MemoryLog166(sizeof(struct abuf166), INCLINOMETER_CYCLE_TIME, "inclinometer") {return;};
+	InclinometerLog() : MemoryLog166(128*1024, INCLINOMETER_CYCLE_TIME, "inclinometer") {return;};
 	~InclinometerLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
@@ -76,7 +76,8 @@ unsigned int InclinometerLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-Team166Inclinometer::Team166Inclinometer(void):	InclinometerA(T166_ENC_INCL_A), InclinometerB(T166_ENC_INCL_B)
+Team166Inclinometer::Team166Inclinometer(void):	
+	Inclinometer(T166_ENC_INCL_A, T166_ENC_INCL_B)
 
 {
 	Start((char *)"166InclinometerTask", INCLINOMETER_CYCLE_TIME);
@@ -96,6 +97,7 @@ int Team166Inclinometer::Main(int a2, int a3, int a4, int a5,
 		
 		
 	Robot166 *lHandle;            // Local handle
+	Proxy166 *proxy;				// Proxy handle
 	InclinometerLog sl;                   // log
 	
 	// Let the world know we're in
@@ -107,19 +109,26 @@ int Team166Inclinometer::Main(int a2, int a3, int a4, int a5,
 	// Register our logger
 	lHandle = Robot166::getInstance();
 	lHandle->RegisterLogger(&sl);	
-		
+	
+	// Register the proxy
+	proxy = Proxy166::getInstance();
+	
+	int printstop=0;
+	Inclinometer.Start();
+	
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		
-		static int throttle = 0;
-		throttle++;
-		if (throttle%10==0){
-				throttle = 0;
-				DPRINTF(LOG_DEBUG,"Channel: %i Value: %i",InclinometerA.GetChannel(),InclinometerA.Get(),InclinometerB.GetChannel(),InclinometerB.Get());
-				}
-				
-        // Should we log this value?
+
+		proxy->SetInclinometer(Inclinometer.Get());
+		
+		if ((++printstop)%(1000/INCLINOMETER_CYCLE_TIME)==0)
+		{
+			DPRINTF(LOG_DEBUG, "%d", proxy->GetInclinometer());
+		}
+		
+		// Should we log this value?
 		sl.PutOne(0, 0, 0);
 		
 		// Wait for our next lap
