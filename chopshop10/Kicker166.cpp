@@ -35,7 +35,7 @@ struct abuf166
 class KickerLog : public MemoryLog166
 {
 public:
-	KickerLog() : MemoryLog166(128*1024, "kicker") {return;};
+	KickerLog() : MemoryLog166(sizeof(struct abuf166), KICKER_CYCLE_TIME, "kicker") {return;};
 	~KickerLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted

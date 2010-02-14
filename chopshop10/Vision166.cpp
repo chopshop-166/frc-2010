@@ -41,7 +41,7 @@ Team166Vision::Team166Vision(void) :
 	SetDebugFlag ( DEBUG_SCREEN_ONLY  ) ;
 	
 	// Start our task
-	Start((char *)"166VisionTask", 100);	
+	Start((char *)"166VisionTask", VISION_CYCLE_TIME);	
 };
 
 Team166Vision::~Team166Vision(void)

@@ -28,7 +28,7 @@ struct sobuf166
 class SonarLog : public MemoryLog166
 {
 public:
-	SonarLog() : MemoryLog166(128*1024, "sonar") {return;};
+	SonarLog() : MemoryLog166(sizeof(struct sobuf166), SONAR_CYCLE_TIME, "sonar") {return;};
 	~SonarLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted

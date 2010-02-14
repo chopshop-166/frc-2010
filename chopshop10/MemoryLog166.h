@@ -23,7 +23,7 @@ class MemoryLog166
 
 // Methods	
 public:
-	MemoryLog166(unsigned int msize, char *f);// Constructor
+	MemoryLog166(unsigned int msize, unsigned int ltime, char *f);// Constructor
 	virtual ~MemoryLog166(void);              // Destructor
 	char *GetNextBuffer(unsigned int bsize);  // Get next buffer to write
 	int DumpToFile(int dnum);                 // Dump the data into a file

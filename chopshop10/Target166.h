@@ -85,11 +85,29 @@ int FindTwoColors(TrackingThreshold td1, TrackingThreshold td2,
 
 void PrintReport(ImageHits* myReport);
 
+
+
+// Sample in memory buffer
+struct vbuf166
+{
+	struct timespec tp;             // Time of snapshot
+	int   staleCount;				// Keeps track of the number of stale images
+	double imageTime;		 	    // image timestamp
+	float bearing;                  // Target bearing	
+	float hs;               		// horizontal servo position
+	float nhs;		                // normalized horizontal servo position
+	float incrementH;               // increment from image to new bearing		
+	float tilt;                     // Target tilt	
+	float vs;               		// vertical servo position
+	float nvs;		                // normalized vertical servo position
+	float incrementV;               // increment from image to new tilt	
+};
+
 // Vision Memory Log
 class VisionLog : public MemoryLog166
 {
 public:
-	VisionLog() : MemoryLog166(128*1024, "vision") {return;};
+	VisionLog() : MemoryLog166(sizeof(struct vbuf166), 1, "vision") {return;};
 	~VisionLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
@@ -100,7 +118,6 @@ public:
 			float bearing, float hs, float nhs, float incrementH, 
 			float tilt, float vs, float nvs, float incrementV);
 };
-
 
 #endif
 

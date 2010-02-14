@@ -25,7 +25,7 @@ struct abuf166
 class TankDriveLog : public MemoryLog166
 {
 public:
-	TankDriveLog() : MemoryLog166(128*1024, "tank_drive") {return;};
+	TankDriveLog() : MemoryLog166(sizeof(struct abuf166), TANK_CYCLE_TIME, "tank_drive") {return;};
 	~TankDriveLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted

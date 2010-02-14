@@ -37,7 +37,7 @@ struct abuf166
 class EBrakeLog : public MemoryLog166
 {
 public:
-	EBrakeLog() : MemoryLog166(128*1024, "ebrake") {return;};
+	EBrakeLog() : MemoryLog166(sizeof(struct abuf166), EBRAKE_CYCLE_TIME, "ebrake") {return;};
 	~EBrakeLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted

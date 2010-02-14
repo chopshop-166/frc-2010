@@ -25,22 +25,6 @@ int Target_debugFlag = 0;
 #define DPRINTF if(Target_debugFlag)dprintf
 
 
-// Sample in memory buffer
-struct vbuf166
-{
-	struct timespec tp;             // Time of snapshot
-	int   staleCount;				// Keeps track of the number of stale images
-	double imageTime;		 	    // image timestamp
-	float bearing;                  // Target bearing	
-	float hs;               		// horizontal servo position
-	float nhs;		                // normalized horizontal servo position
-	float incrementH;               // increment from image to new bearing		
-	float tilt;                     // Target tilt	
-	float vs;               		// vertical servo position
-	float nvs;		                // normalized vertical servo position
-	float incrementV;               // increment from image to new tilt	
-};
-
 // Write one buffer into memory
 unsigned int VisionLog::PutOne(
 		int staleCount, double imageTime,

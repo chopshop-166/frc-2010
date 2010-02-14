@@ -35,7 +35,7 @@ struct abuf166
 class BannerLog : public MemoryLog166
 {
 public:
-	BannerLog() : MemoryLog166(128*1024, "banner") {return;};
+	BannerLog() : MemoryLog166(sizeof(struct abuf166), BANNER_CYCLE_TIME, "banner") {return;};
 	~BannerLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted

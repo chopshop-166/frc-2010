@@ -34,7 +34,7 @@ struct abuf166
 class InclinometerLog : public MemoryLog166
 {
 public:
-	InclinometerLog() : MemoryLog166(128*1024, "inclinometer") {return;};
+	InclinometerLog() : MemoryLog166(sizeof(struct abuf166), INCLINOMETER_CYCLE_TIME, "inclinometer") {return;};
 	~InclinometerLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted

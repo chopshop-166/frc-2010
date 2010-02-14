@@ -36,7 +36,7 @@ struct abuf166
 class LiftCanLog : public MemoryLog166
 {
 public:
-	LiftCanLog() : MemoryLog166(128*1024, "lift") {return;};
+	LiftCanLog() : MemoryLog166(sizeof(struct abuf166), LIFT_CYCLE_TIME, "lift") {return;};
 	~LiftCanLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted

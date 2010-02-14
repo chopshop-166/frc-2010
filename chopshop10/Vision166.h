@@ -39,11 +39,16 @@
 #define DAMPING_FACTOR 0.75
 
 #define SERVO_DEADBAND 0.01
-#define VISION_LOOP_TIME 0.050 // seconds
 #define SCORE_MINIMUM 0.01
 #define SCORE_GOOD 0.4
 
 #define DISTORTION_DELTA_MAX 0.25
+
+//
+// This constant defines how often we want this task to run in the form
+// of miliseconds. Max allowed time is 999 miliseconds.
+//
+#define VISION_CYCLE_TIME (100) // 100ms
 
 class DashboardDataSender;
 

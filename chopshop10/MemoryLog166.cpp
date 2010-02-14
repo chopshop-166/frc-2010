@@ -23,15 +23,19 @@
 #define DPRINTF if(false)dprintf
 
 // Memory log constructor
-MemoryLog166::MemoryLog166(unsigned int msize, char *f)
+MemoryLog166::MemoryLog166(unsigned int msize, unsigned int ltime, char *f)
 {
+	unsigned int ms;  // Size of memory that we need
+	
+	// Compute the size that we need for 1 item per loop during 2m15s + 5s padding
+	ms = ((1000*((2*60) + 15 + 5)) / ltime) * msize;
 	
 	// Allocate the requested memory
-	MemoryBase = (char *)valloc(msize);
+	MemoryBase = (char *)valloc(ms);
 	
 	// Initialize members
-	MemorySize = msize;
-	MemoryEnd = &MemoryBase[msize];
+	MemorySize = ms;
+	MemoryEnd = &MemoryBase[ms];
 	MemoryNext = MemoryBase;
 	Next = 0;
 	BuffersRequested = 0;
@@ -109,8 +113,9 @@ int MemoryLog166::DumpToFile(int dnum)
 	
 	// Reset what we have logged
 	MemoryNext = MemoryBase;
-	printf("Completed dump for %s into %s; Requested buffers %d, Obtained buffers %d\n",
-			FileName, Factual, BuffersRequested, BuffersObtained);
+	printf("Completed dump for %s into %s;\n", FileName, Factual);
+	printf("  Requested buffers %d, Obtained buffers %d\n",
+			BuffersRequested, BuffersObtained);
 	BuffersRequested = 0;
 	BuffersObtained = 0;
 	
