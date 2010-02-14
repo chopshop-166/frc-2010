@@ -19,6 +19,7 @@
 #include "Team166Task.h"
 #include "TankDrive166.h"
 #include "Kicker166.h"
+#include "LiftCan166.h"
 #include "SensorTest166.h"
 #include "Banner166.h"
 #include "Vision166.h"
@@ -33,7 +34,7 @@
 #define DPRINTF if(false)dprintf
 
 // Are we using the CAN bus?
-#define UsingCan (1)
+#define UsingCan (0)
 
 // List of tasks that have requested to come up
 Team166Task *Team166Task::ActiveTasks[T166_MAXTASK + 1] = {0};
@@ -41,15 +42,15 @@ Team166Task *Team166Task::ActiveTasks[T166_MAXTASK + 1] = {0};
 // Declare external tasks
 Proxy166 Team166ProxyObject; // This task has to always be started first or it'll error
 #if UsingCan
-Team166TankDrive Team166TankDriveObject;
-#else
 Team166CANDrive Team166CANDriveObject;
+#else
+Team166TankDrive Team166TankDriveObject;
 #endif
 
 #if UsingCan
-Team166Lift Team166LiftObject;
-#else
 Team166LiftCan Team166LiftCanObject;
+#else
+Team166Lift Team166LiftObject;
 #endif
 
 Team166Kicker Team166KickerObject;

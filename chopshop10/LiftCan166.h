@@ -10,11 +10,11 @@
 /*  Copyright (c) MHS Chopshop Team 166, 2010.  All Rights Reserved.          */
 /*----------------------------------------------------------------------------*/
 
-#if !defined(_LIFT166_H)
-#define _LIFT166_H
+#if !defined(_LIFT166Can_H)
+#define _LIFT166Can_H
 #include "WPILib.h"
 #include "Robot166.h"
-//#include "CANJaguar.h"
+#include "CANJaguar.h"
 
 
 //
@@ -49,4 +49,4 @@ private:
 	
 };
 
-#endif // !defined(_LIFT166)
+#endif // !defined(_LIFT166Can)
