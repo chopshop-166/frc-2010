@@ -20,7 +20,6 @@
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
 
-int limit;
 
 // Sample in memory buffer
 struct abuf166
@@ -112,7 +111,8 @@ int Team166Lift::Main(int a2, int a3, int a4, int a5,
 	proxy=Proxy166::getInstance();
 	
 	int printstop=0;
-		
+	int limit;
+
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {

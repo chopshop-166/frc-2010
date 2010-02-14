@@ -13,15 +13,16 @@
 #if !defined(_ROBOT166_H)
 #define _ROBOT166_H
 #include "WPILib.h"
+#include "CANJaguar.h"
 #include "Team166Task.h"
 #include "TankDrive166.h"
 #include "Lift166.h"
+#include "LiftCan166.h"
 #include "Kicker166.h"
 #include "Autonomous166.h"
 #include "MemoryLog166.h"
 #include "Proxy166.h"
 #include "Banner166.h"
-#include "CANJaguar.h"
 #include "Inclinometer.h"
 #define DASHBOARD_BUFFER_MAX (21)
 //

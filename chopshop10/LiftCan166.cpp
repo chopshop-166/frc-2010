@@ -1,10 +1,10 @@
 /*******************************************************************************
 *  Project   		: chopshop10 - 2010 Chopshop Robot Controller Code
-*  File Name  		: CANDrive166.cpp     
+*  File Name  		: Lift166.cpp     
 *  Owner		   	: Software Group (FIRST Chopshop Team 166)
-*  Creation Date	: January 23, 2010
+*  Creation Date	: January 18, 2010
 *  Revision History	: From Explorer with TortoiseSVN, Use "Show log" menu item
-*  File Description	: Code which monitors jaguar return info
+*  File Description	: Robot code which controls the hanging lift
 *******************************************************************************/ 
 /*----------------------------------------------------------------------------*/
 /*  Copyright (c) MHS Chopshop Team 166, 2010.  All Rights Reserved.          */
@@ -12,31 +12,32 @@
 
 #include "WPILib.h"
 #include "Team166Task.h"
-#include "CANDrive166.h"
+#include "LiftCan166.h"
 #include "MemoryLog166.h"
 #include "Robot166.h"
 #include "BaeUtilities.h"
-#include "Proxy166.h"
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
 
+
+
 // Sample in memory buffer
 struct abuf166
 {
-	struct timespec tp;               // Time of snapshot
+	struct timespec tp;              // Time of snapshot
 	float x_acc;                     // accelerometer x value
-	float y_acc;					//  accelerometer y value
+	float y_acc;					 // accelerometer y value
 	float acc_vector;
 	
 };
 
 //  Memory Log
-class CANDriveLog : public MemoryLog166
+class LiftCanLog : public MemoryLog166
 {
 public:
-	CANDriveLog() : MemoryLog166(128*1024, "candrive") {return;};
-	~CANDriveLog() {return;};
+	LiftCanLog() : MemoryLog166(128*1024, "lift") {return;};
+	~LiftCanLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
 			FILE *outputFile);        // and then stored in this file
@@ -44,7 +45,7 @@ public:
 };
 
 // Write one buffer into memory
-unsigned int CANDriveLog::PutOne(float x_acc, float y_acc, float acc_vector)
+unsigned int LiftCanLog::PutOne(float x_acc, float y_acc, float acc_vector)
 {
 	struct abuf166 *ob;               // Output buffer
 	
@@ -64,10 +65,9 @@ unsigned int CANDriveLog::PutOne(float x_acc, float y_acc, float acc_vector)
 }
 
 // Format the next buffer for file output
-unsigned int CANDriveLog::DumpBuffer(char *nptr, FILE *ofile)
+unsigned int LiftCanLog::DumpBuffer(char *nptr, FILE *ofile)
 {
 	struct abuf166 *ab = (struct abuf166 *)nptr;
-	
 	// Output the data into the file
 	fprintf(ofile, "%u, %u, %f, %f, %f\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->x_acc, ab->y_acc, ab->acc_vector);
 	
@@ -75,80 +75,76 @@ unsigned int CANDriveLog::DumpBuffer(char *nptr, FILE *ofile)
 	return (sizeof(struct abuf166));
 }
 
-// Initializes the ProxyHandle. 
-Team166CANDrive *Team166CANDrive::CANDriveHandle = 0;
-
-/**
- * @brief Gets the singleton instance of Proxy166.
- * @return The instance of Proxy166
- */
-Team166CANDrive *Team166CANDrive::getInstance(void)
-{
-	return CANDriveHandle;
-}
-
 
 // task constructor
-Team166CANDrive::Team166CANDrive(void):
-	blackJag(T166_BLACK_JAG_CAN),
-	leftJag(T166_LEFT_MOTOR_CAN),
-	rightJag(T166_RIGHT_MOTOR_CAN)
+Team166LiftCan::Team166LiftCan(void): lift_jag(T166_LIFT_MOTOR_CAN), Lift_BOTTOM_Limit_Switch(BOTTOM_LIMITSWITCH_DIGITAL_INPUT)
 {
-	DPRINTF(LOG_DEBUG, "Black Jag");
-	CANDriveHandle=this;
-	Start((char *)"166CANDriveTask", CAN_CYCLE_TIME);
+	Start((char *)"166LiftCanTask", LIFT_CYCLE_TIME);
 	return;
-
 };
 	
 // task destructor
-Team166CANDrive::~Team166CANDrive(void)
+Team166LiftCan::~Team166LiftCan(void)
 {
 	return;
 };
-void Team166CANDrive::CANDrive(float leftValue, float rightValue)
-{
-	leftJag.Set(leftValue);
-	rightJag.Set(-rightValue);
-}
 	
 // Main function of the task
-int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
+int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {
 		
-	Robot166 *lHandle;                  // Local handle
-	CANDriveLog sl;                    // log
-	Proxy166 *proxy;				  //pointer to proxy	
-	proxy = proxy->getInstance();     
-	
-	int printstop=0;
+	Robot166 *lHandle;            // Local handle
+	LiftCanLog sl;                   // log
+	Proxy166 *proxy;
+	float joystickY;
 	
 	// Let the world know we're in
-	DPRINTF(LOG_DEBUG,"In the 166 CANDrive task\n");
-
+	DPRINTF(LOG_DEBUG,"In the 166 Lift task\n");
+	
 	// Wait for Robot go-ahead (e.g. entering Autonomous or Tele-operated mode)
 	WaitForGoAhead();
 	
 	// Register our logger
 	lHandle = Robot166::getInstance();
-	lHandle->RegisterLogger(&sl);
-	printf("CANDrive is ready.\n");
+	lHandle->RegisterLogger(&sl);	
 	
-	float leftValue, rightValue;
-
+	proxy=Proxy166::getInstance();
+	
+	int printstop=0;
+	int limit;
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		leftValue = proxy->GetJoystickY(1);
-		rightValue = proxy->GetJoystickY(2);
-		CANDrive(leftValue, rightValue);
-		if(((++printstop)%20)==0){
-			DPRINTF(LOG_DEBUG, "Left Jaguar: %f : %f : %f",leftJag.GetBusVoltage(), leftJag.GetOutputVoltage(), leftJag.GetOutputCurrent(), leftJag.GetTemperature() );
-			DPRINTF(LOG_DEBUG, "Right Jaguar: %f : %f : %f",rightJag.GetBusVoltage(), rightJag.GetOutputVoltage(), rightJag.GetOutputCurrent(), rightJag.GetTemperature() );
-		}
 		
-		// do stuff
+		
+        // Some code that doesn't do anything:
+//		int dir;
+//        lHandle->GetLift(&dir, &lift_motor);   // Get the direction of the lift
+    			  //gives the values for the desired lift motor speed
+//	if (proxy->GetSwitch())
+		if (proxy->GetButton(3,2,false)){
+			limit = Lift_BOTTOM_Limit_Switch.Get();
+            DPRINTF(LOG_DEBUG,"Limit Switch: %d", limit);
+			if (Lift_BOTTOM_Limit_Switch.Get()==1){
+				lift_jag.Set(0);
+				}
+	        else{
+	        	DPRINTF(LOG_DEBUG,"Button pushed: now in LIFT mode.\n");
+	        	joystickY = proxy->GetJoystickY(3);
+	        	lift_jag.Set(joystickY);
+	        	}
+		}
+		else{
+			lift_jag.Set(0);
+		}
+        if(((++printstop)%10)==0) {
+        	joystickY = proxy->GetJoystickY(3);
+        	DPRINTF(LOG_DEBUG, "Joystick Y: %f", joystickY);
+        	
+        }
+
+        // Should we log this value?
 		sl.PutOne(0, 0, 0);
 		
 		// Wait for our next lap

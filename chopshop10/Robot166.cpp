@@ -32,17 +32,26 @@
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
 
+// Are we using the CAN bus?
+#define UsingCan (1)
+
 // List of tasks that have requested to come up
 Team166Task *Team166Task::ActiveTasks[T166_MAXTASK + 1] = {0};
 
 // Declare external tasks
 Proxy166 Team166ProxyObject; // This task has to always be started first or it'll error
-#if 0
+#if UsingCan
 Team166TankDrive Team166TankDriveObject;
 #else
 Team166CANDrive Team166CANDriveObject;
 #endif
+
+#if UsingCan
 Team166Lift Team166LiftObject;
+#else
+Team166LiftCan Team166LiftCanObject;
+#endif
+
 Team166Kicker Team166KickerObject;
 Team166Banner Team166BannerObject;
 Team166Vision Team166VisionObject;
