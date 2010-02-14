@@ -16,6 +16,11 @@
 #include "MemoryLog166.h"
 #include "Robot166.h"
 #include "BaeUtilities.h"
+#include "CANJaguar.h"
+#include "Vision166.h"
+#include "CANDrive166.h"
+
+
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
@@ -94,8 +99,17 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {
 		
+	bool CameraStatus;
+	//bool BannerStatus;
+	//bool Health_CameraStatus;
+	bool Health_InclinometerStatus;
+	
+	
+	
 	Robot166 *lHandle;            // Local handle
+	Proxy166 *proxy;              // Local proxy handle
 	HealthMonLog sl;                   // log
+	
 	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 HealthMon task\n");
@@ -103,13 +117,65 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 	// Wait for Robot go-ahead (e.g. entering Autonomous or Tele-operated mode)
 	WaitForGoAhead();
 	
+	// Register the Proxy
+	proxy = Proxy166::getInstance();
+	
+	CameraStatus = Team166VisionObject.IsActive();
+	
+	
+	
+	
 	// Register our logger
 	lHandle = Robot166::getInstance();
-	lHandle->RegisterLogger(&sl);	
-
+	lHandle->RegisterLogger(&sl);
+	
+	/*if(CameraStatus==true){
+		lHandle->Robot166::DriverStationDisplay("Camera Active");
+		Health_CameraStatus = true;
+	} else {
+		lHandle->Robot166::DriverStationDisplay("Camera not Active");
+		Health_CameraStatus = false;
+	}
+	*/
+	
+	
+	
+	/*if(BannerStatus==true){
+		lHandle->Robot166::DriverStationDisplay("Banner Sensor: 1");
+	} else {
+		lHandle->Robot166::DriverStationDisplay("Banner Sensor: 0");
+	}
+*/
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
+
+		int InclinometerStatus = proxy->GetInclinometer();
+		
+		int Health_Status = Health_InclinometerStatus;
+		
+		if(InclinometerStatus==0){
+			// lHandle->Robot166::DriverStationDisplay("Inclinometer is 0");
+			Health_InclinometerStatus = true;
+		}
+		else if(InclinometerStatus!=0){
+			// lHandle->Robot166::DriverStationDisplay("Inclinometer changed");
+			Health_InclinometerStatus = false;
+		}
+		
+		/*if(Health_Status==2){
+			lHandle->Robot166::DriverStationDisplay("Health: 100%%");
+		}*/
+		/*else*/ if(Health_Status==1){
+			lHandle->Robot166::DriverStationDisplay("Health: 50%%");
+		}
+		else if(Health_Status==0){
+			lHandle->Robot166::DriverStationDisplay("Health: 0%%");
+		}
+		else{
+			lHandle->Robot166::DriverStationDisplay("Something's all messed up!");
+		}
+		
 		// do stuff
 		sl.PutOne(0, 0, 0);
 		WaitForNextLoop();
