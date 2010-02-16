@@ -109,6 +109,7 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 	Robot166 *lHandle;            // Local handle
 	Proxy166 *proxy;              // Local proxy handle
 	HealthMonLog sl;                   // log
+	Team166CANDrive *canDrive;
 	
 	
 	// Let the world know we're in
@@ -121,13 +122,21 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 	proxy = Proxy166::getInstance();
 	
 	CameraStatus = Team166VisionObject.IsActive();
+	string healthErrors;
+	canDrive = Team166CANDrive::getInstance();
 	
+	float JaguarCurrentStatus3;
 	
-	
+	float JoystickPosition;
+	float SonarStatus;
+	int Health_Status;
+	bool Health_SonarStatus;
+	int InclinometerStatus;
 	
 	// Register our logger
 	lHandle = Robot166::getInstance();
 	lHandle->RegisterLogger(&sl);
+	char* buffer = new char[DASHBOARD_BUFFER_MAX];
 	
 	/*if(CameraStatus==true){
 		lHandle->Robot166::DriverStationDisplay("Camera Active");
@@ -138,43 +147,91 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 	}
 	*/
 	
-	
-	
-	/*if(BannerStatus==true){
-		lHandle->Robot166::DriverStationDisplay("Banner Sensor: 1");
-	} else {
-		lHandle->Robot166::DriverStationDisplay("Banner Sensor: 0");
-	}
-*/
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 
-		int InclinometerStatus = proxy->GetInclinometer();
 		
-		int Health_Status = Health_InclinometerStatus;
+		//getting new statuses every time
 		
-		if(InclinometerStatus==0){
+		SonarStatus = proxy->GetSonarDistance();
+		
+		InclinometerStatus = proxy->GetInclinometer();
+		
+		JaguarCurrentStatus3 = proxy->GetCurrent(3);
+		
+		JoystickPosition = proxy->GetJoystickY(2);
+		
+		//Determining Inclinometer Status
+		//Reserved for if we need it
+		
+		/*
+		 * if(InclinometerStatus==0){
 			// lHandle->Robot166::DriverStationDisplay("Inclinometer is 0");
 			Health_InclinometerStatus = true;
 		}
 		else if(InclinometerStatus!=0){
 			// lHandle->Robot166::DriverStationDisplay("Inclinometer changed");
 			Health_InclinometerStatus = false;
+			
+		}
+		*/
+		
+		//Determining the Sonar Health
+		
+		if(SonarStatus>5){
+			Health_SonarStatus = true;
 		}
 		
+		else if(SonarStatus<1){
+			Health_SonarStatus = false;
+		}
+
+		
+		//Total Health Status things
+		Health_Status = Health_SonarStatus;
+		
+		
+		
 		/*if(Health_Status==2){
-			lHandle->Robot166::DriverStationDisplay("Health: 100%%");
-		}*/
-		/*else*/ if(Health_Status==1){
-			lHandle->Robot166::DriverStationDisplay("Health: 50%%");
+			lHandle->Robot166::DriverStationDisplay("Hlth: 100%%");
+		}
+		*/
+		if(Health_Status==1){
+			lHandle->Robot166::DriverStationDisplay("Hlth: 100%%");
+			
+			
+			
+			/*
+			if(Health_SonarStatus==false){
+				healthErrors += "no sonar, ";
+			}
+			if(Health_InclinometerStatus==false){
+				healthErrors += "incline, ";
+			}
+			sprintf(buffer,"Errors: %s",healthErrors.c_str());
+			lHandle->DriverStationDisplay(buffer);
+			
+			
+			*/
 		}
 		else if(Health_Status==0){
-			lHandle->Robot166::DriverStationDisplay("Health: 0%%");
+			lHandle->DriverStationDisplay("Hlth: 0%%");
+			
+			if(Health_SonarStatus==false){
+							healthErrors += "no sonar, ";
+						}
+			if(Health_InclinometerStatus==false){
+							healthErrors += "incline, ";
+						}
+			sprintf(buffer,"Errors: %s",healthErrors.c_str());
+			lHandle->DriverStationDisplay(buffer);
 		}
 		else{
-			lHandle->Robot166::DriverStationDisplay("Something's all messed up!");
+			lHandle->DriverStationDisplay("HealthMon error");
 		}
+		
+		DPRINTF(LOG_DEBUG,"%f",JaguarCurrentStatus3);
 		
 		// do stuff
 		sl.PutOne(0, 0, 0);
