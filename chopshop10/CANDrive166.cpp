@@ -152,7 +152,7 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 		
 		// Put current values into proxy
 		proxy->SetCurrent(T166_LEFT_MOTOR_CAN,leftJag.GetOutputCurrent());
-		proxy->SetCurrent;(T166_RIGHT_MOTOR_CAN,rightJag.GetOutputCurrent());
+		proxy->SetCurrent(T166_RIGHT_MOTOR_CAN,rightJag.GetOutputCurrent());
 		proxy->SetTemperature(T166_LEFT_MOTOR_CAN,leftJag.GetTemperature());
 		proxy->SetTemperature(T166_RIGHT_MOTOR_CAN,rightJag.GetTemperature());
 		
