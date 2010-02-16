@@ -77,7 +77,7 @@ unsigned int LiftCanLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-Team166LiftCan::Team166LiftCan(void): lift_jag(T166_LIFT_MOTOR_CAN), Lift_BOTTOM_Limit_Switch(BOTTOM_LIMITSWITCH_DIGITAL_INPUT)
+Team166LiftCan::Team166LiftCan(void): lift_jag(T166_BLACK_JAG_CAN), Lift_BOTTOM_Limit_Switch(BOTTOM_LIMITSWITCH_DIGITAL_INPUT)
 {
 	Start((char *)"166LiftCanTask", LIFT_CYCLE_TIME);
 	return;
@@ -118,31 +118,29 @@ int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		
 		
-        // Some code that doesn't do anything:
-//		int dir;
-//        lHandle->GetLift(&dir, &lift_motor);   // Get the direction of the lift
-    			  //gives the values for the desired lift motor speed
-//	if (proxy->GetSwitch())
-		if (proxy->GetButton(3,2,false)){
+
+		//gives the values for the desired lift motor speed
+		if (proxy->GetButton(3,2,false)) {
 			limit = Lift_BOTTOM_Limit_Switch.Get();
             DPRINTF(LOG_DEBUG,"Limit Switch: %d", limit);
-			if (Lift_BOTTOM_Limit_Switch.Get()==1){
+			if (limit==1){
 				lift_jag.Set(0);
-				}
-	        else{
+			}
+	        else {
 	        	DPRINTF(LOG_DEBUG,"Button pushed: now in LIFT mode.\n");
 	        	joystickY = proxy->GetJoystickY(3);
 	        	lift_jag.Set(joystickY);
 	        	}
 		}
-		else{
+		else {
 			lift_jag.Set(0);
 		}
         if(((++printstop)%10)==0) {
         	joystickY = proxy->GetJoystickY(3);
         	DPRINTF(LOG_DEBUG, "Joystick Y: %f", joystickY);
-        	
         }
+		proxy->SetCurrent(T166_BLACK_JAG_CAN,lift_jag.GetOutputCurrent());
+		proxy->SetTemperature(T166_BLACK_JAG_CAN,lift_jag.GetTemperature());
 
         // Should we log this value?
 		sl.PutOne(0, 0, 0);

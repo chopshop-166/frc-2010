@@ -319,6 +319,39 @@ bool Proxy166::GetEbrake() {
 }
 
 /**
+ * @brief Sets Jaguar Current
+ * @param Jaguar id
+ * @param Jaguar output voltage
+ */
+void Proxy166::SetCurrent(int id, float current)
+{
+	Current[id] = current;
+}
+/**
+ * @brief Gets Jaguar Current
+ * @param Jaguar id
+ */
+float Proxy166::GetCurrent(int id)
+{
+	return Current[id];
+}
+
+/**
+ * @brief Sets Jaguar Voltage
+ * @param Jaguar id
+ * @param Jaguar output Voltage
+ */
+void Proxy166::SetTemperature(int id, float temperature)
+{
+	Temperature[id] = temperature;
+}
+
+float Proxy166::GetTemperature(int id)
+{
+	return Temperature[id];
+}
+
+/**
  * @brief Sets the Camera Bearing
  * @param down current camera bearing
  */

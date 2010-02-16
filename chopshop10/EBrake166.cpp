@@ -79,7 +79,7 @@ unsigned int EBrakeLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-Team166EBrake::Team166EBrake(void): Ebrake_Spike(T166_EBRAKE_CHANNEL),
+Team166EBrake::Team166EBrake(void): Ebrake_Can(T166_EBRAKE_MOTOR_CAN),
   Ebrake_Limit_Top(T166_EBRAKE_LIMIT_TOP),
   Ebrake_Limit_Bottom(T166_EBRAKE_LIMIT_BOTTOM)
 {
@@ -141,7 +141,7 @@ int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 					DPRINTF(LOG_DEBUG, "Lowering");
 					printstop=0;
 				}
-				Ebrake_Spike.Set(Relay::kForward);
+				Ebrake_Can.Set(1);
 			}
 		}	
 		if (Limit_Upper == false)
@@ -150,7 +150,7 @@ int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 				DPRINTF(LOG_DEBUG, "%d", Limit_Upper);
 				printstop=0;
 			}
-			Ebrake_Spike.Set(Relay::kReverse);
+			Ebrake_Can.Set(-1);
 		}
 		if (Limit_Lower == true) {
 			proxy->SetEbrake(true);
@@ -158,6 +158,9 @@ int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 		else if (Limit_Upper == true) {
 			proxy->SetEbrake(false);
 		}
+		proxy->SetCurrent(T166_EBRAKE_MOTOR_CAN,Ebrake_Can.GetOutputCurrent());
+		proxy->SetTemperature(T166_EBRAKE_MOTOR_CAN,Ebrake_Can.GetTemperature());
+		
 		sl.PutOne(0, 0, 0);
 		
 		// Wait for our next lap

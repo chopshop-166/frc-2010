@@ -37,7 +37,7 @@ public:
 			int a6, int a7, int a8, int a9, int a10);
 			
 private:
-	Relay Ebrake_Spike;
+	CANJaguar Ebrake_Can;
 	bool Limit_Lower;
 	bool Limit_Upper;
 	DigitalInput Ebrake_Limit_Top;

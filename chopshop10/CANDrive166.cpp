@@ -90,11 +90,10 @@ Team166CANDrive *Team166CANDrive::getInstance(void)
 
 // task constructor
 Team166CANDrive::Team166CANDrive(void):
-	blackJag(T166_BLACK_JAG_CAN),
+//	blackJag(T166_BLACK_JAG_CAN),
 	leftJag(T166_LEFT_MOTOR_CAN),
 	rightJag(T166_RIGHT_MOTOR_CAN)
 {
-	DPRINTF(LOG_DEBUG, "Black Jag");
 	CANDriveHandle=this;
 	Start((char *)"166CANDriveTask", CAN_CYCLE_TIME);
 	return;
@@ -120,15 +119,17 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 	Robot166 *lHandle;                  // Local handle
 	CANDriveLog sl;                    // log
 	Proxy166 *proxy;				  //pointer to proxy	
-	proxy = proxy->getInstance();     
 	
 	int printstop=0;
 	
+	char *buffer = new char[DASHBOARD_BUFFER_MAX];
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 CANDrive task\n");
 
 	// Wait for Robot go-ahead (e.g. entering Autonomous or Tele-operated mode)
 	WaitForGoAhead();
+
+	proxy = Proxy166::getInstance();
 	
 	// Register our logger
 	lHandle = Robot166::getInstance();
@@ -140,6 +141,7 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
+		
 		leftValue = proxy->GetJoystickY(1);
 		rightValue = proxy->GetJoystickY(2);
 		CANDrive(leftValue, rightValue);
@@ -147,6 +149,15 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 			DPRINTF(LOG_DEBUG, "Left Jaguar: %f : %f : %f",leftJag.GetBusVoltage(), leftJag.GetOutputVoltage(), leftJag.GetOutputCurrent(), leftJag.GetTemperature() );
 			DPRINTF(LOG_DEBUG, "Right Jaguar: %f : %f : %f",rightJag.GetBusVoltage(), rightJag.GetOutputVoltage(), rightJag.GetOutputCurrent(), rightJag.GetTemperature() );
 		}
+		
+		// Put current values into proxy
+		proxy->SetCurrent(T166_LEFT_MOTOR_CAN,leftJag.GetOutputCurrent());
+		proxy->SetCurrent;(T166_RIGHT_MOTOR_CAN,rightJag.GetOutputCurrent());
+		proxy->SetTemperature(T166_LEFT_MOTOR_CAN,leftJag.GetTemperature());
+		proxy->SetTemperature(T166_RIGHT_MOTOR_CAN,rightJag.GetTemperature());
+		
+//		sprintf(buffer,"Temperature: %f", proxy->GetTemperature(3));
+//		lHandle->DriverStationDisplay(buffer);
 		
 		// do stuff
 		sl.PutOne(0, 0, 0);
