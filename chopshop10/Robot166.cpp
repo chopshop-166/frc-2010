@@ -41,13 +41,13 @@ Team166Task *Team166Task::ActiveTasks[T166_MAXTASK + 1] = {0};
 
 // Declare external tasks
 Proxy166 Team166ProxyObject; // This task has to always be started first or it'll error
-#if UsingCan
+#if UsingCan 
 Team166CANDrive Team166CANDriveObject;
 #else
 Team166TankDrive Team166TankDriveObject;
 #endif
 
-#if 0
+#if UsingCan
 Team166LiftCan Team166LiftCanObject;
 #else
 Team166Lift Team166LiftObject;

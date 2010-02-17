@@ -141,7 +141,7 @@ int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 					DPRINTF(LOG_DEBUG, "Lowering");
 					printstop=0;
 				}
-				Ebrake_Can.Set(1);
+				Ebrake_Can.Set(.5);
 			}
 		}	
 		if (Limit_Upper == false)
@@ -150,7 +150,7 @@ int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 				DPRINTF(LOG_DEBUG, "%d", Limit_Upper);
 				printstop=0;
 			}
-			Ebrake_Can.Set(-1);
+			Ebrake_Can.Set(-.5);
 		}
 		if (Limit_Lower == true) {
 			proxy->SetEbrake(true);

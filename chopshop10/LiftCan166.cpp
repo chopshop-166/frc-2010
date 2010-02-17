@@ -77,7 +77,7 @@ unsigned int LiftCanLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-Team166LiftCan::Team166LiftCan(void): lift_jag(T166_BLACK_JAG_CAN), Lift_BOTTOM_Limit_Switch(BOTTOM_LIMITSWITCH_DIGITAL_INPUT)
+Team166LiftCan::Team166LiftCan(void): lift_jag(T166_LIFT_MOTOR_CAN), Lift_BOTTOM_Limit_Switch(BOTTOM_LIMITSWITCH_DIGITAL_INPUT)
 {
 	Start((char *)"166LiftCanTask", LIFT_CYCLE_TIME);
 	return;
@@ -139,8 +139,8 @@ int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
         	joystickY = proxy->GetJoystickY(3);
         	DPRINTF(LOG_DEBUG, "Joystick Y: %f", joystickY);
         }
-		proxy->SetCurrent(T166_BLACK_JAG_CAN,lift_jag.GetOutputCurrent());
-		proxy->SetTemperature(T166_BLACK_JAG_CAN,lift_jag.GetTemperature());
+		proxy->SetCurrent(T166_LIFT_MOTOR_CAN,lift_jag.GetOutputCurrent());
+		proxy->SetTemperature(T166_LIFT_MOTOR_CAN,lift_jag.GetTemperature());
 
         // Should we log this value?
 		sl.PutOne(0, 0, 0);
