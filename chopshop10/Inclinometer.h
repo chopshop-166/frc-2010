@@ -19,6 +19,7 @@
 // This constant defines how often we want this task to run in the form
 // of miliseconds. Max allowed time is 999 miliseconds.
 //
+// Inclinometer has "near real time" updates
 
 #define INCLINOMETER_CYCLE_TIME (100) // 100ms
 
