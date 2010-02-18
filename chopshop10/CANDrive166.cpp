@@ -25,10 +25,8 @@
 struct abuf166
 {
 	struct timespec tp;               // Time of snapshot
-	float x_acc;                     // accelerometer x value
-	float y_acc;					//  accelerometer y value
-	float acc_vector;
-	
+	float l_current;              // left motor current value
+	float r_current;		      // right motor current value	
 };
 
 //  Memory Log
@@ -40,11 +38,11 @@ public:
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
 			FILE *outputFile);        // and then stored in this file
-	unsigned int PutOne(float x_acc, float y_acc, float acc_vector);     // Log the x and y values
+	unsigned int PutOne(float l_current, float r_current);     // Log the x and y values
 };
 
 // Write one buffer into memory
-unsigned int CANDriveLog::PutOne(float x_acc, float y_acc, float acc_vector)
+unsigned int CANDriveLog::PutOne(float l_current, float r_current)
 {
 	struct abuf166 *ob;               // Output buffer
 	
@@ -53,9 +51,8 @@ unsigned int CANDriveLog::PutOne(float x_acc, float y_acc, float acc_vector)
 		
 		// Fill it in.
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
-		ob->x_acc = x_acc;
-		ob->y_acc = y_acc;
-		ob->acc_vector = acc_vector;
+		ob->l_current = l_current;
+		ob->r_current = r_current;
 		return (sizeof(struct abuf166));
 	}
 	
@@ -69,7 +66,8 @@ unsigned int CANDriveLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct abuf166 *ab = (struct abuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %f, %f, %f\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->x_acc, ab->y_acc, ab->acc_vector);
+	fprintf(ofile, "%u, %u, %f, %f\n", ab->tp.tv_sec, ab->tp.tv_nsec, 
+			ab->l_current, ab->r_current);
 	
 	// Done
 	return (sizeof(struct abuf166));
@@ -137,6 +135,7 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 	printf("CANDrive is ready.\n");
 	
 	float leftValue, rightValue;
+	float leftCurrent, rightCurrent;
 
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
@@ -145,22 +144,28 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 		leftValue = proxy->GetJoystickY(1);
 		rightValue = proxy->GetJoystickY(2);
 		CANDrive(leftValue, rightValue);
+		
+		leftCurrent = leftJag.GetOutputCurrent();
+		rightCurrent = rightJag.GetOutputCurrent();
+		
 		if(((++printstop)%20)==0){
-			DPRINTF(LOG_DEBUG, "Left Jaguar: %f : %f : %f",leftJag.GetBusVoltage(), leftJag.GetOutputVoltage(), leftJag.GetOutputCurrent(), leftJag.GetTemperature() );
-			DPRINTF(LOG_DEBUG, "Right Jaguar: %f : %f : %f",rightJag.GetBusVoltage(), rightJag.GetOutputVoltage(), rightJag.GetOutputCurrent(), rightJag.GetTemperature() );
+			//DPRINTF(LOG_DEBUG, "Left Jaguar: %f : %f : %f",leftJag.GetBusVoltage(), leftJag.GetOutputVoltage(), leftJag.GetOutputCurrent(), leftJag.GetTemperature() );
+			//DPRINTF(LOG_DEBUG, "Right Jaguar: %f : %f : %f",rightJag.GetBusVoltage(), rightJag.GetOutputVoltage(), rightJag.GetOutputCurrent(), rightJag.GetTemperature() );
+			DPRINTF(LOG_DEBUG, "Left Jag Current: %f", leftCurrent);
+			DPRINTF(LOG_DEBUG, "Right Jag Current: %f", rightCurrent );
 		}
 		
 		// Put current values into proxy
-		proxy->SetCurrent(T166_LEFT_MOTOR_CAN,leftJag.GetOutputCurrent());
-		proxy->SetCurrent(T166_RIGHT_MOTOR_CAN,rightJag.GetOutputCurrent());
-		proxy->SetTemperature(T166_LEFT_MOTOR_CAN,leftJag.GetTemperature());
-		proxy->SetTemperature(T166_RIGHT_MOTOR_CAN,rightJag.GetTemperature());
+		proxy->SetCurrent(T166_LEFT_MOTOR_CAN, leftCurrent);
+		proxy->SetCurrent(T166_RIGHT_MOTOR_CAN, rightCurrent);
+		//proxy->SetTemperature(T166_LEFT_MOTOR_CAN,leftJag.GetTemperature());
+		//proxy->SetTemperature(T166_RIGHT_MOTOR_CAN,rightJag.GetTemperature());
 		
 //		sprintf(buffer,"Temperature: %f", proxy->GetTemperature(3));
 //		lHandle->DriverStationDisplay(buffer);
 		
 		// do stuff
-		sl.PutOne(0, 0, 0);
+		sl.PutOne(leftCurrent, rightCurrent);
 		
 		// Wait for our next lap
 		WaitForNextLoop();
