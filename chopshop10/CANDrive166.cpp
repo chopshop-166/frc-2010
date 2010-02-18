@@ -161,8 +161,10 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 		//proxy->SetTemperature(T166_LEFT_MOTOR_CAN,leftJag.GetTemperature());
 		//proxy->SetTemperature(T166_RIGHT_MOTOR_CAN,rightJag.GetTemperature());
 		
-//		sprintf(buffer,"Temperature: %f", proxy->GetTemperature(3));
-//		lHandle->DriverStationDisplay(buffer);
+		if (true) {
+			sprintf(buffer,"DRV: %f %f", leftCurrent, rightCurrent);
+			lHandle->DriverStationDisplay(buffer);
+		}
 		
 		// do stuff
 		sl.PutOne(leftCurrent, rightCurrent);

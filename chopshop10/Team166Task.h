@@ -77,11 +77,12 @@
 // CAN bus layout
 //
 /** Number of Jags used */
-#define T166_NUM_JAGS (6)
+#define T166_NUM_JAGS (5)
+
 /** channel for the Left Motor */
 #define T166_LEFT_MOTOR_CAN (7)
 /** channel for the Right Motor */
-#define T166_RIGHT_MOTOR_CAN (8)
+#define T166_RIGHT_MOTOR_CAN (10)
 /** channel for the Lift Winch Motor */
 #define T166_LIFT_MOTOR_CAN (5)
 /** channel for the Ebrake motor */
