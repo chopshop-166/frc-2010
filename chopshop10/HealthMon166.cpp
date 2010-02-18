@@ -139,10 +139,10 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 	char* buffer = new char[DASHBOARD_BUFFER_MAX];
 	
 	/*if(CameraStatus==true){
-		lHandle->Robot166::DriverStationDisplay("Camera Active");
+		lHandle->Robot166::DriverStationDisplayHS("Camera Active");
 		Health_CameraStatus = true;
 	} else {
-		lHandle->Robot166::DriverStationDisplay("Camera not Active");
+		lHandle->Robot166::DriverStationDisplayHS("Camera not Active");
 		Health_CameraStatus = false;
 	}
 	*/
@@ -167,11 +167,11 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 		
 		/*
 		 * if(InclinometerStatus==0){
-			// lHandle->Robot166::DriverStationDisplay("Inclinometer is 0");
+			// lHandle->Robot166::DriverStationDisplayHS("Inclinometer is 0");
 			Health_InclinometerStatus = true;
 		}
 		else if(InclinometerStatus!=0){
-			// lHandle->Robot166::DriverStationDisplay("Inclinometer changed");
+			// lHandle->Robot166::DriverStationDisplayHS("Inclinometer changed");
 			Health_InclinometerStatus = false;
 			
 		}
@@ -194,11 +194,11 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 		
 		
 		/*if(Health_Status==2){
-			lHandle->Robot166::DriverStationDisplay("Hlth: 100%%");
+			lHandle->Robot166::DriverStationDisplayHS("Hlth: 100%%");
 		}
 		*/
 		if(Health_Status==1){
-			lHandle->Robot166::DriverStationDisplay("Hlth: 100%%");
+			lHandle->Robot166::DriverStationDisplayHS("Hlth: 100%%");
 			
 			
 			
@@ -210,13 +210,13 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 				healthErrors += "incline, ";
 			}
 			sprintf(buffer,"Errors: %s",healthErrors.c_str());
-			lHandle->DriverStationDisplay(buffer);
+			lHandle->DriverStationDisplayHS(buffer);
 			
 			
 			*/
 		}
 		else if(Health_Status==0){
-			lHandle->DriverStationDisplay("Hlth: 0%%");
+			lHandle->DriverStationDisplayHS("Hlth: 0%%");
 			
 			if(Health_SonarStatus==false){
 							healthErrors += "no sonar, ";
@@ -225,10 +225,10 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 							healthErrors += "incline, ";
 						}
 			sprintf(buffer,"Errors: %s",healthErrors.c_str());
-			lHandle->DriverStationDisplay(buffer);
+			lHandle->DriverStationDisplayHS(buffer);
 		}
 		else{
-			lHandle->DriverStationDisplay("HealthMon error");
+			lHandle->DriverStationDisplayHS("HealthMon error");
 		}
 		
 		DPRINTF(LOG_DEBUG,"%f",JaguarCurrentStatus3);

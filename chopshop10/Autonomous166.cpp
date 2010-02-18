@@ -27,9 +27,7 @@ void Autonomous166::Autonomous(void) {
 	
 	// Create and register the local robot handle
 	Robot166 *lHandle;
-	while( !(lHandle = Robot166::getInstance())
-			&& !( lHandle->IsAutonomous() )
-	) {
+	while( !(lHandle = Robot166::getInstance()) && !( lHandle->IsAutonomous() ) ) {
 		Wait(AUTONOMOUS_WAIT_TIME);
 	}
 	State state = sSetup;
@@ -49,18 +47,21 @@ void Autonomous166::Autonomous(void) {
 	
 	// Sensor storage data
 	int banner;
+	int inclinometer;
 	float sonar;
 	
 	// Starting location. 1 is nearest, 3 is furthest from our goals
 	const unsigned short loc = DriverStation::GetInstance()->GetLocation();
-	sprintf(buffer,"Location: %d", loc);
+	sprintf(buffer,"Field location: %d", loc);
 	lHandle->DriverStationDisplay(buffer);
+	printf("Field location: %d", loc);
 	
 	// As long as Autonomous is running, go through the states
 	while( lHandle->IsAutonomous() ) {
 		// Reset sensors
 		banner = proxy->GetBanner();
 		sonar = proxy->GetSonarDistance();
+		inclinometer = proxy->GetInclinometer();
 		
 		switch(state) {
 		
@@ -72,15 +73,23 @@ void Autonomous166::Autonomous(void) {
 			
 		// We don't have a ball in our possession yet
 		case sSearching:
-			if(banner) {
+			if( banner ) {
+				// Oops! We shouldn't be sensing a line
 				state = sRetreating;
 				lHandle->DriverStationDisplay("Line sensed!");
 				retreatcounter = AUTONOMOUS_RETREAT_TIME;
 				break;
 			}
 			if( sonar < SONAR_NEAR ) {
+				// We have a ball
 				state = sBallHeld;
 				lHandle->DriverStationDisplay("Ball captured");
+				break;
+			}
+			if( (inclinometer > 5) && (inclinometer < -5) ) {
+				// We're tilting...
+				state = sResting;
+				lHandle->DriverStationDisplay("Stopped: Tilt");
 				break;
 			}
 			proxy->SetJoystickY(1,0.25);
@@ -91,11 +100,11 @@ void Autonomous166::Autonomous(void) {
 		case sBallHeld:
 			if( sonar >= SONAR_NEAR ) {
 				state = sSearching;
-				lHandle->DriverStationDisplay("Scanning for ball.");
+				lHandle->DriverStationDisplay("Scanning for ball");
 			}
 			if(banner) {
 				state = sRetreating;
-				lHandle->DriverStationDisplay("Line sensed!");
+				lHandle->DriverStationDisplay("Line sensed");
 				retreatcounter = AUTONOMOUS_RETREAT_TIME;
 				break;
 			}
@@ -118,7 +127,7 @@ void Autonomous166::Autonomous(void) {
 				}
 			} else {
 				state = sSearching;
-				lHandle->DriverStationDisplay("Scanning for ball.");
+				lHandle->DriverStationDisplay("Scanning for ball");
 			}
 			break;
 			
@@ -128,8 +137,8 @@ void Autonomous166::Autonomous(void) {
 				proxy->SetJoystickY(1, 1);
 				proxy->SetJoystickY(2, -1);
 			} else {
-				state = sResting;
-				lHandle->DriverStationDisplay("ZZZZZZZZZZ");
+				state = sGoGoGo;
+				lHandle->DriverStationDisplay("GoGoGo!");
 			}
 			break;
 			
@@ -153,12 +162,26 @@ void Autonomous166::Autonomous(void) {
 				proxy->SetJoystickY(2,-0.75);
 			} else {
 				state = sResting;
-				lHandle->DriverStationDisplay("ZZZZZZZZZZ");
+				lHandle->DriverStationDisplay("ZZZZZZZZZZZZZZZZZZZZZ");
 			}
 			break;
+		
+		// Wait for the end of Autonomous
+		case sGoGoGo:
+			if( banner ) {
+				// great, we've reached the end of Autonomous. Naptime!
+				state = sResting;
+				lHandle->DriverStationDisplay("ZZZZZZZZZZZZZZZZZZZZZ");
+				retreatcounter = AUTONOMOUS_RETREAT_TIME;
+				break;
+			}
+			proxy->SetJoystickY(1,0);
+			proxy->SetJoystickY(2,0);
+			break;
+				
 		default:
 			state = sResting;
-			lHandle->DriverStationDisplay("ZZZZZZZZZZ");
+			lHandle->DriverStationDisplay("ZZZZZZZZZZZZZZZZZZZZZ");
 			break;
 		}
 		Wait(AUTONOMOUS_WAIT_TIME);

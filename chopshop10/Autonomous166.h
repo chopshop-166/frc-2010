@@ -37,7 +37,8 @@ public:
 		sDodging=4,
 		sGuarding=5,
 		sResting=6,
-		sRetreating=7
+		sRetreating=7,
+		sGoGoGo=8
 	};
 	Autonomous166(void);
 	~Autonomous166(void);
