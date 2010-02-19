@@ -160,7 +160,7 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 		if(InclinometerStatus==false){
 			healthErrors += "I";
 		}
-		sprintf(buffer,"%f%%:%s",Health_Status,healthErrors.c_str());
+		sprintf(buffer,"%.0f%%:%s",Health_Status,healthErrors.c_str());
 		lHandle->DriverStationDisplayHS(buffer);
 		
 		// do stuff
