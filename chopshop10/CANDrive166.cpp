@@ -103,12 +103,7 @@ Team166CANDrive::~Team166CANDrive(void)
 {
 	return;
 };
-void Team166CANDrive::CANDrive(float leftValue, float rightValue)
-{
-	leftJag.Set(leftValue);
-	rightJag.Set(-rightValue);
-}
-	
+
 // Main function of the task
 int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
@@ -134,16 +129,14 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 	lHandle->RegisterLogger(&sl);
 	printf("CANDrive is ready.\n");
 	
-	float leftValue, rightValue;
 	float leftCurrent, rightCurrent;
 
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		
-		leftValue = proxy->GetJoystickY(1);
-		rightValue = proxy->GetJoystickY(2);
-		CANDrive(leftValue, rightValue);
+		leftJag.Set(proxy->GetJoystickY(1));
+		rightJag.Set(-proxy->GetJoystickY(2));
 		
 		leftCurrent = leftJag.GetOutputCurrent();
 		rightCurrent = rightJag.GetOutputCurrent();

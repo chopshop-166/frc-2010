@@ -48,9 +48,9 @@ Team166TankDrive Team166TankDriveObject;
 #endif
 
 #if UsingCan
-Team166LiftCan Team166LiftCanObject;
+//Team166LiftCan Team166LiftCanObject;
 #else
-Team166Lift Team166LiftObject;
+//Team166Lift Team166LiftObject;
 #endif
 
 Team166Kicker Team166KickerObject;
