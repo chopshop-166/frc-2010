@@ -21,15 +21,11 @@
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
 
-
 // Sample in memory buffer
 struct abuf166
 {
 	struct timespec tp;               // Time of snapshot
-	// update these values to be realistic
-	float x_acc;                     // accelarometer x value
-	float y_acc;					//  accelarometer y value
-	float acc_vector;
+	float current;                  // current value
 	
 };
 
@@ -42,25 +38,21 @@ public:
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
 			FILE *outputFile);        // and then stored in this file
-	unsigned int PutOne(float x_acc, float y_acc, float acc_vector);     // Log the x and y values
+	unsigned int PutOne(float current);     // Log values
 };
 
 // Write one buffer into memory
-unsigned int EBrakeLog::PutOne(float x_acc, float y_acc, float acc_vector)
+unsigned int EBrakeLog::PutOne(float current)
 {
 	struct abuf166 *ob;               // Output buffer
 	
 	// Get output buffer
-	if ((ob = (struct abuf166 *)GetNextBuffer(sizeof(struct abuf166)))) {
-		
+	if ((ob = (struct abuf166 *)GetNextBuffer(sizeof(struct abuf166)))) {		
 		// Fill it in.
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
-		ob->x_acc = x_acc;
-		ob->y_acc = y_acc;
-		ob->acc_vector = acc_vector;
+		ob->current = current;
 		return (sizeof(struct abuf166));
-	}
-	
+	}	
 	// Did not get a buffer. Return a zero length
 	return (0);
 }
@@ -68,12 +60,9 @@ unsigned int EBrakeLog::PutOne(float x_acc, float y_acc, float acc_vector)
 // Format the next buffer for file output
 unsigned int EBrakeLog::DumpBuffer(char *nptr, FILE *ofile)
 {
-	struct abuf166 *ab = (struct abuf166 *)nptr;
-	
+	struct abuf166 *ab = (struct abuf166 *)nptr;	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %f, %f, %f\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->x_acc, ab->y_acc, ab->acc_vector);
-	
-	// Done
+	fprintf(ofile, "%u, %u, %f\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->current);	
 	return (sizeof(struct abuf166));
 }
 
@@ -122,16 +111,18 @@ int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 	lHandle->RegisterLogger(&sl);
 	
 	unsigned printstop=0;
+	float myCurrent;
 		
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		//printf("Code running\n");
-		// do stuff
+
+		myCurrent = Ebrake_Can.GetOutputCurrent();
+		
 		Limit_Upper = Ebrake_Limit_Top.Get();
 		Limit_Lower = Ebrake_Limit_Bottom.Get();
 		if(((++printstop)%20)==0) {
-			DPRINTF(LOG_DEBUG, "%d", Limit_Lower);
+			DPRINTF(LOG_DEBUG, "EB LL %d", Limit_Lower);
 		}
 		if ((proxy->GetButton(1,1) == true) || (proxy->GetButton(2,1) == true))
         {
@@ -147,7 +138,7 @@ int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 		if (Limit_Upper == false)
 		{
 			if(((++printstop)%20)==0) {
-				DPRINTF(LOG_DEBUG, "%d", Limit_Upper);
+				DPRINTF(LOG_DEBUG, "EB UL %d", Limit_Upper);
 				printstop=0;
 			}
 			Ebrake_Can.Set(-.5);
@@ -158,10 +149,11 @@ int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 		else if (Limit_Upper == true) {
 			proxy->SetEbrake(false);
 		}
-		proxy->SetCurrent(T166_EBRAKE_MOTOR_CAN,Ebrake_Can.GetOutputCurrent());
-		proxy->SetTemperature(T166_EBRAKE_MOTOR_CAN,Ebrake_Can.GetTemperature());
+		proxy->SetCurrent(T166_EBRAKE_MOTOR_CAN, myCurrent);
+		//proxy->SetTemperature(T166_EBRAKE_MOTOR_CAN,Ebrake_Can.GetTemperature());
 		
-		sl.PutOne(0, 0, 0);
+		// log data
+		sl.PutOne(myCurrent);
 		
 		// Wait for our next lap
 		WaitForNextLoop();
