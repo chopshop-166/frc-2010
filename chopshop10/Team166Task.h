@@ -45,6 +45,8 @@
 #define T166_ENC_INCL_B (2)             // Inclinometer encoder; channel B
 #define T116_ENC_INCL_I (3)		        // Inclinometer encoder; Index Channel/
 
+#define T166_PNEUMATIC_PRESSURE_READY (5)	// Pneumatic pressure ready for use
+
 #define T166_EBRAKE_LIMIT_TOP (7)           // EBrake top limit
 #define T166_EBRAKE_LIMIT_BOTTOM (8)        // Brake bottom limit
 
@@ -62,11 +64,12 @@
 #define T166_LEFT_BACK_MOTOR_CHANNEL (1)
 /** channel for the Right Motor */   
 #define T166_RIGHT_BACK_MOTOR_CHANNEL (2)
+/** channel for the pneumatic pump */
+#define T166_PNEUMATIC_PUMP_MOTOR_CHANNEL (3)
 /** channels for the Kicker */
-#define T166_KICKER_CHANNEL (3)   // !!! CRF: Eliminate when kicker code is updated !!!
-#define T166_KICKER_COMPRESSOR_MOTOR_CHANNEL (3)   
-#define T166_KICKER_PNEUMATIC_1_CHANNEL (4)   
-#define T166_KICKER_PNEUMATIC_2_CHANNEL (5)   
+#define T166_KICKER_PNEUMATIC_SETUP_CHANNEL (4)   // Activate to setup kicker for use
+#define T166_KICKER_PNEUMATIC_RELEASE_CHANNEL (5) // Activate to kick the ball
+#define T166_KICKER_CHANNEL (5)   // !!! CRF: Eliminate when kicker code is updated !!!
 /** channel for the E-Brake Motor */    
 #define T166_EBRAKE_CHANNEL (6)	
 /** channel for the Lift Motor */    
@@ -75,6 +78,8 @@
 #define T166_HORIZONTAL_SERVO_CHANNEL (8)     
 /** channel for the Vertical Servo */    
 #define T166_VERTICAL_SERVO_CHANNEL (9) 
+/** channel for pneumatic lift extender **/
+#define T166_LIFT_PNEUMATIC_ACTIVATE (10)
 
 //
 // CAN bus layout
