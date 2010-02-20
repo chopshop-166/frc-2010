@@ -128,6 +128,12 @@ class Proxy166 : public Team166Task {
 		void SetCameraBearing(float);
 		float GetCameraBearing(void);
 		
+		void SetVisionStatus(bool);
+		bool GetVisionStatus();
+		
+		float GetCameraScoreToTargetX();
+		void SetCameraScoreToTargetX(float);
+		
 		Proxy166(void);
 		~Proxy166(void);
 		
