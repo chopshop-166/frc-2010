@@ -278,14 +278,14 @@ bool Proxy166::GetTrigger(int joy_id, bool reset) {
  * @brief Sets the cache value of the banner sensor.
  * @param newval What to set the value to.
  */
-void Proxy166::SetBanner(int newval) { 
+void Proxy166::SetBanner(bool newval) { 
 	Banner = newval; 
 }
 /**
  * @brief Gets the cache value of the banner sensor. 
  * @return The last value set by the banner sensor task
  */
-int Proxy166::GetBanner() { 
+bool Proxy166::GetBanner() { 
 	return Banner; 
 }
 /**

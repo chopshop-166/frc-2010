@@ -101,8 +101,8 @@ class Proxy166 : public Team166Task {
 		float GetSonarDistance(void);
 		
 		// Proxy access for banner sensor
-		void SetBanner(int);
-		int GetBanner(void);
+		void SetBanner(bool);
+		bool GetBanner(void);
 		
 		// Proxy access for inclinometer
 		void SetInclinometer(int);
@@ -164,7 +164,7 @@ class Proxy166 : public Team166Task {
 		Joystick driveStickCopilot;	  // Camera / copilot joy stick
 		
 		// proxy storage for banner sensor value
-		int Banner;
+		bool Banner;
 		
 		//proxy storage for inclinometer value
 		int Inclinometer;

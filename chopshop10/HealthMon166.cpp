@@ -140,9 +140,11 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 		
 		// Determining Inclinometer Status
 		// Will show false until tilted for the first time
-		if(!InclinometerStatus) {
-			InclinometerStatus = (bool)proxy->GetInclinometer();
-		}
+		InclinometerStatus |= (bool)proxy->GetInclinometer();
+
+		// Determining Inclinometer Status
+		// Will show false until tilted for the first time
+		BannerStatus |= proxy->GetBanner();
 		
 		//Determining the Sonar Health
 		if(proxy->GetSonarDistance()<1){
@@ -155,12 +157,18 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 		Health_Status = (float(SonarStatus+InclinometerStatus+CameraStatus+BannerStatus)/4.)*100;
 		
 		if(SonarStatus==false){
-			healthErrors += "S";
+			healthErrors += "Snr ";
 		}
 		if(InclinometerStatus==false){
-			healthErrors += "I";
+			healthErrors += "Inc ";
 		}
-		sprintf(buffer,"%.0f%%:%s",Health_Status,healthErrors.c_str());
+		if(BannerStatus==false){
+			healthErrors += "Bnr ";
+		}
+		if(CameraStatus==false){
+			healthErrors += "Cam ";
+		}
+		sprintf(buffer,"%.0f: %s",Health_Status,healthErrors.c_str());
 		lHandle->DriverStationDisplayHS(buffer);
 		
 		// do stuff
