@@ -48,7 +48,7 @@
 #define T166_EBRAKE_LIMIT_TOP (7)           // EBrake top limit
 #define T166_EBRAKE_LIMIT_BOTTOM (8)        // Brake bottom limit
 
-#define T166_KICKER_LIMIT_SWITCH (9)		// Kicker limit switch
+#define T166_KICKER_LIMIT_SWITCH (9)		// Kicker limit switch !!! CRF: Eliminate when kicker code is updated !!!
 #define T166_BANNER_SENSOR_DIGITAL_INPUT (10)	// Banner Sensor
 
 //#define TOP_LIMITSWITCH_DIGITAL_INPUT    (13)  //top limit switch for lift
@@ -62,8 +62,11 @@
 #define T166_LEFT_BACK_MOTOR_CHANNEL (1)
 /** channel for the Right Motor */   
 #define T166_RIGHT_BACK_MOTOR_CHANNEL (2)
-/** channel for the Kicker Motor */
-#define T166_KICKER_CHANNEL (5)   
+/** channels for the Kicker */
+#define T166_KICKER_CHANNEL (3)   // !!! CRF: Eliminate when kicker code is updated !!!
+#define T166_KICKER_COMPRESSOR_MOTOR_CHANNEL (3)   
+#define T166_KICKER_PNEUMATIC_1_CHANNEL (4)   
+#define T166_KICKER_PNEUMATIC_2_CHANNEL (5)   
 /** channel for the E-Brake Motor */    
 #define T166_EBRAKE_CHANNEL (6)	
 /** channel for the Lift Motor */    
@@ -72,6 +75,8 @@
 #define T166_HORIZONTAL_SERVO_CHANNEL (8)     
 /** channel for the Vertical Servo */    
 #define T166_VERTICAL_SERVO_CHANNEL (9) 
+/** Channels used for the kicker */
+#define T166_kI
 
 //
 // CAN bus layout
@@ -88,7 +93,7 @@
 /** channel for the Ebrake motor */
 #define T166_EBRAKE_MOTOR_CAN (6)
 /** channel for the Kicker motor */
-#define T166_KICKER_MOTOR_CAN (9)
+#define T166_KICKER_MOTOR_CAN (9)	// !!! CRF: Eliminate when kicker code is updated !!!
 
 //
 // USB port layout
