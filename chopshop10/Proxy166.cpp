@@ -15,9 +15,10 @@
 #include "wpilib.h"
 #include "Proxy166.h"
 #include "Robot166.h"
+#include "Runtime166.h"
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(false)dprintf
+#define DPRINTF if(true)dprintf
 
 /**
  * @brief Initializes the joystick axes to 0 and the buttons to unset.
@@ -38,6 +39,45 @@ Proxy166 *Proxy166::ProxyHandle = 0;
  * @param joy_id Which joystick to set the cached X axis value for.
  * @param value What to set the cached value as.
  */
+
+
+/**
+ * @brief Initializes semaphors for joysticks and switches, and starts the Proxy166 task.
+ */
+Proxy166::Proxy166(void):
+	driveStickRight(T166_USB_STICK_1),        // USB port for 1st stick
+	driveStickLeft(T166_USB_STICK_2),        // USB port for 2nd stick
+	driveStickCopilot(T166_USB_STICK_3),
+	Banner(0),
+	Inclinometer(0),
+	SonarDistance(0.0),
+	CameraBearing(90)
+{
+	ProxyHandle = this;
+	// initialize memory for banner
+	// note use of semaphores are commented out for now
+	// they are not required for atomic actions 
+	// and they appeared to be causing tasks to crash
+	for(unsigned i=0;i<NUMBER_OF_JOYSTICKS;i++) {
+		// Initializing semaphores for joysticks
+		JoystickLocks[i] = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
+		Joysticks[i] = ProxyJoystick();
+	}
+	for(unsigned i=0;i<NUMBER_OF_SWITCHES;i++) {
+		// Initializing semaphores for switches
+		SwitchLocks[i] = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
+	}
+	
+	// Set the initial distance
+	
+	// Start the actual task
+	Start((char *)"166ProxyTask", PROXY_CYCLE_TIME);
+}
+
+Proxy166::~Proxy166(void)
+{
+	return;
+}
 void Proxy166::SetJoystickX(int joy_id, float value) {
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
 	//semTake(JoystickLocks[joy_id], WAIT_FOREVER);
@@ -381,44 +421,6 @@ void Proxy166::SetCameraScoreToTargetX(float x) {
 float Proxy166::GetCameraScoreToTargetX() {
 	return CameraScoreX;
 }
-
-/**
- * @brief Initializes semaphors for joysticks and switches, and starts the Proxy166 task.
- */
-Proxy166::Proxy166(void):
-	driveStickRight(T166_USB_STICK_1),        // USB port for 1st stick
-	driveStickLeft(T166_USB_STICK_2),        // USB port for 2nd stick
-	driveStickCopilot(T166_USB_STICK_3),
-	Banner(0),
-	Inclinometer(0),
-	SonarDistance(0.0),
-	CameraBearing(90)
-{
-	ProxyHandle = this;
-	// initialize memory for banner
-	// note use of semaphores are commented out for now
-	// they are not required for atomic actions 
-	// and they appeared to be causing tasks to crash
-	for(unsigned i=0;i<NUMBER_OF_JOYSTICKS;i++) {
-		// Initializing semaphores for joysticks
-		JoystickLocks[i] = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
-		Joysticks[i] = ProxyJoystick();
-	}
-	for(unsigned i=0;i<NUMBER_OF_SWITCHES;i++) {
-		// Initializing semaphores for switches
-		SwitchLocks[i] = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
-	}
-	
-	// Set the initial distance
-	
-	// Start the actual task
-	Start((char *)"166ProxyTask", PROXY_CYCLE_TIME);
-}
-
-Proxy166::~Proxy166(void)
-{
-	return;
-}
 /**
  * @brief Gets the singleton instance of Proxy166.
  * @return The instance of Proxy166
@@ -558,17 +560,14 @@ int Proxy166::Main(	int a2, int a3, int a4, int a5,
 	
 	Timer debugTimer;
 	debugTimer.Start();
-	RegisterCounter(3, 2);
-	RegisterCounter(3, 1);
 	
-	
+	Runtime166 Loop;
 	
 	ProxyJoystick old_sticks[NUMBER_OF_JOYSTICKS+1];
-	//Timer debugTimer;
-	//debugTimer.Start();
+	
 	while(MyTaskInitialized) {
-		// In autonomous, the Autonomous166 task will update relevant values
 		if(lHandle->IsOperatorControl()) {
+			Loop.Start();
 			for(int x = 0;x<NUMBER_OF_JOYSTICKS;x++) {
 				old_sticks[x] = GetJoystick(x);
 			}
@@ -577,7 +576,7 @@ int Proxy166::Main(	int a2, int a3, int a4, int a5,
 			SetJoystick(3, driveStickCopilot);
 			
 			vector<int>::iterator it = tracker.begin();
-			while(it != tracker.end()) {
+			while(tracker.size() > 0 && it != tracker.end()) {
 				int joy_id = *it;
 				int button_id = *(it+1);
 				
@@ -588,10 +587,11 @@ int Proxy166::Main(	int a2, int a3, int a4, int a5,
 					// The button was previously pressed, but is now released
 					(*(it+2))++; // Increase the counter
 				}
-				
-				//DPRINTF(LOG_DEBUG, "%d.%d %d\n", joy_id, button_id, GetPendingCount(joy_id, button_id));
-				
 				it += 3;
+			}
+			Loop.Stop();
+			if(debugTimer.HasPeriodPassed(1.0)) {
+				DPRINTF(LOG_DEBUG, "Runtime debug info: %s", Loop.GetStats());
 			}
 		}
 		// The task ends if it's not initialized
