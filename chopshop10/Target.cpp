@@ -4,7 +4,7 @@
 #include "Target.h"
 #include <algorithm>
 #include <math.h>
-
+#if 0
 // These parameters set ellipse finding in the NI imaq (Image Aquisition) library.
 // Refer to the CVI Function Reference PDF document installed with LabVIEW for
 // additional information.
@@ -159,3 +159,4 @@ void Target::Print()
 						m_majorRadius, m_minorRadius,
 						m_rotation, m_score, m_bothFound);
 }
+#endif

@@ -23,7 +23,7 @@
 
 // WPILib include files for vision
 #include "TrackAPI.h" 
-#include "Vision/AxisCamera2010.h"
+#include "Vision/AxisCamera.h"
 #include "Vision/HSLImage.h"
 
 // Constants

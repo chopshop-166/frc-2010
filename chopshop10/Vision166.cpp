@@ -17,7 +17,7 @@
 #include <vector>
 #include "RobotCamera166.h"
 
-#include "Vision/AxisCamera2010.h" 
+#include "Vision/AxisCamera.h" 
 #include "BaeUtilities.h"
 #include "FrcError.h"
 #include "nivision.h"
@@ -41,14 +41,14 @@ Team166Vision::Team166Vision(void) :
 	SetDebugFlag ( DEBUG_SCREEN_ONLY  ) ;
 	
 	// Start our task
-	Start((char *)"166VisionTask", VISION_CYCLE_TIME);	
+	//Start((char *)"166VisionTask", VISION_CYCLE_TIME);	
 };
 
 Team166Vision::~Team166Vision(void)
 {		
 	return;
 };
-
+#if 0
 /**
  * @brief Set vision processing on or off
  * If off, the main loop just idles and monitors this flag
@@ -58,11 +58,12 @@ Team166Vision::~Team166Vision(void)
 void Team166Vision::SetActive(bool activeFlag) {
 	visionActive = activeFlag;
 }
-
+#endif
 int Team166Vision::IsActive(void) {
-	return visionActive;
+	//return visionActive;
+	return false;
 }
-
+#if 0
 /**
  * Set servo positions (0.0 to 1.0) 
  * 
@@ -221,13 +222,14 @@ ColorImage *Team166Vision::GetImage() {
 		result = camera166->GetImage();
 	return result;
 }
+#endif
 int Team166Vision::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {	
+#if 0
 	Robot166 *lHandle;
 	Proxy166 *pHandle;
 	SetActive(false);
-	
 	DPRINTF(LOG_DEBUG, "Vision task initializing the camera...\n");
 	TryStartCamera(false);
 	DPRINTF(LOG_DEBUG, "Waiting for autonomous or operator control...\n");
@@ -248,6 +250,7 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 	while ((lHandle->IsOperatorControl() || 
 		   lHandle->IsAutonomous()))
 	{
+
 		if(IsActive()) {
 			img = GetImage();
 			pHandle->SetImage(img);
@@ -261,12 +264,13 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 		if(debugTimer.HasPeriodPassed(0.5)) {
 			debugTimer.Reset();
 		}
-		
+
 		WaitForNextLoop();		
 	}
+#endif
 	return 0;
 }
-
+#if 0
 int Team166Vision::_StartCameraThreadFunc(void *this_p,int a2, int a3, int a4, int a5,
 		int a6, int a7, int a8, int a9, int a10) {
 	StartCamera();
@@ -304,3 +308,4 @@ void Team166Vision::TryStartCamera(bool long_wait) {
 	else
 		DPRINTF(LOG_DEBUG, "Gave up on starting camera.\n");
 }
+#endif

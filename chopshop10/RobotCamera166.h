@@ -10,7 +10,7 @@
 /*  Copyright (c) MHS Chopshop Team 166, 2010.  All Rights Reserved.          */
 /*----------------------------------------------------------------------------*/
 
-#include "Vision/AxisCamera2010.h"
+#include "Vision/AxisCamera.h"
 
 #if !defined(_ROBOTCAMERA166_H)
 #define _ROBOTFUNCTIONS166_H
@@ -18,7 +18,7 @@
 void StartPCVideoServer();	
 void StartCamera();
 void TakeSnapshot(char* imageName);
-void SetupCamera(ResolutionT res, RotationT rot);
+void SetupCamera(AxisCameraParams::Resolution_t res, AxisCameraParams::Rotation_t rot);
 void DriveTowardsTarget();
 
 extern AxisCamera *camera166;

@@ -23,7 +23,7 @@
 
 int Target_debugFlag = 0;
 #define DPRINTF if(Target_debugFlag)dprintf
-
+#if 0
 
 // Write one buffer into memory
 unsigned int VisionLog::PutOne(
@@ -551,5 +551,6 @@ void PrintReport(ImageHits *myReport)
 	}
 	dprintf(LOG_INFO, "\n-------\n");
 }
+#endif
 
 

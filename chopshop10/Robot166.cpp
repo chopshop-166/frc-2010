@@ -22,7 +22,7 @@
 #include "LiftCan166.h"
 #include "SensorTest166.h"
 #include "Banner166.h"
-#include "Vision166.h"
+//#include "Vision166.h"
 #include "Sonar166.h"
 #include "RobotCamera166.h"
 #include "CANDrive166.h"
@@ -97,7 +97,8 @@ Robot166::Robot166(void)
 	DriverStationDisplay("Starting 166 Robot");
 
 	/* allow writing to vxWorks target */
-	Priv_SetWriteFileAllowed(1);   	
+	//TODO: see if we can write to disk with this out of the system
+	//Priv_SetWriteFileAllowed(1);   	
 	
 	// Setup expiration for task watchdog.
 	GetWatchdog().SetExpiration(5.0); // 5 seconds

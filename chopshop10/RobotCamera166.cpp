@@ -13,18 +13,20 @@
 #include "WPILib.h"
 #include "BaeUtilities.h"
 #include "RobotCamera166.h"
-
 // needed for Camera Init
-#include "AxisCamera2010.h" 
+#include "AxisCamera.h" 
 #include "FrcError.h"
 #include "PCVideoServer.h"
 #include "nivision.h" 
+
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
 
 // Create storage space for camera
 AxisCamera *camera166 = 0;
+
+#if 0
 // Camera setup parameters go here
 // Image size (larger images take longer to process)
 ResolutionT resolution = k160x120;  // k640x480, k640x360, k320x240, k160x120
@@ -49,7 +51,7 @@ void StartCamera()
 		TakeSnapshot(imageName);
 	}
 }
-
+#endif
 
 /** 
  * Get an image from camera and store it on the cRIO 
@@ -57,8 +59,9 @@ void StartCamera()
  **/
 void TakeSnapshot(char* imageName)	
 {	
+#if 0
 	/* allow writing to vxWorks target */
-	Priv_SetWriteFileAllowed(1);   	
+	//Priv_SetWriteFileAllowed(1);   	
 	
 	DPRINTF(LOG_DEBUG, "taking a SNAPSHOT ");
 	Image* cameraImage = frcCreateImage(IMAQ_IMAGE_HSL);
@@ -81,9 +84,10 @@ void TakeSnapshot(char* imageName)
 			frcDispose(cameraImage);
 		}
 	}
+#endif
 }
 
-
+#if 0
 /** 
  * Pass to the camera the configuration settings and store an image on the cRIO 
  * @param ResolutionT camera resolution 
@@ -98,4 +102,4 @@ void SetupCamera(ResolutionT res, RotationT rot)
 void DriveTowardsTarget() {
 	
 }
-
+#endif

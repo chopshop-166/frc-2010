@@ -11,9 +11,9 @@
 /*----------------------------------------------------------------------------*/
 #include "Utility.h"
 #include "Team166Task.h"
-#include "Vision/AxisCamera2010.h"
+#include "Vision/AxisCamera.h"
 
-#include "AxisCamera2010.h" 
+#include "AxisCamera.h" 
 #include "FrcError.h"
 #include "PCVideoServer.h"
 #include "nivision.h" 
