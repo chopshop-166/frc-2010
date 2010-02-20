@@ -114,6 +114,7 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 	Proxy166 *proxy;				  //pointer to proxy	
 	
 	int printstop=0;
+	int valuethrottle=0;
 	
 	char *buffer = new char[DASHBOARD_BUFFER_MAX];
 	// Let the world know we're in
@@ -135,7 +136,11 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		
+		if ((++valuethrottle)% (1000/CAN_CYCLE_TIME)==0)
+		{		
+			leftCurrent = leftJag.GetOutputCurrent();
+			rightCurrent = rightJag.GetOutputCurrent();
+		}
 		if( proxy->GetButton(1,3) || proxy->GetButton(2,3)) {
 			if(proxy->GetInclinometer() < -10) {
 				left = 0.25;
@@ -156,20 +161,19 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 		
 		leftCurrent = leftJag.GetOutputCurrent();
 		rightCurrent = rightJag.GetOutputCurrent();
-		
+
 		
 		if(((++printstop)%20)==0){
-			//DPRINTF(LOG_DEBUG, "Left Jaguar: %f : %f : %f",leftJag.GetBusVoltage(), leftJag.GetOutputVoltage(), leftJag.GetOutputCurrent(), leftJag.GetTemperature() );
-			//DPRINTF(LOG_DEBUG, "Right Jaguar: %f : %f : %f",rightJag.GetBusVoltage(), rightJag.GetOutputVoltage(), rightJag.GetOutputCurrent(), rightJag.GetTemperature() );
 			DPRINTF(LOG_DEBUG, "Left Jag Current: %f", leftCurrent);
 			DPRINTF(LOG_DEBUG, "Right Jag Current: %f", rightCurrent );
 		}
 		
-		// Put current values into proxy
-		proxy->SetCurrent(T166_LEFT_MOTOR_CAN, leftCurrent);
-		proxy->SetCurrent(T166_RIGHT_MOTOR_CAN, rightCurrent);
-		//proxy->SetTemperature(T166_LEFT_MOTOR_CAN,leftJag.GetTemperature());
-		//proxy->SetTemperature(T166_RIGHT_MOTOR_CAN,rightJag.GetTemperature());
+		if ((++valuethrottle)% (1000/CAN_CYCLE_TIME)==0)
+		{
+			// Put current values into proxy
+			proxy->SetCurrent(T166_LEFT_MOTOR_CAN, leftCurrent);
+			proxy->SetCurrent(T166_RIGHT_MOTOR_CAN, rightCurrent);
+		}
 		
 		if (false) {
 			sprintf(buffer,"DRV: %f %f", leftCurrent, rightCurrent);

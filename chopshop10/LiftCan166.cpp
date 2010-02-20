@@ -97,7 +97,6 @@ int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
 	Robot166 *lHandle;            // Local handle
 	LiftCanLog sl;                   // log
 	Proxy166 *proxy;
-	float joystickY;
 	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 Lift task\n");
@@ -111,36 +110,41 @@ int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
 	
 	proxy=Proxy166::getInstance();
 	
-	int printstop=0;
-	int limit;
+	bool limit;
+	int valuethrottle=0;
+	
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		
-		
-
 		//gives the values for the desired lift motor speed
-		if (proxy->GetButton(3,2,false)) {
 			limit = Lift_BOTTOM_Limit_Switch.Get();
-            DPRINTF(LOG_DEBUG,"Limit Switch: %d", limit);
-			if (limit==1){
+			
+			if ((limit == true) || (proxy->GetButton(3,2) == false)){
 				lift_jag.Set(0);
+				
+		    	// Should we log this value?
+				sl.PutOne(0, 0, 0);
+				
+				// Wait for our next lap
+				WaitForNextLoop();
+				continue;
+				
 			}
-	        else {
-	        	DPRINTF(LOG_DEBUG,"Button pushed: now in LIFT mode.\n");
-	        	joystickY = proxy->GetJoystickY(3);
-	        	lift_jag.Set(joystickY);
-	        	}
+			if (proxy->GetButton(3,2) == true) {
+				lift_jag.Set(proxy->GetJoystickY(3));
+				// Should we log this value?
+				sl.PutOne(0, 0, 0);
+				
+				// Wait for our next lap
+				WaitForNextLoop();
+				continue;
+			}
+	
+		if ((++valuethrottle)% (1000/LIFT_CYCLE_TIME)==0)
+		{
+			proxy->SetCurrent(T166_LIFT_MOTOR_CAN,lift_jag.GetOutputCurrent());
 		}
-		else {
-			lift_jag.Set(0);
-		}
-        if(((++printstop)%10)==0) {
-        	joystickY = proxy->GetJoystickY(3);
-        	DPRINTF(LOG_DEBUG, "Joystick Y: %f", joystickY);
-        }
-		proxy->SetCurrent(T166_LIFT_MOTOR_CAN,lift_jag.GetOutputCurrent());
-		proxy->SetTemperature(T166_LIFT_MOTOR_CAN,lift_jag.GetTemperature());
 
         // Should we log this value?
 		sl.PutOne(0, 0, 0);
