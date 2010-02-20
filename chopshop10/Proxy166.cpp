@@ -319,6 +319,21 @@ bool Proxy166::GetEbrake() {
 }
 
 /**
+ * @brief Set pneumatic air pressure
+ * @param pressure Pressure
+ */
+void Proxy166::SetPressure(float pressure) {
+	PneumaticPressure = pressure;
+}
+
+/**
+ * @brief Obtain pneumatic pressure
+ */
+float Proxy166::GetPressure(void) {
+	return PneumaticPressure;
+}
+
+/**
  * @brief Sets Jaguar Current
  * @param Jaguar id
  * @param Jaguar output voltage
@@ -537,15 +552,14 @@ int Proxy166::Main(	int a2, int a3, int a4, int a5,
 					int a6, int a7, int a8, int a9, int a10) {
 
 	Robot166 *lHandle = NULL;
-	while( ( lHandle = Robot166::getInstance() ) == NULL) {
-		Wait(0.05);
-	}
 	WaitForGoAhead();
 	
 	Timer debugTimer;
 	debugTimer.Start();
 	RegisterCounter(3, 2);
 	RegisterCounter(3, 1);
+	
+	lHandle = Robot166::getInstance();
 	
 	ProxyJoystick old_sticks[NUMBER_OF_JOYSTICKS+1];
 	//Timer debugTimer;

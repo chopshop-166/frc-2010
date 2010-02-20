@@ -97,7 +97,7 @@ class Proxy166 : public Team166Task {
 		void DeleteImage(void);
 
 		// Set/Get methods for sonar distance
-		void SetSonarDistance(float dist);
+		void SetSonarDistance(float);
 		float GetSonarDistance(void);
 		
 		// Proxy access for banner sensor
@@ -111,6 +111,10 @@ class Proxy166 : public Team166Task {
 		// Proxy access for Ebrake
 		void SetEbrake(bool);
 		bool GetEbrake(void);
+
+		// Set/Get methods for pneumatic pressure
+		void SetPressure(float);
+		float GetPressure(void);
 		
 		// Proxy access for Jaguar current
 		void SetCurrent(int, float);
@@ -181,8 +185,11 @@ class Proxy166 : public Team166Task {
 		// Proxy Storage for jaguar output current
 		float Temperature[T166_NUM_JAGS];
 		
-		//proxy storage for camera bearing
+		// Proxy storage for camera bearing
 		float CameraBearing;
+		
+		// Proxy storage for the pneumatic pressure
+		float PneumaticPressure;
 };
 
 #endif

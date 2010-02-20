@@ -129,6 +129,8 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 	bool InclinometerStatus = false;
 	// Whether the camera is up
 	bool CameraStatus = Team166VisionObject.IsActive();
+	// Whether pressure sensor's working properly
+	bool PressureStatus = false;
 	// Whether banner's working properly
 	bool BannerStatus = false;
 	
@@ -142,9 +144,12 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 		// Will show false until tilted for the first time
 		InclinometerStatus |= (bool)proxy->GetInclinometer();
 
-		// Determining Inclinometer Status
-		// Will show false until tilted for the first time
+		// Determining Banner Status
+		// Will show false until tripped for the first time
 		BannerStatus |= proxy->GetBanner();
+		
+		// Get the camera's status
+		CameraStatus = Team166VisionObject.IsActive();
 		
 		//Determining the Sonar Health
 		if(proxy->GetSonarDistance()<1){
@@ -154,7 +159,11 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 		}
 		
 		// Do the total health overall, as a %
-		Health_Status = (float(SonarStatus+InclinometerStatus+CameraStatus+BannerStatus)/4.)*100;
+		Health_Status = (float(	SonarStatus+
+								InclinometerStatus+
+								CameraStatus+
+								BannerStatus+
+								PressureStatus)/5.)*100;
 		
 		if(SonarStatus==false){
 			healthErrors += "Snr ";
@@ -168,7 +177,14 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 		if(CameraStatus==false){
 			healthErrors += "Cam ";
 		}
-		sprintf(buffer,"%.0f: %s",Health_Status,healthErrors.c_str());
+		if(PressureStatus==false){
+			healthErrors += "Pnu ";
+		}
+		if(Health_Status!=100) {
+			sprintf(buffer,"%.0f: %s",Health_Status,healthErrors.c_str());
+		} else {
+			sprintf(buffer,"Perfectly healthy!");
+		}
 		lHandle->DriverStationDisplayHS(buffer);
 		
 		// do stuff

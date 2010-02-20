@@ -34,7 +34,9 @@ void Autonomous166::Autonomous(void) {
 	
 	// Create and register proxy handle
 	Proxy166 *proxy;
-	while( (proxy = Proxy166::getInstance()) == NULL ) {}
+	while( (proxy = Proxy166::getInstance()) == NULL ) {
+		Wait(AUTONOMOUS_WAIT_TIME);
+	}
 
 	// Dashboard output buffer
 	char* buffer = new char[DASHBOARD_BUFFER_MAX];

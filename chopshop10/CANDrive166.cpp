@@ -128,6 +128,7 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 	lHandle = Robot166::getInstance();
 	lHandle->RegisterLogger(&sl);
 	printf("CANDrive is ready.\n");
+	float left=0,right=0;
 	
 	float leftCurrent, rightCurrent;
 
@@ -135,11 +136,27 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		
-		leftJag.Set(proxy->GetJoystickY(1));
-		rightJag.Set(-proxy->GetJoystickY(2));
+		if( proxy->GetButton(1,3) || proxy->GetButton(2,3)) {
+			if(proxy->GetInclinometer() < -10) {
+				left = 0.25;
+				right = -0.25;
+			} else if(proxy->GetInclinometer() > 10) {
+				left = -0.25;
+				right = 0.25;
+			} else {
+				left = 0;
+				right = 0;
+			}
+		} else {
+			left = proxy->GetJoystickY(1);
+			right = -proxy->GetJoystickY(2);
+		}
+		leftJag.Set(left);
+		rightJag.Set(right);
 		
 		leftCurrent = leftJag.GetOutputCurrent();
 		rightCurrent = rightJag.GetOutputCurrent();
+		
 		
 		if(((++printstop)%20)==0){
 			//DPRINTF(LOG_DEBUG, "Left Jaguar: %f : %f : %f",leftJag.GetBusVoltage(), leftJag.GetOutputVoltage(), leftJag.GetOutputCurrent(), leftJag.GetTemperature() );
@@ -154,7 +171,7 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 		//proxy->SetTemperature(T166_LEFT_MOTOR_CAN,leftJag.GetTemperature());
 		//proxy->SetTemperature(T166_RIGHT_MOTOR_CAN,rightJag.GetTemperature());
 		
-		if (true) {
+		if (false) {
 			sprintf(buffer,"DRV: %f %f", leftCurrent, rightCurrent);
 			lHandle->DriverStationDisplay(buffer);
 		}
