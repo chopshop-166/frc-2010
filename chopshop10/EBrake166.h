@@ -38,10 +38,6 @@ public:
 			
 private:
 	CANJaguar Ebrake_Can;
-	bool Limit_Lower;
-	bool Limit_Upper;
-	DigitalInput Ebrake_Limit_Top;
-	DigitalInput Ebrake_Limit_Bottom;
 	
 };
 

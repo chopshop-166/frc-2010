@@ -68,20 +68,10 @@ unsigned int EBrakeLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-Team166EBrake::Team166EBrake(void): Ebrake_Can(T166_EBRAKE_MOTOR_CAN),
-  Ebrake_Limit_Top(T166_EBRAKE_LIMIT_TOP),
-  Ebrake_Limit_Bottom(T166_EBRAKE_LIMIT_BOTTOM)
+Team166EBrake::Team166EBrake(void): Ebrake_Can(T166_EBRAKE_MOTOR_CAN)
 {
 	Start((char *)"166EBrakeTask", EBRAKE_CYCLE_TIME);
-	if (Ebrake_Limit_Top.Get() == true)
-	{
-		Limit_Upper = true;
-	}
-	else if (Ebrake_Limit_Bottom.Get() == true)
-	{
-		Limit_Lower = true;
-	}
-		return;
+	return;
 };
 	
 // task destructor
@@ -119,36 +109,29 @@ int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 
 		myCurrent = Ebrake_Can.GetOutputCurrent();
 		
-		Limit_Upper = Ebrake_Limit_Top.Get();
-		Limit_Lower = Ebrake_Limit_Bottom.Get();
-		if(((++printstop)%20)==0) {
-			DPRINTF(LOG_DEBUG, "EB LL %d", Limit_Lower);
-		}
 		if ((proxy->GetButton(1,1) == true) || (proxy->GetButton(2,1) == true))
         {
-			if(Limit_Lower == false)
-			{
 				if(((++printstop)%20)==0) {
 					DPRINTF(LOG_DEBUG, "Lowering");
 					printstop=0;
 				}
-				Ebrake_Can.Set(.5);
-			}
+				Ebrake_Can.Set(-.3);
+
+			// log data
+			sl.PutOne(myCurrent);
+			
+			// Wait for our next lap
+			WaitForNextLoop();
+			continue;
+				
 		}	
-		if (Limit_Upper == false)
-		{
+
 			if(((++printstop)%20)==0) {
-				DPRINTF(LOG_DEBUG, "EB UL %d", Limit_Upper);
+				DPRINTF(LOG_DEBUG, "Raising");
 				printstop=0;
 			}
-			Ebrake_Can.Set(-.5);
-		}
-		if (Limit_Lower == true) {
-			proxy->SetEbrake(true);
-		}
-		else if (Limit_Upper == true) {
-			proxy->SetEbrake(false);
-		}
+			Ebrake_Can.Set(.3);
+
 		proxy->SetCurrent(T166_EBRAKE_MOTOR_CAN, myCurrent);
 		//proxy->SetTemperature(T166_EBRAKE_MOTOR_CAN,Ebrake_Can.GetTemperature());
 		
