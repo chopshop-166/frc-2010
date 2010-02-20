@@ -75,8 +75,6 @@
 #define T166_HORIZONTAL_SERVO_CHANNEL (8)     
 /** channel for the Vertical Servo */    
 #define T166_VERTICAL_SERVO_CHANNEL (9) 
-/** Channels used for the kicker */
-#define T166_kI
 
 //
 // CAN bus layout
