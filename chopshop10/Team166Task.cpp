@@ -29,7 +29,6 @@ Team166Task::Team166Task(int IsEssential)
 	last_print_sec = 0;
 	loop_calls = 0;
 	OverRuns = 0;
-	T_Status[0] = 0;
 };
 	
 // Destructor
@@ -285,21 +284,3 @@ int Team166Task::FeedWatchDog(void)
 		}
 	return (1);
 };
-
-// Method to set the status of the task
-void Team166Task::SetStatus(char *Status)
-{
-	// Save the status
-	strncpy(T_Status, Status, sizeof(T_Status)-1);
-	
-	// Done
-	return;
-}
-
-// Get task status
-char *Team166Task::GetStatus(void)
-{
-	// Returns a pointer to the extra internal status we have
-	return (T_Status);
-}
-

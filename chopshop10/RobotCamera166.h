@@ -15,6 +15,14 @@
 #if !defined(_ROBOTCAMERA166_H)
 #define _ROBOTFUNCTIONS166_H
 
+//! Which joystick to use for the left side in Tank Drive
+#define DRIVE_JOYSTICK_LEFT 1
+//! Which joystick to use for the right side in Tank Drive
+#define DRIVE_JOYSTICK_RIGHT 2
+
+//! Max absolute joystick value to set
+#define DRIVE_PROPORTIONAL_CONSTANT 0.5
+
 void StartPCVideoServer();	
 void StartCamera();
 void TakeSnapshot(char* imageName);

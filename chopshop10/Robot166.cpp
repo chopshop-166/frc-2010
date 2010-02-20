@@ -35,29 +35,31 @@
 
 // Are we using the CAN bus?
 #define UsingCan (1)
-
+#define UsingSuitcase (0)
 // List of tasks that have requested to come up
 Team166Task *Team166Task::ActiveTasks[T166_MAXTASK + 1] = {0};
 
 // Declare external tasks
 Proxy166 Team166ProxyObject; // This task has to always be started first or it'll error
-#if UsingCan 
-Team166CANDrive Team166CANDriveObject;
-#else
-Team166TankDrive Team166TankDriveObject;
+#if not UsingSuitcase
+	#if UsingCan 
+		Team166CANDrive Team166CANDriveObject;
+	#else
+		Team166TankDrive Team166TankDriveObject;
+	#endif
+	
+	#if UsingCan
+		Team166LiftCan Team166LiftCanObject;
+	#else
+		Team166Lift Team166LiftObject;
+	#endif
+		Team166EBrake Team166EBrakeObject;
+		Team166Kicker Team166KickerObject;
+		Team166Banner Team166BannerObject;
+		Team166Sonar Team166SonarObject; 
 #endif
-
-#if UsingCan
-//Team166LiftCan Team166LiftCanObject;
-#else
-//Team166Lift Team166LiftObject;
-#endif
-
-Team166Kicker Team166KickerObject;
-Team166Banner Team166BannerObject;
 Team166Vision Team166VisionObject;
-Team166Sonar Team166SonarObject; 
-Team166EBrake Team166EBrakeObject;
+
 Team166HealthMon Team166HealthMonObject;
 Team166Inclinometer Team166InclinometerObject;
 

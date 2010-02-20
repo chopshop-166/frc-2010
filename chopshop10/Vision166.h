@@ -74,29 +74,30 @@ public:
 	bool IsTargetAcquired(void);
 	//! The bearing in degrees to the angle. 
 	float GetBearing(void);
-	//! Whether the camera is no or off
-	int IsActive(void);
-	//! Controls the output of Team166Vision::IsActive()
-	void SetActive(bool);
 	//! Tries to start the camera using threads
 	void TryStartCamera(bool);
 	//! Captures an image from the camera
 	ColorImage *GetImage();
 	
+	float GetScoreToTargetX();
+	float GetScoreToTargetY();
 // Private functions and attributes
 private:	
 	ColorMode colorMode;
 	
 	//! Target has been acquired since last run
 	bool targetAcquired; 
-	//! Whether the vision task should perform vision processing
-	bool visionActive;
 	//! Whether the image ( Proxy166::GetImage() ) is new or not. 
 	bool staleFlag; 
 	//! Angle horizontally to the target
 	float bearing;
 	//! Angle vertically to the target
 	float tilt; 
+	
+	//! -1.0 to 1.0 score to target x-axis bearing, independent of servo positions, to be passed to the drive functions.
+	float score_to_target_x;
+	//! -1.0 to 1.0 score to target y-axis tilt, independent of servo positions, to be passed to the drive functions.
+	float score_to_target_y;
 	
 	Servo horizontalServo;
 	Servo verticalServo;
@@ -108,7 +109,7 @@ private:
 	static int _StartCameraThreadFunc(void *this_p,int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10);
 	
-	void AcquireTarget(vector<Target>&,float&,float&);
+	void AcquireTarget(vector<Target>&,float&,float&,bool=false);
 	void IsTargetAccquired();
 	void SetServoPositions(float normalizedHorizontal, float normalizedVertical);
 	void AdjustServoPositions(float normDeltaHorizontal, float normDeltaVertical);

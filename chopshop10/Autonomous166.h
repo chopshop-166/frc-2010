@@ -20,8 +20,6 @@
 #include "Robot166.h"
 #include <math.h>
 
-extern Team166Vision Team166VisionObject;
-
 #define AUTONOMOUS_WAIT_TIME (0.050)
 #define SONAR_NEAR (12.5)
 #define AUTONOMOUS_RETREAT_TIME (20)

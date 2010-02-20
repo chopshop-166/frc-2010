@@ -14,6 +14,7 @@
 #include <semLib.h>
 #include "wpilib.h"
 #include "Proxy166.h"
+#include "Runtime166.h"
 #include "Robot166.h"
 
 // To locally enable debug printing: set true, to disable false
@@ -319,21 +320,6 @@ bool Proxy166::GetEbrake() {
 }
 
 /**
- * @brief Set pneumatic air pressure
- * @param pressure Pressure
- */
-void Proxy166::SetPressure(float pressure) {
-	PneumaticPressure = pressure;
-}
-
-/**
- * @brief Obtain pneumatic pressure
- */
-float Proxy166::GetPressure(void) {
-	return PneumaticPressure;
-}
-
-/**
  * @brief Sets Jaguar Current
  * @param Jaguar id
  * @param Jaguar output voltage
@@ -352,6 +338,21 @@ float Proxy166::GetCurrent(int id)
 }
 
 /**
+ * @brief Sets Jaguar Voltage
+ * @param Jaguar id
+ * @param Jaguar output Voltage
+ */
+void Proxy166::SetTemperature(int id, float temperature)
+{
+	Temperature[id] = temperature;
+}
+
+float Proxy166::GetTemperature(int id)
+{
+	return Temperature[id];
+}
+
+/**
  * @brief Sets the Camera Bearing
  * @param down current camera bearing
  */
@@ -367,6 +368,12 @@ float Proxy166::GetCameraBearing() {
 	return CameraBearing;
 }
 
+void Proxy166::SetCameraScoreToTargetX(float score) {
+	CameraScoreX = score;
+}
+float Proxy166::GetCameraScoreToTargetX() {
+	return CameraScoreX;
+}
 /**
  * @brief Initializes semaphors for joysticks and switches, and starts the Proxy166 task.
  */
@@ -428,6 +435,16 @@ void Proxy166::SetImage(ColorImage *img) {
 	image = img;
 }
 
+/**
+ * @brief Sets the vision status.
+ */
+void Proxy166::SetVisionStatus(bool status) {
+	VisionStatus = status;
+}
+
+bool Proxy166::GetVisionStatus() {
+	return VisionStatus;
+}
 
 /**
  * @brief Deletes the cached image.
@@ -537,14 +554,15 @@ int Proxy166::Main(	int a2, int a3, int a4, int a5,
 					int a6, int a7, int a8, int a9, int a10) {
 
 	Robot166 *lHandle = NULL;
+	
 	WaitForGoAhead();
 	
+	lHandle = Robot166::getInstance();
+
 	Timer debugTimer;
 	debugTimer.Start();
-	RegisterCounter(3, 2);
-	RegisterCounter(3, 1);
 	
-	lHandle = Robot166::getInstance();
+	Runtime166 LoopStats;
 	
 	ProxyJoystick old_sticks[NUMBER_OF_JOYSTICKS+1];
 	//Timer debugTimer;
@@ -552,6 +570,7 @@ int Proxy166::Main(	int a2, int a3, int a4, int a5,
 	while(MyTaskInitialized) {
 		// In autonomous, the Autonomous166 task will update relevant values
 		if(lHandle->IsOperatorControl()) {
+			LoopStats.Start();
 			for(int x = 0;x<NUMBER_OF_JOYSTICKS;x++) {
 				old_sticks[x] = GetJoystick(x);
 			}
@@ -560,7 +579,7 @@ int Proxy166::Main(	int a2, int a3, int a4, int a5,
 			SetJoystick(3, driveStickCopilot);
 			
 			vector<int>::iterator it = tracker.begin();
-			while(it != tracker.end()) {
+			while(tracker.size() > 0 && it != tracker.end()) {
 				int joy_id = *it;
 				int button_id = *(it+1);
 				
@@ -575,6 +594,11 @@ int Proxy166::Main(	int a2, int a3, int a4, int a5,
 				//DPRINTF(LOG_DEBUG, "%d.%d %d\n", joy_id, button_id, GetPendingCount(joy_id, button_id));
 				
 				it += 3;
+			}
+			LoopStats.Stop();
+			if(debugTimer.HasPeriodPassed(1.0))) {
+				debugTimer.Reset();
+				printf("Runtime Proxy stats: %s", LoopStats.GenerateStats().c_str());
 			}
 		}
 		// The task ends if it's not initialized

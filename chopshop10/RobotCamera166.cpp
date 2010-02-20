@@ -13,25 +13,29 @@
 #include "WPILib.h"
 #include "BaeUtilities.h"
 #include "RobotCamera166.h"
+#include "Proxy166.h"
 // needed for Camera Init
 #include "AxisCamera.h" 
+#include "AxisCameraParams.h"
 #include "FrcError.h"
 #include "PCVideoServer.h"
 #include "nivision.h" 
+#include "Vision166.h"
 
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
 
+//! Used to fetch the target X and Y positions.
+
 // Create storage space for camera
 AxisCamera *camera166 = 0;
 
-#if 0
 // Camera setup parameters go here
 // Image size (larger images take longer to process)
-ResolutionT resolution = k160x120;  // k640x480, k640x360, k320x240, k160x120
+AxisCameraParams::Resolution_t resolution = AxisCameraParams::kResolution_160x120;  // k640x480, k640x360, k320x240, k160x120
 // Use rotation of 180 if camera is mounted updside down
-RotationT rotation = k0;   // k0, k180
+AxisCameraParams::Rotation_t rotation = AxisCameraParams::kRotation_0;   // k0, k180
 
 /** 
  * start the CameraTask 
@@ -42,8 +46,8 @@ void StartCamera()
 	char *imageName = "166StartPic.png";
 
 	//camera166 = AxisCamera::getInstance();
-	camera166 = &AxisCamera::getInstance();
-	if ( !camera166->isInstance() ) {
+	camera166 = &AxisCamera::GetInstance();
+	if ( 0 == camera166) {
 		DPRINTF( LOG_DEBUG,"Failed to spawn camera task; exiting. Error code %s", 
 				GetVisionErrorText(GetLastVisionError()) );	
 	} else {
@@ -51,7 +55,6 @@ void StartCamera()
 		TakeSnapshot(imageName);
 	}
 }
-#endif
 
 /** 
  * Get an image from camera and store it on the cRIO 
@@ -59,7 +62,6 @@ void StartCamera()
  **/
 void TakeSnapshot(char* imageName)	
 {	
-#if 0
 	/* allow writing to vxWorks target */
 	//Priv_SetWriteFileAllowed(1);   	
 	
@@ -84,22 +86,45 @@ void TakeSnapshot(char* imageName)
 			frcDispose(cameraImage);
 		}
 	}
-#endif
 }
 
-#if 0
 /** 
  * Pass to the camera the configuration settings and store an image on the cRIO 
  * @param ResolutionT camera resolution 
  * @param RotationT camera rotation (k0, k180) 
  **/
-void SetupCamera(ResolutionT res, RotationT rot)	
+void SetupCamera(AxisCameraParams::Resolution_t res, AxisCameraParams::Rotation_t rot)	
 {
-	camera166->writeResolution(res);
-	camera166->writeRotation(rot);
+	camera166->WriteResolution(res);
+	camera166->WriteRotation(rot);
 }
 
+/**
+ * Sets Joystick X and Y values to drive towards the target during Operater mode. 
+ * This function will do nothing if the camera is inactive (Team166VisionObject.IsActive() is false)
+ * This function assumes Tank drive. 
+ * This function will force the calling thread to wait until the Proxy is initialized.
+ */
 void DriveTowardsTarget() {
+	/**
+	 * Power to the left side is proportional to how far to the right the target is.
+	 * Power to the right side is proportional to how far to the left the target is. 
+	 */
 	
+	Proxy166 *pHandle = NULL;
+	
+	// Wait until the Proxy is initialized
+	while(0 == pHandle) {
+		pHandle = Proxy166::getInstance();
+		Wait(0.05);
+	}
+	if(pHandle->GetVisionStatus()) {
+		float bearing = pHandle->GetCameraScoreToTargetX();
+		
+		float distance_left = fabs(1.0 - bearing) / 2.0; // How far to the left the target is
+		float distance_right = fabs(-1.0 - bearing) / 2.0; // How far to the right the target is
+		
+		pHandle->SetJoystickY(DRIVE_JOYSTICK_LEFT, DRIVE_PROPORTIONAL_CONSTANT * distance_right);
+		pHandle->SetJoystickY(DRIVE_JOYSTICK_RIGHT, DRIVE_PROPORTIONAL_CONSTANT * distance_left);	
+	}
 }
-#endif

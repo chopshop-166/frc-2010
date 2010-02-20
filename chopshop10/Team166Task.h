@@ -22,8 +22,7 @@
 #define TEAM166TASK_K_STACKSIZE (64 * 1024) 
 /** Spawned task priority (100) */
 #define TEAM166TASK_K_PRIO (100)
-// Max length of task status string
-#define TEAM166_MAX_STATUS_LENGTH (32)
+
 //
 // Analog Pin layout
 // _MOD refers to cRIO module (1 or 2)
@@ -162,12 +161,6 @@ public:
 	static int FeedWatchDog(void);
 	
 	static void PrintInactive(void);
-	
-	// Method to set the status of the task
-	void SetStatus(char *Status);
-	
-	// Get task status
-	char *GetStatus(void);
 
 // Data members
 public:
@@ -196,7 +189,5 @@ private:
 	unsigned int last_print_sec;  // Last second we printed out a log message
 	unsigned int loop_calls;      // Times we've been called to wait
 	
-	// Miscellaneous
-	char T_Status[TEAM166_MAX_STATUS_LENGTH]; // Task Current Status
 };
 #endif // !defined(_TEAM166TASK_H)

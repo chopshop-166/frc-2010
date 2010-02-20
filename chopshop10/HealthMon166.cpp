@@ -128,7 +128,7 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 	// Whether the inclinometer's showing proper values
 	bool InclinometerStatus = false;
 	// Whether the camera is up
-	bool CameraStatus = Team166VisionObject.IsActive();
+	bool CameraStatus = proxy->GetVisionStatus();
 	// Whether pressure sensor's working properly
 	bool PressureStatus = false;
 	// Whether banner's working properly

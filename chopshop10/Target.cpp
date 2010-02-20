@@ -4,7 +4,7 @@
 #include "Target.h"
 #include <algorithm>
 #include <math.h>
-#if 0
+
 // These parameters set ellipse finding in the NI imaq (Image Aquisition) library.
 // Refer to the CVI Function Reference PDF document installed with LabVIEW for
 // additional information.
@@ -66,14 +66,14 @@ int compareTargets(Target t1, Target t2)
 vector<Target> Target::FindCircularTargets(ColorImage *image)
 {
 	wpi_assert(image != NULL);
-	int width = image->getWidth();
-	int height = image->getHeight();
+	int width = image->GetWidth();
+	int height = image->GetHeight();
 
 	vector<Target> sortedTargets;
 	
 	// get the luminance plane only for the image to make the code
 	// insensitive to lighting conditions.
-	MonoImage  *luminancePlane = image->getLuminancePlane();
+	MonoImage  *luminancePlane = image->GetLuminancePlane();
 	vector<EllipseMatch> *results = luminancePlane->DetectEllipses(&ellipseDescriptor, 
 																	&curveOptions,
 																	&shapeOptions,
@@ -159,4 +159,3 @@ void Target::Print()
 						m_majorRadius, m_minorRadius,
 						m_rotation, m_score, m_bothFound);
 }
-#endif

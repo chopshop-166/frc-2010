@@ -14,7 +14,6 @@
 #define _HEALTH166_H
 #include "WPILib.h"
 #include "Robot166.h"
-extern Team166Vision Team166VisionObject;
 //
 // This constant defines how often we want this task to run in the form
 // of miliseconds. Max allowed time is 999 miliseconds.
