@@ -11,7 +11,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "Autonomous166.h"
-#include "Vision166.h"
+#include "RobotCamera166.h"
 #include "Proxy166.h"
 #include "Robot166.h"
 
@@ -110,8 +110,12 @@ void Autonomous166::Autonomous(void) {
 				retreatcounter = AUTONOMOUS_RETREAT_TIME;
 				break;
 			}
-			proxy->SetJoystickY(1,0);
-			proxy->SetJoystickY(2,0);
+			if(proxy->GetCameraScoreToTargetX()) {
+				state = sPoised;
+				lHandle->DriverStationDisplay("Ready to kick");
+			} else {
+				DriveTowardsTarget();
+			}
 			break;
 			
 		// We have a ball and are aligned with the goal
@@ -171,10 +175,9 @@ void Autonomous166::Autonomous(void) {
 		// Wait for the end of Autonomous
 		case sGoGoGo:
 			if( banner ) {
-				// great, we've reached the end of Autonomous. Naptime!
+				// Great, we've reached the end of Autonomous. Naptime!
 				state = sResting;
 				lHandle->DriverStationDisplay("ZZZZZZZZZZZZZZZZZZZZZ");
-				retreatcounter = AUTONOMOUS_RETREAT_TIME;
 				break;
 			}
 			proxy->SetJoystickY(1,0);
