@@ -256,7 +256,7 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 				
 				// This method should only be called during Autonomous, but for testing
 				// we should call it during any mode. 
-				DriveTowardsTarget();
+				//DriveTowardsTarget();
 				
 				pHandle->DeleteImage();
 			}
