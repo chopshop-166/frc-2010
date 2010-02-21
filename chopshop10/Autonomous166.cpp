@@ -68,7 +68,7 @@ void Autonomous166::Autonomous(void) {
 		camerascore = proxy->GetCameraScoreToTargetX();
 
 		// Output changing debug values
-		printf("%f\t%f\t%f\r",proxy->GetJoystickY(1),proxy->GetJoystickY(2),camerascore);
+		//printf("%f\t%f\t%f\r",proxy->GetJoystickY(1),proxy->GetJoystickY(2),camerascore);
 		
 		switch(state) {
 		
