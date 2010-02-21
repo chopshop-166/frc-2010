@@ -64,7 +64,7 @@ unsigned int BannerLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct bbuf166 *bb = (struct bbuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %f, %f, %f\n", bb->tp.tv_sec, bb->tp.tv_nsec, bb->T166_BANNER_VALUE);
+	fprintf(ofile, "%u, %u, %f\n", bb->tp.tv_sec, bb->tp.tv_nsec, bb->T166_BANNER_VALUE);
 	
 	// Done
 	return (sizeof(struct bbuf166));
