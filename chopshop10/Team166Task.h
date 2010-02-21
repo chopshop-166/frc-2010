@@ -82,6 +82,13 @@
 #define T166_LIFT_PNEUMATIC_ACTIVATE (10)
 
 //
+// Relay Layout
+//
+/** Channels for Relays */
+#define T166_VACUUM_RELAY_CHANNEL (1)
+
+
+//
 // CAN bus layout
 //
 /** Number of Jags used */
