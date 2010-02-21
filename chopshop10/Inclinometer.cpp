@@ -31,7 +31,7 @@ struct incbuf166
 class InclinometerLog : public MemoryLog166
 {
 public:
-	InclinometerLog() : MemoryLog166(128*1024, INCLINOMETER_CYCLE_TIME, "inclinometer") {return;};
+	InclinometerLog() : MemoryLog166(sizeof(struct incbuf166), INCLINOMETER_CYCLE_TIME, "inclinometer") {return;};
 	~InclinometerLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
@@ -63,7 +63,7 @@ unsigned int InclinometerLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct incbuf166 *ib = (struct incbuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %f, %f, %f\n", ib->tp.tv_sec, ib->tp.tv_nsec, ib->angle_inc);
+	fprintf(ofile, "%u, %u, %f\n", ib->tp.tv_sec, ib->tp.tv_nsec, ib->angle_inc);
 	
 	// Done
 	return (sizeof(struct incbuf166));
@@ -89,8 +89,7 @@ Team166Inclinometer::~Team166Inclinometer(void)
 int Team166Inclinometer::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {
-		
-		
+			
 	Robot166 *lHandle;            // Local handle
 	Proxy166 *proxy;				// Proxy handle
 	InclinometerLog sl;                   // log
