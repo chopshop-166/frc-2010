@@ -15,6 +15,8 @@
 using namespace std;
 
 /**
+ * @class Runtime166
+ * 
  * Basic runtime class for basic statistics, debugging help. 
  * Usage: Declare an instance of this class, then call Start() when you want to begin
  * tracking, then Stop() when you want to stop tracking. This class will keep

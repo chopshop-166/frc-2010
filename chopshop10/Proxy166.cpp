@@ -140,6 +140,12 @@ int Proxy166::Main(	int a2, int a3, int a4, int a5,
 	return 0;
 }
 
+/**
+ * @brief Sets the cached X axis value of a joystick.
+ * @param joy_id Which joystick to set the cached X axis value for.
+ * @param value What to set the cached value as.
+ */
+
 void Proxy166::SetJoystickX(int joy_id, float value) {
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
 	//semTake(JoystickLocks[joy_id], WAIT_FOREVER);
@@ -584,6 +590,12 @@ void Proxy166::UnregisterCounter(int joystick_id, int button_id) {
 	}
 }
 
+/**
+ * @brief Whether a joystick is registered for tracking
+ * @param joystick_id What joystick to check
+ * @param button_id What button on the joystick to check.
+ * @return Whether it is registered.
+ */
 bool Proxy166::IsRegistered(int joystick_id, int button_id) {
 	wpi_assert(joystick_id < NUMBER_OF_JOYSTICKS && joystick_id >= 0);
 	wpi_assert(button_id < NUMBER_OF_JOY_BUTTONS && button_id >= 0);
