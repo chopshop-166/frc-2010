@@ -40,7 +40,6 @@ public:
 
 private:
 	bool Cocked;
-	DigitalInput Kicker_Limit_Switch;
 
 };
 

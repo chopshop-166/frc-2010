@@ -77,10 +77,9 @@ unsigned int KickerLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-Team166Kicker::Team166Kicker(void): Kicker_Limit_Switch(T166_KICKER_LIMIT_SWITCH)
+Team166Kicker::Team166Kicker(void)
 {
 	Start((char *)"166KickerTask", KICKER_CYCLE_TIME);
-	Cocked = Kicker_Limit_Switch.Get();
 };
 	
 // task destructor
@@ -103,6 +102,8 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 	enum {WFP, LATCH, LWAIT, LREL, DSREADY, TRIGGER, KWAIT, KREL} sState = WFP;  // Solenoid state
 	int lwait;                                      // Latch release wait counter
     int kwait;                                      // Kicker release wait counter
+	DigitalInput Latch_Magnet_Sensor (T166_LATCH_MAGNET_SENSOR);
+	
 	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 Kicker task\n");
@@ -124,7 +125,7 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		
 		// Get limit switch value
-		Cocked = Kicker_Limit_Switch.Get();
+		Cocked = Latch_Magnet_Sensor.Get();
 
         /*
          *  State machine to control the pistons.
@@ -166,13 +167,11 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
         // Wait for latch
         case LWAIT:
         {
-        	// Have we waited enough loops?
-        	if (lwait++ < 10){
-        		
-        		// We haven't waited long enough.   :(   Let's try again later.
+        	// Is the magnet sensor ready? Are we ready to override it?
+        	if (Latch_Magnet_Sensor.Get() && !(lwait++ < T166_LATCH_OVERRIDE)){
+        		// Keep waiting
         		break;
-        		}
-        	
+        	}
         	// We've waited long enough!!   :D   We're done here.
         	// Intentionally fall through to LREL
         	sState = LREL;
