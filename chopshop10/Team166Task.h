@@ -84,9 +84,20 @@
 //
 // Relay Layout
 //
-/** Channels for Relays */
+/** Channels for Vacuum */
 #define T166_VACUUM_RELAY_CHANNEL (1)
+/** Channels for Compressor */
+#define T166_COMPRESSOR_RELAY_CHANNEL (2)
 
+//
+// Pneumatics Bumper */
+//
+/** Channel for Latch piston */
+#define T166_LATCH_PISTON (1)
+/** Channel for Kicker piston */
+#define T166_KICKER_PISTON (2)
+/** Channel for Lift Piston */
+#define T166_LIFT_PISTON (3)
 
 //
 // CAN bus layout
