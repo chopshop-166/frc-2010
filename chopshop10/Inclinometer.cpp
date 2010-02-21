@@ -24,10 +24,7 @@
 struct incbuf166
 {
 	struct timespec tp;               // Time of snapshot
-	float x_inc;                     // inclinometer x value
-	float y_inc;					//  inclinometer y value
-	float inc_vector;
-	
+	float angle_inc;                 // Angle of the inclinometer   
 };
 
 //  Memory Log
@@ -39,11 +36,11 @@ public:
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
 			FILE *outputFile);        // and then stored in this file
-	unsigned int PutOne(float x_inc, float y_inc, float inc_vector);     // Log the x and y values
+	unsigned int PutOne(int angle_inc);     // Log the x and y values
 };
 
 // Write one buffer into memory
-unsigned int InclinometerLog::PutOne(float x_inc, float y_inc, float inc_vector)
+unsigned int InclinometerLog::PutOne(int angle_inc)
 {
 	struct incbuf166 *ob;               // Output buffer
 	
@@ -52,9 +49,7 @@ unsigned int InclinometerLog::PutOne(float x_inc, float y_inc, float inc_vector)
 		
 		// Fill it in.
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
-		ob->x_inc = x_inc;
-		ob->y_inc = y_inc;
-		ob->inc_vector = inc_vector;
+		ob->angle_inc = angle_inc;
 		return (sizeof(struct incbuf166));
 	}
 	
@@ -68,7 +63,7 @@ unsigned int InclinometerLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct incbuf166 *ib = (struct incbuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %f, %f, %f\n", ib->tp.tv_sec, ib->tp.tv_nsec, ib->x_inc, ib->y_inc, ib->inc_vector);
+	fprintf(ofile, "%u, %u, %f, %f, %f\n", ib->tp.tv_sec, ib->tp.tv_nsec, ib->angle_inc);
 	
 	// Done
 	return (sizeof(struct incbuf166));
@@ -112,6 +107,7 @@ int Team166Inclinometer::Main(int a2, int a3, int a4, int a5,
 	
 	// Register the proxy
 	proxy = Proxy166::getInstance();
+	int inclinometerAngle;
 	
 	int printstop=0;
 	Inclinometer.Start();
@@ -120,8 +116,8 @@ int Team166Inclinometer::Main(int a2, int a3, int a4, int a5,
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		
-
-		proxy->SetInclinometer(Inclinometer.Get());
+		inclinometerAngle = Inclinometer.Get();
+		proxy->SetInclinometer(inclinometerAngle);
 		
 		if ((++printstop)%(1000/INCLINOMETER_CYCLE_TIME)==0)
 		{
@@ -129,7 +125,7 @@ int Team166Inclinometer::Main(int a2, int a3, int a4, int a5,
 		}
 		
 		// Should we log this value?
-		sl.PutOne(0, 0, 0);
+		sl.PutOne(inclinometerAngle);
 		
 		// Wait for our next lap
 		WaitForNextLoop();		
