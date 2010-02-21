@@ -96,16 +96,6 @@
 #define T166_LIFT_PISTON (3)
 
 //
-// Pneumatics */
-//
-/** Low pressure limit */
-#define T166_PNEU_LOW (60.0)
-/** High pressure limit */
-#define T166_PNEU_HIGH (80.0)
-/** Minimum kicking pressure */
-#define T166_PNEU_KICK_MIN (50.0)
-
-//
 // CAN bus layout
 //
 /** Number of Jags used */
@@ -123,11 +113,27 @@
 // USB port layout
 //
 /** First stick is in USB port #1 */
-#define T166_USB_STICK_1 (1)                
+#define T166_USB_STICK_1 (1)
 /** Second stick is in USB port #2 */
-#define T166_USB_STICK_2 (2)   
+#define T166_USB_STICK_2 (2)
 /** Third stick is in USB port #3 */
-#define T166_USB_STICK_3 (3)   
+#define T166_USB_STICK_3 (3)
+
+//
+// Joystick buttons
+//
+// Ebrake trigger
+#define T166_EBRAKE_BUTTON (1)
+// Lift button
+#define T166_LIFT_BUTTON (2)
+// Autobalancing button
+#define T166_AUTOBALANCE_BUTTON (3)
+// Kicker button
+#define T166_KICKER_BUTTON (4)
+// Vacuum botton
+#define T166_VACUUM_BUTTON (5)
+// Camera snapshot button
+#define T166_CAMERA_BUTTON (8)
 
 //
 // Max tasks we support being started in Robot166
@@ -158,8 +164,7 @@ public:
 	virtual ~Team166Task();
 	
 	//! Sets the loop exit status 
-	void SetStatus(const char* = ""); // Set a default to null string for success.
-	const char* GetStatus();
+	void SetStatus(int,const char*);
 	
 	// General start routine; needs to be called by target constructor
 	int Start(char *tname, unsigned int loop_interval);
@@ -193,7 +198,8 @@ public:
 	int MyTaskInitialized;      // This task has been initialized
 	int MyWatchDog;             // Feeding my own watch dog
 	int MyTaskIsEssential;      // Flag indicating if this task is essential
-	const char* MyStatusString; // Status string
+	int MyStatus;
+	const char* MyStatusString;
 	char *MyName;               // Name of this task
 	int MissedWatchDog;         // Missed watchdog count
 	float MyLoopInterval;       // Timing interval for loop

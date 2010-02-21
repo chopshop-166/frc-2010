@@ -18,6 +18,9 @@
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(true)dprintf
 
+// If we're using a camera, enable this
+#define UsingCamera (true)
+
 Autonomous166::Autonomous166() {
 	
 }
@@ -51,7 +54,9 @@ void Autonomous166::Autonomous(void) {
 	int banner=0;
 	int inclinometer=0;
 	float sonar=0;
+#if UsingCamera
 	float camerascore=0;
+#endif
 	
 	// Starting location. 1 is nearest, 3 is furthest from our goals
 	const unsigned short loc = DriverStation::GetInstance()->GetLocation();
@@ -65,10 +70,9 @@ void Autonomous166::Autonomous(void) {
 		banner = proxy->GetBanner();
 		sonar = proxy->GetSonarDistance();
 		inclinometer = proxy->GetInclinometer();
+#if UsingCamera
 		camerascore = proxy->GetCameraScoreToTargetX();
-
-		// Output changing debug values
-		//printf("%f\t%f\t%f\r",proxy->GetJoystickY(1),proxy->GetJoystickY(2),camerascore);
+#endif
 		
 		switch(state) {
 		
@@ -115,18 +119,23 @@ void Autonomous166::Autonomous(void) {
 				retreatcounter = AUTONOMOUS_RETREAT_TIME;
 				break;
 			}
-			if(!camerascore) {
+#if UsingCamera
+			if( (camerascore >= -0.03) || (camerascore <= 0.03) ) {
 				state = sPoised;
-				lHandle->DriverStationDisplay("Ready to kick");
+				lHandle->DriverStationDisplay("Kicking!");
 			} else {
 				DriveTowardsTarget();
 			}
+#else
+			state = sPoised;
+			lHandle->DriverStationDisplay("Kicking!");
+#endif
 			break;
 			
 		// We have a ball and are aligned with the goal
 		case sPoised:
 			// Tell the kicker to kick
-			proxy->SetButton(3,1,true);
+			proxy->SetButton(3,T166_KICKER_BUTTON,true);
 			// Check whether we've kicked all the balls in the area
 			if( ++kicked == loc ) {
 				if( loc == 3 ) { // Furthest zone from goal
