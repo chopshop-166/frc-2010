@@ -103,6 +103,14 @@
 #include <stdio.h>
 #include "WPILib.h"
 
+#include "errnoLib.h"
+#include "inetLib.h"
+#include "moduleLib.h"
+#include "sockLib.h"
+#include "semLib.h"
+#include "sysSymTbl.h"
+#include "taskLib.h"
+
 //
 //	Below here, code that actually emulates the VxWorks routines will
 //	be created. It probably will make sense to add files for emulation
@@ -110,6 +118,68 @@
 //
 
 
-
-
+int    accept (int s, struct sockaddr *addr, int *addrlen) {return 0;};
+int  clock_gettime (clockid_t clock_id, struct timespec *tp) {return 0;};
+STATUS close (int) {return 0;};
+STATUS         connect (int s, struct sockaddr *name, int namelen) {return 0;};
+//cplusDemangle'
+int      errnoGet (void) {return 0;};
+//FRC_NetworkCommunication_observeUserProgramStarting'
+//getCommonControlData'
+//getDynamicControlData'
+//imaqGetLastError'
+unsigned long   inet_addr (char *){return 0;};
+//LedInput'
+//LedOutput'
+STATUS         listen (int s, int backlog){return 0;};
+MODULE_ID    moduleFindByName (char * moduleName){return 0;};
+//moduleNameFindBySymbolName'
+int      nanosleep (const struct timespec *rqtp, struct timespec *rmtp){return 0;};
+//overrideIOConfig'
+//pcre_compile'
+//pcre_exec'
+void    printErrno (int errNo) {};
+//Priv_ReadJPEGString_C'
+//Priv_SetWriteFileAllowed'
+int    recv (int s, char *buf, int bufLen, int flags){return 0;};
+SEM_ID     semBCreate    (int options, SEM_B_STATE initialState){return 0;};
+STATUS     semDelete     (SEM_ID semId){return 0;};
+STATUS     semFlush      (SEM_ID semId){return 0;};
+STATUS     semGive       (SEM_ID semId){return 0;};
+SEM_ID     semMCreate    (int options){return 0;};
+STATUS     semTake       (SEM_ID semId, int timeout){return 0;};
+int    send (int s, const char *buf, int bufLen, int flags){return 0;};
+//setErrorData'
+//setStatusData'
+int    socket (int domain, int type, int protocol);
+ STATUS	symFindByValue(SYMTAB_ID symTblId, UINT value, char * name, 
+			       int * pValue, SYM_TYPE * pType){return 0;};
+int     sysClkRateGet (){return 0;};
+SYMTAB_ID    sysSymTbl;
+STATUS	taskDelete 	(int tid){return 0;};
+int	taskIdSelf 	(void){return 0;};
+STATUS	taskIdVerify 	(int tid){return 0;};
+BOOL	taskIsReady 	(int tid){return 0;};
+BOOL	taskIsSuspended (int tid){return 0;};
+STATUS taskKill(int,int){return 0;};
+STATUS   taskLock        (void){return 0;};
+int	taskNameToId 	(char * name){return 0;};
+STATUS	taskPriorityGet (int tid, int * pPriority){return 0;};
+STATUS	taskPrioritySet (int tid, int newPriority){return 0;};
+STATUS   taskRegsGet     (int tid, REG_SET * pRegs){return 0;};
+STATUS	taskRestart 	(int tid){return 0;};
+STATUS	taskResume 	(int tid){return 0;};
+int	taskSpawn 	(char * name, int priority, int options, 
+			   	 int stackSize, FUNCPTR entryPt, int arg1,  
+			   	 int arg2, int arg3, int arg4, int arg5, 
+			   	 int arg6, int arg7, int arg8, int arg9, 
+				 int arg10){return 0;};
+STATUS	taskSuspend 	(int tid){return 0;};
+STATUS   taskUnlock      (void){return 0;};
+STATUS taskDelay(int){return 0;};
+STATUS	taskUnsafe	(void){return 0;};
+//trcStack'
+STATUS unldByModuleId(MODULE_ID moduleId, int options){return 0;};
+//UserSwitchInput'
+int    write (int, char *, size_t){return 0;};
 

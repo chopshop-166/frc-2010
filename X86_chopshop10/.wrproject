@@ -155,7 +155,7 @@
             <stringAttribute key="BLD::Info|Tool|C++-Linker|dbgFlags|Solaris-gnu-native-2.9x" value=""/>
             <stringAttribute key="BLD::Info|Tool|C++-Linker|dbgFlags|Solaris-gnu-native-3.x-4.x" value=""/>
             <stringAttribute key="BLD::Info|Tool|C++-Linker|dbgFlags|Windows-gnu-native-2.9x" value=""/>
-            <stringAttribute key="BLD::Info|Tool|C++-Linker|dbgFlags|Windows-gnu-native-3.x-4.x" value=""/>
+            <stringAttribute key="BLD::Info|Tool|C++-Linker|dbgFlags|Windows-gnu-native-3.x-4.x" value="-g"/>
             <stringAttribute key="BLD::Info|Tool|C++-Linker|dbgFlags|Windows-msvc-native" value="-DEBUG"/>
             <stringAttribute key="BLD::Info|Tool|C++-Linker|derivedSigs|Linux-gnu-native-2.9x" value="*"/>
             <stringAttribute key="BLD::Info|Tool|C++-Linker|derivedSigs|Linux-gnu-native-3.x-4.x" value="*"/>
@@ -231,7 +231,7 @@
             <stringAttribute key="BLD::Info|Tool|C-Linker|dbgFlags|Solaris-gnu-native-2.9x" value=""/>
             <stringAttribute key="BLD::Info|Tool|C-Linker|dbgFlags|Solaris-gnu-native-3.x-4.x" value=""/>
             <stringAttribute key="BLD::Info|Tool|C-Linker|dbgFlags|Windows-gnu-native-2.9x" value=""/>
-            <stringAttribute key="BLD::Info|Tool|C-Linker|dbgFlags|Windows-gnu-native-3.x-4.x" value=""/>
+            <stringAttribute key="BLD::Info|Tool|C-Linker|dbgFlags|Windows-gnu-native-3.x-4.x" value="-g"/>
             <stringAttribute key="BLD::Info|Tool|C-Linker|dbgFlags|Windows-msvc-native" value="-DEBUG"/>
             <stringAttribute key="BLD::Info|Tool|C-Linker|derivedSigs|Linux-gnu-native-2.9x" value="*"/>
             <stringAttribute key="BLD::Info|Tool|C-Linker|derivedSigs|Linux-gnu-native-3.x-4.x" value="*"/>

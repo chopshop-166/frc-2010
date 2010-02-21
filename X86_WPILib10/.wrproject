@@ -6,9 +6,11 @@
             <listAttribute key="BLD::Info|GlobalMacros">
                 <stringAttribute value="PROJECT_TYPE"/>
                 <stringAttribute value="DEFINES"/>
+                <stringAttribute value="EXPAND_DBG"/>
             </listAttribute>
             <stringAttribute key="BLD::Info|GlobalMacro|DEFINES" value="-U__DEPRECATED -U__STRICT_ANSI__"/>
-            <stringAttribute key="BLD::Info|GlobalMacro|PROJECT_TYPE" value="APP"/>
+            <stringAttribute key="BLD::Info|GlobalMacro|EXPAND_DBG" value="0"/>
+            <stringAttribute key="BLD::Info|GlobalMacro|PROJECT_TYPE" value="DKM"/>
             <listAttribute key="BLD::Info|Incl|Linux-gnu-native-2.9x"/>
             <listAttribute key="BLD::Info|Incl|Linux-gnu-native-3.x-4.x"/>
             <listAttribute key="BLD::Info|Incl|Solaris-gnu-native-2.9x"/>
