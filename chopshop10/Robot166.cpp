@@ -27,6 +27,7 @@
 #include "EBrake166.h"
 #include "HealthMon166.h"
 #include "Inclinometer.h"
+#include "Pneumatics166.h"
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
@@ -52,6 +53,8 @@ Proxy166 Team166ProxyObject; // This task has to always be started first or it'l
 	Team166Banner Team166BannerObject;
 	Team166Sonar Team166SonarObject;
 	Team166Inclinometer Team166InclinometerObject;
+	Pneumatics166 Team166PneumaticsObject;
+	
 #endif
 Team166Vision Team166VisionObject;
 Team166HealthMon Team166HealthMonObject;
