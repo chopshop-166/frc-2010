@@ -23,6 +23,9 @@ struct pbuf166
 {
 	struct timespec tp;               // Time of snapshot
 	// Any values that need to be logged go here
+	float pressure;                   // psi
+	bool compressor_on;
+	
 };
 
 //  Memory Log
@@ -34,11 +37,11 @@ public:
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
 			FILE *outputFile);        // and then stored in this file
-	unsigned int PutOne(float ppressure);        // Log the values needed-add in arguments
+	unsigned int PutOne(float ppressure, bool compresson_on);        // Log the values needed-add in arguments
 };
 
 // Write one buffer into memory
-unsigned int PneumaticsLog::PutOne(void)
+unsigned int PneumaticsLog::PutOne(float ppress, bool c_on)
 {
 	struct pbuf166 *ob;               // Output buffer
 	
@@ -48,6 +51,8 @@ unsigned int PneumaticsLog::PutOne(void)
 		// Fill it in.
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
 		// Add any values to be logged here
+		ob->pressure = ppress;
+		ob->compressor_on = c_on;
 		return (sizeof(struct pbuf166));
 	}
 	
@@ -61,7 +66,7 @@ unsigned int PneumaticsLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct pbuf166 *ab = (struct pbuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u\n", ab->tp.tv_sec, ab->tp.tv_nsec); // Add values here
+	fprintf(ofile, "%u, %u, %f, %d\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->pressure, ab->compressor_on); // Add values here
 	
 	// Done
 	return (sizeof(struct pbuf166));
@@ -273,7 +278,7 @@ int Pneumatics166::Main(int a2, int a3, int a4, int a5,
 #endif	
 		
         // Logging any values
-		sl.PutOne();
+		sl.PutOne(ppressure, CompressorOn);
 		
 		// Wait for our next lap
 		WaitForNextLoop();		
