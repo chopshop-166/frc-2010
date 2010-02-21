@@ -43,7 +43,6 @@ public:
 private:
 	
 	CANJaguar lift_jag;
-//	DigitalInput Lift_TOP_Limit_Switch;
 	DigitalInput Lift_BOTTOM_Limit_Switch;
 //	Team166CANDrive* CANDriveHandle;
 	

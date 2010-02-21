@@ -106,9 +106,11 @@ int Team166Vacuum::Main(int a2, int a3, int a4, int a5,
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		
-		if ((proxy->GetSonarDistance() <= 15) || (proxy->GetButton(3,5)))
+		// Is there something within 15 inches
+		// is the 5th button on the copilot joystick pressed?
+		if ((proxy->GetSonarDistance() <= 15) || (proxy->GetButton(3,T166_VACUUM_BUTTON)))
 		{
+			// Turn motor on
 			Vacuum_Relay.Set(Relay::kOn);
 	        // Logging any values
 			sl.PutOne();
@@ -117,6 +119,7 @@ int Team166Vacuum::Main(int a2, int a3, int a4, int a5,
 			WaitForNextLoop();	
 			continue;
 		}
+		// Turn motor off
 		Vacuum_Relay.Set(Relay::kOff);
 		
         // Logging any values

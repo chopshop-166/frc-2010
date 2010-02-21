@@ -25,10 +25,10 @@
 // Sample in memory buffer
 struct abuf166
 {
-	struct timespec tp;              // Time of snapshot
-	float x_acc;                     // accelerometer x value
-	float y_acc;					 // accelerometer y value
-	float acc_vector;
+	struct timespec tp;             // Time of snapshot
+	int liftstate;					// State of lift
+	float JoyY;						// Position of Joystick
+	bool limit;						// State of limit switch
 	
 };
 
@@ -41,11 +41,11 @@ public:
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
 			FILE *outputFile);        // and then stored in this file
-	unsigned int PutOne(float x_acc, float y_acc, float acc_vector);     // Log the x and y values
+	unsigned int PutOne(int liftstate, float JoyY, bool limit);     // Log the x and y values
 };
 
 // Write one buffer into memory
-unsigned int LiftCanLog::PutOne(float x_acc, float y_acc, float acc_vector)
+unsigned int LiftCanLog::PutOne(int liftstate, float JoyY, bool limit)
 {
 	struct abuf166 *ob;               // Output buffer
 	
@@ -54,9 +54,9 @@ unsigned int LiftCanLog::PutOne(float x_acc, float y_acc, float acc_vector)
 		
 		// Fill it in.
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
-		ob->x_acc = x_acc;
-		ob->y_acc = y_acc;
-		ob->acc_vector = acc_vector;
+		ob->liftstate = liftstate;
+		ob->JoyY = JoyY;
+		ob->limit = limit;
 		return (sizeof(struct abuf166));
 	}
 	
@@ -69,7 +69,7 @@ unsigned int LiftCanLog::DumpBuffer(char *nptr, FILE *ofile)
 {
 	struct abuf166 *ab = (struct abuf166 *)nptr;
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %f, %f, %f\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->x_acc, ab->y_acc, ab->acc_vector);
+	fprintf(ofile, "%u, %u, %d, %f, %d\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->liftstate, ab->JoyY, ab->limit);
 	
 	// Done
 	return (sizeof(struct abuf166));
@@ -98,6 +98,17 @@ int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
 	LiftCanLog sl;                   // log
 	Proxy166 *proxy;
 	
+	// State of Lift state machine
+	enum {REST, EJECT, EJECT_WAIT, WINCHING } lstate = REST;
+	
+	// Defines Solenoid for Lift piston
+	Solenoid Lift_Solenoid(T166_LIFT_PISTON);
+	
+	// Wait counter
+	int ejectwaitcount;
+	float JoyY;
+	bool limit;
+	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 Lift task\n");
 	
@@ -110,44 +121,70 @@ int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
 	
 	proxy=Proxy166::getInstance();
 	
-	bool limit;
 	int valuethrottle=0;
 	
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		
-		//gives the values for the desired lift motor speed
-			limit = Lift_BOTTOM_Limit_Switch.Get();
-			
-			if ((limit == true) || (proxy->GetButton(3,2) == false)){
-				lift_jag.Set(0);
-				
-		    	// Should we log this value?
-				sl.PutOne(0, 0, 0);
-				
-				// Wait for our next lap
-				WaitForNextLoop();
-				continue;
-				
+		switch (lstate) {
+			// Waiting for button to be pressed
+			case REST: {
+				// Check if the button is pressed
+				if (proxy->GetButton(3,T166_LIFT_BUTTON) == true) {
+					// Pressurize the cylinder
+					lstate = EJECT;
+				}
+				else {
+					break;
+				}
 			}
-			if (proxy->GetButton(3,2) == true) {
-				lift_jag.Set(proxy->GetJoystickY(3));
-				// Should we log this value?
-				sl.PutOne(0, 0, 0);
-				
-				// Wait for our next lap
-				WaitForNextLoop();
-				continue;
+			// Intiate ejecton of piston
+			case EJECT: {
+				// Open solenoid, to fill cylinder
+				Lift_Solenoid.Set(true);
+				// start wait timer
+				ejectwaitcount = 0;
+				break;
 			}
-	
-		if ((++valuethrottle)% (1000/LIFT_CYCLE_TIME)==0)
-		{
-			proxy->SetCurrent(T166_LIFT_MOTOR_CAN,lift_jag.GetOutputCurrent());
+			// Wait for piston to be ejected
+			case EJECT_WAIT: {
+				// Check if we have waited long enough
+				if (ejectwaitcount++ == 200/LIFT_CYCLE_TIME)
+				{
+					// We have waited long enough, release pressure 
+					Lift_Solenoid.Set(false);
+					// Let us control the winch
+					lstate = WINCHING;
+				}
+				break;
+			}
+			// Allow Operator to control winch
+			case WINCHING: {
+				// Get the value of the limit switch
+				limit = Lift_BOTTOM_Limit_Switch.Get();
+				// Get the value of the joystick
+				JoyY = proxy->GetJoystickY(3);
+				// only get current once a second
+				if ((++valuethrottle)% (1000/LIFT_CYCLE_TIME)==0)
+				{
+					proxy->SetCurrent(T166_LIFT_MOTOR_CAN,lift_jag.GetOutputCurrent());
+				}
+				// Make sure limit is not pressed
+				if (limit == true) {
+					// If it is go back to rest
+					lstate = REST;
+				}
+				else {
+					// Set motor to joystick axis
+					lift_jag.Set(JoyY);
+				}
+				break;
+			}
 		}
-
+		
         // Should we log this value?
-		sl.PutOne(0, 0, 0);
+		sl.PutOne(lstate, JoyY, limit);
 		
 		// Wait for our next lap
 		WaitForNextLoop();

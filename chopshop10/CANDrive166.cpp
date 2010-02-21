@@ -141,7 +141,7 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 			leftCurrent = leftJag.GetOutputCurrent();
 			rightCurrent = rightJag.GetOutputCurrent();
 		}
-		if( proxy->GetButton(1,3) || proxy->GetButton(2,3)) {
+		if( proxy->GetButton(1,T166_AUTOBALANCE_BUTTON) || proxy->GetButton(2,T166_AUTOBALANCE_BUTTON)) {
 			if(proxy->GetInclinometer() < -10) {
 				left = 0.25;
 				right = -0.25;

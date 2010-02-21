@@ -100,7 +100,6 @@ int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 	lHandle = Robot166::getInstance();
 	lHandle->RegisterLogger(&sl);
 	
-	unsigned printstop=0;
 	int valuethrottle=0;
 	float myCurrent;
 	int sent1=0;
@@ -115,11 +114,12 @@ int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 			myCurrent = Ebrake_Can.GetOutputCurrent();
 		}
 		
-		if ((proxy->GetButton(1,1) == true) || (proxy->GetButton(2,1) == true))
+		if ((proxy->GetButton(1,T166_EBRAKE_BUTTON) == true) || (proxy->GetButton(2,T166_EBRAKE_BUTTON) == true))
         {
 			if (!sent1)
 			{
 				Ebrake_Can.Set(-.3);
+				lHandle->DriverStationDisplay("Down");
 				sent1=1;
 				sent2=0;
 			}
@@ -133,6 +133,7 @@ int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 		if (!sent2)
 		{
 			Ebrake_Can.Set(.3);
+			lHandle->DriverStationDisplay("Up");
 			sent1=0;
 			sent2=1;
 		}
