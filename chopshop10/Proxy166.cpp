@@ -563,6 +563,9 @@ int Proxy166::Main(	int a2, int a3, int a4, int a5,
 	
 	Runtime166 Loop;
 	
+	RegisterCounter(3, 1);
+	RegisterCounter(3, 2);
+	
 	ProxyJoystick old_sticks[NUMBER_OF_JOYSTICKS+1];
 	
 	while(MyTaskInitialized) {
@@ -591,7 +594,8 @@ int Proxy166::Main(	int a2, int a3, int a4, int a5,
 			}
 			Loop.Stop();
 			if(debugTimer.HasPeriodPassed(1.0)) {
-				DPRINTF(LOG_DEBUG, "Runtime debug info: %s", Loop.GetStats());
+				DPRINTF(LOG_DEBUG, "Runtime debug info: %s\n", Loop.GetStats());
+				Loop.Reset();
 			}
 		}
 		// The task ends if it's not initialized

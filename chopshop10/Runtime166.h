@@ -17,11 +17,11 @@ using namespace std;
 class Runtime166 {
 	Timer t;
 	vector<float> loop_times;
-	unsigned int limit;
+	int limit;
 	
 public:
 	Runtime166();
-	Runtime166(unsigned int);
+	Runtime166(int);
 	/**
 	 * Starts tracking time.
 	 */
@@ -38,4 +38,8 @@ public:
 	 * Gets the number of times it's been stopped.
 	 */
 	unsigned int Loops();
+	/**
+	 * Clears tracking time.
+	 */
+	void Reset();
 };

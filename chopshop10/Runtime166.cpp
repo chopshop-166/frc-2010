@@ -12,12 +12,14 @@
 
 #include "Runtime166.h"
 #include <math.h>
+#include <string>
+using namespace std;
 
 Runtime166::Runtime166() {
 	limit = 50;
 }
 
-Runtime166::Runtime166(unsigned int lim) {
+Runtime166::Runtime166(int lim) {
 	limit = lim;
 }
 
@@ -25,7 +27,7 @@ void Runtime166::Stop() {
 	t.Stop();
 	loop_times.push_back(t.Get());
 	t.Reset();
-	if(loop_times.size() > limit) {
+	while(limit > 0 && loop_times.size() > limit) {
 		loop_times.erase(loop_times.begin(), loop_times.begin()+(loop_times.size() - limit));
 	}
 }
@@ -38,10 +40,10 @@ unsigned int Runtime166::Loops() {
 	return loop_times.size();
 }
 
-char *Runtime166::GetStats() {
+char* Runtime166::GetStats() {
 	if(loop_times.size() == 0)
 		return "";
-	char *r = new char[500];
+	char* r = new char[500];
 	
 	vector<float>::iterator it = loop_times.begin();
 	float max = *it;
@@ -57,17 +59,20 @@ char *Runtime166::GetStats() {
 			min = *it;
 		
 		avg += *it;
-		it++;
-	} while((++it) != loop_times.begin());
+	} while((++it) != loop_times.end());
 	avg /= n;
 	
 	it = loop_times.begin();
 	do {
 		sx += pow((avg - *it), 2);
-	} while((++it) != loop_times.begin());
+	} while((++it) != loop_times.end());
 	
 	sx = sqrt(sx / (n-1));
 	
-	sprintf("[n %u] [max %f] [min %f] [avg %f] [sx %f]", r, n, max, min, avg, sx);
+	sprintf(r, "[n %d] [max %f] [min %f] [avg %f] [sx %f]", n, max, min, avg, sx);
 	return r;
+}
+
+void Runtime166::Reset() {
+	loop_times.erase(loop_times.begin(), loop_times.end());
 }
