@@ -22,41 +22,36 @@
 #define DPRINTF if(false)dprintf
 
 // Sample in memory buffer
-struct abuf166
+struct bbuf166
 {
 	struct timespec tp;               // Time of snapshot
 	float T166_BANNER_VALUE;          // banner value 1 or 0
-	float y_acc;					//  accelerometer y value
-	float acc_vector;
-	
 };
 
 //  Memory Log
 class BannerLog : public MemoryLog166
 {
 public:
-	BannerLog() : MemoryLog166(sizeof(struct abuf166), BANNER_CYCLE_TIME, "banner") {return;};
+	BannerLog() : MemoryLog166(sizeof(struct bbuf166), BANNER_CYCLE_TIME, "banner") {return;};
 	~BannerLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
 			FILE *outputFile);        // and then stored in this file
-	unsigned int PutOne(float T166_BANNER_VALUE, float y_acc, float acc_vector);     // Log the x and y values
+	unsigned int PutOne(UINT32 T166_BANNER_VALUE);     // Log the x and y values
 };
 
 // Write one buffer into memory
-unsigned int BannerLog::PutOne(float T166_BANNER_VALUE, float y_acc, float acc_vector)
+unsigned int BannerLog::PutOne(UINT32 T166_BANNER_VALUE)
 {
-	struct abuf166 *ob;               // Output buffer
+	struct bbuf166 *ob;               // Output buffer
 	
 	// Get output buffer
-	if ((ob = (struct abuf166 *)GetNextBuffer(sizeof(struct abuf166)))) {
+	if ((ob = (struct bbuf166 *)GetNextBuffer(sizeof(struct bbuf166)))) {
 		
 		// Fill it in.
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
 		ob->T166_BANNER_VALUE = T166_BANNER_VALUE;
-		ob->y_acc = y_acc;
-		ob->acc_vector = acc_vector;
-		return (sizeof(struct abuf166));
+		return (sizeof(struct bbuf166));
 	}
 	
 	// Did not get a buffer. Return a zero length
@@ -66,13 +61,13 @@ unsigned int BannerLog::PutOne(float T166_BANNER_VALUE, float y_acc, float acc_v
 // Format the next buffer for file output
 unsigned int BannerLog::DumpBuffer(char *nptr, FILE *ofile)
 {
-	struct abuf166 *ab = (struct abuf166 *)nptr;
+	struct bbuf166 *bb = (struct bbuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %f, %f, %f\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->T166_BANNER_VALUE, ab->y_acc, ab->acc_vector);
+	fprintf(ofile, "%u, %u, %f, %f, %f\n", bb->tp.tv_sec, bb->tp.tv_nsec, bb->T166_BANNER_VALUE);
 	
 	// Done
-	return (sizeof(struct abuf166));
+	return (sizeof(struct bbuf166));
 }
 
 
@@ -131,7 +126,7 @@ int Team166Banner::Main(int a2, int a3, int a4, int a5,
 		
 		
         // Should we log this value?
-		sl.PutOne(CurrentBannerValue, 0, 0);
+		sl.PutOne(CurrentBannerValue);
 		
 		// Wait for our next lap
 		WaitForNextLoop();		

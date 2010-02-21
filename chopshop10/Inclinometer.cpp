@@ -21,12 +21,12 @@
 #define DPRINTF if(false)dprintf
 
 // Sample in memory buffer
-struct abuf166
+struct incbuf166
 {
 	struct timespec tp;               // Time of snapshot
-	float x_acc;                     // accelarometer x value
-	float y_acc;					//  accelarometer y value
-	float acc_vector;
+	float x_inc;                     // inclinometer x value
+	float y_inc;					//  inclinometer y value
+	float inc_vector;
 	
 };
 
@@ -39,23 +39,23 @@ public:
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
 			FILE *outputFile);        // and then stored in this file
-	unsigned int PutOne(float x_acc, float y_acc, float acc_vector);     // Log the x and y values
+	unsigned int PutOne(float x_inc, float y_inc, float inc_vector);     // Log the x and y values
 };
 
 // Write one buffer into memory
-unsigned int InclinometerLog::PutOne(float x_acc, float y_acc, float acc_vector)
+unsigned int InclinometerLog::PutOne(float x_inc, float y_inc, float inc_vector)
 {
-	struct abuf166 *ob;               // Output buffer
+	struct incbuf166 *ob;               // Output buffer
 	
 	// Get output buffer
-	if ((ob = (struct abuf166 *)GetNextBuffer(sizeof(struct abuf166)))) {
+	if ((ob = (struct incbuf166 *)GetNextBuffer(sizeof(struct incbuf166)))) {
 		
 		// Fill it in.
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
-		ob->x_acc = x_acc;
-		ob->y_acc = y_acc;
-		ob->acc_vector = acc_vector;
-		return (sizeof(struct abuf166));
+		ob->x_inc = x_inc;
+		ob->y_inc = y_inc;
+		ob->inc_vector = inc_vector;
+		return (sizeof(struct incbuf166));
 	}
 	
 	// Did not get a buffer. Return a zero length
@@ -65,13 +65,13 @@ unsigned int InclinometerLog::PutOne(float x_acc, float y_acc, float acc_vector)
 // Format the next buffer for file output
 unsigned int InclinometerLog::DumpBuffer(char *nptr, FILE *ofile)
 {
-	struct abuf166 *ab = (struct abuf166 *)nptr;
+	struct incbuf166 *ib = (struct incbuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %f, %f, %f\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->x_acc, ab->y_acc, ab->acc_vector);
+	fprintf(ofile, "%u, %u, %f, %f, %f\n", ib->tp.tv_sec, ib->tp.tv_nsec, ib->x_inc, ib->y_inc, ib->inc_vector);
 	
 	// Done
-	return (sizeof(struct abuf166));
+	return (sizeof(struct incbuf166));
 }
 
 
