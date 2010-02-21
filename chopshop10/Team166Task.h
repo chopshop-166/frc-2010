@@ -45,14 +45,13 @@
 //
 #define T166_ENC_INCL_A (1)             // Inclinometer encoder; channel A
 #define T166_ENC_INCL_B (2)             // Inclinometer encoder; channel B
-#define T116_ENC_INCL_I (3)		        // Inclinometer encoder; Index Channel/
 
 #define T166_PNEUMATIC_PRESSURE_SWITCH (5)	// Pneumatic pressure NOT ready for use
 
 #define T166_EBRAKE_LIMIT_TOP (7)           // EBrake top limit
 #define T166_EBRAKE_LIMIT_BOTTOM (8)        // Brake bottom limit
 
-#define T166_KICKER_LIMIT_SWITCH (9)		// Kicker limit switch !!! CRF: Eliminate when kicker code is updated !!!
+#define T166_LATCH_MAGNET_SENSOR (3)		// Latch Magnet Sensor
 #define T166_BANNER_SENSOR_DIGITAL_INPUT (10)	// Banner Sensor
 
 //#define TOP_LIMITSWITCH_DIGITAL_INPUT    (13)  //top limit switch for lift
