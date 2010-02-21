@@ -19,7 +19,7 @@
 #include "Proxy166.h"
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(true)dprintf
+#define DPRINTF if(false)dprintf
 
 // Sample in memory buffer
 struct abuf166
@@ -258,7 +258,7 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
         	// There is enough pressure!!   :)   We're done here.
         	// Intentionally fall through to LATCH
         	sState = LATCH;
-        	printf("LATCH: Draw the piston back into the latch\n");
+        	DPRINTF(LOG_DEBUG, "LATCH: Draw the piston back into the latch\n");
         }
         
         // Draw the piston back into the latch
@@ -273,7 +273,7 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
         	// Done
         	// Intentionally fall through to LWAIT
         	sState = LWAIT;
-        	printf("LWAIT: Wait for latch\n");
+        	DPRINTF(LOG_DEBUG, "LWAIT: Wait for latch\n");
         }
         
         // Wait for latch
@@ -289,7 +289,7 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
         	// We've waited long enough!!   :D   We're done here.
         	// Intentionally fall through to LREL
         	sState = LREL;
-        	printf("LREL: Release the latching piston\n");
+        	DPRINTF(LOG_DEBUG, "LREL: Release the latching piston\n");
         }
         
         // Release the latching piston
@@ -301,19 +301,19 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
         	// Done
         	// Intentionally fall through to DSREADY
         	sState = DSREADY;
-        	printf("DSREADY: Send a signal to the DS that we're ready to kick\n");
+        	DPRINTF(LOG_DEBUG, "DSREADY: Send a signal to the DS that we're ready to kick\n");
         }
         
         // Send a signal to the driver station to tell we're ready to kick
         case DSREADY:
         {
         	// TODO send a real ready signal to DS
-        	printf("We're READY TO KICK !!!!!\n");
+        	DPRINTF(LOG_DEBUG, "We're READY TO KICK !!!!!\n");
         	
         	// Done
         	// Intentionally fall through to TRIGGER
         	sState = TRIGGER;
-        	printf("TRIGGER: Wait until the trigger (joy 3 - bttn 4) tells us to kick");
+        	DPRINTF(LOG_DEBUG, "TRIGGER: Wait until the trigger (joy 3 - bttn 4) tells us to kick");
         }
         
         // Wait until the trigger tells us to kick
@@ -331,7 +331,7 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
         		// Done
             	// Intentionally fall through to KWAIT
             	sState = KWAIT;
-            	printf("KWAIT: Wait for the kicker");
+            	DPRINTF(LOG_DEBUG, "KWAIT: Wait for the kicker");
         	}
         	else{
         		// The trigger isn't asking us to kick yet. Let's try again later.
@@ -352,7 +352,7 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
         	// We've waited long enough!!   :D    We're done here.
         	// Intentionally fall through to KREL
         	sState = KREL;
-        	printf("KREL: Release pressure from the kicker piston");
+        	DPRINTF(LOG_DEBUG, "KREL: Release pressure from the kicker piston");
         }
         
         // Release pressure from kicker piston
@@ -364,7 +364,7 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
         	// Done
         	// Intentionally fall through - return to WFP
         	sState = WFP;
-        	printf("Returning to the WFP state.\n  WFP: Wait for pressure");
+        	DPRINTF(LOG_DEBUG, "Returning to the WFP state.\n  WFP: Wait for pressure");
         }
         }
         

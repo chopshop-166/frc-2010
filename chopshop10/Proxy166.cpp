@@ -18,7 +18,7 @@
 #include "Runtime166.h"
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(true)dprintf
+#define DPRINTF if(false)dprintf
 
 /**
  * @brief Initializes the joystick axes to 0 and the buttons to unset.
