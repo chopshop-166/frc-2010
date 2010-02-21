@@ -250,7 +250,7 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 			if(0 != img) {
 				// We successfully grabbed an image
 				matches = Target::FindCircularTargets(img);
-				AcquireTarget(matches, prev_servo_x, prev_servo_y, false);
+				AcquireTarget(matches, prev_servo_x, prev_servo_y);
 				dds->sendVisionData(0.0, 0.0, 0.0, matches[0].m_xPos / matches[0].m_xMax, matches);
 				//DPRINTF(LOG_DEBUG, "HzS = %f ; VlS = %f\n", horizontalServo.Get(), verticalServo.Get())			
 				

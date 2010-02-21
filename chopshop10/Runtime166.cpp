@@ -27,7 +27,7 @@ void Runtime166::Stop() {
 	t.Stop();
 	loop_times.push_back(t.Get()); // Appends the last loop time to the list.
 	t.Reset();
-	if(limit > 0 && loop_times.size() > limit) { 
+	if(limit > 0 && (int)loop_times.size() > limit) { 
 		// If we've tracked too many times, delete the oldest ones.
 		// Delete from the first element (loop_times.begin()) to the oldest one under the limit.
 		loop_times.erase(loop_times.begin(), loop_times.begin()+(loop_times.size() - limit));
