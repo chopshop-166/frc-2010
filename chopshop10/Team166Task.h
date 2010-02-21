@@ -174,7 +174,8 @@ public:
 	virtual ~Team166Task();
 	
 	//! Sets the loop exit status 
-	void SetStatus(int,const char*);
+	void SetStatus(const char* = ""); // Set a default to empty string for success.
+	const char* GetStatus();
 	
 	// General start routine; needs to be called by target constructor
 	int Start(char *tname, unsigned int loop_interval);
@@ -197,10 +198,15 @@ public:
 	// Check if all registered tasks are up
 	static int IfUp(void);
 	
+	// Get handle to a specific task
+	static Team166Task *GetTaskHandle(char *name);
+	
 	// Should we feed the watchdog?
 	static int FeedWatchDog(void);
 	
 	static void PrintInactive(void);
+	
+	
 
 // Data members
 public:

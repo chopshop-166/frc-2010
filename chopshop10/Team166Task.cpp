@@ -140,6 +140,22 @@ const char *Team166Task::GetStatus() {
 	return MyStatusString;
 }
 
+// Get handle to a specific task by name
+Team166Task *Team166Task::GetTaskHandle(char *name)
+{
+	Team166Task *ntask;             // Next task being examined
+	int l;                          // Local loop variable
+	
+	// Enter loop to walk through all tasks
+	for (l=0; l<T166_MAXTASK; l++) {
+		if ((ntask = ActiveTasks[l]) && (!strcmp(name, ntask->MyName)))
+			return (ntask);
+	}
+	
+	// Could not find the named task. Just return a null pointer
+	return (0);
+}
+
 // Wait for next lap
 void Team166Task::WaitForNextLoop(void)
 {
