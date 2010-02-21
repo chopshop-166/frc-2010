@@ -98,8 +98,8 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 	Proxy166 *proxy;	                            // Get handle for joystick
 	Robot166 *lHandle;                              // Local handle
 	KickerLog sl;                                   // Arm log
-	Solenoid latchSolenoid(4);                      // Latch solenoid
-	Solenoid kickerSolenoid(5);                     // Kicker solenoid
+	Solenoid latchSolenoid(T166_LATCH_PISTON);                      // Latch solenoid
+	Solenoid kickerSolenoid(T166_KICKER_PISTON);                     // Kicker solenoid
 	enum {WFP, LATCH, LWAIT, LREL, DSREADY, TRIGGER, KWAIT, KREL} sState = WFP;  // Solenoid state
 	int lwait;                                      // Latch release wait counter
     int kwait;                                      // Kicker release wait counter
@@ -136,7 +136,7 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
         case WFP:
         {
         	// Is there enough pressure?
-        	if (proxy->GetPressure() < 50.0){
+        	if (proxy->GetPressure() < T166_PNEU_KICK_MIN){
         		
         		// There isn't enough pressure.   :(   Try again later.
         		break;

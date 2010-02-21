@@ -96,6 +96,16 @@
 #define T166_LIFT_PISTON (3)
 
 //
+// Pneumatics */
+//
+/** Low pressure limit */
+#define T166_PNEU_LOW (60.0)
+/** High pressure limit */
+#define T166_PNEU_HIGH (80.0)
+/** Minimum kicking pressure */
+#define T166_PNEU_KICK_MIN (50.0)
+
+//
 // CAN bus layout
 //
 /** Number of Jags used */

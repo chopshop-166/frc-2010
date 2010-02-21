@@ -97,8 +97,8 @@ int Pneumatics166::Main(int a2, int a3, int a4, int a5,
 	int opressure;                                  // Trimmed to 0.5v to 4.5v
 	float ppressure;                                // Pressure converted to psi
 	enum {UNKNOWN, FILL, DRAIN} pState = UNKNOWN;   // Pressure state
-	float low_pressure = 60.0;                      // Low pressure limit
-	float high_pressure = 80.0;                     // High pressure limit
+	float low_pressure = T166_PNEU_LOW;             // Low pressure limit
+	float high_pressure = T166_PNEU_HIGH;           // High pressure limit
 	int doprint = 0;
 	
 	// Let the world know we're in
