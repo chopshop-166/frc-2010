@@ -112,14 +112,16 @@
 /** Number of Jags used */
 #define T166_NUM_JAGS (5)
 
-/** channel for the Left Motor */
-#define T166_LEFT_MOTOR_CAN (7)
-/** channel for the Right Motor */
-#define T166_RIGHT_MOTOR_CAN (10)
 /** channel for the Lift Winch Motor */
 #define T166_LIFT_MOTOR_CAN (5)
 /** channel for the Ebrake motor */
 #define T166_EBRAKE_MOTOR_CAN (6)
+/** channel for the Left Motor */
+#define T166_LEFT_MOTOR_CAN (7)
+/** channel for the Vacuum */
+#define T166_VACUUM_CAN (9)
+/** channel for the Right Motor */
+#define T166_RIGHT_MOTOR_CAN (10)
 //
 // USB port layout
 //
