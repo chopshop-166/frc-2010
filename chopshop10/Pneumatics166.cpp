@@ -19,7 +19,7 @@
 #define DPRINTF if(false)dprintf
 
 // Sample in memory buffer
-struct abuf166
+struct pbuf166
 {
 	struct timespec tp;               // Time of snapshot
 	// Any values that need to be logged go here
@@ -29,26 +29,26 @@ struct abuf166
 class PneumaticsLog : public MemoryLog166
 {
 public:
-	PneumaticsLog() : MemoryLog166(sizeof(struct abuf166), PNEUMATICS_CYCLE_TIME, "pneumatics") {return;};
+	PneumaticsLog() : MemoryLog166(sizeof(struct pbuf166), PNEUMATICS_CYCLE_TIME, "pneumatics") {return;};
 	~PneumaticsLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
 			FILE *outputFile);        // and then stored in this file
-	unsigned int PutOne(void);        // Log the values needed-add in arguments
+	unsigned int PutOne(float ppressure);        // Log the values needed-add in arguments
 };
 
 // Write one buffer into memory
 unsigned int PneumaticsLog::PutOne(void)
 {
-	struct abuf166 *ob;               // Output buffer
+	struct pbuf166 *ob;               // Output buffer
 	
 	// Get output buffer
-	if ((ob = (struct abuf166 *)GetNextBuffer(sizeof(struct abuf166)))) {
+	if ((ob = (struct pbuf166 *)GetNextBuffer(sizeof(struct pbuf166)))) {
 		
 		// Fill it in.
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
 		// Add any values to be logged here
-		return (sizeof(struct abuf166));
+		return (sizeof(struct pbuf166));
 	}
 	
 	// Did not get a buffer. Return a zero length
@@ -58,13 +58,13 @@ unsigned int PneumaticsLog::PutOne(void)
 // Format the next buffer for file output
 unsigned int PneumaticsLog::DumpBuffer(char *nptr, FILE *ofile)
 {
-	struct abuf166 *ab = (struct abuf166 *)nptr;
+	struct pbuf166 *ab = (struct pbuf166 *)nptr;
 	
 	// Output the data into the file
 	fprintf(ofile, "%u, %u\n", ab->tp.tv_sec, ab->tp.tv_nsec); // Add values here
 	
 	// Done
-	return (sizeof(struct abuf166));
+	return (sizeof(struct pbuf166));
 }
 
 
