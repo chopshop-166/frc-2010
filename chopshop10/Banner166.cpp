@@ -95,7 +95,7 @@ int Team166Banner::Main(int a2, int a3, int a4, int a5,
 {
 	Proxy166 *proxy;				// Handle to proxy
 	UINT32 CurrentBannerValue;
-	Robot166 *lHandle;            // Local handle
+	Robot166 *lHandle;              // Local handle
 	BannerLog sl;                   // log
 	
 	// Let the world know we're in
