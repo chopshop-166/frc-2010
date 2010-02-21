@@ -17,6 +17,10 @@
 <pathentry kind="con" path="com.windriver.ide.core.WR_CONTAINER"/>
 <pathentry kind="con" path="com.windriver.ide.core.build.model.WR_USERDEFINED_CONTAINER"/>
 </storageModule>
+<storageModule moduleId="userdefinedContainer">
+<indexAllFiles value="false"/>
+<initialized value="true"/>
+</storageModule>
 </cconfiguration>
 </storageModule>
 </cproject>

@@ -17,9 +17,9 @@
             <listAttribute key="BLD::Info|Incl|Windows-gnu-native-3.x-4.x">
                 <stringAttribute value="-IW:/workspace/chopshop10"/>
                 <stringAttribute value="-Iw:/workspace/X86_WPILib10"/>
-                <stringAttribute value="-Iw:/workspace/WPILib10"/>
-                <stringAttribute value="-IW:/workspace/WPILib10/Vision"/>
-                <stringAttribute value="-IW:/workspace/WPILib10/Vision2009"/>
+                <stringAttribute value="-Iw:/workspace/WPILib10-a"/>
+                <stringAttribute value="-IW:/workspace/WPILib10-a/Vision"/>
+                <stringAttribute value="-IW:/workspace/WPILib10-a/Vision2009"/>
             </listAttribute>
             <listAttribute key="BLD::Info|Incl|Windows-msvc-native"/>
             <listAttribute key="BLD::Info|Libs|Windows-gnu-native-3.x-4.x">
