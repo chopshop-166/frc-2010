@@ -158,10 +158,11 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 		}
 		leftJag.Set(left);
 		rightJag.Set(right);
-		
-		leftCurrent = leftJag.GetOutputCurrent();
-		rightCurrent = rightJag.GetOutputCurrent();
-
+		if ((++valuethrottle)% (1000/CAN_CYCLE_TIME) ==0)
+		{
+			leftCurrent = leftJag.GetOutputCurrent();
+			rightCurrent = rightJag.GetOutputCurrent();
+		}
 		
 		if(((++printstop)%20)==0){
 			DPRINTF(LOG_DEBUG, "Left Jag Current: %f", leftCurrent);

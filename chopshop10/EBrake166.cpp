@@ -103,6 +103,8 @@ int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 	unsigned printstop=0;
 	int valuethrottle=0;
 	float myCurrent;
+	int sent1=0;
+	int sent2=0;
 		
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
@@ -115,25 +117,25 @@ int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 		
 		if ((proxy->GetButton(1,1) == true) || (proxy->GetButton(2,1) == true))
         {
-				if(((++printstop)%20)==0) {
-					DPRINTF(LOG_DEBUG, "Lowering");
-					printstop=0;
-				}
+			if (!sent1)
+			{
 				Ebrake_Can.Set(-.3);
-
+				sent1=1;
+				sent2=0;
+			}
 			// log data
 			sl.PutOne(myCurrent);
 			
 			// Wait for our next lap
 			WaitForNextLoop();
 			continue;
-				
 		}	
-			if(((++printstop)%20)==0) {
-				DPRINTF(LOG_DEBUG, "Raising");
-				printstop=0;
-			}
+		if (!sent2)
+		{
 			Ebrake_Can.Set(.3);
+			sent1=0;
+			sent2=1;
+		}
 		if ((++valuethrottle)% (1000/EBRAKE_CYCLE_TIME)==0)
 		{	
 			proxy->SetCurrent(T166_EBRAKE_MOTOR_CAN, myCurrent);
