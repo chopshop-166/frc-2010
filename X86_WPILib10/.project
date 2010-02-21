@@ -19,9 +19,9 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>WPILib10</name>
+			<name>WPILib10-a</name>
 			<type>2</type>
-			<location>W:/workspace/WPILib10</location>
+			<location>W:/workspace/WPILib10-a</location>
 		</link>
 	</linkedResources>
 </projectDescription>

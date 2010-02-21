@@ -17,7 +17,7 @@
             <listAttribute key="BLD::Info|Incl|Solaris-gnu-native-3.x-4.x"/>
             <listAttribute key="BLD::Info|Incl|Windows-gnu-native-2.9x"/>
             <listAttribute key="BLD::Info|Incl|Windows-gnu-native-3.x-4.x">
-                <stringAttribute value="-IW:/workspace/WPILib10"/>
+                <stringAttribute value="-IW:/workspace/WPILib10-a"/>
                 <stringAttribute value="-Iw:/workspace/X86_WPILib10"/>
             </listAttribute>
             <listAttribute key="BLD::Info|Incl|Windows-msvc-native"/>
