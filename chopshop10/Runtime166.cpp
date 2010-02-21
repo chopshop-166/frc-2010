@@ -16,7 +16,7 @@
 using namespace std;
 
 Runtime166::Runtime166() {
-	limit = 50;
+	limit = 50; // Default to 50.
 }
 
 Runtime166::Runtime166(int lim) {
@@ -25,9 +25,11 @@ Runtime166::Runtime166(int lim) {
 
 void Runtime166::Stop() {
 	t.Stop();
-	loop_times.push_back(t.Get());
+	loop_times.push_back(t.Get()); // Appends the last loop time to the list.
 	t.Reset();
-	while(limit > 0 && loop_times.size() > limit) {
+	if(limit > 0 && loop_times.size() > limit) { 
+		// If we've tracked too many times, delete the oldest ones.
+		// Delete from the first element (loop_times.begin()) to the oldest one under the limit.
 		loop_times.erase(loop_times.begin(), loop_times.begin()+(loop_times.size() - limit));
 	}
 }
@@ -43,23 +45,23 @@ unsigned int Runtime166::Loops() {
 char* Runtime166::GetStats() {
 	if(loop_times.size() == 0)
 		return "";
-	char* r = new char[500];
+	char* r = new char[500]; // Returned string
 	
-	vector<float>::iterator it = loop_times.begin();
+	vector<float>::iterator it = loop_times.begin(); 
 	float max = *it;
 	float min = *it;
-	float sx = 0;
+	float sx = 0; // Standard deviation
 	int n = loop_times.size();
 	float avg = 0;
 	
-	do {
-		if(max < *it)
+	do { // Iterate over every element in the loop_times vector
+		if(max < *it) // Dereferencing the iterater returns the "current" element
 			max = *it;
 		if(min > *it)
 			min = *it;
 		
 		avg += *it;
-	} while((++it) != loop_times.end());
+	} while((++it) != loop_times.end()); // Adding to the iterator moves it along.
 	avg /= n;
 	
 	it = loop_times.begin();

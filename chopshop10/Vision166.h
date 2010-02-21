@@ -26,7 +26,6 @@
 #include "Vision/AxisCamera.h"
 #include "Vision/HSLImage.h"
 
-// Constants
 #define PI 3.14159265358979
 #define DEFAULT_VERTICAL_PAN_POSITION 0
 #define CAMERA_SPAWN_TRY_WAIT 0.5 // seconds to wait for each thread
@@ -58,28 +57,45 @@ class DashboardDataSender;
  */
 class Team166Vision : public Team166Task
 {
-	
-// Public functions and attributes
 public:
-	
 	Team166Vision(void);
-	
 	virtual ~Team166Vision(void);
 	
 	//! Main function of the Vision task
 	virtual int Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10);	
 
-	//! Whether or not the target has been acquired
+	/**
+	 * @return bool Whether the target has been acquired.
+	 */
 	bool IsTargetAcquired(void);
-	//! The bearing in degrees to the angle. 
+	/**
+	 * The bearing to the target in degrees.
+	 * @return float Degrees to the angle, 0 being full left and 180 being full right. 
+	 */
 	float GetBearing(void);
-	//! Tries to start the camera using threads
+	/**
+	 * @brief Tries to start the camera using vxWorks threads, since
+	 * StartCamera() will hang the thread if it can't successfully start
+	 * the camera. Will try to start the camera several times, timing out 
+	 * after a predefined amount of time.
+	 */
 	void TryStartCamera(bool);
-	//! Captures an image from the camera
+	/**
+	 * Allocates a pointer, and stores a captured image into it.
+	 * @return ColorImage Captured image.
+	 */
 	ColorImage *GetImage();
 	
+	/**
+	 * Gets the score horizontally to the target.
+	 * @return float Score value, -1.0 being full left and 1.0 being full right.
+	 */
 	float GetScoreToTargetX();
+	/**
+	 * Gets the score vertically to the target.
+	 * @return float Score value, -1.0 being down and 1.0 being up.
+	 */
 	float GetScoreToTargetY();
 // Private functions and attributes
 private:	
@@ -103,16 +119,27 @@ private:
 	Servo verticalServo;
 	
 	DashboardDataSender *dds;
-	
-	//! Main function of the thread, spawned in TryStartCamera.
-	//! Calls StartCamera() which will hang the calling thread if it fails.
+
+	/**
+	 * @brief The main function of the threads spawned in TryStartCamera(). 
+	 * Spawned via taskSpawn vxWorks function. 
+	 * Calls StartCamera(), which will hang the calling thread in a variety of circumstances.
+	 */
 	static int _StartCameraThreadFunc(void *this_p,int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10);
 	
-	void AcquireTarget(vector<Target>&,float&,float&,bool=false);
-	void IsTargetAccquired();
+	/**
+	 * @brief Tries to find the target in the current view of the camera.
+	 * @param matches A vector to store the matches for elipses in.
+	 * @param psx Previous servo X value. Will be used later for smoothing movement.
+	 * @param psy Previous servo Y value. Will be used later for smoothing movement.
+	 */
+	void AcquireTarget(vector<Target>& matches,float& psx,float& psy);
+	//! Sets the servo positions directly.
 	void SetServoPositions(float normalizedHorizontal, float normalizedVertical);
+	//! Sets the servo positinos from image x and y values. 
 	void AdjustServoPositions(float normDeltaHorizontal, float normDeltaVertical);
+	//! Directly maps x and y to servo X and Y values. 
 	void _SetServoPositions(float servoHorizontal, float servoVertical);
 };
 #endif // !defined(_VISION166_H)

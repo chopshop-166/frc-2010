@@ -149,7 +149,7 @@ float Team166Vision::GetBearing() {
 	return bearing;
 }
 
-void Team166Vision::AcquireTarget(vector<Target> & matches, float & prev_servo_x, float & prev_servo_y, bool set_servos) {
+void Team166Vision::AcquireTarget(vector<Target> & matches, float & prev_servo_x, float & prev_servo_y) {
 	static Timer *debug; // Persistent (but local) debug timer
 	Proxy166 *pHandle = Proxy166::getInstance();
 	if(pHandle == NULL)
@@ -243,15 +243,20 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 	while ((lHandle->IsOperatorControl() || 
 		   lHandle->IsAutonomous()))
 	{
-		if(pHandle->GetVisionStatus()) {
+		if(true == pHandle->GetVisionStatus()) {
+			// Vision is enabled
 			img = GetImage();
 			pHandle->SetImage(img);
 			if(0 != img) {
+				// We successfully grabbed an image
 				matches = Target::FindCircularTargets(img);
 				AcquireTarget(matches, prev_servo_x, prev_servo_y, false);
 				dds->sendVisionData(0.0, 0.0, 0.0, matches[0].m_xPos / matches[0].m_xMax, matches);
 				//DPRINTF(LOG_DEBUG, "HzS = %f ; VlS = %f\n", horizontalServo.Get(), verticalServo.Get())			
 				
+				// This method should only be called during Autonomous, but for testing
+				// we should call it during any mode. 
+				DriveTowardsTarget();
 				
 				pHandle->DeleteImage();
 			}
@@ -273,10 +278,12 @@ int Team166Vision::_StartCameraThreadFunc(void *this_p,int a2, int a3, int a4, i
 		int a6, int a7, int a8, int a9, int a10) {
 	Proxy166 *pHandle = Proxy166::getInstance();
 	while(0 == pHandle) {
+		// Wait for the Proxy to initialize - we'll be setting the Vision Status in it. 
 		pHandle = Proxy166::getInstance();
 		Wait(0.05);
 	}
 	
+	// This will hang the calling thread if it fails to initialize, or if a misc error occurs.
 	StartCamera();
 	if(0 != (&AxisCamera::GetInstance())) {
 		pHandle->SetVisionStatus(true);
@@ -295,12 +302,12 @@ void Team166Vision::TryStartCamera(bool long_wait) {
 		Wait(0.05);
 	}
 	
-	Wait(4.0);
+	Wait(3.5);
 	
-	Timer threadTimer;
+	Timer threadTimer; // Waits for the timout on the specific thread. 
 	threadTimer.Start();
 	
-	Timer cameraTimer;
+	Timer cameraTimer; // Waits for the timeout on this function.
 	cameraTimer.Start();
 	do {
 		if(id != -1 && threadTimer.HasPeriodPassed(CAMERA_SPAWN_TRY_WAIT)) {
@@ -309,14 +316,15 @@ void Team166Vision::TryStartCamera(bool long_wait) {
 			threadTimer.Reset();
 			DPRINTF(LOG_DEBUG, "Restarting VisionSpawner...\n");
 		}
-		else if (id == -1) {
+		else if (id == -1) { 
+			// First time running this loop
 			DPRINTF(LOG_DEBUG, "Starting VisionSpawner...\n");
 			id = taskSpawn((char*)"VisionSpawner", 90, VX_FP_TASK, 5000, (FUNCPTR) _StartCameraThreadFunc,0,0,0,0,0,0,0,0,0,0);
 		}
 	} while(
 			false == pHandle->GetVisionStatus() && !cameraTimer.HasPeriodPassed(CAMERA_SPAWN_WAIT_MAX)
 	);
-	if(pHandle->GetVisionStatus())
+	if(true == pHandle->GetVisionStatus())
 		DPRINTF(LOG_DEBUG, "Started camera.\n");
 	else
 		DPRINTF(LOG_DEBUG, "Gave up on starting camera.\n");
