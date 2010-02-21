@@ -23,7 +23,6 @@ Team166Task::Team166Task(int IsEssential)
 	MyWatchDog = 0;
 	MyTaskIsEssential = IsEssential;
 	MyName = 0;
-	MyStatus = 0;
 	MyStatusString = "";
 	MissedWatchDog = 0;
 	exit_time.tv_sec = 0;	
@@ -126,14 +125,19 @@ void Team166Task::WaitForGoAhead(void)
 };
 
 /**
- * @brief Sets the calling task's exit status. Should be called within a class that
+ * @brief Sets the calling task's status. Should be called within a class that
  * derives from this class. 
- * @param exit_status An integer to represent the exit status
- * @param exit_status_string A string to represent the exit status - use to explain the int.
+ * @param exit_status_string A string to represent the exit status.
  */
-void Team166Task::SetStatus(int exit_status, const char * exit_status_string) {
-	MyStatus = exit_status;
+void Team166Task::SetStatus(const char * exit_status_string) {
 	MyStatusString = exit_status_string;
+}
+
+/**
+ * @brief Gets the calling task's status. 
+ */
+const char *Team166Task::GetStatus() {
+	return MyStatusString;
 }
 
 // Wait for next lap
@@ -147,8 +151,6 @@ void Team166Task::WaitForNextLoop(void)
 	
 	// Indicate that we've checked in
 	MyWatchDog = 1;
-	MyStatus = 0;
-	MyStatusString = "";
 	// Get the current time
 	clock_gettime(CLOCK_REALTIME, &current_time);
 	

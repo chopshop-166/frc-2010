@@ -158,7 +158,8 @@ public:
 	virtual ~Team166Task();
 	
 	//! Sets the loop exit status 
-	void SetStatus(int,const char* = "");
+	void SetStatus(const char* = ""); // Set a default to null string for success.
+	const char* GetStatus();
 	
 	// General start routine; needs to be called by target constructor
 	int Start(char *tname, unsigned int loop_interval);
@@ -192,8 +193,7 @@ public:
 	int MyTaskInitialized;      // This task has been initialized
 	int MyWatchDog;             // Feeding my own watch dog
 	int MyTaskIsEssential;      // Flag indicating if this task is essential
-	int MyStatus;
-	const char* MyStatusString;
+	const char* MyStatusString; // Status string
 	char *MyName;               // Name of this task
 	int MissedWatchDog;         // Missed watchdog count
 	float MyLoopInterval;       // Timing interval for loop
