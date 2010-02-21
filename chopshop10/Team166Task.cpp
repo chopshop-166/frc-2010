@@ -125,6 +125,12 @@ void Team166Task::WaitForGoAhead(void)
 	return;
 };
 
+/**
+ * @brief Sets the calling task's exit status. Should be called within a class that
+ * derives from this class. 
+ * @param exit_status An integer to represent the exit status
+ * @param exit_status_string A string to represent the exit status - use to explain the int.
+ */
 void Team166Task::SetStatus(int exit_status, const char * exit_status_string) {
 	MyStatus = exit_status;
 	MyStatusString = exit_status_string;
@@ -141,7 +147,8 @@ void Team166Task::WaitForNextLoop(void)
 	
 	// Indicate that we've checked in
 	MyWatchDog = 1;
-	
+	MyStatus = 0;
+	MyStatusString = "";
 	// Get the current time
 	clock_gettime(CLOCK_REALTIME, &current_time);
 	
@@ -218,6 +225,9 @@ int Team166Task::IfUp(void)
 	return (1);
 };
 
+/**
+ * @brief Prints out which tasks aer not feeding the watchdog.
+ */
 void Team166Task::PrintStats(void) {
 	int last_id = 0;
 	for(int x = 0;x<T166_MAXTASK;x++) {
@@ -240,7 +250,9 @@ void Team166Task::PrintStats(void) {
 	if(printed)
 		printf("\n");
 }
-
+/**
+ * Prints out a list of tasks that have no tinitialized.
+ */
 void Team166Task::PrintInactive(void) {
 	int last_id = 0;
 	for(int x = 0;x<T166_MAXTASK;x++) {
