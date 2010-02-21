@@ -23,6 +23,8 @@ Team166Task::Team166Task(int IsEssential)
 	MyWatchDog = 0;
 	MyTaskIsEssential = IsEssential;
 	MyName = 0;
+	MyStatus = 0;
+	MyStatusString = "";
 	MissedWatchDog = 0;
 	exit_time.tv_sec = 0;	
 	exit_time.tv_nsec = 0;
@@ -122,6 +124,11 @@ void Team166Task::WaitForGoAhead(void)
 	// Done
 	return;
 };
+
+void Team166Task::SetStatus(int exit_status, const char * status_string) {
+	MyStatus = exit_status;
+	MyStatusString = exit_status_string;
+}
 
 // Wait for next lap
 void Team166Task::WaitForNextLoop(void)

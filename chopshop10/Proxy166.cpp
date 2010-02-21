@@ -78,6 +78,68 @@ Proxy166::~Proxy166(void)
 {
 	return;
 }
+/**
+ * @brief Main thread function for Proxy166.
+ * Runs forever, until MyTaskInitialized is false. 
+ * 
+ * @todo Update DS switch array
+ */
+int Proxy166::Main(	int a2, int a3, int a4, int a5,
+					int a6, int a7, int a8, int a9, int a10) {
+
+	Robot166 *lHandle = NULL;
+	WaitForGoAhead();
+	
+	lHandle = Robot166::getInstance();
+	
+	Timer debugTimer;
+	debugTimer.Start();
+	
+	Runtime166 Loop;
+	
+	RegisterCounter(3, 1);
+	RegisterCounter(3, 2);
+	
+	ProxyJoystick old_sticks[NUMBER_OF_JOYSTICKS+1];
+	
+	while(MyTaskInitialized) {
+		if(lHandle->IsOperatorControl()) {
+			Loop.Start();
+			for(int x = 0;x<NUMBER_OF_JOYSTICKS;x++) {
+				old_sticks[x] = GetJoystick(x);
+			}
+			SetJoystick(1, driveStickRight);
+			SetJoystick(2, driveStickLeft);
+			SetJoystick(3, driveStickCopilot);
+			
+			vector<int>::iterator it = tracker.begin();
+			while(tracker.size() > 0 && it != tracker.end()) {
+				int joy_id = *it;
+				int button_id = *(it+1);
+				
+				bool old_button = old_sticks[joy_id].button[button_id];
+				bool new_button = GetButton(joy_id, button_id);
+				
+				if(old_button == 1 && new_button == 0) {
+					// The button was previously pressed, but is now released
+					(*(it+2))++; // Increase the counter
+				}
+				it += 3;
+			}
+			Loop.Stop();
+			if(debugTimer.HasPeriodPassed(1.0)) {
+				DPRINTF(LOG_DEBUG, "Loop stats: %s\n", Loop.GetStats());
+				DPRINTF(LOG_DEBUG, "[3.1 %d] [3.2 %d]\n", GetPendingCount(3, 1), GetPendingCount(3, 2));
+				Loop.Reset();
+			}
+		}
+		// The task ends if it's not initialized
+		WaitForNextLoop();
+	}
+	
+	return 0;
+}
+
 void Proxy166::SetJoystickX(int joy_id, float value) {
 	wpi_assert(joy_id < NUMBER_OF_JOYSTICKS && joy_id >= 0);
 	//semTake(JoystickLocks[joy_id], WAIT_FOREVER);
@@ -543,64 +605,4 @@ void DumpJoystick(ProxyJoystick j) {
 		printf("[%d=%d] ", x, j.button[x]);
 	}
 	printf("\n");
-}
-/**
- * @brief Main thread function for Proxy166.
- * Runs forever, until MyTaskInitialized is false. 
- * 
- * @todo Update DS switch array
- */
-int Proxy166::Main(	int a2, int a3, int a4, int a5,
-					int a6, int a7, int a8, int a9, int a10) {
-
-	Robot166 *lHandle = NULL;
-	WaitForGoAhead();
-	
-	lHandle = Robot166::getInstance();
-	
-	Timer debugTimer;
-	debugTimer.Start();
-	
-	Runtime166 Loop;
-	
-	RegisterCounter(3, 1);
-	RegisterCounter(3, 2);
-	
-	ProxyJoystick old_sticks[NUMBER_OF_JOYSTICKS+1];
-	
-	while(MyTaskInitialized) {
-		if(lHandle->IsOperatorControl()) {
-			Loop.Start();
-			for(int x = 0;x<NUMBER_OF_JOYSTICKS;x++) {
-				old_sticks[x] = GetJoystick(x);
-			}
-			SetJoystick(1, driveStickRight);
-			SetJoystick(2, driveStickLeft);
-			SetJoystick(3, driveStickCopilot);
-			
-			vector<int>::iterator it = tracker.begin();
-			while(tracker.size() > 0 && it != tracker.end()) {
-				int joy_id = *it;
-				int button_id = *(it+1);
-				
-				bool old_button = old_sticks[joy_id].button[button_id];
-				bool new_button = GetButton(joy_id, button_id);
-				
-				if(old_button == 1 && new_button == 0) {
-					// The button was previously pressed, but is now released
-					(*(it+2))++; // Increase the counter
-				}
-				it += 3;
-			}
-			Loop.Stop();
-			if(debugTimer.HasPeriodPassed(1.0)) {
-				DPRINTF(LOG_DEBUG, "Runtime debug info: %s\n", Loop.GetStats());
-				Loop.Reset();
-			}
-		}
-		// The task ends if it's not initialized
-		WaitForNextLoop();
-	}
-	
-	return 0;
 }

@@ -154,6 +154,9 @@ public:
 	// Destructor
 	virtual ~Team166Task();
 	
+	//! Sets the loop exit status 
+	void SetStatus(int);
+	
 	// General start routine; needs to be called by target constructor
 	int Start(char *tname, unsigned int loop_interval);
 	
@@ -171,7 +174,7 @@ public:
 	// Wait for next lap
 	void WaitForNextLoop(void);
 	
-	static void Team166Task::PrintStats(void);
+	static void PrintStats(void);
 	// Check if all registered tasks are up
 	static int IfUp(void);
 	
@@ -186,6 +189,8 @@ public:
 	int MyTaskInitialized;      // This task has been initialized
 	int MyWatchDog;             // Feeding my own watch dog
 	int MyTaskIsEssential;      // Flag indicating if this task is essential
+	int MyStatus;
+	const char* MyStatusString;
 	char *MyName;               // Name of this task
 	int MissedWatchDog;         // Missed watchdog count
 	float MyLoopInterval;       // Timing interval for loop
