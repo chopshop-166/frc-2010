@@ -255,8 +255,6 @@ int Robot166::DriverStationDisplay(char* dsTextString)
 	static char *string2;
 	static char *string3;
 	static char *string4;
-	static char *string5;
-	static char *string6;
 	static bool init=true;
 	if(init) {
 		//Initializes it first call.
@@ -268,37 +266,27 @@ int Robot166::DriverStationDisplay(char* dsTextString)
 		strncpy(string3,"                                           ",DASHBOARD_BUFFER_MAX);
 		string4=new char [DASHBOARD_BUFFER_MAX];
 		strncpy(string4,"                                           ",DASHBOARD_BUFFER_MAX);
-		string5=new char [DASHBOARD_BUFFER_MAX];
-		strncpy(string5,"                                           ",DASHBOARD_BUFFER_MAX);
-		string6=new char [DASHBOARD_BUFFER_MAX];
-		strncpy(string6,"                                           ",DASHBOARD_BUFFER_MAX);
 		init=false;
 	}
 	
 	//Clears the current values on the Dashboard.
 	
-	//dsHandleLCD->Printf(DriverStationLCD::kUser_Line1,1,"                     ");
-	dsHandleLCD->Printf(DriverStationLCD::kUser_Line2,1,"                     ");
 	dsHandleLCD->Printf(DriverStationLCD::kUser_Line3,1,"                     ");
 	dsHandleLCD->Printf(DriverStationLCD::kUser_Line4,1,"                     ");
 	dsHandleLCD->Printf(DriverStationLCD::kUser_Line5,1,"                     ");
 	dsHandleLCD->Printf(DriverStationLCD::kUser_Line6,1,"                     ");
 
 	//Clears line to make room for next output.
-	//strncpy(string1,string2,DASHBOARD_BUFFER_MAX);
-	strncpy(string6,string5,DASHBOARD_BUFFER_MAX);
-	strncpy(string5,string4,DASHBOARD_BUFFER_MAX);
 	strncpy(string4,string3,DASHBOARD_BUFFER_MAX);
 	strncpy(string3,string2,DASHBOARD_BUFFER_MAX);
-	strncpy(string2,dsTextString,DASHBOARD_BUFFER_MAX);
+	strncpy(string2,string1,DASHBOARD_BUFFER_MAX);
+	strncpy(string1,dsTextString,DASHBOARD_BUFFER_MAX);
 	
-	//Outputs each line back onto the station.	
-	//dsHandleLCD->Printf(DriverStationLCD::kUser_Line1,1,string1);
-	dsHandleLCD->Printf(DriverStationLCD::kUser_Line2,1,string2);
-	dsHandleLCD->Printf(DriverStationLCD::kUser_Line3,1,string3);
-	dsHandleLCD->Printf(DriverStationLCD::kUser_Line4,1,string4);
-	dsHandleLCD->Printf(DriverStationLCD::kUser_Line5,1,string5);
-	dsHandleLCD->Printf(DriverStationLCD::kUser_Line6,1,string6);
+	//Outputs each line back onto the station.
+	dsHandleLCD->Printf(DriverStationLCD::kUser_Line3,1,string1);
+	dsHandleLCD->Printf(DriverStationLCD::kUser_Line4,1,string2);
+	dsHandleLCD->Printf(DriverStationLCD::kUser_Line5,1,string3);
+	dsHandleLCD->Printf(DriverStationLCD::kUser_Line6,1,string4);
 	dsHandleLCD->UpdateLCD();
 	return 0;
 }
@@ -329,5 +317,32 @@ int Robot166::DriverStationDisplayHS(char* dsTextString)
 	dsHandleLCD->UpdateLCD();
 	return 0;
 }
+
+/**
+ * Send text to DS LCD display
+ */
+int Robot166::DriverStationDisplayHSData(char* dsTextString)
+{ 
+	static char *str;
+	static bool init=true;
+	if(init) {
+		//Initializes it first call.
+		str=new char [DASHBOARD_BUFFER_MAX];
+		strncpy(str,"                                           ",DASHBOARD_BUFFER_MAX);
+		init=false;
+	}
+	
+	//Clears the current values on the Dashboard.
+	dsHandleLCD->Printf(DriverStationLCD::kUser_Line2,1,"                     ");
+
+	//Puts new values into the string
+	strncpy(str,dsTextString,DASHBOARD_BUFFER_MAX);
+	
+	//Outputs each line back onto the station.	
+	dsHandleLCD->Printf(DriverStationLCD::kUser_Line2,1,str);
+	dsHandleLCD->UpdateLCD();
+	return 0;
+}
+
 START_ROBOT_CLASS(Robot166);
 

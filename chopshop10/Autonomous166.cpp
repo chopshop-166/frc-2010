@@ -48,9 +48,10 @@ void Autonomous166::Autonomous(void) {
 	unsigned short kicked = 0;
 	
 	// Sensor storage data
-	int banner;
-	int inclinometer;
-	float sonar;
+	int banner=0;
+	int inclinometer=0;
+	float sonar=0;
+	float camerascore=0;
 	
 	// Starting location. 1 is nearest, 3 is furthest from our goals
 	const unsigned short loc = DriverStation::GetInstance()->GetLocation();
@@ -64,6 +65,10 @@ void Autonomous166::Autonomous(void) {
 		banner = proxy->GetBanner();
 		sonar = proxy->GetSonarDistance();
 		inclinometer = proxy->GetInclinometer();
+		camerascore = proxy->GetCameraScoreToTargetX();
+
+		// Output changing debug values
+		printf("%f\t%f\t%f\r",proxy->GetJoystickY(1),proxy->GetJoystickY(2),camerascore);
 		
 		switch(state) {
 		
@@ -88,7 +93,7 @@ void Autonomous166::Autonomous(void) {
 				lHandle->DriverStationDisplay("Ball captured");
 				break;
 			}
-			if( (inclinometer > 5) && (inclinometer < -5) ) {
+			if( (inclinometer > 5) || (inclinometer < -5) ) {
 				// We're tilting...
 				state = sResting;
 				lHandle->DriverStationDisplay("Stopped: Tilt");
@@ -110,7 +115,7 @@ void Autonomous166::Autonomous(void) {
 				retreatcounter = AUTONOMOUS_RETREAT_TIME;
 				break;
 			}
-			if(proxy->GetCameraScoreToTargetX()) {
+			if(!camerascore) {
 				state = sPoised;
 				lHandle->DriverStationDisplay("Ready to kick");
 			} else {
@@ -129,6 +134,7 @@ void Autonomous166::Autonomous(void) {
 					lHandle->DriverStationDisplay("Guarding goal");
 				} else {
 					state = sDodging;
+					retreatcounter = AUTONOMOUS_RETREAT_TIME;
 					lHandle->DriverStationDisplay("Moving out of the way");
 				}
 			} else {
@@ -180,8 +186,14 @@ void Autonomous166::Autonomous(void) {
 				lHandle->DriverStationDisplay("ZZZZZZZZZZZZZZZZZZZZZ");
 				break;
 			}
-			proxy->SetJoystickY(1,0);
-			proxy->SetJoystickY(2,0);
+			if( (inclinometer > 5) || (inclinometer < -5) ) {
+				// Great, we've reached the end of Autonomous. Naptime!
+				state = sResting;
+				lHandle->DriverStationDisplay("ZZZZZZZZZZZZZZZZZZZZZ");
+				break;
+			}
+			proxy->SetJoystickY(1,1);
+			proxy->SetJoystickY(2,1);
 			break;
 				
 		default:
