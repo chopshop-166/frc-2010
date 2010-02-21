@@ -112,8 +112,8 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 	float ppressure;                                // Pressure converted to psi
 	enum {UNKNOWN, FILL, DRAIN} pState = UNKNOWN;   // Pressure state
 	enum {WFP, LATCH, LWAIT, LREL, DSREADY, TRIGGER, KWAIT, KREL} sState = WFP;  // Solenoid state
-	float low_pressure = 80.0;                     // Low pressure limit
-	float high_pressure = 100.0;                    // High pressure limit
+	float low_pressure = 60.0;                     // Low pressure limit
+	float high_pressure = 80.0;                    // High pressure limit
 	int doprint = 0;
 	int lwait;                                      // Latch release wait counter
     int kwait;                                      // Kicker release wait counter
@@ -280,7 +280,7 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
         case LWAIT:
         {
         	// Have we waited enough loops?
-        	if (lwait++ < 200){
+        	if (lwait++ < 10){
         		
         		// We haven't waited long enough.   :(   Let's try again later.
         		break;
@@ -343,7 +343,7 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
         case KWAIT:
         {
         	// Have we waited long enough?
-        	if (kwait++ < 200){
+        	if (kwait++ < 10){
         		
         		// We haven't waited long enough.   :(    Let's try again later.
         		break;
@@ -415,7 +415,7 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 			DPRINTF(LOG_DEBUG, "%d, %d", Cocked, proxy->GetButton(3,1));
 		}
 #endif	
-#if 0
+
 		//Is the kicker cocked, is the trigger pressed?
 		if ((proxy->GetButton(3,1) == true) || Cocked == false)
 		{
@@ -433,7 +433,7 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 		
 		//Stop motor when the limit switch is pressed
 		Kicker_jag.Set(0); 
-#endif
+
         // Should we log this value?
 		sl.PutOne(0, 0, 0);
 		
