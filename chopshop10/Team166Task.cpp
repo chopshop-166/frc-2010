@@ -125,7 +125,7 @@ void Team166Task::WaitForGoAhead(void)
 	return;
 };
 
-void Team166Task::SetStatus(int exit_status, const char * status_string) {
+void Team166Task::SetStatus(int exit_status, const char * exit_status_string) {
 	MyStatus = exit_status;
 	MyStatusString = exit_status_string;
 }

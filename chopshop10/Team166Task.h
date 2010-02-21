@@ -155,7 +155,7 @@ public:
 	virtual ~Team166Task();
 	
 	//! Sets the loop exit status 
-	void SetStatus(int);
+	void SetStatus(int,const char* = "");
 	
 	// General start routine; needs to be called by target constructor
 	int Start(char *tname, unsigned int loop_interval);
