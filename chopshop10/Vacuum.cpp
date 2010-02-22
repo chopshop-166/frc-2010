@@ -119,6 +119,7 @@ int Team166Vacuum::Main(int a2, int a3, int a4, int a5,
 		{
 			Vacuum_Jag.Set(1);
 			Vacuum_On = true;
+			SetStatus("sucking");
 			if ((++valuethrottle) % (200/VACUUM_CYCLE_TIME) == 0)
 			{
 				Vac_Current = Vacuum_Jag.GetOutputCurrent();
@@ -132,8 +133,10 @@ int Team166Vacuum::Main(int a2, int a3, int a4, int a5,
 			{
 				proxy->SetBallCap(false);
 			}
+			
+		} else {
+		SetStatus("not sucking");
 		}
-		
         // Logging any values
 		sl.PutOne(Vacuum_On, Vac_Current);
 		
