@@ -15,9 +15,8 @@
 struct abuf166
 {
 	struct timespec tp;               // Time of snapshot
-	float x_acc;                     // accelarometer x value
-	float y_acc;					//  accelarometer y value
-	float acc_vector;
+	float rightValue;                 // Right Value
+	float leftValue;                  // Left Value
 	
 };
 
@@ -30,7 +29,7 @@ public:
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
 			FILE *outputFile);        // and then stored in this file
-	unsigned int PutOne(float x_acc, float y_acc, float acc_vector);     // Log the x and y values
+	unsigned int PutOne(float leftValue, float rightValue);     // Log the x and y values
 };
 
 class Team166Drive : public Team166Task
@@ -38,7 +37,7 @@ class Team166Drive : public Team166Task
 public:
 };
 // Write one buffer into memory
-unsigned int TankDriveLog::PutOne(float x_acc, float y_acc, float acc_vector)
+unsigned int TankDriveLog::PutOne(float leftValue, float rightValue)
 {
 	struct abuf166 *ob;               // Output buffer
 	
@@ -47,9 +46,8 @@ unsigned int TankDriveLog::PutOne(float x_acc, float y_acc, float acc_vector)
 		
 		// Fill it in.
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
-		ob->x_acc = x_acc;
-		ob->y_acc = y_acc;
-		ob->acc_vector = acc_vector;
+		ob->leftValue = leftValue;
+		ob->rightValue = rightValue;
 		return (sizeof(struct abuf166));
 	}
 	
@@ -63,7 +61,7 @@ unsigned int TankDriveLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct abuf166 *ab = (struct abuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %f, %f, %f\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->x_acc, ab->y_acc, ab->acc_vector);
+	fprintf(ofile, "%u, %u, %f, %f\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->leftValue, ab->rightValue);
 	
 	// Done
 	return (sizeof(struct abuf166));
@@ -91,7 +89,7 @@ int Team166TankDrive::Main(int a2, int a3, int a4, int a5,
 	float leftValue;
 	float rightValue;
 	Robot166 *lHandle;            // Local handle
-	TankDriveLog sl;                   // Arm log
+	TankDriveLog sl;                   // TankDrive log
 	Proxy166 *proxy;				// Handle to data associated with the Proxy object
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 TankDrive task\n");
@@ -119,7 +117,7 @@ int Team166TankDrive::Main(int a2, int a3, int a4, int a5,
 		}
 		
         // Should we log this value?
-		sl.PutOne(0, 0, 0);
+		sl.PutOne(leftValue, rightValue);
 		
 		// Wait for our next lap
 		WaitForNextLoop();		
