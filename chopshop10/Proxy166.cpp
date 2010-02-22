@@ -51,7 +51,8 @@ Proxy166::Proxy166(void):
 	Banner(0),
 	Inclinometer(0),
 	SonarDistance(0.0),
-	CameraBearing(90)
+	CameraBearing(90),
+	areSettingJoysticks(true)
 {
 	ProxyHandle = this;
 	// initialize memory for banner
@@ -95,16 +96,10 @@ int Proxy166::Main(	int a2, int a3, int a4, int a5,
 	Timer debugTimer;
 	debugTimer.Start();
 	
-	Runtime166 Loop;
-	
-	RegisterCounter(3, 1);
-	RegisterCounter(3, 2);
-	
 	ProxyJoystick old_sticks[NUMBER_OF_JOYSTICKS+1];
 	
 	while(MyTaskInitialized) {
-		if(lHandle->IsOperatorControl()) {
-			Loop.Start();
+		if(lHandle->IsOperatorControl() && true == AreSettingJoysticks()) {
 			for(int x = 0;x<NUMBER_OF_JOYSTICKS;x++) {
 				old_sticks[x] = GetJoystick(x);
 			}
@@ -112,25 +107,24 @@ int Proxy166::Main(	int a2, int a3, int a4, int a5,
 			SetJoystick(2, driveStickLeft);
 			SetJoystick(3, driveStickCopilot);
 			
-			vector<int>::iterator it = tracker.begin();
-			while(tracker.size() > 0 && it != tracker.end()) {
-				int joy_id = *it;
-				int button_id = *(it+1);
-				
-				bool old_button = old_sticks[joy_id].button[button_id];
-				bool new_button = GetButton(joy_id, button_id);
-				
-				if(old_button == 1 && new_button == 0) {
-					// The button was previously pressed, but is now released
-					(*(it+2))++; // Increase the counter
+			if(tracker.size() > 0) {
+				vector<int>::iterator it = tracker.begin();
+				while(it != tracker.end()) {
+					int joy_id = *it;
+					int button_id = *(it+1);
+					
+					bool old_button = old_sticks[joy_id].button[button_id];
+					bool new_button = GetButton(joy_id, button_id);
+					
+					if(old_button == 1 && new_button == 0) {
+						// The button was previously pressed, but is now released
+						(*(it+2))++; // Increase the counter
+					}
+					it += 3;
 				}
-				it += 3;
 			}
-			Loop.Stop();
 			if(debugTimer.HasPeriodPassed(1.0)) {
-				DPRINTF(LOG_DEBUG, "Loop stats: %s\n", Loop.GetStats());
-				DPRINTF(LOG_DEBUG, "[3.1 %d] [3.2 %d]\n", GetPendingCount(3, 1), GetPendingCount(3, 2));
-				Loop.Reset();
+				// Debug info
 			}
 		}
 		// The task ends if it's not initialized
@@ -610,6 +604,10 @@ bool Proxy166::IsRegistered(int joystick_id, int button_id) {
 		}
 	}
 	return false;
+}
+
+bool Proxy166::AreSettingJoysticks() {
+	return areSettingJoysticks;
 }
 
 void DumpJoystick(ProxyJoystick j) {

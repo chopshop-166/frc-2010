@@ -58,6 +58,7 @@ class ProxyJoystick {
 
 class Proxy166 : public Team166Task {
 	public:		
+		
 		// joystick axes
 		void SetJoystickX(int, float);  
 		void SetJoystickY(int, float);
@@ -137,6 +138,9 @@ class Proxy166 : public Team166Task {
 		Proxy166(void);
 		~Proxy166(void);
 		
+		bool AreSettingJoysticks();
+		void ToggleSettingJoysticks(bool);
+		
 		static Proxy166 *getInstance(void);
 		
 		virtual int Main(int a2, int a3, int a4, int a5,
@@ -199,6 +203,8 @@ class Proxy166 : public Team166Task {
 
 		// Proxy storage for the pneumatic pressure
 		float PneumaticPressure;
+		
+		bool areSettingJoysticks;
 };
 
 #endif
