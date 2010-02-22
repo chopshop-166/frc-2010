@@ -145,7 +145,7 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
         		// There isn't enough pressure.   :(   Try again later.
         		break;
         	}
-        	
+			kickSolenoid.Set(true);    // We are getting ready to kick
         	// There is enough pressure!!   :)   We're done here.
         	// Intentionally fall through to SIGNAL
         	kickState = SIGNAL;
@@ -180,7 +180,6 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 		{
 			unkickSolenoid.Set(false); // We aren't unkicking
 			latchSolenoid.Set(false);  // We aren't latching
-			kickSolenoid.Set(true);    // We are kicking
 			unlatchSolenoid.Set(true); // We ARE unlatching [AND KICKING!!!]
 			
         	kwait = 0;  // Reset wait counter
