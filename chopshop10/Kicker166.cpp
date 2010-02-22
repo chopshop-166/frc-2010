@@ -185,6 +185,7 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
         	// Done
         	// Intentionally fall through to DSREADY
         	sState = DSREADY;
+        	SetStatus("ready");
         	DPRINTF(LOG_DEBUG, "DSREADY: Send a signal to the DS that we're ready to kick\n");
         }
         
@@ -215,6 +216,7 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
         		// Done
             	// Intentionally fall through to KWAIT
             	sState = KWAIT;
+            	SetStatus("not ready");
             	DPRINTF(LOG_DEBUG, "KWAIT: Wait for the kicker");
         	}
         	else{

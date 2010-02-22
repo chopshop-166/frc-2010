@@ -1,4 +1,4 @@
-/*******************************************************************************
+	/*******************************************************************************
 *  Project   		: chopshop10 - 2010 Chopshop Robot Controller Code
 *  File Name  		: HealthMon166.cpp     
 *  Owner		   	: Software Group (FIRST Chopshop Team 166)
@@ -101,8 +101,10 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 	Robot166 *lHandle;            		// Local handle
 	Proxy166 *proxy;              		// Local proxy handle
 	HealthMonLog sl;					// log
-	Team166CANDrive *canDrive;			// CAN drive handle
-	
+	Team166Task *kickerTask;			// Kicker task
+	Team166Task *ebrakeTask;			// E-Brake task
+	Team166Task *vacuumTask;			// Vacuum task
+	Team166Task *sonarTask;				// Sonar task
 	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 HealthMon task\n");
@@ -115,77 +117,66 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 	lHandle->RegisterLogger(&sl);
 	char* buffer = new char[DASHBOARD_BUFFER_MAX];
 	
-	// Register the Proxy and CAN drive
+	// Register each task
 	proxy = Proxy166::getInstance();
-	canDrive = Team166CANDrive::getInstance();
-
-	// Error message string
-	string healthErrors="";
+	kickerTask = Team166Task::GetTaskHandle("166KickerTask");
+	ebrakeTask = Team166Task::GetTaskHandle("166EBrakeTask");
+	vacuumTask = Team166Task::GetTaskHandle("166BallSucker");
+	sonarTask = Team166Task::GetTaskHandle("166SonarTask");
+	
+	
 	// Health status index
 	float Health_Status = 0;
 	// Whether the sonar is valid
-	bool SonarStatus = false;
+	char SonarStatus;
 	// Whether the inclinometer's showing proper values
-	bool InclinometerStatus = false;
+	int InclinometerStatus = 0;
 	// Whether the camera is up
 	bool CameraStatus = proxy->GetVisionStatus();
-	// Whether pressure sensor's working properly
-	bool PressureStatus = false;
-	// Whether banner's working properly
+	// Whether banner is detected
 	bool BannerStatus = false;
+
+
+	
+	lHandle->DriverStationDisplayHS("HLT K E V PSI B S INC");
 	
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		//getting new statuses every time
-		healthErrors = "";
-		
-		// Determining Inclinometer Status
-		// Will show false until tilted for the first time
-		InclinometerStatus |= (bool)proxy->GetInclinometer();
 
 		// Determining Banner Status
 		// Will show false until tripped for the first time
-		BannerStatus |= proxy->GetBanner();
+		BannerStatus |= !proxy->GetBanner();
 		
 		// Get the camera's status
 		CameraStatus = proxy->GetVisionStatus();
 		
 		//Determining the Sonar Health
 		if(proxy->GetSonarDistance()<1){
-			SonarStatus = false;
+			SonarStatus = 'e';
 		} else {
-			SonarStatus = true;
+			SonarStatus = sonarTask->GetStatus()[0];
 		}
 		
 		// Do the total health overall, as a %
-		Health_Status = (float(	SonarStatus+
+		Health_Status = (float(	((SonarStatus=='e')?0:1)+
 								InclinometerStatus+
 								CameraStatus+
-								BannerStatus+
-								PressureStatus)/5.)*100;
-		
-		if(SonarStatus==false){
-			healthErrors += "Snr ";
-		}
-		if(InclinometerStatus==false){
-			healthErrors += "Inc ";
-		}
-		if(BannerStatus==false){
-			healthErrors += "Bnr ";
-		}
-		if(CameraStatus==false){
-			healthErrors += "Cam ";
-		}
-		if(PressureStatus==false){
-			healthErrors += "Pnu ";
-		}
-		if(Health_Status!=100) {
-			sprintf(buffer,"%.0f: %s",Health_Status,healthErrors.c_str());
-		} else {
-			sprintf(buffer,"Perfectly healthy!");
-		}
-		lHandle->DriverStationDisplayHS(buffer);
+								BannerStatus)/4.)*100;
+
+		sprintf(buffer,
+				"%03.0f %c %c %c %03.0f %c %c %03d",
+				Health_Status,
+				kickerTask->GetStatus()[0],
+				ebrakeTask->GetStatus()[0],
+//				vacuumTask->GetStatus()[0],
+				's',
+				proxy->GetPressure(),
+				((proxy->GetBanner())?'y':'n'),
+				SonarStatus,
+				proxy->GetInclinometer()
+				);
+		lHandle->DriverStationDisplayHSData(buffer);
 		
 		// do stuff
 		sl.PutOne(0, 0, 0);
