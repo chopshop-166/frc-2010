@@ -23,6 +23,8 @@ struct abuf166
 {
 	struct timespec tp;               // Time of snapshot
 	// Any values that need to be logged go here
+	bool Vacuum_On;
+	float Vacuum_Current;
 };
 
 //  Memory Log
@@ -34,11 +36,11 @@ public:
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
 			FILE *outputFile);        // and then stored in this file
-	unsigned int PutOne(void);     // Log the values needed-add in arguments
+	unsigned int PutOne(bool Vacuum_On, float Vacuum_Current);     // Log the values needed-add in arguments
 };
 
 // Write one buffer into memory
-unsigned int VacuumLog::PutOne(void)
+unsigned int VacuumLog::PutOne(bool Vacuum_On, float Vacuum_Current)
 {
 	struct abuf166 *ob;               // Output buffer
 	
@@ -48,6 +50,8 @@ unsigned int VacuumLog::PutOne(void)
 		// Fill it in.
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
 		// Add any values to be logged here
+		ob->Vacuum_On = Vacuum_On;
+		ob->Vacuum_Current = Vacuum_Current;
 		return (sizeof(struct abuf166));
 	}
 	
@@ -61,7 +65,7 @@ unsigned int VacuumLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct abuf166 *ab = (struct abuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u\n", ab->tp.tv_sec, ab->tp.tv_nsec); // Add values here
+	fprintf(ofile, "%u, %u\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->Vacuum_On, ab->Vacuum_Current); // Add values here
 	
 	// Done
 	return (sizeof(struct abuf166));
@@ -69,7 +73,7 @@ unsigned int VacuumLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-Team166Vacuum::Team166Vacuum(void): Vacuum_Relay(T166_VACUUM_RELAY_CHANNEL, Relay::kForwardOnly)
+Team166Vacuum::Team166Vacuum(void): Vacuum_Jag(T166_VACUUM_CAN)
 {
 	Start((char *)"166BallSucker", VACUUM_CYCLE_TIME);
 	return;
@@ -88,6 +92,9 @@ int Team166Vacuum::Main(int a2, int a3, int a4, int a5,
 	Proxy166 *proxy;				// Handle to proxy
 	Robot166 *lHandle;            // Local handle
 	VacuumLog sl;                   // log
+	float Vac_Current;
+	bool Vacuum_On;
+	int valuethrottle;
 	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the Vacuum\n");
@@ -108,22 +115,27 @@ int Team166Vacuum::Main(int a2, int a3, int a4, int a5,
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		// Is there something within 15 inches
 		// is the 5th button on the copilot joystick pressed?
-		if ((proxy->GetSonarDistance() <= 15) || (proxy->GetButton(3,T166_VACUUM_BUTTON)))
+		if (proxy->GetButton(3,5) == true) 
 		{
-			// Turn motor on
-			Vacuum_Relay.Set(Relay::kOn);
-	        // Logging any values
-			sl.PutOne();
-			
-			// Wait for our next lap
-			WaitForNextLoop();	
-			continue;
+			Vacuum_Jag.Set(1);
+			Vacuum_On = true;
+			if ((++valuethrottle) % (200/VACUUM_CYCLE_TIME) == 0)
+			{
+				Vac_Current = Vacuum_Jag.GetOutputCurrent();
+				proxy->SetCurrent(T166_VACUUM_CAN, Vac_Current);
+			}
+			if (Vac_Current <= 10)
+			{
+				proxy->SetBallCap(true);
+			}	
+			else 
+			{
+				proxy->SetBallCap(false);
+			}
 		}
-		// Turn motor off
-		Vacuum_Relay.Set(Relay::kOff);
 		
         // Logging any values
-		sl.PutOne();
+		sl.PutOne(Vacuum_On, Vac_Current);
 		
 		// Wait for our next lap
 		WaitForNextLoop();		
