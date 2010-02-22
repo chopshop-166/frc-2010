@@ -31,7 +31,7 @@ struct abuf166
 class VacuumLog : public MemoryLog166
 {
 public:
-	VacuumLog() : MemoryLog166(sizeof(struct abuf166), VACUUM_CYCLE_TIME, "template") {return;};
+	VacuumLog() : MemoryLog166(sizeof(struct abuf166), VACUUM_CYCLE_TIME, "vacuum") {return;};
 	~VacuumLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
@@ -107,8 +107,7 @@ int Team166Vacuum::Main(int a2, int a3, int a4, int a5,
 	lHandle->RegisterLogger(&sl);	
 	
 	// Register the proxy
-	proxy = Proxy166::getInstance();
-		
+	proxy = Proxy166::getInstance();		
 	
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
