@@ -98,8 +98,10 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 	Robot166 *lHandle;                              // Local handle
 	KickerLog sl;                                   // Arm log
 	Solenoid latchSolenoid(T166_LATCH_PISTON);                      // Latch solenoid
-	Solenoid unkickSolenoid(T166_KICKER_PISTON);                    // Kicker solenoid
+	Solenoid unkickSolenoid(T166_UNKICKER_PISTON);                  // Unkicker solenoid
 	Solenoid unlatchSolenoid(T166_UNLATCH_PISTON);                  // Unlatch solenoid
+	Solenoid kickSolenoid(T166_KICKER_PISTON);                      // Kicker solenoid
+	
 	//enum {WFP, LATCH, LWAIT, LREL, DSREADY, TRIGGER, KWAIT, KREL} sState = WFP;  // Solenoid state
 	enum {WFP, SIGNAL, TRIGGERWAIT, uLPUSH, KICKWAIT, uKPUSH, uKSENSORWAIT, LPUSH, LWAIT, uKVENT} kickState = TRIGGERWAIT; // Kicker state
 	int lwait;                                      // Latch release wait counter
@@ -178,6 +180,7 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 		{
 			unkickSolenoid.Set(false); // We aren't unkicking
 			latchSolenoid.Set(false);  // We aren't latching
+			kickSolenoid.Set(true);    // We are kicking
 			unlatchSolenoid.Set(true); // We ARE unlatching [AND KICKING!!!]
 			
         	kwait = 0;  // Reset wait counter
@@ -202,6 +205,7 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 		// (PUSH UNKICK) pull back the kicker
 		case uKPUSH:
 		{
+			kickSolenoid.Set(false);  // We aren't kicking
 			unkickSolenoid.Set(true); // We are unkicking
         	// Intentionally fall through to next state
         	kickState = uKSENSORWAIT;

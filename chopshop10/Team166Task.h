@@ -87,12 +87,15 @@
 //
 /** Channel for Latch piston */
 #define T166_LATCH_PISTON (4)
-/** Channel for Kicker piston */
-#define T166_KICKER_PISTON (2)
+/** Channel for Unkicker piston */
+#define T166_UNKICKER_PISTON (2)
 /** Channel for Lift Piston */
 #define T166_LIFT_PISTON (3)
-/** Channel for reverse of latch piston */
+/** Channel for Unlatch piston */
 #define T166_UNLATCH_PISTON (1)
+/** Channel for Kicker piston */
+#define T166_KICKER_PISTON (5)
+
 
 //
 // Pneumatics */
