@@ -72,9 +72,7 @@
 /** channel for the Horizontal Servo */    
 #define T166_HORIZONTAL_SERVO_CHANNEL (8)     
 /** channel for the Vertical Servo */    
-#define T166_VERTICAL_SERVO_CHANNEL (9) 
-/** channel for pneumatic lift extender **/ //TODO GET RID OF ME
-#define T166_LIFT_PNEUMATIC_ACTIVATE (10)
+#define T166_VERTICAL_SERVO_CHANNEL (9)
 
 //
 // Relay Layout
