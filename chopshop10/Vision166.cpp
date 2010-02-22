@@ -258,10 +258,21 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 				// we should call it during any mode. 
 				//DriveTowardsTarget();
 				
+				if(pHandle->GetCameraScoreToTargetX() < 0) {
+					// The target is left of the robot
+					SetStatus("L");
+				}
+				else {
+					SetStatus("R");
+				}
+				
 				pHandle->DeleteImage();
 			}
 			if(pHandle->GetThrottle(3) > 0.0) // Controlling the servos based on joystick input
 				SetServoPositions(pHandle->GetJoystickY(3), pHandle->GetJoystickX(3));
+		}
+		else {
+			SetStatus("0");
 		}
 		if(debugTimer.HasPeriodPassed(3.0)) {
 			debugTimer.Reset();
@@ -301,6 +312,7 @@ void Team166Vision::TryStartCamera(bool long_wait) {
 		pHandle = Proxy166::getInstance();
 		Wait(0.05);
 	}
+	pHandle->SetVisionStatus(false);
 	
 	Wait(3.5);
 	
