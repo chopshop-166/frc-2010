@@ -99,7 +99,7 @@ int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
 	Proxy166 *proxy;
 	
 	// State of Lift state machine
-	enum {REST, EJECT, EJECT_WAIT, WINCHING } lstate = REST;
+	enum {REST, EJECT, WINCHING } lstate = REST;
 	
 	// Defines Solenoid for Lift piston
 	Solenoid Lift_Solenoid(T166_LIFT_PISTON);
@@ -147,42 +147,28 @@ int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
 				ejectwaitcount = 0;
 				break;
 			}
-			// Wait for piston to be ejected
-			case EJECT_WAIT: {
-				// Check if we have waited long enough
-				if (ejectwaitcount++ == 200/LIFT_CYCLE_TIME)
-				{
-					// We have waited long enough, release pressure 
-					Lift_Solenoid.Set(false);
-					// Let us control the winch
-					lstate = WINCHING;
-				}
-				break;
-			}
 			// Allow Operator to control winch
 			case WINCHING: {
 				// Get the value of the limit switch
 				limit = Lift_BOTTOM_Limit_Switch.Get();
+				// Make sure limit is not pressed
+				if (limit == true) {
+					// If it is go back to rest
+					lstate = REST;
+				}
 				// Get the value of the joystick
 				JoyY = proxy->GetJoystickY(3);
 				// only get current once a second
 				if ((++valuethrottle)% (1000/LIFT_CYCLE_TIME)==0)
 				{
 					proxy->SetCurrent(T166_LIFT_MOTOR_CAN,lift_jag.GetOutputCurrent());
+					Lift_Solenoid.Set(false);
 				}
-				// Make sure limit is not pressed
-				if (limit == true) {
-					// If it is go back to rest
-					lstate = REST;
-				}
-				else {
 					// Set motor to joystick axis
 					lift_jag.Set(JoyY);
-				}
 				break;
 			}
 		}
-		
         // Should we log this value?
 		sl.PutOne(lstate, JoyY, limit);
 		

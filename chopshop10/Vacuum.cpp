@@ -133,9 +133,11 @@ int Team166Vacuum::Main(int a2, int a3, int a4, int a5,
 			{
 				proxy->SetBallCap(false);
 			}
-			
-		} else {
-		SetStatus("not sucking");
+		} 
+		else
+		{
+			SetStatus("not sucking");
+			Vacuum_Jag.Set(0);
 		}
         // Logging any values
 		sl.PutOne(Vacuum_On, Vac_Current);
