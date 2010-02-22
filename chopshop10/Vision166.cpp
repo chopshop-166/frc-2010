@@ -273,7 +273,7 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 			SetStatus("0");
 		}
 		if(pHandle->GetThrottle(3) > 0.0) // Controlling the servos based on joystick input
-				SetServoPositions(pHandle->GetJoystickY(3), pHandle->GetJoystickX(3));
+				SetServoPositions(pHandle->GetJoystickX(3), pHandle->GetJoystickY(3));
 		if(debugTimer.HasPeriodPassed(3.0)) {
 			debugTimer.Reset();
 			DPRINTF(LOG_DEBUG, "[img %d] [Throttle %f] [Ly %f] [Ry %f]\n", 
