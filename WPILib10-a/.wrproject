@@ -1374,6 +1374,7 @@
                 <stringAttribute value="SIMSPARCSOLARISdiab"/>
                 <stringAttribute value="SIMSPARCSOLARISgnu"/>
             </listAttribute>
+            <listAttribute key="BLD::Tgt|Targets"/>
             <intAttribute key="BuildSupportEnabled" value="1"/>
             <listAttribute key="BuildSupportForBuildSpecs">
                 <stringAttribute value="PPC603gnu"/>
@@ -1383,7 +1384,7 @@
         </mapAttribute>
     </attributes>
     <buildtargets>
-        <buildtarget buildtool="Librarian" name="WPILib" passed="false" targetname="WPILib">
+        <buildtarget buildtool="Librarian" name="WPILib10-a" passed="true" targetname="WPILib">
             <contents>
                 <folder name="/WPILib10-a" recursive="true"/>
             </contents>
