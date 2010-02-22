@@ -124,32 +124,16 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 	vacuumTask = Team166Task::GetTaskHandle("166BallSucker");
 	sonarTask = Team166Task::GetTaskHandle("166SonarTask");
 	
-	
-	// Health status index
-	float Health_Status = 0;
 	// Whether the sonar is valid
 	char SonarStatus;
-	// Whether the inclinometer's showing proper values
-	int InclinometerStatus = 0;
 	// Whether the camera is up
-	bool CameraStatus = proxy->GetVisionStatus();
-	// Whether banner is detected
-	bool BannerStatus = false;
 
-
-	
-	lHandle->DriverStationDisplayHS("HLT K E V PSI B S INC");
+	// Print out the key
+	lHandle->DriverStationDisplayHS("K E V PSI B S INC C");
 	
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-
-		// Determining Banner Status
-		// Will show false until tripped for the first time
-		BannerStatus |= !proxy->GetBanner();
-		
-		// Get the camera's status
-		CameraStatus = proxy->GetVisionStatus();
 		
 		//Determining the Sonar Health
 		if(proxy->GetSonarDistance()<1){
@@ -157,16 +141,9 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 		} else {
 			SonarStatus = sonarTask->GetStatus()[0];
 		}
-		
-		// Do the total health overall, as a %
-		Health_Status = (float(	((SonarStatus=='e')?0:1)+
-								InclinometerStatus+
-								CameraStatus+
-								BannerStatus)/4.)*100;
 
 		sprintf(buffer,
-				"%03.0f %c %c %c %03.0f %c %c %03d",
-				Health_Status,
+				"%c %c %c %03.0f %c %c %03d %c",
 				kickerTask->GetStatus()[0],
 				ebrakeTask->GetStatus()[0],
 //				vacuumTask->GetStatus()[0],
@@ -174,7 +151,8 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 				proxy->GetPressure(),
 				((proxy->GetBanner())?'y':'n'),
 				SonarStatus,
-				proxy->GetInclinometer()
+				proxy->GetInclinometer(),
+				((proxy->GetVisionStatus())?'y':'n')
 				);
 		lHandle->DriverStationDisplayHSData(buffer);
 		

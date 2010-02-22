@@ -22,7 +22,7 @@
 
 #define AUTONOMOUS_WAIT_TIME (0.050)
 #define SONAR_NEAR (12.5)
-#define AUTONOMOUS_RETREAT_TIME (2000)
+#define AUTONOMOUS_RETREAT_TIME (20)
 
 class Autonomous166
 {

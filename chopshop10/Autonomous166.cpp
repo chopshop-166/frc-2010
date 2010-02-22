@@ -45,7 +45,7 @@ void Autonomous166::Autonomous(void) {
 	char* buffer = new char[DASHBOARD_BUFFER_MAX];
 	
 	// Counter for retreat timer
-	unsigned long retreatcounter = 0;
+	unsigned retreatcounter = 0;
 	
 	// Number of times kicked
 	unsigned short kicked = 0;
@@ -66,6 +66,8 @@ void Autonomous166::Autonomous(void) {
 	
 	// As long as Autonomous is running, go through the states
 	while( lHandle->IsAutonomous() ) {
+		printf("%3.0f\r",sonar);
+		
 		// Reset sensors
 		banner = proxy->GetBanner();
 		sonar = proxy->GetSonarDistance();
@@ -160,8 +162,8 @@ void Autonomous166::Autonomous(void) {
 		// Getting out of the way after we take all of our shots
 		case sDodging:
 			if( --retreatcounter != 0 ) {
-				proxy->SetJoystickY(1, 1);
-				proxy->SetJoystickY(2, -1);
+				proxy->SetJoystickY(1, 0.5);
+				proxy->SetJoystickY(2, -0.5);
 			} else {
 				state = sGoGoGo;
 				lHandle->DriverStationDisplay("GoGoGo!");
@@ -171,8 +173,8 @@ void Autonomous166::Autonomous(void) {
 			
 		// Going back to defend the goal
 		case sGuarding:
-			proxy->SetJoystickY(1,-0.75);
-			proxy->SetJoystickY(2,-0.75);
+			proxy->SetJoystickY(1,-0.25);
+			proxy->SetJoystickY(2,-0.25);
 			break;
 			
 		// Wait for the end of Autonomous
@@ -185,8 +187,8 @@ void Autonomous166::Autonomous(void) {
 			retreatcounter = 1;
 #endif
 			if( --retreatcounter != 0 ) {
-				proxy->SetJoystickY(1,-1);
-				proxy->SetJoystickY(2,-0.75);
+				proxy->SetJoystickY(1,-0.5);
+				proxy->SetJoystickY(2,-0.375);
 			} else {
 				state = sResting;
 				lHandle->DriverStationDisplay("ZZZZZZZZZZZZZZZZZZZZZ");
@@ -208,8 +210,8 @@ void Autonomous166::Autonomous(void) {
 				lHandle->DriverStationDisplay("ZZZZZZZZZZZZZZZZZZZZZ");
 				break;
 			}
-			proxy->SetJoystickY(1,1);
-			proxy->SetJoystickY(2,1);
+			proxy->SetJoystickY(1,0.5);
+			proxy->SetJoystickY(2,0.5);
 			break;
 				
 		default:
