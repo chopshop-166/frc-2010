@@ -19,7 +19,7 @@
 #define DPRINTF if(true)dprintf
 
 // If we're using a camera, enable this
-#define UsingCamera (true)
+#define UsingCamera (1)
 
 Autonomous166::Autonomous166() {
 	
@@ -112,6 +112,7 @@ void Autonomous166::Autonomous(void) {
 			if( sonar >= SONAR_NEAR ) {
 				state = sSearching;
 				lHandle->DriverStationDisplay("Scanning for ball");
+				break;
 			}
 			if(banner) {
 				state = sRetreating;
@@ -123,6 +124,7 @@ void Autonomous166::Autonomous(void) {
 			if( (camerascore >= -0.03) || (camerascore <= 0.03) ) {
 				state = sPoised;
 				lHandle->DriverStationDisplay("Kicking!");
+				break;
 			} else {
 				DriveTowardsTarget();
 			}
@@ -141,14 +143,17 @@ void Autonomous166::Autonomous(void) {
 				if( loc == 3 ) { // Furthest zone from goal
 					state = sGuarding;
 					lHandle->DriverStationDisplay("Guarding goal");
+					break;
 				} else {
 					state = sDodging;
 					retreatcounter = AUTONOMOUS_RETREAT_TIME;
 					lHandle->DriverStationDisplay("Moving out of the way");
+					break;
 				}
 			} else {
 				state = sSearching;
 				lHandle->DriverStationDisplay("Scanning for ball");
+				break;
 			}
 			break;
 			
@@ -160,6 +165,7 @@ void Autonomous166::Autonomous(void) {
 			} else {
 				state = sGoGoGo;
 				lHandle->DriverStationDisplay("GoGoGo!");
+				break;
 			}
 			break;
 			
@@ -184,6 +190,7 @@ void Autonomous166::Autonomous(void) {
 			} else {
 				state = sResting;
 				lHandle->DriverStationDisplay("ZZZZZZZZZZZZZZZZZZZZZ");
+				break;
 			}
 			break;
 		
