@@ -609,6 +609,9 @@ bool Proxy166::IsRegistered(int joystick_id, int button_id) {
 bool Proxy166::AreSettingJoysticks() {
 	return areSettingJoysticks;
 }
+void Proxy166::ToggleSettingJoysticks(bool in) {
+	in = areSettingJoysticks;
+}
 
 void DumpJoystick(ProxyJoystick j) {
 	for(int x = 0;x<=NUMBER_OF_JOY_BUTTONS;x++) {
