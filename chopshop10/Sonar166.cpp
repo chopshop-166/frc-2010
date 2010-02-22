@@ -158,6 +158,13 @@ int Team166Sonar::Main(int a2, int a3, int a4, int a5,
         // Compute the distance in inches. See comments above.
         distance = (aavg / (UMAX * 2.0));
         pHandle->SetSonarDistance(distance);
+        if(distance > 15) {
+        	SetStatus("not detected");
+        } else if(distance <= 15 && distance >= 6){
+        	SetStatus("detected");
+        } else {
+        	SetStatus("error");
+        }
 #if 0
         // Display a log message
         if (!(cc++ % 40))

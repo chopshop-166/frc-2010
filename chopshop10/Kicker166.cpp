@@ -247,6 +247,14 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
         	// Release pressure from the kicker piston
         	kickerSolenoid.Set(false);
         	
+        	
+        	
+        	
+        	
+        	
+        	
+        	
+        	
         	// Done
         	// Intentionally fall through - return to WFP
         	sState = WFP;
