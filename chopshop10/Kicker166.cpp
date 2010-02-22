@@ -25,8 +25,8 @@
 struct abuf166
 {
 	struct timespec tp;              // Time of snapshot
-	float x_acc;                     // accelarometer x value
-	float y_acc;					 //  accelarometer y value
+	float x_acc;                     // accelerometer x value
+	float y_acc;					 //  accelerometer y value
 	float acc_vector;
 	
 };
@@ -126,7 +126,7 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 		
 		// Get limit switch value
 		Cocked = Latch_Magnet_Sensor.Get();
-
+		
         /*
          *  State machine to control the pistons.
          */
@@ -138,7 +138,6 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
         {
         	// Is there enough pressure?
         	if (proxy->GetPressure() < T166_PNEU_KICK_MIN){
-        		
         		// There isn't enough pressure.   :(   Try again later.
         		break;
         	}
@@ -163,12 +162,11 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
         	sState = LWAIT;
         	DPRINTF(LOG_DEBUG, "LWAIT: Wait for latch\n");
         }
-        
         // Wait for latch
         case LWAIT:
         {
         	// Is the magnet sensor ready? Are we ready to override it?
-        	if (Latch_Magnet_Sensor.Get() && !(lwait++ < T166_LATCH_OVERRIDE)){
+        	if (Latch_Magnet_Sensor.Get() && (lwait++ < 100)){//T166_LATCH_OVERRIDE)){
         		// Keep waiting
         		break;
         	}
