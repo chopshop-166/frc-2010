@@ -192,7 +192,12 @@ void Robot166::OperatorControl(void)
 		    GetWatchdog().Feed();
 		
 		// take a picture 
-		if (Team166ProxyObject.GetButton(1,8) or Team166ProxyObject.GetButton(1,9))
+		if (Team166ProxyObject.GetButton(T166_USB_STICK_1,T166_CAMERA_BUTTON) 
+				or Team166ProxyObject.GetButton(T166_USB_STICK_1,T166_CAMERA_BUTTON2)
+			    or Team166ProxyObject.GetButton(T166_USB_STICK_2,T166_CAMERA_BUTTON) 
+			    or Team166ProxyObject.GetButton(T166_USB_STICK_2,T166_CAMERA_BUTTON2)
+			    or Team166ProxyObject.GetButton(T166_USB_STICK_3,T166_CAMERA_BUTTON) 
+			    or Team166ProxyObject.GetButton(T166_USB_STICK_3,T166_CAMERA_BUTTON2))
 		{
 			joystickImageCount++;
 			sprintf(imageName, "166_joystick_img_%03i.png", joystickImageCount);

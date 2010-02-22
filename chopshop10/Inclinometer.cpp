@@ -9,7 +9,7 @@
 /*----------------------------------------------------------------------------*/
 /*  Copyright (c) MHS Chopshop Team 166, 2010.  All Rights Reserved.          */
 /*----------------------------------------------------------------------------*/
-
+#include <math.h>
 #include "WPILib.h"
 #include "Team166Task.h"
 #include "Inclinometer.h"
@@ -76,6 +76,7 @@ Team166Inclinometer::Team166Inclinometer(void):
 
 {
 	Start((char *)"166InclinometerTask", INCLINOMETER_CYCLE_TIME);
+	lastAngle = 360.0; // set to abnormal angle to force logging
 	return;
 };
 	
@@ -123,8 +124,11 @@ int Team166Inclinometer::Main(int a2, int a3, int a4, int a5,
 			DPRINTF(LOG_DEBUG, "%d", proxy->GetInclinometer());
 		}
 		
-		// Should we log this value?
-		sl.PutOne(inclinometerAngle);
+		// Should we log this value? Only if changed from previous value
+		if ((fabs(inclinometerAngle-lastAngle)) > 0.001) {
+			sl.PutOne(inclinometerAngle);
+			lastAngle = inclinometerAngle;
+		}
 		
 		// Wait for our next lap
 		WaitForNextLoop();		
