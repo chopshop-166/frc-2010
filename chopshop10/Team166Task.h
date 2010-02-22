@@ -147,6 +147,8 @@
 #define T166_VACUUM_BUTTON (5)
 // Camera snapshot button
 #define T166_CAMERA_BUTTON (8)
+// Other Camera snapshot button
+#define T166_CAMERA_BUTTON2 (9)
 
 //
 // Max tasks we support being started in Robot166
