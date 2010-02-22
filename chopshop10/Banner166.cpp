@@ -123,6 +123,11 @@ int Team166Banner::Main(int a2, int a3, int a4, int a5,
 				}
 		
 		proxy->SetBanner(CurrentBannerValue);
+		if(CurrentBannerValue) {
+			SetStatus("not detected");
+		} else {
+			SetStatus("detected");
+		}
 		
 		
         // Should we log this value?

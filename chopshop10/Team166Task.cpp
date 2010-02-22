@@ -23,7 +23,7 @@ Team166Task::Team166Task(int IsEssential)
 	MyWatchDog = 0;
 	MyTaskIsEssential = IsEssential;
 	MyName = 0;
-	MyStatusString = "";
+	MyStatusString = "ZZZZZ";
 	MissedWatchDog = 0;
 	exit_time.tv_sec = 0;	
 	exit_time.tv_nsec = 0;

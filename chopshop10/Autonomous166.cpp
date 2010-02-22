@@ -66,8 +66,6 @@ void Autonomous166::Autonomous(void) {
 	
 	// As long as Autonomous is running, go through the states
 	while( lHandle->IsAutonomous() ) {
-		printf("%3.0f\r",sonar);
-		
 		// Reset sensors
 		banner = proxy->GetBanner();
 		sonar = proxy->GetSonarDistance();

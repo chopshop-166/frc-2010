@@ -113,7 +113,6 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 	CANDriveLog sl;                    // log
 	Proxy166 *proxy;				  //pointer to proxy	
 	
-	int printstop=0;
 	int valuethrottle=0;
 	
 	char *buffer = new char[DASHBOARD_BUFFER_MAX];
@@ -137,11 +136,11 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		if( proxy->GetButton(1,T166_AUTOBALANCE_BUTTON) || proxy->GetButton(2,T166_AUTOBALANCE_BUTTON)) {
-			if(proxy->GetInclinometer() < -10) {
-				left = 0.25;
-				right = -0.25;
-			} else if(proxy->GetInclinometer() > 10) {
+			if(proxy->GetInclinometer() < -2) {
 				left = -0.25;
+				right = -0.25;
+			} else if(proxy->GetInclinometer() > 2) {
+				left = 0.25;
 				right = 0.25;
 			} else {
 				left = 0;
@@ -149,9 +148,9 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 			}
 		} else {
 			left = proxy->GetJoystickY(1);
-			right = -proxy->GetJoystickY(2);
+			right = proxy->GetJoystickY(2);
 		}
-		leftJag.Set(left);
+		leftJag.Set(-left);
 		rightJag.Set(right);
 		if ((++valuethrottle) % (1000/CAN_CYCLE_TIME) ==0)
 		{

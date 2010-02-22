@@ -1,4 +1,4 @@
-	/*******************************************************************************
+/*******************************************************************************
 *  Project   		: chopshop10 - 2010 Chopshop Robot Controller Code
 *  File Name  		: HealthMon166.cpp     
 *  Owner		   	: Software Group (FIRST Chopshop Team 166)
@@ -105,6 +105,8 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 	Team166Task *ebrakeTask;			// E-Brake task
 	Team166Task *vacuumTask;			// Vacuum task
 	Team166Task *sonarTask;				// Sonar task
+	Team166Task *visionTask;			// Vision task
+	Team166Task *bannerTask;			// Banner task
 	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 HealthMon task\n");
@@ -113,19 +115,35 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 	WaitForGoAhead();
 	
 	// Register our logger
-	lHandle = Robot166::getInstance();
+	while(!(lHandle = Robot166::getInstance())) {
+		Wait(T166_TA_WAIT_LENGTH);
+	}
 	lHandle->RegisterLogger(&sl);
 	char* buffer = new char[DASHBOARD_BUFFER_MAX];
 	
 	// Register each task
-	proxy = Proxy166::getInstance();
-	kickerTask = Team166Task::GetTaskHandle("166KickerTask");
-	ebrakeTask = Team166Task::GetTaskHandle("166EBrakeTask");
-	vacuumTask = Team166Task::GetTaskHandle("166BallSucker");
-	sonarTask = Team166Task::GetTaskHandle("166SonarTask");
+	while(!(proxy = Proxy166::getInstance())) {
+		Wait(T166_TA_WAIT_LENGTH);
+	}
+	while(!(kickerTask = Team166Task::GetTaskHandle("166KickerTask"))) {
+		Wait(T166_TA_WAIT_LENGTH);
+	}
+	while(!(ebrakeTask = Team166Task::GetTaskHandle("166EBrakeTask"))) {
+		Wait(T166_TA_WAIT_LENGTH);
+	}
+	while(!(vacuumTask = Team166Task::GetTaskHandle("166BallSucker"))) {
+		Wait(T166_TA_WAIT_LENGTH);
+	}
+	while(!(sonarTask = Team166Task::GetTaskHandle("166SonarTask"))) {
+		Wait(T166_TA_WAIT_LENGTH);
+	}
+	while(!(visionTask = Team166Task::GetTaskHandle("166VisionTask"))) {
+		Wait(T166_TA_WAIT_LENGTH);
+	}
+	while(!(bannerTask = Team166Task::GetTaskHandle("166BannerTask"))) {
+		Wait(T166_TA_WAIT_LENGTH);
+	}
 	
-	// Whether the sonar is valid
-	char SonarStatus;
 	// Whether the camera is up
 
 	// Print out the key
@@ -134,24 +152,16 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		
-		//Determining the Sonar Health
-		if(proxy->GetSonarDistance()<1){
-			SonarStatus = 'e';
-		} else {
-			SonarStatus = sonarTask->GetStatus()[0];
-		}
-
 		sprintf(buffer,
-				"%c %c %c %03.0f %c %c %03d %c",
+				"%c %c %c %03i %c %c %03d %c",
 				kickerTask->GetStatus()[0],
 				ebrakeTask->GetStatus()[0],
 				vacuumTask->GetStatus()[0],
-				proxy->GetPressure(),
-				((proxy->GetBanner())?'y':'n'),
-				SonarStatus,
+				(int)proxy->GetPressure(),
+				bannerTask->GetStatus()[0],
+				sonarTask->GetStatus()[0],
 				proxy->GetInclinometer(),
-				((proxy->GetVisionStatus())?'y':'n')
+				visionTask->GetStatus()[0]
 				);
 		lHandle->DriverStationDisplayHSData(buffer);
 		
