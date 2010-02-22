@@ -118,7 +118,7 @@ int Team166EBrake::Main(int a2, int a3, int a4, int a5,
         {
 			if (!sent1)
 			{
-				Ebrake_Can.Set(-.3);
+				Ebrake_Can.Set(-1);
 //				lHandle->DriverStationDisplay("Down");
 				SetStatus("down");
 				sent1=1;
