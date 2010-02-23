@@ -126,8 +126,6 @@ int Team166Sonar::Main(int a2, int a3, int a4, int a5,
 	// Get a handle to the proxy object
 	pHandle = Proxy166::getInstance();
 	
-	printf("Sonar task is getting ready...\n");
-
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
@@ -162,6 +160,8 @@ int Team166Sonar::Main(int a2, int a3, int a4, int a5,
         	SetStatus("not detected");
         } else if(distance <= 15 && distance >= 6){
         	SetStatus("detected");
+        	// log value only if valid distance detected
+            sl.PutOne(distance);
         } else {
         	SetStatus("error");
         }
@@ -170,8 +170,6 @@ int Team166Sonar::Main(int a2, int a3, int a4, int a5,
         if (!(cc++ % 40))
         	printf("Value: %u, Distance: %f\n", utmp, distance);
 #endif   	
-		// Should we log this value?
-        sl.PutOne(distance);
 		
 		// Wait for our next lap
 		WaitForNextLoop();		

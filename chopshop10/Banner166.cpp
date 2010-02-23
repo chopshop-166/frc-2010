@@ -110,25 +110,26 @@ int Team166Banner::Main(int a2, int a3, int a4, int a5,
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		
-		CurrentBannerValue = BannerSensor.Get();
-	
+		CurrentBannerValue = BannerSensor.Get();	
 		
 		static int throttle = 0;
 		throttle++;
 		if (throttle%10==0){
 				throttle = 0;
 				DPRINTF(LOG_DEBUG,"Channel: %i Value: %i",
-						BannerSensor.GetChannel(),CurrentBannerValue);
-				
+						BannerSensor.GetChannel(),CurrentBannerValue);				
 				}
 		
 		proxy->SetBanner(CurrentBannerValue);
 		if(CurrentBannerValue) {
+			if (!strcmp(GetStatus(),"not detected")){
+				// log first detection on DS
+				lHandle->DriverStationDisplay("BANNER DETECTED");
+			}
 			SetStatus("detected");
 		} else {
 			SetStatus("not detected");
-		}
-		
+		}		
 		
         // Should we log this value?
 		sl.PutOne(CurrentBannerValue);
