@@ -16,7 +16,7 @@ static EllipseDescriptor ellipseDescriptor = {
 										};
 
 static CurveOptions curveOptions = {	IMAQ_NORMAL_IMAGE,	// extractionMode
-										60, 				// threshold
+										40, 				// threshold
 										IMAQ_NORMAL, 		// filterSize
 										25, 				// minLength
 										15, 				// rowStepSize 
@@ -29,7 +29,7 @@ static ShapeDetectionOptions shapeOptions = {
 										IMAQ_GEOMETRIC_MATCH_SHIFT_INVARIANT,	// mode
 										NULL,			// angle ranges
 										0,				// num angle ranges
-										0,				// scale range
+										{75, 125},		// scale range
 										500				// minMatchScore
 };
 
