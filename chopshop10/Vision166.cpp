@@ -240,8 +240,7 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 	
 	static float prev_servo_x = 0.0, prev_servo_y = DEFAULT_VERTICAL_PAN_POSITION;
 	
-	while ((lHandle->IsOperatorControl() || 
-		   lHandle->IsAutonomous()))
+	while (MyTaskInitialized)
 	{
 		if(true == pHandle->GetVisionStatus()) {
 			// Vision is enabled
@@ -251,7 +250,17 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 				// We successfully grabbed an image
 				matches = Target::FindCircularTargets(img);
 				AcquireTarget(matches, prev_servo_x, prev_servo_y);
-				dds->sendVisionData(0.0, 0.0, 0.0, matches[0].m_xPos / matches[0].m_xMax, matches);
+				
+				// Disable image overlay for all but the best selection.
+				matches.erase(matches.begin()+1, matches.end());
+				
+				dds->sendVisionData(
+					0.0, 
+					0.0, 
+					0.0, 
+					matches[0].m_xPos / matches[0].m_xMax, 
+					matches
+				);
 				//DPRINTF(LOG_DEBUG, "HzS = %f ; VlS = %f\n", horizontalServo.Get(), verticalServo.Get())			
 				
 				// This method should only be called during Autonomous, but for testing
@@ -276,7 +285,9 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 			float Jy = pHandle->GetJoystickY(3);
 			if(FLIP_SERVO_VERTICAL)
 				Jy *= -1.0;
-			SetServoPositions(pHandle->GetJoystickX(3), Jy);
+			
+			if(lHandle->IsAutonomous() || lHandle->IsOperatorControl())
+				SetServoPositions(pHandle->GetJoystickX(3), Jy);
 		}
 		if(debugTimer.HasPeriodPassed(3.0)) {
 			debugTimer.Reset();
