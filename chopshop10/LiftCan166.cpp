@@ -103,6 +103,7 @@ int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
 	
 	// Defines Solenoid for Lift piston
 	Solenoid Lift_Solenoid(T166_LIFT_PISTON);
+	Lift_Solenoid.Set(false);
 	
 	// Wait counter
 	int ejectwaitcount;
@@ -136,6 +137,7 @@ int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
 					lstate = EJECT;
 				}
 				else {
+					Lift_Solenoid.Set(false);
 					break;
 				}
 			}
