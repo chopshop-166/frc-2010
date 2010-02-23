@@ -147,7 +147,7 @@ int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
 				Lift_Solenoid.Set(true);
 				// start wait timer
 				ejectwaitcount = 0;
-				break;
+				lstate = WINCHING;
 			}
 			// Allow Operator to control winch
 			case WINCHING: {

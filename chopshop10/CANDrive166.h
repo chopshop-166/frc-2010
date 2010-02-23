@@ -20,8 +20,13 @@
 // of miliseconds. Max allowed time is 999 miliseconds.
 //
 #define CAN_CYCLE_TIME (50) // 20ms
-
 #define NO_SPEED				 0    //speed to use when there is no input
+
+// Autobalance constants
+// Dead zone-won't try to center itself-in degrees
+#define AUTOBALANCE_DEADZONE (5)
+// Speed from 0 to 1
+#define AUTOBALANCE_SPEED (0.425)
 
 class Team166CANDrive : public Team166Task
 {
