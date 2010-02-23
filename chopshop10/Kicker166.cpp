@@ -153,8 +153,9 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 		// Signal the DS that we can kick
 		case SIGNAL:
 		{
-        	// TODO send a real ready signal to DS
+        	// Send a ready signal to DS
         	DPRINTF(LOG_DEBUG, "We're READY TO KICK !!!!!\n");
+			lHandle->DriverStationDisplay("READY TO KICK");
         	
         	// Done
         	// Intentionally fall through to TRIGGERWAIT
@@ -165,15 +166,18 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 		case TRIGGERWAIT:
 		{
 			// Is the trigger asking us to kick?
-			if (!proxy->GetButton(3,4,true)){
+			if (proxy->GetButton(T166_USB_STICK_1, T166_KICKER_BUTTON,true)
+				or proxy->GetButton(T166_USB_STICK_2, T166_KICKER_BUTTON,true)
+				or proxy->GetButton(T166_USB_STICK_3, T166_KICKER_BUTTON,true))
+			{
+				// The trigger is asking us to kick.
+	        	kickState = uLPUSH;
+			} else {
+				// Done
 				// The trigger isn't asking us to kick. Wait.
 				break;
 			}
-			// The trigger is asking us to kick.	
-			// Done
         	// Intentionally fall through to next state
-        	kickState = uLPUSH;
-        	
 		}
 		// (PUSH UNLATCH) unlatch the kicker
 		case uLPUSH:
