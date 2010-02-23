@@ -61,14 +61,6 @@
 //
 // PWM layout
 //
-/** channel for the Left Motor */
-#define T166_LEFT_BACK_MOTOR_CHANNEL (1)
-/** channel for the Right Motor */   
-#define T166_RIGHT_BACK_MOTOR_CHANNEL (2)
-/** channel for the E-Brake Motor */    
-#define T166_EBRAKE_CHANNEL (6)	
-/** channel for the Lift Motor */    
-#define T166_LIFT_CHANNEL (7)	
 /** channel for the Horizontal Servo */    
 #define T166_HORIZONTAL_SERVO_CHANNEL (8)     
 /** channel for the Vertical Servo */    

@@ -17,7 +17,6 @@
 #include <stdio.h>
 #include "WPILib.h"
 #include "Team166Task.h"
-#include "TankDrive166.h"
 #include "Kicker166.h"
 #include "LiftCan166.h"
 #include "Banner166.h"
@@ -42,13 +41,8 @@ Team166Task *Team166Task::ActiveTasks[T166_MAXTASK + 1] = {0};
 // Declare external tasks
 Proxy166 Team166ProxyObject; // This task has to always be started first or it'll error
 #if (!UsingSuitcase)
-	#if UsingCan
-		Team166CANDrive Team166CANDriveObject;
-		Team166LiftCan Team166LiftCanObject;
-	#else
-		Team166TankDrive Team166TankDriveObject;
-		Team166Lift Team166LiftObject;
-	#endif
+	Team166CANDrive Team166CANDriveObject;
+	Team166LiftCan Team166LiftCanObject;
 	Team166EBrake Team166EBrakeObject;
 	Team166Kicker Team166KickerObject;
 	Team166Banner Team166BannerObject;

@@ -15,8 +15,6 @@
 #include "WPILib.h"
 #include "CANJaguar.h"
 #include "Team166Task.h"
-#include "TankDrive166.h"
-#include "Lift166.h"
 #include "LiftCan166.h"
 #include "Kicker166.h"
 #include "Autonomous166.h"
