@@ -87,7 +87,10 @@
 #define T166_UNLATCH_PISTON (1)
 /** Channel for Kicker piston */
 #define T166_KICKER_PISTON (5)
-
+/** Channel for E-brake piston */
+#define T166_EBRAKE_PISTON (6)
+/** Channel for Un-e-brake piston */
+#define T166_UNEBRAKE_PISTON (7)
 
 //
 // Pneumatics */

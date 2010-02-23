@@ -68,7 +68,7 @@ unsigned int EBrakeLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-Team166EBrake::Team166EBrake(void): Ebrake_Can(T166_EBRAKE_MOTOR_CAN)
+Team166EBrake::Team166EBrake(void)
 {
 	Start((char *)"166EBrakeTask", EBRAKE_CYCLE_TIME);
 	return;
@@ -88,6 +88,11 @@ int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 	Proxy166 *proxy;	//Get handle for joystick
 	Robot166 *lHandle;            // Local handle
 	EBrakeLog sl;                   // log
+	
+	Solenoid ebrakeSolenoid(T166_EBRAKE_PISTON);        // E-brake solenoid
+	Solenoid unebrakeSolenoid(T166_UNEBRAKE_PISTON);  // Un-e-brake solenoid
+	ebrakeSolenoid.Set(false);                          // Vent e-brake
+	unebrakeSolenoid.Set(true);                         // Push un-e-brake
 	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 EBrake task\n");
@@ -109,16 +114,22 @@ int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		
+#if 0
 		if ((++valuethrottle)% (1000/EBRAKE_CYCLE_TIME)==0)
 		{	
 			myCurrent = Ebrake_Can.GetOutputCurrent();
 		}
+#endif
 		
 		if ((proxy->GetButton(1,T166_EBRAKE_BUTTON) == true) || (proxy->GetButton(2,T166_EBRAKE_BUTTON) == true))
         {
 			if (!sent1)
 			{
+#if 0
 				Ebrake_Can.Set(-1);
+#endif
+				unebrakeSolenoid.Set(false);  // Vent un-e-brake
+				ebrakeSolenoid.Set(true);     // Push e-brake
 				lHandle->DriverStationDisplay("EBrake DOWN");
 				SetStatus("down");
 				sent1=1;
@@ -133,7 +144,11 @@ int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 		}	
 		if (!sent2)
 		{
+#if 0
 			Ebrake_Can.Set(.3);
+#endif
+			ebrakeSolenoid.Set(false);     // Vent e-brake
+			unebrakeSolenoid.Set(true);    // Push un-e-brake
 			lHandle->DriverStationDisplay("EBrake UP");
 			SetStatus("up");
 			sent1=0;

@@ -37,7 +37,7 @@ public:
 			int a6, int a7, int a8, int a9, int a10);
 			
 private:
-	CANJaguar Ebrake_Can;
+	// CANJaguar Ebrake_Can;
 
 	
 };
