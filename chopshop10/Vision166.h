@@ -26,6 +26,7 @@
 #include "Vision/AxisCamera.h"
 #include "Vision/HSLImage.h"
 
+#define FLIP_SERVO_VERTICAL true
 #define PI 3.14159265358979
 #define DEFAULT_VERTICAL_PAN_POSITION 0
 #define CAMERA_SPAWN_TRY_WAIT 0.5 // seconds to wait for each thread
