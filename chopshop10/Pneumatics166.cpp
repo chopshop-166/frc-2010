@@ -90,20 +90,18 @@ Pneumatics166::~Pneumatics166(void)
 int Pneumatics166::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {
-	// TODO: THE VARS LIVE HERE!!!!!!!!!!
+	// THE VARS LIVE HERE!!!!!!!!!!
 	Proxy166 *proxy;	                            // Get handle for joystick
 	Robot166 *lHandle;                              // Local handle
 	PneumaticsLog sl;                               // Pneumatics log
 	DigitalInput PressureSwitch(T166_PNEUMATIC_PRESSURE_SWITCH); // Pressure switch
 	Relay CompressorSpike(T166_COMPRESSOR_RELAY_CHANNEL,Relay::kForwardOnly);   // Compressor spike
 	int CompressorOn = 0;                           // Compressor state
-	AnalogChannel ps(T166_PNEU_MOD,TI66_PNEU_PRESS);// Pressure sensor
-	float pressure;                                 // Pressure from a/d converter
-	int opressure;                                  // Trimmed to 0.5v to 4.5v
+	AnalogChannel ps(T166_PNEU_MOD,TI66_PNEU_PRESS);	// Pressure sensor
+	float pressure;                                 	// Pressure from a/d converter
 	float ppressure;                                // Pressure converted to psi
+	bool PressureSensorGood = true;										// Whether the pressure sensor's good
 	enum {UNKNOWN, FILL, DRAIN} pState = UNKNOWN;   // Pressure state
-	float low_pressure = T166_PNEU_LOW;             // Low pressure limit
-	float high_pressure = T166_PNEU_HIGH;           // High pressure limit
 	int doprint = 0;
 	
 	// Let the world know we're in
@@ -126,30 +124,36 @@ int Pneumatics166::Main(int a2, int a3, int a4, int a5,
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		
 
-		// Capture the pressure as seen by the A/D converter
-		pressure = opressure = ps.GetValue();
+		// Capture the pressure by adjusted voltage
+		// Subtract 0.5 because sensor ranges from 0.5 to 4.5
+		pressure = (ps.GetVoltage()-0.5);
 		
 		// If the value is below acceptable range, assume minimum value
-		if (pressure < 102.4) {  // Below 0.5V?
-			pressure = 102.4;    // Yes, set to 0.5V
-		} else {
-			if (pressure >= 921.6) // 4.5V or greater?
-				pressure = 921.6;
+		if( (pressure < 0) || (pressure > 4.0) ) { // 4.5V or greater?
+			SetStatus("error");
+			if(PressureSensorGood) {
+				DPRINTF(LOG_DEBUG, "Bad values, using backup sensor");
+			}
+			PressureSensorGood = false;
 		}
 		
-		// Adjust for a base of 0.5v
-		pressure -= 102.4;
+		// Convert voltage to PSI
+		// (250 (Max PSI)/4 (Max adjusted voltage)==62.5)
+		if(PressureSensorGood) {
+			ppressure = (pressure * 62.5);
+		} else {
+			ppressure = (PressureSwitch.Get())? T166_PNEU_HIGH+1 : T166_PNEU_LOW-1;
+		}
 		
-		// Convert a/d input to psi measurement
-        ppressure = (pressure*256)/819.2;
         
         // Update the pressure value in the proxy
         proxy->SetPressure(ppressure);
     	
         // Print various values for debugging
 		if ((doprint++ %40) == 0)
-			DPRINTF(LOG_DEBUG, "Pressure switch value: %d %d \n   Orig: %d Trim: %f Psi: %f\n",
-					PressureSwitch.Get(), CompressorOn, opressure, pressure, ppressure);
+			DPRINTF(LOG_DEBUG, "Pressure switch value: %d %d \n\t Trim: %f Psi: %f\n",
+					PressureSwitch.Get(), CompressorOn, pressure, ppressure);
+		
 		
         // Decide what we need to do now
         switch (pState) {
@@ -158,7 +162,7 @@ int Pneumatics166::Main(int a2, int a3, int a4, int a5,
         case UNKNOWN:
         {
         	// Do we have enough pressure already?
-        	if (ppressure < high_pressure) {
+        	if (ppressure < T166_PNEU_HIGH) {
         		
         		// No, we need to start by filling the tank(s)
         		pState = FILL;
@@ -175,7 +179,7 @@ int Pneumatics166::Main(int a2, int a3, int a4, int a5,
         // We need more pressure. Keep filling.
         case FILL:
         {
-        	
+        	SetStatus("low");
         	// We need to fill the tank(s). Is the compressor on already?
 			if (!CompressorOn)
 			{
@@ -191,7 +195,7 @@ int Pneumatics166::Main(int a2, int a3, int a4, int a5,
 			}
 			
 			// Have we reached our target pressure?
-			if (ppressure >= high_pressure) {
+			if (ppressure >= T166_PNEU_HIGH) {
 				
 				// Yes. We can let it drain now
 				pState = DRAIN;
@@ -204,6 +208,7 @@ int Pneumatics166::Main(int a2, int a3, int a4, int a5,
         // We have enough pressure. Just keep using it.
         case DRAIN:
         {
+        	SetStatus("full");
 			// Is the compressor on?
 			if (CompressorOn){
 				
@@ -217,7 +222,7 @@ int Pneumatics166::Main(int a2, int a3, int a4, int a5,
 			}
 			
 			// Have we gone down too far?
-			if (ppressure <= low_pressure) {
+			if (ppressure <= T166_PNEU_LOW) {
 				
 				// Yes. We need more air
 				pState = FILL;
@@ -227,55 +232,6 @@ int Pneumatics166::Main(int a2, int a3, int a4, int a5,
 			break;
         }
         }
-        
-                
-#if 0	
-		if ((doprint++ %40) == 0)
-			DPRINTF(LOG_DEBUG, "Pressure switch value: %d %d \n   Orig: %d Trim: %d Psi: %f\n", PressureSwitch.Get(), CompressorOn, opressure, pressure, ppressure);
-		
-		// Should we turn off the compressor?
-		if (!PressureSwitch.Get())
-		{
-			//The pressure is low: turn on the compressor if it isn't on already
-			//DPRINTF(LOG_DEBUG, "The pressure is low.\n");
-			
-			// Is the compressor off?
-			if (!CompressorOn)
-			{
-				// The compressor is off, now let's turn it on
-				// Say we are turning on the compressor
-				DPRINTF(LOG_DEBUG, "Turning on the compressor!!\n");
-				
-				// Turn the compressor on
-				CompressorSpike.Set(Relay::kOn);
-				
-				// Remember that the compressor is on
-				CompressorOn = 1;
-			}
-		}
-		else
-		{
-			//The pressure is fine: turn off the compressor if it isn't on already
-			//DPRINTF(LOG_DEBUG, "The pressure is fine.\n");
-						
-			// Is the compressor on?
-			if (CompressorOn){
-				
-				DPRINTF(LOG_DEBUG, "Turning off the compressor!!\n");
-				
-				// Yes compressor is on: turn it off
-				CompressorSpike.Set(Relay::kOff);
-				
-				// Remember we have turned off the compressor
-				CompressorOn = 0;
-			}
-		}
-		
-		if ((++printstop)%(1000/KICKER_CYCLE_TIME)==0)
-		{
-			DPRINTF(LOG_DEBUG, "%d, %d", Cocked, proxy->GetButton(3,1));
-		}
-#endif	
 		
         // Logging any values
 		sl.PutOne(ppressure, CompressorOn);
