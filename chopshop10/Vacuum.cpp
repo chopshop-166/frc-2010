@@ -73,7 +73,7 @@ unsigned int VacuumLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-Team166Vacuum::Team166Vacuum(void): Vacuum_Jag(T166_EBRAKE_MOTOR_CAN)
+Team166Vacuum::Team166Vacuum(void): Vacuum_Jag(T166_VACUUM_CAN)
 {
 	Start((char *)"166BallSucker", VACUUM_CYCLE_TIME);
 	return;
@@ -119,8 +119,6 @@ int Team166Vacuum::Main(int a2, int a3, int a4, int a5,
 			Vacuum_Jag.Set(1);
 			Vacuum_On = true;
 			SetStatus("sucking");
-//			printf("Sucking\n");
-//			lHandle->DriverStationDisplay("Sucking");
 			if ((++valuethrottle) % (200/VACUUM_CYCLE_TIME) == 0)
 			{
 				Vac_Current = Vacuum_Jag.GetOutputCurrent();
@@ -129,7 +127,6 @@ int Team166Vacuum::Main(int a2, int a3, int a4, int a5,
 			if (Vac_Current <= 10)
 			{
 				proxy->SetBallCap(true);
-				printf("Ball captured\n");
 			}	
 			else 
 			{
@@ -139,8 +136,6 @@ int Team166Vacuum::Main(int a2, int a3, int a4, int a5,
 		else
 		{
 			SetStatus("not sucking");
-//			printf("Not sucking\n");
-//			lHandle->DriverStationDisplay("Not sucking");
 			Vacuum_Jag.Set(0);
 		}
         // Logging any values

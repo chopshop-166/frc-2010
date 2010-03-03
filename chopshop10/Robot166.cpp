@@ -41,18 +41,18 @@ Team166Task *Team166Task::ActiveTasks[T166_MAXTASK + 1] = {0};
 // Declare external tasks
 Proxy166 Team166ProxyObject; // This task has to always be started first or it'll error
 #if (!UsingSuitcase)
-//	Team166CANDrive Team166CANDriveObject;
-//	Team166LiftCan Team166LiftCanObject;
+	Team166CANDrive Team166CANDriveObject;
+	Team166LiftCan Team166LiftCanObject;
 	Team166EBrake Team166EBrakeObject;
-//	Team166Kicker Team166KickerObject;
+	Team166Kicker Team166KickerObject;
 	Team166Banner Team166BannerObject;
 	Team166Sonar Team166SonarObject;
 	Team166Inclinometer Team166InclinometerObject;
 	Pneumatics166 Team166PneumaticsObject;
 	Team166Vacuum Team166VacuumObject;
 #endif
-//Team166Vision Team166VisionObject;
-//Team166HealthMon Team166HealthMonObject;
+Team166Vision Team166VisionObject;
+Team166HealthMon Team166HealthMonObject;
 
 // This links to the single instance of the Robot task
 class Robot166;
