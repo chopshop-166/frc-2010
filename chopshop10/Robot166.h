@@ -23,6 +23,9 @@
 #include "Banner166.h"
 #include "Inclinometer.h"
 #define DASHBOARD_BUFFER_MAX (21)
+
+// Robot166 wait time
+#define ROBOT_WAIT_TIME (0.5)
 //
 // Robot modes
 //

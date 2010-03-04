@@ -53,7 +53,7 @@ void Autonomous166::Autonomous(void) {
 	// Sensor storage data
 	int banner=0;
 	int inclinometer=0;
-	float sonar=0;
+	bool ball=false;
 #if UsingCamera
 	float camerascore=0;
 #endif
@@ -68,7 +68,7 @@ void Autonomous166::Autonomous(void) {
 	while( lHandle->IsAutonomous() ) {
 		// Reset sensors
 		banner = proxy->GetBanner();
-		sonar = proxy->GetSonarDistance();
+		ball = proxy->GetBallCap();
 		inclinometer = proxy->GetInclinometer();
 #if UsingCamera
 		camerascore = proxy->GetCameraScoreToTargetX();
@@ -91,7 +91,7 @@ void Autonomous166::Autonomous(void) {
 				retreatcounter = AUTONOMOUS_RETREAT_TIME;
 				break;
 			}
-			if( sonar < SONAR_NEAR ) {
+			if( ball ) {
 				// We have a ball
 				state = sBallHeld;
 				lHandle->DriverStationDisplay("Ball captured");
@@ -109,7 +109,7 @@ void Autonomous166::Autonomous(void) {
 			
 		// We have a ball in our possession
 		case sBallHeld:
-			if( sonar >= SONAR_NEAR ) {
+			if( !ball ) {
 				state = sSearching;
 				lHandle->DriverStationDisplay("Scanning for ball");
 				break;
@@ -189,23 +189,17 @@ void Autonomous166::Autonomous(void) {
 				proxy->SetJoystickY(2,-0.375);
 			} else {
 				state = sResting;
-				lHandle->DriverStationDisplay("ZZZZZZZZZZZZZZZZZZZZZ");
+				lHandle->DriverStationDisplay("Found boundary");
 				break;
 			}
 			break;
 		
 		// Wait for the end of Autonomous
 		case sGoGoGo:
-			if( banner ) {
+			if( banner || ( (inclinometer > 5) || (inclinometer < -5) ) ) {
 				// Great, we've reached the end of Autonomous. Naptime!
 				state = sResting;
-				lHandle->DriverStationDisplay("ZZZZZZZZZZZZZZZZZZZZZ");
-				break;
-			}
-			if( (inclinometer > 5) || (inclinometer < -5) ) {
-				// Great, we've reached the end of Autonomous. Naptime!
-				state = sResting;
-				lHandle->DriverStationDisplay("ZZZZZZZZZZZZZZZZZZZZZ");
+				lHandle->DriverStationDisplay("Found boundary");
 				break;
 			}
 			proxy->SetJoystickY(1,0.5);
@@ -214,7 +208,7 @@ void Autonomous166::Autonomous(void) {
 				
 		default:
 			state = sResting;
-			lHandle->DriverStationDisplay("ZZZZZZZZZZZZZZZZZZZZZ");
+			lHandle->DriverStationDisplay("Found boundary");
 			break;
 		}
 		Wait(AUTONOMOUS_WAIT_TIME);

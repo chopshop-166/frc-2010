@@ -48,8 +48,8 @@
 
 #define T166_PNEUMATIC_PRESSURE_SWITCH (5)	// Pneumatic pressure NOT ready for use
 
-#define T166_EBRAKE_LIMIT_TOP (7)           // EBrake top limit
-#define T166_EBRAKE_LIMIT_BOTTOM (8)        // Brake bottom limit
+#define T166_AUTONOMOUS_JUMPER (7)           // Enable/Disable autonomous
+
 
 #define T166_LATCH_MAGNET_SENSOR (3)		// Latch Magnet Sensor
 #define T166_BANNER_SENSOR_DIGITAL_INPUT (10)	// Banner Sensor

@@ -135,14 +135,23 @@ float Robot166::GetBatteryVoltage(void)
 }
 
 /**
- * Drive left & right motors for 2 seconds then stop
+ * Run autonomous class if jumper is in, otherwise wait for Teleop
  */
 void Robot166::Autonomous(void)
 {
-	DPRINTF(LOG_DEBUG,"autonomous\n");
-	RobotMode = T166_AUTONOMOUS;
-	GetWatchdog().SetEnabled(false);
-	Autonomous166().Autonomous();
+	DigitalInput jumper(T166_AUTONOMOUS_JUMPER);
+	if(!jumper.Get()) {
+		DPRINTF(LOG_DEBUG,"Entered autonomous\n");
+		RobotMode = T166_AUTONOMOUS;
+		GetWatchdog().SetEnabled(false);
+		Autonomous166().Autonomous();
+	} else {
+		DPRINTF(LOG_DEBUG,"Entered disabled autonomous\n");
+		RobotMode = T166_AUTONOMOUS;
+		while(IsAutonomous()) {
+			Wait(ROBOT_WAIT_TIME);
+		}
+	}
 }
 
 /** 
@@ -164,7 +173,7 @@ void Robot166::OperatorControl(void)
 		dsHandleLCD->UpdateLCD();
 	while (IsOperatorControl())
 	{
-		if(debugTimer.HasPeriodPassed(0.5))
+		if(debugTimer.HasPeriodPassed(ROBOT_WAIT_TIME))
 			Team166Task::PrintStats();
 		
 		// Are we being disabled?
@@ -178,7 +187,7 @@ void Robot166::OperatorControl(void)
 			    printf("Logfiles dumped!\n");
 			    maxLogId++;
 			}
-			Wait (0.5);
+			Wait (ROBOT_WAIT_TIME);
 			continue;
 		}
 		
@@ -198,7 +207,7 @@ void Robot166::OperatorControl(void)
 			sprintf(imageName, "166_joystick_img_%03i.png", joystickImageCount);
 			TakeSnapshot(imageName);
 		}
-		Wait (0.5);
+		Wait (ROBOT_WAIT_TIME);
 	}
 	
 }
