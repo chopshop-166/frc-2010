@@ -103,7 +103,7 @@ int a6, int a7, int a8, int a9, int a10)
 	Solenoid kickSolenoid(T166_KICKER_PISTON);                      // Kicker solenoid
 	
 	//enum {WFP, LATCH, LWAIT, LREL, DSREADY, TRIGGER, KWAIT, KREL} sState = WFP;  // Solenoid state
-	enum {WFP, TRIGGERWAIT, KICKWAIT, uKSENSORWAIT, LWAIT, uKVENT} kickState = TRIGGERWAIT; // Kicker state
+	enum {WFP, TRIGGERWAIT, KICKWAIT, uKSENSORWAIT, LWAIT} kickState = TRIGGERWAIT; // Kicker state
 	int lwait = 0;                                      // Latch release wait counter
 	int kwait = 0;                                      // Kicker release wait counter
 	int latchwait = 0;                                  // Latched? wait counter
@@ -177,7 +177,7 @@ int a6, int a7, int a8, int a9, int a10)
 			// Wait for the kicker to kick
 			// Have we waited long enough?
 			if (kwait++ >= 100){				
-				// We've waited long enough!!   :D    We're done here.
+				// We've waited long enough
 				// Pull back the kicker
 				kickSolenoid.Set(false);  // We aren't kicking
 				unkickSolenoid.Set(true); // We are unkicking
@@ -203,16 +203,13 @@ int a6, int a7, int a8, int a9, int a10)
 			// Wait for the latch to be down
 			// Have we waited long enough?
 			if (latchwait++ >= 100){
-				// We've waited long enough!!   :D    We're done here.
-				// Intentionally fall through to the next state
-				kickState = uKVENT;
+				// We've waited long enough
+				// We aren't unkicking, so get rid
+				unkickSolenoid.Set(false);
+				// Wait for Pressure
+				kickState = WFP;
 			}
 			break;
-		case uKVENT:
-			// (VENT UNKICK) release the latched kicker
-			unkickSolenoid.Set(false);  // We aren't unkicking
-			// Intentionally fall through to next state
-			kickState = WFP;
 		}
 
 		// Should we log this value?

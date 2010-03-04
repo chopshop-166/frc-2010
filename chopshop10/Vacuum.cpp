@@ -92,9 +92,10 @@ int Team166Vacuum::Main(int a2, int a3, int a4, int a5,
 	Proxy166 *proxy;				// Handle to proxy
 	Robot166 *lHandle;            // Local handle
 	VacuumLog sl;                   // log
-	float Vac_Current;
-	bool Vacuum_On;
-	int valuethrottle;
+	float Vac_Current=0;
+	bool Vacuum_On=false;
+	int valuethrottle=0;
+	bool button=false;
 	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the Vacuum\n");
@@ -112,28 +113,32 @@ int Team166Vacuum::Main(int a2, int a3, int a4, int a5,
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
+		// Get button value
+		button = proxy->GetButton(T166_COPILOT_STICK,T166_VACUUM_BUTTON);
+		
 		// Is there something within 15 inches
 		// is the 5th button on the copilot joystick pressed?
-		if (proxy->GetButton(T166_COPILOT_STICK,T166_VACUUM_BUTTON)) 
-		{
-			lHandle->DriverStationDisplay("Starting Vacuum");
-			Vacuum_Jag.Set(1);
-			Vacuum_On = true;
-			SetStatus("sucking");
-			if ((++valuethrottle) % (500/VACUUM_CYCLE_TIME) == 0)
-			{
+		if (button) {
+			if(!Vacuum_On) {
+				lHandle->DriverStationDisplay("Starting Vacuum");
+				Vacuum_Jag.Set(1);
+				Vacuum_On = true;
+				SetStatus("sucking");
+			}
+			if ((++valuethrottle) % (500/VACUUM_CYCLE_TIME) == 0) {
 				Vac_Current = Vacuum_Jag.GetOutputCurrent();
 				proxy->SetCurrent(T166_VACUUM_CAN, Vac_Current);
 			}
 			proxy->SetBallCap(Vac_Current <= 10);
-		} 
-		else
-		{
+		} else {
 			lHandle->DriverStationDisplay("Stopping Vacuum");
 			SetStatus("not sucking");
 			Vacuum_On = false;
 			Vacuum_Jag.Set(0);
 		}
+		
+		printf("%1.2f, %s\n",Vacuum_Jag.Get(),
+				((button)?"Pressed":"Unpressed"));
         // Logging any values
 		sl.PutOne(Vacuum_On, Vac_Current);
 		
