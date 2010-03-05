@@ -195,6 +195,7 @@ class Proxy166 : public Team166Task {
 		// Proxy storage for jaguar output current
 		float Current[T166_NUM_JAGS];
 		
+		
 		// Proxy storage for camera bearing
 		float CameraBearing;
 

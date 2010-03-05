@@ -179,26 +179,16 @@ void DashboardDataSender::sendIOPortData() {
 	dash.FinalizeCluster();
 	dash.Finalize();
 }
-
-/*Gathers ouput from CAN on Jaguars*/
-float DashboardDataSender::sendCANData(CANJaguar jag){
-	if (IOTimer->Get() < 0.1)
-		return 0;
-	IOTimer->Reset();
-	Dashboard &dash = DriverStation::GetInstance()->GetLowPriorityDashboardPacker();
+void DashboardDataSender::sendPSI(float psi)
+{
+	if (visionTimer->Get() < 0.1)
+		return;
+	visionTimer->Reset();
+	Dashboard &dash = DriverStation::GetInstance()->GetHighPriorityDashboardPacker();
 	dash.AddCluster();
 	{
-		dash.AddCluster();
-		{
-			dash.AddCluster();
-			{
-				dash.AddFloat((float)jag.GetOutputVoltage());
-			}
-			dash.FinalizeCluster();
-		}
-		dash.FinalizeCluster();
+		dash.AddFloat(psi);
 	}
 	dash.FinalizeCluster();
 	dash.Finalize();
-	return 0;
 }
