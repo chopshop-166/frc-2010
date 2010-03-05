@@ -350,21 +350,7 @@ void Proxy166::SetSonarDistance(float dist) {
 float Proxy166::GetSonarDistance(void) {
 	return SonarDistance;
 }
-/** 
- *@brief Set Whether ball is captured
- *@param ballcap is ball captured
- */
-void Proxy166::SetBallCap(bool ballcap)
-{
-	BallCaptured = ballcap;
-}
-/**
- *@brief Get whether or not ball is captured
- */
-bool Proxy166::GetBallCap()
-{
-	return BallCaptured;
-}
+
 /**
  * @brief Sets the cache value of the trigger (button 1) on a joystick.
  * @param joy_id Which joystick to set the trigger status for.

@@ -91,7 +91,7 @@ Team166Kicker::~Team166Kicker(void)
 
 // Main function of the task
 int Team166Kicker::Main(int a2, int a3, int a4, int a5,
-int a6, int a7, int a8, int a9, int a10)
+			int a6, int a7, int a8, int a9, int a10)
 {
 	// TODO THE VARS LIVE HERE!!!!!!!!!!
 	Proxy166 *proxy;	                            // Get handle for joystick
@@ -126,7 +126,7 @@ int a6, int a7, int a8, int a9, int a10)
 	//int printstop=0;
 	// General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
-	(lHandle->RobotMode == T166_OPERATOR)) {
+			(lHandle->RobotMode == T166_OPERATOR)) {
 		
 		// Get limit switch value TODO GET RID OF ME
 		//Cocked = Latch_Magnet_Sensor.Get();

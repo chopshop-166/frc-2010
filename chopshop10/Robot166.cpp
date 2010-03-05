@@ -27,7 +27,6 @@
 #include "HealthMon166.h"
 #include "Inclinometer.h"
 #include "Pneumatics166.h"
-#include "Vacuum.h"
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
@@ -49,7 +48,6 @@ Proxy166 Team166ProxyObject; // This task has to always be started first or it'l
 	Team166Sonar Team166SonarObject;
 	Team166Inclinometer Team166InclinometerObject;
 	Pneumatics166 Team166PneumaticsObject;
-	Team166Vacuum Team166VacuumObject;
 #endif
 #if UsingCamera
 	Team166Vision Team166VisionObject;
@@ -146,7 +144,7 @@ void Robot166::Autonomous(void)
 		DPRINTF(LOG_DEBUG,"Entered autonomous\n");
 		RobotMode = T166_AUTONOMOUS;
 		GetWatchdog().SetEnabled(false);
-		Autonomous166().Autonomous();
+		Autonomous166();
 	} else {
 		DPRINTF(LOG_DEBUG,"Entered disabled autonomous\n");
 		RobotMode = T166_AUTONOMOUS;

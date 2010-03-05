@@ -27,7 +27,7 @@
 #define UsingCamera (0)
 
 // Code version number
-#define T166_CODE_VERSION ("CODE: GSR-H-3-NOCAM")
+#define T166_CODE_VERSION ("CODE: GSR-F-1-NOCAM")
 
 // Maximum dashboard buffer size
 #define DASHBOARD_BUFFER_MAX (21)
@@ -40,11 +40,6 @@
 //
 typedef enum {T166_UNKNOWN=0, T166_CONSTRUCTOR, T166_AUTONOMOUS, T166_OPERATOR, T166_DISABLED} t_RobotMode;
 
-//
-// Direction for the conveyer belt
-//
-typedef enum {T166_CB_UNKNOWN=0, T166_CB_FORWARD, T166_CB_BACKWARD, T166_CB_STILL} t_ConveyerDirection;
-
 /**
  * This is a demo program showing the use of the RobotBase class.
  * The SimpleRobot class is the base of a robot application that will automatically call your
@@ -55,15 +50,6 @@ class Robot166 : public SimpleRobot
 {
 public:
     t_RobotMode RobotMode;                    // Robot mode
-    //Encoder lfEncoder;                        // Encoder for the Left Front
-    //Encoder rfEncoder;						  // Encoder for the Right Front
-    //Encoder lbEncoder;						  // Encoder for the Left Back
-    //Encoder rbEncoder;						  // Encoder for the Right Back
-	//Victor lift_victor;                       // Victor controlling the lift
-    //DigitalInput limitswitch_top;             //the first of two limit switches on the high end of the lifter
-    //DigitalInput limitswitch_bottom;          //the first of two limit switches on the bottom end of the lifter
-    
-    
 private:
 	SEM_ID JoyLock;                           // Coordination of Joystick parameters
 	float JoyX;                               // Joystick X position
@@ -75,7 +61,6 @@ private:
     DriverStationLCD *dsHandleLCD;            // Driver Station display handle
     MemoryLog166 *mlHead;                     // Memory log head
     int maxLogId;                             // Max log file id
-    
 public:
 	Robot166(void);                           // Constructor
 	void Autonomous(void);                    // Method called by WPI when we're in autonomous mode

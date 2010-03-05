@@ -15,7 +15,7 @@ void _GLOBAL__I__ZN11CANDriveLog6PutOneEff();
 
 void _GLOBAL__I__ZN19DashboardDataSender11getInstanceEv();
 
-void _GLOBAL__I__ZN9EBrakeLog6PutOneEf();
+void _GLOBAL__I__ZN9EBrakeLog6PutOneEb();
 
 void _GLOBAL__I__ZN12HealthMonLog6PutOneEfff();
 
@@ -41,8 +41,6 @@ void _GLOBAL__I__ZN11TemplateLog6PutOneEv();
 
 void _GLOBAL__I__ZN11Team166TaskC2Ei();
 
-void _GLOBAL__I__ZN9VacuumLog6PutOneEbf();
-
 void _GLOBAL__I__ZN13Team166VisionC2Ev();
 
 void _GLOBAL__I__ZN9ErrorBase16globalErrorMutexE();
@@ -60,7 +58,7 @@ void (*_ctors[])() =
     _GLOBAL__I__ZN9BannerLog6PutOneEj,
     _GLOBAL__I__ZN11CANDriveLog6PutOneEff,
     _GLOBAL__I__ZN19DashboardDataSender11getInstanceEv,
-    _GLOBAL__I__ZN9EBrakeLog6PutOneEf,
+    _GLOBAL__I__ZN9EBrakeLog6PutOneEb,
     _GLOBAL__I__ZN12HealthMonLog6PutOneEfff,
     _GLOBAL__I__ZN15InclinometerLog6PutOneEi,
     _GLOBAL__I__ZN9KickerLog6PutOneEfff,
@@ -73,7 +71,6 @@ void (*_ctors[])() =
     _GLOBAL__I__ZN8SonarLog6PutOneEf,
     _GLOBAL__I__ZN11TemplateLog6PutOneEv,
     _GLOBAL__I__ZN11Team166TaskC2Ei,
-    _GLOBAL__I__ZN9VacuumLog6PutOneEbf,
     _GLOBAL__I__ZN13Team166VisionC2Ev,
     _GLOBAL__I__ZN9ErrorBase16globalErrorMutexE,
     _GLOBAL__I__ZN9RobotBase10m_instanceE,
@@ -90,7 +87,7 @@ void _GLOBAL__D__ZN11CANDriveLog6PutOneEff();
 
 void _GLOBAL__D__ZN19DashboardDataSender11getInstanceEv();
 
-void _GLOBAL__D__ZN9EBrakeLog6PutOneEf();
+void _GLOBAL__D__ZN9EBrakeLog6PutOneEb();
 
 void _GLOBAL__D__ZN12HealthMonLog6PutOneEfff();
 
@@ -116,8 +113,6 @@ void _GLOBAL__D__ZN11TemplateLog6PutOneEv();
 
 void _GLOBAL__D__ZN11Team166TaskC2Ei();
 
-void _GLOBAL__D__ZN9VacuumLog6PutOneEbf();
-
 void _GLOBAL__D__ZN13Team166VisionC2Ev();
 
 void _GLOBAL__D__ZN9ErrorBase16globalErrorMutexE();
@@ -135,7 +130,7 @@ void (*_dtors[])() =
     _GLOBAL__D__ZN9BannerLog6PutOneEj,
     _GLOBAL__D__ZN11CANDriveLog6PutOneEff,
     _GLOBAL__D__ZN19DashboardDataSender11getInstanceEv,
-    _GLOBAL__D__ZN9EBrakeLog6PutOneEf,
+    _GLOBAL__D__ZN9EBrakeLog6PutOneEb,
     _GLOBAL__D__ZN12HealthMonLog6PutOneEfff,
     _GLOBAL__D__ZN15InclinometerLog6PutOneEi,
     _GLOBAL__D__ZN9KickerLog6PutOneEfff,
@@ -148,7 +143,6 @@ void (*_dtors[])() =
     _GLOBAL__D__ZN8SonarLog6PutOneEf,
     _GLOBAL__D__ZN11TemplateLog6PutOneEv,
     _GLOBAL__D__ZN11Team166TaskC2Ei,
-    _GLOBAL__D__ZN9VacuumLog6PutOneEbf,
     _GLOBAL__D__ZN13Team166VisionC2Ev,
     _GLOBAL__D__ZN9ErrorBase16globalErrorMutexE,
     _GLOBAL__D__ZN9RobotBase10m_instanceE,

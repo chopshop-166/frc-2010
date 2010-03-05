@@ -304,8 +304,7 @@ chopshop10/Debug/Objects/chopshop10/Robot166.o:  \
   W:/workspace/chopshop10/CANDrive166.h \
   W:/workspace/chopshop10/EBrake166.h \
   W:/workspace/chopshop10/HealthMon166.h \
-  W:/workspace/chopshop10/Pneumatics166.h \
-  W:/workspace/chopshop10/Vacuum.h
+  W:/workspace/chopshop10/Pneumatics166.h
 
 C:/windriver/vxworks-6.3/target/h/semLib.h:
 
@@ -920,5 +919,3 @@ W:/workspace/chopshop10/EBrake166.h:
 W:/workspace/chopshop10/HealthMon166.h:
 
 W:/workspace/chopshop10/Pneumatics166.h:
-
-W:/workspace/chopshop10/Vacuum.h:

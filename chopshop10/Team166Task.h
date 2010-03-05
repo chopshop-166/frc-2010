@@ -54,8 +54,6 @@
 #define T166_LATCH_MAGNET_SENSOR (3)		// Latch Magnet Sensor
 #define T166_BANNER_SENSOR_DIGITAL_INPUT (10)	// Banner Sensor
 
-//#define TOP_LIMITSWITCH_DIGITAL_INPUT    (13)  //top limit switch for lift
-		//this limit switch is probably no longer needed
 #define BOTTOM_LIMITSWITCH_DIGITAL_INPUT (14)  //bottom limit switch for lift
 
 //
