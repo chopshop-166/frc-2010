@@ -16,8 +16,8 @@
 #include "Robot166.h"
 
 #define AUTONOMOUS_TILT (10)
+#define AUTONOMOUS_MOTOR_TOLERENCE (20)
 #define AUTONOMOUS_SPEED (0.25)
-#define AUTONOMOUS_MOTOR_TOLERENCE (0.5)
 #define AUTONOMOUS_MOTOR_FLAG_LIMIT (5)
 
 // To locally enable debug printing: set true, to disable false
@@ -60,8 +60,8 @@ Autonomous166::Autonomous166() {
 
 		inclinometerflag = ((inclinometer > AUTONOMOUS_TILT) || (inclinometer < -AUTONOMOUS_TILT));
 		
-		if( ((lmotor - lmotor_old) >= AUTONOMOUS_MOTOR_TOLERENCE)
-			|| ((rmotor - rmotor_old) >= AUTONOMOUS_MOTOR_TOLERENCE)) {
+		if( (((lmotor - lmotor_old) >= AUTONOMOUS_MOTOR_TOLERENCE) && lmotor) ||
+			(((rmotor - rmotor_old) >= AUTONOMOUS_MOTOR_TOLERENCE) && lmotor) ) {
 			++motorflag;
 		} else {
 			motorflag = ((--motorflag>0)? motorflag : 0);

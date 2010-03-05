@@ -101,6 +101,10 @@ class Proxy166 : public Team166Task {
 		void SetSonarDistance(float);
 		float GetSonarDistance(void);
 		
+		// Proxy access for Ball captured
+		void SetBallCap(bool);
+		bool GetBallCap();
+		
 		// Proxy access for banner sensor
 		void SetBanner(bool);
 		bool GetBanner(void);
@@ -184,6 +188,9 @@ class Proxy166 : public Team166Task {
 		
 		//proxy storage for state of ebrake
 		bool EbrakeDown;
+		
+		//proxy storage for Ball captured
+		bool BallCaptured;
 		
 		// Proxy storage for jaguar output current
 		float Current[T166_NUM_JAGS];
