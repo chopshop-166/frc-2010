@@ -23,7 +23,7 @@ void _GLOBAL__I__ZN15InclinometerLog6PutOneEi();
 
 void _GLOBAL__I__ZN9KickerLog6PutOneEfff();
 
-void _GLOBAL__I__ZN10LiftCanLog6PutOneEifb();
+void _GLOBAL__I__ZN10LiftCanLog6PutOneEifbb();
 
 void _GLOBAL__I__ZN13PneumaticsLog6PutOneEfb();
 
@@ -64,7 +64,7 @@ void (*_ctors[])() =
     _GLOBAL__I__ZN12HealthMonLog6PutOneEfff,
     _GLOBAL__I__ZN15InclinometerLog6PutOneEi,
     _GLOBAL__I__ZN9KickerLog6PutOneEfff,
-    _GLOBAL__I__ZN10LiftCanLog6PutOneEifb,
+    _GLOBAL__I__ZN10LiftCanLog6PutOneEifbb,
     _GLOBAL__I__ZN13PneumaticsLog6PutOneEfb,
     _GLOBAL__I__ZN8ProxyLog6PutOneE13ProxyJoystickS0_S0_,
     _GLOBAL__I__ZN11Team166Task11ActiveTasksE,
@@ -98,7 +98,7 @@ void _GLOBAL__D__ZN15InclinometerLog6PutOneEi();
 
 void _GLOBAL__D__ZN9KickerLog6PutOneEfff();
 
-void _GLOBAL__D__ZN10LiftCanLog6PutOneEifb();
+void _GLOBAL__D__ZN10LiftCanLog6PutOneEifbb();
 
 void _GLOBAL__D__ZN13PneumaticsLog6PutOneEfb();
 
@@ -139,7 +139,7 @@ void (*_dtors[])() =
     _GLOBAL__D__ZN12HealthMonLog6PutOneEfff,
     _GLOBAL__D__ZN15InclinometerLog6PutOneEi,
     _GLOBAL__D__ZN9KickerLog6PutOneEfff,
-    _GLOBAL__D__ZN10LiftCanLog6PutOneEifb,
+    _GLOBAL__D__ZN10LiftCanLog6PutOneEifbb,
     _GLOBAL__D__ZN13PneumaticsLog6PutOneEfb,
     _GLOBAL__D__ZN8ProxyLog6PutOneE13ProxyJoystickS0_S0_,
     _GLOBAL__D__ZN11Team166Task11ActiveTasksE,
