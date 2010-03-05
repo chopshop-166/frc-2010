@@ -116,27 +116,9 @@ int Team166Vacuum::Main(int a2, int a3, int a4, int a5,
 		// is the 5th button on the copilot joystick pressed?
 		if (proxy->GetButton(3,5) == true) 
 		{
-			Vacuum_Jag.Set(1);
-			Vacuum_On = true;
-			SetStatus("sucking");
-			if ((++valuethrottle) % (200/VACUUM_CYCLE_TIME) == 0)
-			{
-				Vac_Current = Vacuum_Jag.GetOutputCurrent();
-				proxy->SetCurrent(T166_VACUUM_CAN, Vac_Current);
-			}
-			if (Vac_Current <= 10)
-			{
-				proxy->SetBallCap(true);
-			}	
-			else 
-			{
-				proxy->SetBallCap(false);
-			}
-		} 
-		else
-		{
-			SetStatus("not sucking");
-			Vacuum_Jag.Set(0);
+			Vacuum_On = !Vacuum_On;
+			Vacuum_Jag.Set(Vacuum_On);
+			SetStatus( ((Vacuum_On)?"sucking" : "not sucking") );
 		}
         // Logging any values
 		sl.PutOne(Vacuum_On, Vac_Current);
