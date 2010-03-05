@@ -22,12 +22,13 @@
 #include "Proxy166.h"
 #include "Banner166.h"
 #include "Inclinometer.h"
+#include "DashboardDataSender.h"
 
 // If we're using a camera, enable this
 #define UsingCamera (0)
 
 // Code version number
-#define T166_CODE_VERSION ("CODE: GSR-F-2-NOCAM")
+#define T166_CODE_VERSION ("CODE: GSR-F-3-NOCAM")
 
 // Maximum dashboard buffer size
 #define DASHBOARD_BUFFER_MAX (21)
@@ -61,6 +62,7 @@ private:
     DriverStationLCD *dsHandleLCD;            // Driver Station display handle
     MemoryLog166 *mlHead;                     // Memory log head
     int maxLogId;                             // Max log file id
+    DashboardDataSender *sender;				  // Dashboard sender
 public:
 	Robot166(void);                           // Constructor
 	void Autonomous(void);                    // Method called by WPI when we're in autonomous mode

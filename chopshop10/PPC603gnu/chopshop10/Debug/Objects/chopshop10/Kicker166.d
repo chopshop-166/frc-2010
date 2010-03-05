@@ -298,7 +298,8 @@ chopshop10/Debug/Objects/chopshop10/Kicker166.o:  \
   C:/windriver/vxworks-6.3/target/h/WPILib/Vision/PCVideoServer.h \
   C:/windriver/vxworks-6.3/target/h/WPILib/nivision.h \
   W:/workspace/chopshop10/Banner166.h \
-  W:/workspace/chopshop10/Inclinometer.h
+  W:/workspace/chopshop10/Inclinometer.h \
+  W:/workspace/chopshop10/DashboardDataSender.h
 
 C:/windriver/vxworks-6.3/target/h/WPILib/WPILib.h:
 
@@ -901,3 +902,5 @@ C:/windriver/vxworks-6.3/target/h/WPILib/nivision.h:
 W:/workspace/chopshop10/Banner166.h:
 
 W:/workspace/chopshop10/Inclinometer.h:
+
+W:/workspace/chopshop10/DashboardDataSender.h:

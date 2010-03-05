@@ -20,6 +20,62 @@
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
 
+// Sample in memory buffer
+struct abuf166
+{
+	struct timespec tp;               // Time of snapshot
+	ProxyJoystick joy[3];                  // current value
+	
+};
+
+//  Memory Log
+class ProxyLog : public MemoryLog166
+{
+public:
+	ProxyLog() : MemoryLog166(sizeof(struct abuf166), PROXY_CYCLE_TIME, "proxy") {return;};
+	~ProxyLog() {return;};
+	unsigned int DumpBuffer(          // Dump the next buffer into the file
+			char *nptr,               // Buffer that needs to be formatted
+			FILE *outputFile);        // and then stored in this file
+	unsigned int PutOne(ProxyJoystick joy1, ProxyJoystick joy2, ProxyJoystick joy3);     // Log values
+};
+
+// Write one buffer into memory
+unsigned int ProxyLog::PutOne(ProxyJoystick joy1, ProxyJoystick joy2, ProxyJoystick joy3)
+{
+	struct abuf166 *ob;               // Output buffer
+	
+	// Get output buffer
+	if ((ob = (struct abuf166 *)GetNextBuffer(sizeof(struct abuf166)))) {		
+		// Fill it in.
+		clock_gettime(CLOCK_REALTIME, &ob->tp);
+		ob->joy[1] = joy1;
+		ob->joy[2] = joy2;
+		ob->joy[3] = joy3;
+		return (sizeof(struct abuf166));
+	}	
+	// Did not get a buffer. Return a zero length
+	return (0);
+}
+
+// Format the next buffer for file output
+unsigned int ProxyLog::DumpBuffer(char *nptr, FILE *ofile)
+{
+	struct abuf166 *ab = (struct abuf166 *)nptr;	
+	// Output the data into the file
+	fprintf(ofile, "%u, %u, ", ab->tp.tv_sec, ab->tp.tv_nsec);
+	for(int i=0;i<3;i++) {
+		fprintf(ofile, "%1.6f, %1.6f, %1.6f, %1.6f, ",
+				ab->joy[i].X, ab->joy[i].Y, ab->joy[i].Z, ab->joy[i].throttle);
+		for(int j=0;j<NUMBER_OF_JOY_BUTTONS;j++) {
+			fprintf(ofile, "%u, ", ab->joy[i].button[j]);
+		}
+	}
+	fprintf(ofile, "\n");
+	return (sizeof(struct abuf166));
+}
+
+
 /**
  * @brief Initializes the joystick axes to 0 and the buttons to unset.
  */

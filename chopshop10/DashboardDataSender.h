@@ -4,7 +4,6 @@
 #include "WPILib.h"
 #include <vector>
 #include "Target.h"
-#include "Robot166.h"
 #include "CANJaguar.h"
 /**
  * This class is just an example of one way you could organize the data that you want

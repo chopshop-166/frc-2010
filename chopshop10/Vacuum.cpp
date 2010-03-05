@@ -94,7 +94,6 @@ int Team166Vacuum::Main(int a2, int a3, int a4, int a5,
 	VacuumLog sl;                   // log
 	float Vac_Current;
 	bool Vacuum_On;
-	int valuethrottle;
 	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the Vacuum\n");
@@ -114,8 +113,7 @@ int Team166Vacuum::Main(int a2, int a3, int a4, int a5,
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		// Is there something within 15 inches
 		// is the 5th button on the copilot joystick pressed?
-		if (proxy->GetButton(3,5) == true) 
-		{
+		if (proxy->GetButton(3,5) == true) {
 			Vacuum_On = !Vacuum_On;
 			Vacuum_Jag.Set(Vacuum_On);
 			SetStatus( ((Vacuum_On)?"sucking" : "not sucking") );

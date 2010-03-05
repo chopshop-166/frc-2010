@@ -29,7 +29,7 @@ struct abuf166
 	int liftstate;					// State of lift
 	float JoyY;						// Position of Joystick
 	bool limit;						// State of limit switch
-	
+	bool button;					// Whether the lift button is pressed
 };
 
 //  Memory Log
@@ -41,11 +41,11 @@ public:
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
 			FILE *outputFile);        // and then stored in this file
-	unsigned int PutOne(int liftstate, float JoyY, bool limit);     // Log the x and y values
+	unsigned int PutOne(int liftstate, float JoyY, bool limit, bool button);     // Log the lift's state
 };
 
 // Write one buffer into memory
-unsigned int LiftCanLog::PutOne(int liftstate, float JoyY, bool limit)
+unsigned int LiftCanLog::PutOne(int liftstate, float JoyY, bool limit, bool button)
 {
 	struct abuf166 *ob;               // Output buffer
 	
@@ -57,6 +57,7 @@ unsigned int LiftCanLog::PutOne(int liftstate, float JoyY, bool limit)
 		ob->liftstate = liftstate;
 		ob->JoyY = JoyY;
 		ob->limit = limit;
+		ob->button = button;
 		return (sizeof(struct abuf166));
 	}
 	
@@ -69,7 +70,8 @@ unsigned int LiftCanLog::DumpBuffer(char *nptr, FILE *ofile)
 {
 	struct abuf166 *ab = (struct abuf166 *)nptr;
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %d, %f, %d\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->liftstate, ab->JoyY, ab->limit);
+	fprintf(ofile, "%u, %u, %d, %f, %d, %d\n",
+			ab->tp.tv_sec, ab->tp.tv_nsec, ab->liftstate, ab->JoyY, ab->limit, ab->button);
 	
 	// Done
 	return (sizeof(struct abuf166));
@@ -109,6 +111,7 @@ int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
 	int ejectwaitcount;
 	float JoyY;
 	bool limit;
+	bool button = false; // Whether the button was pressed
 	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 Lift task\n");
@@ -128,11 +131,13 @@ int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		
+		button = proxy->GetButton(T166_COPILOT_STICK ,T166_LIFT_BUTTON);
+		
 		switch (lstate) {
 			// Waiting for button to be pressed
 			case REST: {
 				// Check if the button is pressed
-				if (proxy->GetButton(3,T166_LIFT_BUTTON) == true) {
+				if (button == true) {
 					// Pressurize the cylinder
 					lstate = EJECT;
 				}
@@ -166,13 +171,15 @@ int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
 					proxy->SetCurrent(T166_LIFT_MOTOR_CAN,lift_jag.GetOutputCurrent());
 					Lift_Solenoid.Set(false);
 				}
+				if(button) {
 					// Set motor to joystick axis
 					lift_jag.Set(JoyY);
+				}
 				break;
 			}
 		}
         // Should we log this value?
-		sl.PutOne(lstate, JoyY, limit);
+		sl.PutOne(lstate, JoyY, limit, button);
 		
 		// Wait for our next lap
 		WaitForNextLoop();

@@ -299,7 +299,8 @@ chopshop10/Debug/Objects/chopshop10/TaskTemplate.o:  \
   C:/windriver/vxworks-6.3/target/h/WPILib/Vision/ColorImage.h \
   C:/windriver/vxworks-6.3/target/h/WPILib/Vision/HSLImage.h \
   W:/workspace/chopshop10/Banner166.h \
-  W:/workspace/chopshop10/Inclinometer.h
+  W:/workspace/chopshop10/Inclinometer.h \
+  W:/workspace/chopshop10/DashboardDataSender.h
 
 C:/windriver/vxworks-6.3/target/h/WPILib/WPILib.h:
 
@@ -904,3 +905,5 @@ C:/windriver/vxworks-6.3/target/h/WPILib/Vision/HSLImage.h:
 W:/workspace/chopshop10/Banner166.h:
 
 W:/workspace/chopshop10/Inclinometer.h:
+
+W:/workspace/chopshop10/DashboardDataSender.h:

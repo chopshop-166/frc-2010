@@ -299,6 +299,7 @@ chopshop10/Debug/Objects/chopshop10/Proxy166.o:  \
   C:/windriver/vxworks-6.3/target/h/WPILib/Vision/HSLImage.h \
   W:/workspace/chopshop10/Banner166.h \
   W:/workspace/chopshop10/Inclinometer.h \
+  W:/workspace/chopshop10/DashboardDataSender.h \
   W:/workspace/chopshop10/Runtime166.h
 
 C:/windriver/vxworks-6.3/target/h/semLib.h:
@@ -902,5 +903,7 @@ C:/windriver/vxworks-6.3/target/h/WPILib/Vision/HSLImage.h:
 W:/workspace/chopshop10/Banner166.h:
 
 W:/workspace/chopshop10/Inclinometer.h:
+
+W:/workspace/chopshop10/DashboardDataSender.h:
 
 W:/workspace/chopshop10/Runtime166.h:

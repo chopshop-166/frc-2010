@@ -80,6 +80,7 @@ Robot166::Robot166(void)
 	JoyX = JoyY = 0.0;
 	dsHandle = DriverStation::GetInstance();
 	dsHandleLCD = DriverStationLCD::GetInstance();
+	sender = DashboardDataSender::getInstance();
 	RobotHandle = this;
 	mlHead = 0;
 	
@@ -213,6 +214,7 @@ void Robot166::OperatorControl(void)
 			sprintf(imageName, "166_joystick_img_%03i.png", joystickImageCount);
 			TakeSnapshot(imageName);
 		}
+		sender->sendIOPortData();
 		Wait (ROBOT_WAIT_TIME);
 	}
 	
@@ -265,7 +267,7 @@ void Robot166::DumpLoggers(int dnum)
  * Send text to DS LCD display
  */
 int Robot166::DriverStationDisplay(char* dsTextString)
-{ 
+{
 	static char *string1;
 	static char *string2;
 	static char *string3;
