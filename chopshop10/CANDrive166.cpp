@@ -135,7 +135,8 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		if( proxy->GetButton(1,T166_AUTOBALANCE_BUTTON) || proxy->GetButton(2,T166_AUTOBALANCE_BUTTON)) {
+		if( proxy->GetButton(T166_DRIVER_STICK_LEFT,T166_AUTOBALANCE_BUTTON)
+				|| proxy->GetButton(T166_DRIVER_STICK_RIGHT,T166_AUTOBALANCE_BUTTON)) {
 			if(proxy->GetInclinometer() < -AUTOBALANCE_DEADZONE) {
 				left = -AUTOBALANCE_SPEED;
 				right = -AUTOBALANCE_SPEED;

@@ -54,8 +54,6 @@
 #define T166_LATCH_MAGNET_SENSOR (3)		// Latch Magnet Sensor
 #define T166_BANNER_SENSOR_DIGITAL_INPUT (10)	// Banner Sensor
 
-//#define TOP_LIMITSWITCH_DIGITAL_INPUT    (13)  //top limit switch for lift
-		//this limit switch is probably no longer needed
 #define BOTTOM_LIMITSWITCH_DIGITAL_INPUT (14)  //bottom limit switch for lift
 
 //
@@ -108,7 +106,7 @@
 // CAN bus layout
 //
 /** Number of Jags used */
-#define T166_NUM_JAGS (5)
+#define T166_NUM_JAGS (4)
 
 /** channel for the Lift Winch Motor */
 #define T166_LIFT_MOTOR_CAN (5)
@@ -116,19 +114,17 @@
 #define T166_EBRAKE_MOTOR_CAN (6)
 /** channel for the Left Motor */
 #define T166_LEFT_MOTOR_CAN (7)
-/** channel for the Vacuum */
-#define T166_VACUUM_CAN (9)
 /** channel for the Right Motor */
 #define T166_RIGHT_MOTOR_CAN (10)
 //
 // USB port layout
 //
 /** First stick is in USB port #1 */
-#define T166_USB_STICK_1 (1)
+#define T166_DRIVER_STICK_LEFT (1)
 /** Second stick is in USB port #2 */
-#define T166_USB_STICK_2 (2)
+#define T166_DRIVER_STICK_RIGHT (2)
 /** Third stick is in USB port #3 */
-#define T166_USB_STICK_3 (3)
+#define T166_COPILOT_STICK (3)
 
 //
 // Joystick buttons

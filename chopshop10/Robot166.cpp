@@ -27,7 +27,6 @@
 #include "HealthMon166.h"
 #include "Inclinometer.h"
 #include "Pneumatics166.h"
-#include "Vacuum.h"
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
@@ -49,9 +48,10 @@ Proxy166 Team166ProxyObject; // This task has to always be started first or it'l
 	Team166Sonar Team166SonarObject;
 	Team166Inclinometer Team166InclinometerObject;
 	Pneumatics166 Team166PneumaticsObject;
-	Team166Vacuum Team166VacuumObject;
 #endif
-Team166Vision Team166VisionObject;
+#if UsingCamera
+	Team166Vision Team166VisionObject;
+#endif
 Team166HealthMon Team166HealthMonObject;
 
 // This links to the single instance of the Robot task
@@ -144,14 +144,20 @@ void Robot166::Autonomous(void)
 		DPRINTF(LOG_DEBUG,"Entered autonomous\n");
 		RobotMode = T166_AUTONOMOUS;
 		GetWatchdog().SetEnabled(false);
-		Autonomous166().Autonomous();
+		Autonomous166();
 	} else {
 		DPRINTF(LOG_DEBUG,"Entered disabled autonomous\n");
 		RobotMode = T166_AUTONOMOUS;
-		while(IsAutonomous()) {
-			Wait(ROBOT_WAIT_TIME);
-		}
 	}
+}
+
+/**
+ * Print a message detailing the robot code version-run once, when disabled
+ */
+void Robot166::Disabled(void)
+{
+	DriverStationDisplay(T166_CODE_VERSION);
+	printf("%s\n", T166_CODE_VERSION);
 }
 
 /** 
@@ -196,12 +202,12 @@ void Robot166::OperatorControl(void)
 		    GetWatchdog().Feed();
 		
 		// take a picture 
-		if (Team166ProxyObject.GetButton(T166_USB_STICK_1,T166_CAMERA_BUTTON) 
-				or Team166ProxyObject.GetButton(T166_USB_STICK_1,T166_CAMERA_BUTTON2)
-			    or Team166ProxyObject.GetButton(T166_USB_STICK_2,T166_CAMERA_BUTTON) 
-			    or Team166ProxyObject.GetButton(T166_USB_STICK_2,T166_CAMERA_BUTTON2)
-			    or Team166ProxyObject.GetButton(T166_USB_STICK_3,T166_CAMERA_BUTTON) 
-			    or Team166ProxyObject.GetButton(T166_USB_STICK_3,T166_CAMERA_BUTTON2))
+		if (Team166ProxyObject.GetButton(T166_DRIVER_STICK_LEFT,T166_CAMERA_BUTTON) 
+				or Team166ProxyObject.GetButton(T166_DRIVER_STICK_LEFT,T166_CAMERA_BUTTON2)
+			    or Team166ProxyObject.GetButton(T166_DRIVER_STICK_RIGHT,T166_CAMERA_BUTTON) 
+			    or Team166ProxyObject.GetButton(T166_DRIVER_STICK_RIGHT,T166_CAMERA_BUTTON2)
+			    or Team166ProxyObject.GetButton(T166_COPILOT_STICK,T166_CAMERA_BUTTON) 
+			    or Team166ProxyObject.GetButton(T166_COPILOT_STICK,T166_CAMERA_BUTTON2))
 		{
 			joystickImageCount++;
 			sprintf(imageName, "166_joystick_img_%03i.png", joystickImageCount);

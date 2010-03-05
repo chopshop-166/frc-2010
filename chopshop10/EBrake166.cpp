@@ -25,7 +25,7 @@
 struct abuf166
 {
 	struct timespec tp;               // Time of snapshot
-	float current;                  // current value
+	bool status;                  // current value
 	
 };
 
@@ -38,11 +38,11 @@ public:
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
 			FILE *outputFile);        // and then stored in this file
-	unsigned int PutOne(float current);     // Log values
+	unsigned int PutOne(bool status);     // Log values
 };
 
 // Write one buffer into memory
-unsigned int EBrakeLog::PutOne(float current)
+unsigned int EBrakeLog::PutOne(bool status)
 {
 	struct abuf166 *ob;               // Output buffer
 	
@@ -50,7 +50,7 @@ unsigned int EBrakeLog::PutOne(float current)
 	if ((ob = (struct abuf166 *)GetNextBuffer(sizeof(struct abuf166)))) {		
 		// Fill it in.
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
-		ob->current = current;
+		ob->status = status;
 		return (sizeof(struct abuf166));
 	}	
 	// Did not get a buffer. Return a zero length
@@ -62,7 +62,7 @@ unsigned int EBrakeLog::DumpBuffer(char *nptr, FILE *ofile)
 {
 	struct abuf166 *ab = (struct abuf166 *)nptr;	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %f\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->current);	
+	fprintf(ofile, "%u, %u, %d\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->status);	
 	return (sizeof(struct abuf166));
 }
 
@@ -90,9 +90,11 @@ int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 	EBrakeLog sl;                   // log
 	
 	Solenoid ebrakeSolenoid(T166_EBRAKE_PISTON);        // E-brake solenoid
-	Solenoid unebrakeSolenoid(T166_UNEBRAKE_PISTON);  // Un-e-brake solenoid
+	Solenoid unebrakeSolenoid(T166_UNEBRAKE_PISTON); 	// Un-e-brake solenoid
 	ebrakeSolenoid.Set(false);                          // Vent e-brake
 	unebrakeSolenoid.Set(true);                         // Push un-e-brake
+	
+	bool brakeisdown;											// Is the brake down?
 	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 EBrake task\n");
@@ -104,63 +106,27 @@ int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 	// Register our logger
 	lHandle = Robot166::getInstance();
 	lHandle->RegisterLogger(&sl);
-	
-	int valuethrottle=0;
-	float myCurrent;
-	int sent1=0;
-	int sent2=0;
 		
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		
-#if 0
-		if ((++valuethrottle)% (1000/EBRAKE_CYCLE_TIME)==0)
-		{	
-			myCurrent = Ebrake_Can.GetOutputCurrent();
-		}
-#endif
-		
-		if ((proxy->GetButton(1,T166_EBRAKE_BUTTON) == true) || (proxy->GetButton(2,T166_EBRAKE_BUTTON) == true))
-        {
-			if (!sent1)
-			{
-#if 0
-				Ebrake_Can.Set(-1);
-#endif
-				unebrakeSolenoid.Set(false);  // Vent un-e-brake
-				ebrakeSolenoid.Set(true);     // Push e-brake
-				lHandle->DriverStationDisplay("EBrake DOWN");
-				SetStatus("down");
-				sent1=1;
-				sent2=0;
-			}
-			// log data
-			sl.PutOne(myCurrent);
-			
-			// Wait for our next lap
-			WaitForNextLoop();
-			continue;
-		}	
-		if (!sent2)
-		{
-#if 0
-			Ebrake_Can.Set(.3);
-#endif
+		if ((proxy->GetButton(1,T166_EBRAKE_BUTTON) == true) || (proxy->GetButton(2,T166_EBRAKE_BUTTON) == true)) {
+			unebrakeSolenoid.Set(false);  // Vent un-e-brake
+			ebrakeSolenoid.Set(true);     // Push e-brake
+			lHandle->DriverStationDisplay("EBrake DOWN");
+			SetStatus("down");
+			brakeisdown = true;
+		} else {
 			ebrakeSolenoid.Set(false);     // Vent e-brake
 			unebrakeSolenoid.Set(true);    // Push un-e-brake
 			lHandle->DriverStationDisplay("EBrake UP");
 			SetStatus("up");
-			sent1=0;
-			sent2=1;
-		}
-		if ((++valuethrottle)% (1000/EBRAKE_CYCLE_TIME)==0)
-		{	
-			proxy->SetCurrent(T166_EBRAKE_MOTOR_CAN, myCurrent);
+			brakeisdown = false;
 		}
 		
-		// log data
-		sl.PutOne(myCurrent);
+		proxy->SetEbrake(brakeisdown);
+		sl.PutOne(brakeisdown);
 		
 		// Wait for our next lap
 		WaitForNextLoop();

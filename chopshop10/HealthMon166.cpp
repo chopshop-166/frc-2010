@@ -103,9 +103,10 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 	HealthMonLog sl;					// log
 	Team166Task *kickerTask;			// Kicker task
 	Team166Task *ebrakeTask;			// E-Brake task
-	Team166Task *vacuumTask;			// Vacuum task
 	Team166Task *sonarTask;				// Sonar task
+#if UsingCamera
 	Team166Task *visionTask;			// Vision task
+#endif
 	Team166Task *bannerTask;			// Banner task
 	
 	// Let the world know we're in
@@ -131,15 +132,14 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 	while(!(ebrakeTask = Team166Task::GetTaskHandle("166EBrakeTask"))) {
 		Wait(T166_TA_WAIT_LENGTH);
 	}
-	while(!(vacuumTask = Team166Task::GetTaskHandle("166BallSucker"))) {
-		Wait(T166_TA_WAIT_LENGTH);
-	}
 	while(!(sonarTask = Team166Task::GetTaskHandle("166SonarTask"))) {
 		Wait(T166_TA_WAIT_LENGTH);
 	}
+#if UsingCamera
 	while(!(visionTask = Team166Task::GetTaskHandle("166VisionTask"))) {
 		Wait(T166_TA_WAIT_LENGTH);
 	}
+#endif
 	while(!(bannerTask = Team166Task::GetTaskHandle("166BannerTask"))) {
 		Wait(T166_TA_WAIT_LENGTH);
 	}
@@ -147,21 +147,24 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 	// Whether the camera is up
 
 	// Print out the key
-	lHandle->DriverStationDisplayHS("K E V PSI B S INC C");
+	lHandle->DriverStationDisplayHS("K E PSI B S INC C");
 	
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		sprintf(buffer,
-				"%c %c %c %03i %c %c %03d %c",
+				"%c %c %03d %c %c %03d %c",
 				kickerTask->GetStatus()[0],
 				ebrakeTask->GetStatus()[0],
-				vacuumTask->GetStatus()[0],
 				(int)proxy->GetPressure(),
 				bannerTask->GetStatus()[0],
 				sonarTask->GetStatus()[0],
 				proxy->GetInclinometer(),
+#if UsingCamera
 				visionTask->GetStatus()[0]
+#else
+				'Z'
+#endif
 				);
 		lHandle->DriverStationDisplayHSData(buffer);
 		

@@ -21,26 +21,12 @@
 #include <math.h>
 
 #define AUTONOMOUS_WAIT_TIME (0.050)
-#define SONAR_NEAR (12.5)
-#define AUTONOMOUS_RETREAT_TIME (20)
 
 class Autonomous166
 {
 public:
-	typedef enum State {
-		sSetup=0,
-		sSearching=1,
-		sBallHeld=2,
-		sPoised=3,
-		sDodging=4,
-		sGuarding=5,
-		sResting=6,
-		sRetreating=7,
-		sGoGoGo=8
-	};
 	Autonomous166(void);
 	~Autonomous166(void);
-	void Autonomous(void);
 };
 
 #endif

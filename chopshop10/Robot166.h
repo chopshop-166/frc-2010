@@ -22,19 +22,23 @@
 #include "Proxy166.h"
 #include "Banner166.h"
 #include "Inclinometer.h"
+
+// If we're using a camera, enable this
+#define UsingCamera (0)
+
+// Code version number
+#define T166_CODE_VERSION ("CODE: GSR-H-4-NOCAM")
+
+// Maximum dashboard buffer size
 #define DASHBOARD_BUFFER_MAX (21)
 
 // Robot166 wait time
 #define ROBOT_WAIT_TIME (0.5)
+
 //
 // Robot modes
 //
 typedef enum {T166_UNKNOWN=0, T166_CONSTRUCTOR, T166_AUTONOMOUS, T166_OPERATOR, T166_DISABLED} t_RobotMode;
-
-//
-// Direction for the conveyer belt
-//
-typedef enum {T166_CB_UNKNOWN=0, T166_CB_FORWARD, T166_CB_BACKWARD, T166_CB_STILL} t_ConveyerDirection;
 
 /**
  * This is a demo program showing the use of the RobotBase class.
@@ -46,15 +50,6 @@ class Robot166 : public SimpleRobot
 {
 public:
     t_RobotMode RobotMode;                    // Robot mode
-    //Encoder lfEncoder;                        // Encoder for the Left Front
-    //Encoder rfEncoder;						  // Encoder for the Right Front
-    //Encoder lbEncoder;						  // Encoder for the Left Back
-    //Encoder rbEncoder;						  // Encoder for the Right Back
-	//Victor lift_victor;                       // Victor controlling the lift
-    //DigitalInput limitswitch_top;             //the first of two limit switches on the high end of the lifter
-    //DigitalInput limitswitch_bottom;          //the first of two limit switches on the bottom end of the lifter
-    
-    
 private:
 	SEM_ID JoyLock;                           // Coordination of Joystick parameters
 	float JoyX;                               // Joystick X position
@@ -66,11 +61,11 @@ private:
     DriverStationLCD *dsHandleLCD;            // Driver Station display handle
     MemoryLog166 *mlHead;                     // Memory log head
     int maxLogId;                             // Max log file id
-    
 public:
 	Robot166(void);                           // Constructor
 	void Autonomous(void);                    // Method called by WPI when we're in autonomous mode
 	void OperatorControl(void);               // Method called by WPI when we're in operator control mode
+	void Disabled(void);                    // Method called by WPI when we're disabled
 	static Robot166 *getInstance(void);       // Get pointer to our Robot166 instance
 	float GetBatteryVoltage(void);            // Get voltage of battery on robot
 			
