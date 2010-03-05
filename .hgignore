@@ -1,1 +1,3 @@
 glob:*.svn
+glob:*.orig
+glob:.metadata\
