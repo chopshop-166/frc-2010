@@ -1,3 +1,5 @@
 glob:*.svn
 glob:*.orig
 glob:.metadata\
+glob:*.o
+glob:*.d
