@@ -197,6 +197,10 @@ chopshop10/$(MODE_DIR)/Objects/chopshop10/Team166Task.o : W:/workspace/chopshop1
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
 
+chopshop10/$(MODE_DIR)/Objects/chopshop10/Vacuum.o : W:/workspace/chopshop10/Vacuum.cpp
+	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
+
+
 chopshop10/$(MODE_DIR)/Objects/chopshop10/Vision166.o : W:/workspace/chopshop10/Vision166.cpp
 	$(TRACE_FLAG)if [ ! -d "`dirname "$@"`" ]; then mkdir -p "`dirname "$@"`"; fi;echo "building $@"; $(TOOL_PATH)ccppc $(DEBUGFLAGS_C++-Compiler) $(CC_ARCH_SPEC) -ansi -Wall  -MD -MP -mlongcall $(ADDED_C++FLAGS) $(IDE_INCLUDES) $(ADDED_INCLUDES) -DCPU=$(CPU) -DTOOL_FAMILY=$(TOOL_FAMILY) -DTOOL=$(TOOL) -D_WRS_KERNEL   $(DEFINES) -o "$@" -c "$<"
 
@@ -222,6 +226,7 @@ OBJECTS_chopshop10 = chopshop10/$(MODE_DIR)/Objects/chopshop10/Autonomous166.o \
 	 chopshop10/$(MODE_DIR)/Objects/chopshop10/Target166.o \
 	 chopshop10/$(MODE_DIR)/Objects/chopshop10/TaskTemplate.o \
 	 chopshop10/$(MODE_DIR)/Objects/chopshop10/Team166Task.o \
+	 chopshop10/$(MODE_DIR)/Objects/chopshop10/Vacuum.o \
 	 chopshop10/$(MODE_DIR)/Objects/chopshop10/Vision166.o
 
 chopshop10/$(MODE_DIR)/chopshop10.out : $(OBJECTS_chopshop10)
@@ -241,7 +246,7 @@ DEP_FILES := chopshop10/$(MODE_DIR)/Objects/chopshop10/Autonomous166.d chopshop1
 	 chopshop10/$(MODE_DIR)/Objects/chopshop10/Proxy166.d chopshop10/$(MODE_DIR)/Objects/chopshop10/Robot166.d chopshop10/$(MODE_DIR)/Objects/chopshop10/RobotCamera166.d \
 	 chopshop10/$(MODE_DIR)/Objects/chopshop10/Runtime166.d chopshop10/$(MODE_DIR)/Objects/chopshop10/Sonar166.d chopshop10/$(MODE_DIR)/Objects/chopshop10/Target.d \
 	 chopshop10/$(MODE_DIR)/Objects/chopshop10/Target166.d chopshop10/$(MODE_DIR)/Objects/chopshop10/TaskTemplate.d chopshop10/$(MODE_DIR)/Objects/chopshop10/Team166Task.d \
-	 chopshop10/$(MODE_DIR)/Objects/chopshop10/Vision166.d
+	 chopshop10/$(MODE_DIR)/Objects/chopshop10/Vacuum.d chopshop10/$(MODE_DIR)/Objects/chopshop10/Vision166.d
 -include $(DEP_FILES)
 
 

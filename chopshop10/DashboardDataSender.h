@@ -27,7 +27,6 @@ public:
 						double gyroRate,
 						double targetX,
 						vector<Target> targets);
-	float sendCANData(CANJaguar jag);
 	static DashboardDataSender *getInstance();
 private:
 	static DashboardDataSender *instance;

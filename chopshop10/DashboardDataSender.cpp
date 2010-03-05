@@ -180,25 +180,3 @@ void DashboardDataSender::sendIOPortData() {
 	dash.Finalize();
 }
 
-/*Gathers ouput from CAN on Jaguars*/
-float DashboardDataSender::sendCANData(CANJaguar jag){
-	if (IOTimer->Get() < 0.1)
-		return 0;
-	IOTimer->Reset();
-	Dashboard &dash = DriverStation::GetInstance()->GetLowPriorityDashboardPacker();
-	dash.AddCluster();
-	{
-		dash.AddCluster();
-		{
-			dash.AddCluster();
-			{
-				dash.AddFloat((float)jag.GetOutputVoltage());
-			}
-			dash.FinalizeCluster();
-		}
-		dash.FinalizeCluster();
-	}
-	dash.FinalizeCluster();
-	dash.Finalize();
-	return 0;
-}
