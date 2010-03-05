@@ -27,6 +27,7 @@ public:
 						double gyroRate,
 						double targetX,
 						vector<Target> targets);
+	void sendPSI(float psi);
 	static DashboardDataSender *getInstance();
 private:
 	static DashboardDataSender *instance;

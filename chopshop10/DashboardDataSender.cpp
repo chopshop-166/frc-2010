@@ -179,4 +179,16 @@ void DashboardDataSender::sendIOPortData() {
 	dash.FinalizeCluster();
 	dash.Finalize();
 }
-
+void DashboardDataSender::sendPSI(float psi)
+{
+	if (visionTimer->Get() < 0.1)
+		return;
+	visionTimer->Reset();
+	Dashboard &dash = DriverStation::GetInstance()->GetHighPriorityDashboardPacker();
+	dash.AddCluster();
+	{
+		dash.AddFloat(psi);
+	}
+	dash.FinalizeCluster();
+	dash.Finalize();
+}

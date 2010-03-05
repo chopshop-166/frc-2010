@@ -45,9 +45,9 @@ Proxy166 *Proxy166::ProxyHandle = 0;
  * @brief Initializes semaphors for joysticks and switches, and starts the Proxy166 task.
  */
 Proxy166::Proxy166(void):
-	driveStickRight(T166_USB_STICK_1),        // USB port for 1st stick
-	driveStickLeft(T166_USB_STICK_2),        // USB port for 2nd stick
-	driveStickCopilot(T166_USB_STICK_3),
+	driveStickRight(T166_DRIVER_STICK_LEFT),        // USB port for 1st stick
+	driveStickLeft(T166_DRIVER_STICK_RIGHT),        // USB port for 2nd stick
+	driveStickCopilot(T166_COPILOT_STICK),
 	Banner(0),
 	Inclinometer(0),
 	SonarDistance(0.0),
@@ -350,21 +350,7 @@ void Proxy166::SetSonarDistance(float dist) {
 float Proxy166::GetSonarDistance(void) {
 	return SonarDistance;
 }
-/** 
- *@brief Set Whether ball is captured
- *@param ballcap is ball captured
- */
-void Proxy166::SetBallCap(bool ballcap)
-{
-	BallCaptured = ballcap;
-}
-/**
- *@brief Get whether or not ball is captured
- */
-bool Proxy166::GetBallCap()
-{
-	return BallCaptured;
-}
+
 /**
  * @brief Sets the cache value of the trigger (button 1) on a joystick.
  * @param joy_id Which joystick to set the trigger status for.

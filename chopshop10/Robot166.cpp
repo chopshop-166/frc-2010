@@ -27,6 +27,7 @@
 #include "HealthMon166.h"
 #include "Inclinometer.h"
 #include "Pneumatics166.h"
+#include "DashboardDataSender.h"
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
@@ -187,7 +188,6 @@ void Robot166::OperatorControl(void)
 			if (!has_been_disabled) {
 				has_been_disabled = 1;
 				DriverStationDisplay("Dumping Memory Log...");
-				dsHandleLCD->UpdateLCD();
 			    printf("Dumping log files...\n");
 			    DumpLoggers(maxLogId);
 			    printf("Logfiles dumped!\n");
@@ -214,6 +214,7 @@ void Robot166::OperatorControl(void)
 			TakeSnapshot(imageName);
 		}
 		Wait (ROBOT_WAIT_TIME);
+		dsHandleLCD->UpdateLCD();
 	}
 	
 }
