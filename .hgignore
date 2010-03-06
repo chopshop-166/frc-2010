@@ -3,7 +3,6 @@ glob:*.orig
 glob:.metadata\
 glob:*.o
 glob:*.d
-glob:PPC603GNU\
 glob:ctdt.*
 glob:*.out
 glob:Makefile
