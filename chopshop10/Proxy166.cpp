@@ -50,7 +50,7 @@ unsigned int ProxyLog::PutOne(ProxyJoystick joy1, ProxyJoystick joy2, ProxyJoyst
 	struct abuf166 *ob;               // Output buffer
 	
 	// Get output buffer
-	if ((ob = (struct abuf166 *)GetNextBuffer(sizeof(struct abuf166)))) {		
+	if ((ob = (struct abuf166 *)GetNextBuffer(sizeof(struct abuf166)))) {
 		// Fill it in.
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
 		ob->joy[1] = joy1;
@@ -67,7 +67,9 @@ unsigned int ProxyLog::DumpBuffer(char *nptr, FILE *ofile)
 {
 	struct abuf166 *ab = (struct abuf166 *)nptr;	
 	// Output the data into the file
-	fprintf(ofile, "%4.5f, ", ((ab->tp.tv_sec-starttime.tv_sec) + (ab->tp.tv_nsec/1000000000.)));
+	fprintf(ofile, "%u, %u, %4.5f, ",
+			ab->tp.tv_sec, ab->tp.tv_nsec,
+			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)));
 	for(int i=0;i<3;i++) {
 		fprintf(ofile, "%1.6f, %1.6f, %1.6f, %1.6f, ",
 				ab->joy[i].X, ab->joy[i].Y, ab->joy[i].Z, ab->joy[i].throttle);

@@ -32,7 +32,11 @@ struct bbuf166
 class BannerLog : public MemoryLog166
 {
 public:
-	BannerLog() : MemoryLog166(sizeof(struct bbuf166), BANNER_CYCLE_TIME, "banner") {return;};
+	struct timespec starttime;
+	BannerLog() : MemoryLog166(sizeof(struct bbuf166), BANNER_CYCLE_TIME, "banner") {
+		clock_gettime(CLOCK_REALTIME, &starttime);
+		return;
+	};
 	~BannerLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
@@ -61,10 +65,13 @@ unsigned int BannerLog::PutOne(UINT32 T166_BANNER_VALUE)
 // Format the next buffer for file output
 unsigned int BannerLog::DumpBuffer(char *nptr, FILE *ofile)
 {
-	struct bbuf166 *bb = (struct bbuf166 *)nptr;
+	struct bbuf166 *ab = (struct bbuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %f\n", bb->tp.tv_sec, bb->tp.tv_nsec, bb->T166_BANNER_VALUE);
+	fprintf(ofile, "%u, %u, %4.5f, %f\n",
+			ab->tp.tv_sec, ab->tp.tv_nsec,
+			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
+			ab->T166_BANNER_VALUE);
 	
 	// Done
 	return (sizeof(struct bbuf166));

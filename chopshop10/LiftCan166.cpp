@@ -36,7 +36,11 @@ struct abuf166
 class LiftCanLog : public MemoryLog166
 {
 public:
-	LiftCanLog() : MemoryLog166(sizeof(struct abuf166), LIFT_CYCLE_TIME, "lift") {return;};
+	struct timespec starttime;		// Start time for the logging
+	LiftCanLog() : MemoryLog166(sizeof(struct abuf166), LIFT_CYCLE_TIME, "lift") {
+		clock_gettime(CLOCK_REALTIME, &starttime);
+		return;
+	};
 	~LiftCanLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
@@ -70,8 +74,10 @@ unsigned int LiftCanLog::DumpBuffer(char *nptr, FILE *ofile)
 {
 	struct abuf166 *ab = (struct abuf166 *)nptr;
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %d, %f, %d, %d\n",
-			ab->tp.tv_sec, ab->tp.tv_nsec, ab->liftstate, ab->JoyY, ab->limit, ab->button);
+	fprintf(ofile, "%u, %u, %4.5f, %d, %f, %d, %d\n",
+			ab->tp.tv_sec, ab->tp.tv_nsec,
+			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
+			ab->liftstate, ab->JoyY, ab->limit, ab->button);
 	
 	// Done
 	return (sizeof(struct abuf166));

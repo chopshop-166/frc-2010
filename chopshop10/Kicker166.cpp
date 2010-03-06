@@ -35,7 +35,11 @@ struct abuf166
 class KickerLog : public MemoryLog166
 {
 public:
-	KickerLog() : MemoryLog166(sizeof(struct abuf166), KICKER_CYCLE_TIME, "kicker") {return;};
+	struct timespec starttime;
+	KickerLog() : MemoryLog166(sizeof(struct abuf166), KICKER_CYCLE_TIME, "kicker") {
+		clock_gettime(CLOCK_REALTIME, &starttime);
+		return;
+	};
 	~KickerLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
@@ -69,7 +73,10 @@ unsigned int KickerLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct abuf166 *ab = (struct abuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %f, %f, %f\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->x_acc, ab->y_acc, ab->acc_vector);
+	fprintf(ofile, "%u, %u, %4.5f, %f, %f, %f\n",
+			ab->tp.tv_sec, ab->tp.tv_nsec,
+			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
+			ab->x_acc, ab->y_acc, ab->acc_vector);
 	
 	// Done
 	return (sizeof(struct abuf166));

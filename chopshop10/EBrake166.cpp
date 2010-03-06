@@ -33,7 +33,11 @@ struct abuf166
 class EBrakeLog : public MemoryLog166
 {
 public:
-	EBrakeLog() : MemoryLog166(sizeof(struct abuf166), EBRAKE_CYCLE_TIME, "ebrake") {return;};
+	struct timespec starttime;
+	EBrakeLog() : MemoryLog166(sizeof(struct abuf166), EBRAKE_CYCLE_TIME, "ebrake") {
+		clock_gettime(CLOCK_REALTIME, &starttime);
+		return;
+	};
 	~EBrakeLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
@@ -47,7 +51,7 @@ unsigned int EBrakeLog::PutOne(bool status)
 	struct abuf166 *ob;               // Output buffer
 	
 	// Get output buffer
-	if ((ob = (struct abuf166 *)GetNextBuffer(sizeof(struct abuf166)))) {		
+	if ((ob = (struct abuf166 *)GetNextBuffer(sizeof(struct abuf166)))) {
 		// Fill it in.
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
 		ob->status = status;
@@ -62,7 +66,10 @@ unsigned int EBrakeLog::DumpBuffer(char *nptr, FILE *ofile)
 {
 	struct abuf166 *ab = (struct abuf166 *)nptr;	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %d\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->status);	
+	fprintf(ofile, "%u, %u, %4.5f, %d\n",
+			ab->tp.tv_sec, ab->tp.tv_nsec,
+			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
+			ab->status);	
 	return (sizeof(struct abuf166));
 }
 

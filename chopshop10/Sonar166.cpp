@@ -28,7 +28,11 @@ struct sobuf166
 class SonarLog : public MemoryLog166
 {
 public:
-	SonarLog() : MemoryLog166(sizeof(struct sobuf166), SONAR_CYCLE_TIME, "sonar") {return;};
+	struct timespec starttime;
+	SonarLog() : MemoryLog166(sizeof(struct sobuf166), SONAR_CYCLE_TIME, "sonar") {
+		clock_gettime(CLOCK_REALTIME, &starttime);
+		return;
+	};
 	~SonarLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
@@ -60,7 +64,10 @@ unsigned int SonarLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct sobuf166 *ab = (struct sobuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %f\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->distance);
+	fprintf(ofile, "%u, %u, %4.5f, %f\n",
+			ab->tp.tv_sec, ab->tp.tv_nsec,
+			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
+			ab->distance);
 	
 	// Done
 	return (sizeof(struct sobuf166));
