@@ -142,11 +142,11 @@ float Robot166::GetBatteryVoltage(void)
 void Robot166::Autonomous(void)
 {
 	DigitalInput jumper(T166_AUTONOMOUS_JUMPER);
-	if(jumper.Get()) {
+	GetWatchdog().SetEnabled(false);
+	if(!jumper.Get()) {
 		DPRINTF(LOG_DEBUG,"Entered autonomous\n");
 		DriverStationDisplay("IN AUTONOMOUS");
 		RobotMode = T166_AUTONOMOUS;
-		GetWatchdog().SetEnabled(false);
 		Autonomous166();
 	} else {
 		DPRINTF(LOG_DEBUG,"Entered disabled autonomous\n");

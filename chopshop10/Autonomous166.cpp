@@ -17,7 +17,7 @@
 
 #define AUTONOMOUS_TILT (10)
 #define AUTONOMOUS_MOTOR_TOLERENCE (10)
-#define AUTONOMOUS_SPEED (0.25)
+#define AUTONOMOUS_SPEED (-0.25)
 #define AUTONOMOUS_MOTOR_FLAG_LIMIT (5)
 
 // To locally enable debug printing: set true, to disable false
@@ -85,6 +85,7 @@ Autonomous166::Autonomous166() {
 			proxy->SetJoystickY(T166_DRIVER_STICK_LEFT, AUTONOMOUS_SPEED);
 			proxy->SetJoystickY(T166_DRIVER_STICK_RIGHT, AUTONOMOUS_SPEED);
 		}
+		Wait(AUTONOMOUS_WAIT_TIME);
 	}
 }
 

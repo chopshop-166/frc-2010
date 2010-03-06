@@ -17,7 +17,7 @@
 #include "Runtime166.h"
 
 // Enable proxy logging?
-#define LoggingProxy (0)
+#define LoggingProxy (1)
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
@@ -73,8 +73,8 @@ unsigned int ProxyLog::DumpBuffer(char *nptr, FILE *ofile)
 	fprintf(ofile, "%u, %u, %4.5f, ",
 			ab->tp.tv_sec, ab->tp.tv_nsec,
 			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)));
-	for(int i=0;i<3;i++) {
-		fprintf(ofile, "%1.6f, %1.6f, %1.6f, %1.6f, ",
+	for(int i=0;i<1;i++) {
+		fprintf(ofile, "%f, %f, %f, %f, ",
 				ab->joy[i].X, ab->joy[i].Y, ab->joy[i].Z, ab->joy[i].throttle);
 		for(int j=0;j<NUMBER_OF_JOY_BUTTONS;j++) {
 			fprintf(ofile, "%u, ", ab->joy[i].button[j]);
@@ -199,7 +199,7 @@ int Proxy166::Main(	int a2, int a3, int a4, int a5,
 			}
 		}
 #if LoggingProxy
-		sl.PutOne(Joysticks[1], Joysticks[2], Joysticks[3]);
+		sl.PutOne(GetJoystick(1), GetJoystick(2), GetJoystick(3));
 #endif
 		// The task ends if it's not initialized
 		WaitForNextLoop();

@@ -121,13 +121,13 @@ int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 		if ((proxy->GetButton(1,T166_EBRAKE_BUTTON) == true) || (proxy->GetButton(2,T166_EBRAKE_BUTTON) == true)) {
 			unebrakeSolenoid.Set(false);  // Vent un-e-brake
 			ebrakeSolenoid.Set(true);     // Push e-brake
-			lHandle->DriverStationDisplay("EBrake DOWN");
+//			lHandle->DriverStationDisplay("EBrake DOWN");
 			SetStatus("down");
 			brakeisdown = true;
 		} else {
 			ebrakeSolenoid.Set(false);     // Vent e-brake
 			unebrakeSolenoid.Set(true);    // Push un-e-brake
-			lHandle->DriverStationDisplay("EBrake UP");
+//			lHandle->DriverStationDisplay("EBrake UP");
 			SetStatus("up");
 			brakeisdown = false;
 		}
