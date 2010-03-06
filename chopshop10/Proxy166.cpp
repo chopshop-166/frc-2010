@@ -151,9 +151,11 @@ int Proxy166::Main(	int a2, int a3, int a4, int a5,
 					int a6, int a7, int a8, int a9, int a10) {
 
 	Robot166 *lHandle = NULL;
+	ProxyLog sl;
 	WaitForGoAhead();
 	
 	lHandle = Robot166::getInstance();
+	lHandle->RegisterLogger(&sl);
 	
 	Timer debugTimer;
 	debugTimer.Start();
@@ -189,6 +191,7 @@ int Proxy166::Main(	int a2, int a3, int a4, int a5,
 				// Debug info
 			}
 		}
+		sl.PutOne(Joysticks[1], Joysticks[2], Joysticks[3]);
 		// The task ends if it's not initialized
 		WaitForNextLoop();
 	}
