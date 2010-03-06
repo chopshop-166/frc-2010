@@ -10,16 +10,19 @@
 /*  Copyright (c) MHS Chopshop Team 166, 2010.  All Rights Reserved.          */
 /*----------------------------------------------------------------------------*/
 
-
 #include <semLib.h>
 #include "wpilib.h"
 #include "Proxy166.h"
 #include "Robot166.h"
 #include "Runtime166.h"
 
+// Enable proxy logging?
+#define LoggingProxy (0)
+
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
 
+#if LoggingProxy
 // Sample in memory buffer
 struct abuf166
 {
@@ -80,7 +83,7 @@ unsigned int ProxyLog::DumpBuffer(char *nptr, FILE *ofile)
 	fprintf(ofile, "\n");
 	return (sizeof(struct abuf166));
 }
-
+#endif
 
 /**
  * @brief Initializes the joystick axes to 0 and the buttons to unset.
@@ -151,11 +154,15 @@ int Proxy166::Main(	int a2, int a3, int a4, int a5,
 					int a6, int a7, int a8, int a9, int a10) {
 
 	Robot166 *lHandle = NULL;
+#if LoggingProxy
 	ProxyLog sl;
+#endif
 	WaitForGoAhead();
 	
 	lHandle = Robot166::getInstance();
+#if LoggingProxy
 	lHandle->RegisterLogger(&sl);
+#endif
 	
 	Timer debugTimer;
 	debugTimer.Start();
@@ -191,7 +198,9 @@ int Proxy166::Main(	int a2, int a3, int a4, int a5,
 				// Debug info
 			}
 		}
+#if LoggingProxy
 		sl.PutOne(Joysticks[1], Joysticks[2], Joysticks[3]);
+#endif
 		// The task ends if it's not initialized
 		WaitForNextLoop();
 	}
