@@ -88,7 +88,6 @@ Team166CANDrive *Team166CANDrive::getInstance(void)
 
 // task constructor
 Team166CANDrive::Team166CANDrive(void):
-//	blackJag(T166_BLACK_JAG_CAN),
 	leftJag(T166_LEFT_MOTOR_CAN),
 	rightJag(T166_RIGHT_MOTOR_CAN)
 {

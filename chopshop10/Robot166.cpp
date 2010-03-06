@@ -27,6 +27,7 @@
 #include "HealthMon166.h"
 #include "Inclinometer.h"
 #include "Pneumatics166.h"
+#include "DashboardDataSender.h"
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
@@ -80,6 +81,7 @@ Robot166::Robot166(void)
 	JoyX = JoyY = 0.0;
 	dsHandle = DriverStation::GetInstance();
 	dsHandleLCD = DriverStationLCD::GetInstance();
+	sender = DashboardDataSender::getInstance();
 	RobotHandle = this;
 	mlHead = 0;
 	
@@ -187,7 +189,6 @@ void Robot166::OperatorControl(void)
 			if (!has_been_disabled) {
 				has_been_disabled = 1;
 				DriverStationDisplay("Dumping Memory Log...");
-				dsHandleLCD->UpdateLCD();
 			    printf("Dumping log files...\n");
 			    DumpLoggers(maxLogId);
 			    printf("Logfiles dumped!\n");
@@ -213,6 +214,8 @@ void Robot166::OperatorControl(void)
 			sprintf(imageName, "166_joystick_img_%03i.png", joystickImageCount);
 			TakeSnapshot(imageName);
 		}
+		sender->sendIOPortData();
+		dsHandleLCD->UpdateLCD();
 		Wait (ROBOT_WAIT_TIME);
 	}
 	
@@ -265,7 +268,7 @@ void Robot166::DumpLoggers(int dnum)
  * Send text to DS LCD display
  */
 int Robot166::DriverStationDisplay(char* dsTextString)
-{ 
+{
 	static char *string1;
 	static char *string2;
 	static char *string3;

@@ -4,7 +4,6 @@
 #include "WPILib.h"
 #include <vector>
 #include "Target.h"
-#include "Robot166.h"
 #include "CANJaguar.h"
 /**
  * This class is just an example of one way you could organize the data that you want
@@ -27,7 +26,7 @@ public:
 						double gyroRate,
 						double targetX,
 						vector<Target> targets);
-	float sendCANData(CANJaguar jag);
+	void sendPSI(float psi);
 	static DashboardDataSender *getInstance();
 private:
 	static DashboardDataSender *instance;
