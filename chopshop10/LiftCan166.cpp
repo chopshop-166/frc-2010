@@ -162,6 +162,7 @@ int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
 				//If 2 seconds have passed extend lift
 				if (lifttimer.Get() == 2)
 				{
+					lift_jag.Set(0);
 					// Open solenoid, to fill cylinder
 					Lift_Solenoid.Set(true);
 					// Go to the winching state so we can lift ourself
