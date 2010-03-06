@@ -32,7 +32,11 @@ struct abuf166
 class ProxyLog : public MemoryLog166
 {
 public:
-	ProxyLog() : MemoryLog166(sizeof(struct abuf166), PROXY_CYCLE_TIME, "proxy") {return;};
+	struct timespec starttime;               // Time of snapshot
+	ProxyLog() : MemoryLog166(sizeof(struct abuf166), PROXY_CYCLE_TIME, "proxy") {
+		clock_gettime(CLOCK_REALTIME, &starttime);
+		return;
+	};
 	~ProxyLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
@@ -63,7 +67,7 @@ unsigned int ProxyLog::DumpBuffer(char *nptr, FILE *ofile)
 {
 	struct abuf166 *ab = (struct abuf166 *)nptr;	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, ", ab->tp.tv_sec, ab->tp.tv_nsec);
+	fprintf(ofile, "%4.5f, ", ((ab->tp.tv_sec-starttime.tv_sec) + (ab->tp.tv_nsec/1000000000.)));
 	for(int i=0;i<3;i++) {
 		fprintf(ofile, "%1.6f, %1.6f, %1.6f, %1.6f, ",
 				ab->joy[i].X, ab->joy[i].Y, ab->joy[i].Z, ab->joy[i].throttle);
