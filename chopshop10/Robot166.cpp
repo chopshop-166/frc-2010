@@ -142,13 +142,15 @@ float Robot166::GetBatteryVoltage(void)
 void Robot166::Autonomous(void)
 {
 	DigitalInput jumper(T166_AUTONOMOUS_JUMPER);
+	GetWatchdog().SetEnabled(false);
 	if(!jumper.Get()) {
 		DPRINTF(LOG_DEBUG,"Entered autonomous\n");
+		DriverStationDisplay("IN AUTONOMOUS");
 		RobotMode = T166_AUTONOMOUS;
-		GetWatchdog().SetEnabled(false);
 		Autonomous166();
 	} else {
 		DPRINTF(LOG_DEBUG,"Entered disabled autonomous\n");
+		DriverStationDisplay("NO AUTONOMOUS");
 		RobotMode = T166_AUTONOMOUS;
 	}
 }
@@ -215,8 +217,8 @@ void Robot166::OperatorControl(void)
 			TakeSnapshot(imageName);
 		}
 		sender->sendIOPortData();
-		dsHandleLCD->UpdateLCD();
 		Wait (ROBOT_WAIT_TIME);
+		dsHandleLCD->UpdateLCD();
 	}
 	
 }
@@ -242,6 +244,7 @@ void Robot166::RegisterLogger(MemoryLog166 *ml)
 		ml->mlNext = mlHead;
 		mlHead = ml;
 		ml->Registered = 1;
+		clock_gettime(CLOCK_REALTIME, &(ml->starttime));
 	}
 }
 

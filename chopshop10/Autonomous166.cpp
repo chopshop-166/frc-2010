@@ -17,7 +17,7 @@
 
 #define AUTONOMOUS_TILT (10)
 #define AUTONOMOUS_MOTOR_TOLERENCE (10)
-#define AUTONOMOUS_SPEED (0.25)
+#define AUTONOMOUS_SPEED (-0.25)
 #define AUTONOMOUS_MOTOR_FLAG_LIMIT (5)
 
 // To locally enable debug printing: set true, to disable false

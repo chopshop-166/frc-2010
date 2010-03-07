@@ -25,26 +25,24 @@
 struct abuf166
 {
 	struct timespec tp;              // Time of snapshot
-	float x_acc;                     // accelerometer x value
-	float y_acc;					 //  accelerometer y value
-	float acc_vector;
-	
 };
 
 // Sample Memory Log
 class KickerLog : public MemoryLog166
 {
 public:
-	KickerLog() : MemoryLog166(sizeof(struct abuf166), KICKER_CYCLE_TIME, "kicker") {return;};
+	KickerLog() : MemoryLog166(sizeof(struct abuf166), KICKER_CYCLE_TIME, "kicker") {
+		return;
+	};
 	~KickerLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
 			FILE *outputFile);        // and then stored in this file
-	unsigned int PutOne(float x_acc, float y_acc, float acc_vector);     // Log the x and y values
+	unsigned int PutOne(void);     // Log the values
 };
 
 // Write one buffer into memory
-unsigned int KickerLog::PutOne(float x_acc, float y_acc, float acc_vector)
+unsigned int KickerLog::PutOne(void)
 {
 	struct abuf166 *ob;               // Output buffer
 	
@@ -53,9 +51,7 @@ unsigned int KickerLog::PutOne(float x_acc, float y_acc, float acc_vector)
 		
 		// Fill it in.
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
-		ob->x_acc = x_acc;
-		ob->y_acc = y_acc;
-		ob->acc_vector = acc_vector;
+		
 		return (sizeof(struct abuf166));
 	}
 	
@@ -69,7 +65,10 @@ unsigned int KickerLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct abuf166 *ab = (struct abuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %f, %f, %f\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->x_acc, ab->y_acc, ab->acc_vector);
+	fprintf(ofile, "%u, %u, %4.5f, %f, %f, %f\n",
+			ab->tp.tv_sec, ab->tp.tv_nsec,
+			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.))
+	);
 	
 	// Done
 	return (sizeof(struct abuf166));
@@ -117,7 +116,6 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 	
 	// Register our logger
 	lHandle = Robot166::getInstance();
-	lHandle->RegisterLogger(&sl);	
 
 
 	// Get handle to main Proxy166
@@ -259,7 +257,7 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 		}
 		
         // Should we log this value?
-		sl.PutOne(0, 0, 0);
+		sl.PutOne();
 		
 		// Wait for our next lap
 		WaitForNextLoop();

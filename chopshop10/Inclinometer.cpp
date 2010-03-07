@@ -31,7 +31,9 @@ struct incbuf166
 class InclinometerLog : public MemoryLog166
 {
 public:
-	InclinometerLog() : MemoryLog166(sizeof(struct incbuf166), INCLINOMETER_CYCLE_TIME, "inclinometer") {return;};
+	InclinometerLog() : MemoryLog166(sizeof(struct incbuf166), INCLINOMETER_CYCLE_TIME, "inclinometer") {
+		return;
+	};
 	~InclinometerLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
@@ -60,10 +62,13 @@ unsigned int InclinometerLog::PutOne(int angle_inc)
 // Format the next buffer for file output
 unsigned int InclinometerLog::DumpBuffer(char *nptr, FILE *ofile)
 {
-	struct incbuf166 *ib = (struct incbuf166 *)nptr;
+	struct incbuf166 *ab = (struct incbuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %f\n", ib->tp.tv_sec, ib->tp.tv_nsec, ib->angle_inc);
+	fprintf(ofile, "%u, %u, %4.5f, %f\n",
+			ab->tp.tv_sec, ab->tp.tv_nsec,
+			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
+			ab->angle_inc);
 	
 	// Done
 	return (sizeof(struct incbuf166));

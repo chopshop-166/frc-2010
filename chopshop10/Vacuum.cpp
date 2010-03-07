@@ -31,7 +31,9 @@ struct abuf166
 class VacuumLog : public MemoryLog166
 {
 public:
-	VacuumLog() : MemoryLog166(sizeof(struct abuf166), VACUUM_CYCLE_TIME, "vacuum") {return;};
+	VacuumLog() : MemoryLog166(sizeof(struct abuf166), VACUUM_CYCLE_TIME, "vacuum") {
+		return;
+	};
 	~VacuumLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
@@ -65,7 +67,10 @@ unsigned int VacuumLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct abuf166 *ab = (struct abuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->Vacuum_On, ab->Vacuum_Current); // Add values here
+	fprintf(ofile, "%u, %u, %4.5f, %d, %f\n",
+			ab->tp.tv_sec, ab->tp.tv_nsec,
+			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
+			ab->Vacuum_On, ab->Vacuum_Current); // Add values here
 	
 	// Done
 	return (sizeof(struct abuf166));

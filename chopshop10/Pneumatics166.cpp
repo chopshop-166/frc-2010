@@ -32,7 +32,9 @@ struct pbuf166
 class PneumaticsLog : public MemoryLog166
 {
 public:
-	PneumaticsLog() : MemoryLog166(sizeof(struct pbuf166), PNEUMATICS_CYCLE_TIME, "pneumatics") {return;};
+	PneumaticsLog() : MemoryLog166(sizeof(struct pbuf166), PNEUMATICS_CYCLE_TIME, "pneumatics") {
+		return;
+	};
 	~PneumaticsLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
@@ -66,7 +68,10 @@ unsigned int PneumaticsLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct pbuf166 *ab = (struct pbuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %f, %d\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->pressure, ab->compressor_on); // Add values here
+	fprintf(ofile, "%u, %u, %4.5f, %f, %d\n",
+			ab->tp.tv_sec, ab->tp.tv_nsec,
+			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
+			ab->pressure, ab->compressor_on); // Add values here
 	
 	// Done
 	return (sizeof(struct pbuf166));
@@ -113,7 +118,6 @@ int Pneumatics166::Main(int a2, int a3, int a4, int a5,
 	// Register our logger
 	lHandle = Robot166::getInstance();
 	lHandle->RegisterLogger(&sl);	
-
 
 	// Get handle to main Proxy166
 	proxy = Proxy166::getInstance();

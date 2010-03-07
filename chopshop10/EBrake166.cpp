@@ -33,7 +33,9 @@ struct abuf166
 class EBrakeLog : public MemoryLog166
 {
 public:
-	EBrakeLog() : MemoryLog166(sizeof(struct abuf166), EBRAKE_CYCLE_TIME, "ebrake") {return;};
+	EBrakeLog() : MemoryLog166(sizeof(struct abuf166), EBRAKE_CYCLE_TIME, "ebrake") {
+		return;
+	};
 	~EBrakeLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
@@ -47,7 +49,7 @@ unsigned int EBrakeLog::PutOne(bool status)
 	struct abuf166 *ob;               // Output buffer
 	
 	// Get output buffer
-	if ((ob = (struct abuf166 *)GetNextBuffer(sizeof(struct abuf166)))) {		
+	if ((ob = (struct abuf166 *)GetNextBuffer(sizeof(struct abuf166)))) {
 		// Fill it in.
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
 		ob->status = status;
@@ -62,7 +64,10 @@ unsigned int EBrakeLog::DumpBuffer(char *nptr, FILE *ofile)
 {
 	struct abuf166 *ab = (struct abuf166 *)nptr;	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %d\n", ab->tp.tv_sec, ab->tp.tv_nsec, ab->status);	
+	fprintf(ofile, "%u, %u, %4.5f, %d\n",
+			ab->tp.tv_sec, ab->tp.tv_nsec,
+			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
+			ab->status);	
 	return (sizeof(struct abuf166));
 }
 
@@ -106,7 +111,7 @@ int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 	// Register our logger
 	lHandle = Robot166::getInstance();
 	lHandle->RegisterLogger(&sl);
-		
+	
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
@@ -114,13 +119,13 @@ int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 		if ((proxy->GetButton(1,T166_EBRAKE_BUTTON) == true) || (proxy->GetButton(2,T166_EBRAKE_BUTTON) == true)) {
 			unebrakeSolenoid.Set(false);  // Vent un-e-brake
 			ebrakeSolenoid.Set(true);     // Push e-brake
-			lHandle->DriverStationDisplay("EBrake DOWN");
+//			lHandle->DriverStationDisplay("EBrake DOWN");
 			SetStatus("down");
 			brakeisdown = true;
 		} else {
 			ebrakeSolenoid.Set(false);     // Vent e-brake
 			unebrakeSolenoid.Set(true);    // Push un-e-brake
-			lHandle->DriverStationDisplay("EBrake UP");
+//			lHandle->DriverStationDisplay("EBrake UP");
 			SetStatus("up");
 			brakeisdown = false;
 		}
