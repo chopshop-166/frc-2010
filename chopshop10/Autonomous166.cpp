@@ -85,7 +85,6 @@ Autonomous166::Autonomous166() {
 			proxy->SetJoystickY(T166_DRIVER_STICK_LEFT, AUTONOMOUS_SPEED);
 			proxy->SetJoystickY(T166_DRIVER_STICK_RIGHT, AUTONOMOUS_SPEED);
 		}
-		Wait(AUTONOMOUS_WAIT_TIME);
 	}
 }
 

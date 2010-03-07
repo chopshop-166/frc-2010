@@ -108,6 +108,7 @@ int Team166Inclinometer::Main(int a2, int a3, int a4, int a5,
 	
 	// Register our logger
 	lHandle = Robot166::getInstance();
+	lHandle->RegisterLogger(&sl);	
 	
 	// Register the proxy
 	proxy = Proxy166::getInstance();

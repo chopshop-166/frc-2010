@@ -33,7 +33,6 @@ class PneumaticsLog : public MemoryLog166
 {
 public:
 	PneumaticsLog() : MemoryLog166(sizeof(struct pbuf166), PNEUMATICS_CYCLE_TIME, "pneumatics") {
-		clock_gettime(CLOCK_REALTIME, &starttime);
 		return;
 	};
 	~PneumaticsLog() {return;};
