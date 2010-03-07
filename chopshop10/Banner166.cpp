@@ -32,9 +32,7 @@ struct bbuf166
 class BannerLog : public MemoryLog166
 {
 public:
-	struct timespec starttime;
 	BannerLog() : MemoryLog166(sizeof(struct bbuf166), BANNER_CYCLE_TIME, "banner") {
-		clock_gettime(CLOCK_REALTIME, &starttime);
 		return;
 	};
 	~BannerLog() {return;};

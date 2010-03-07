@@ -32,7 +32,6 @@ struct pbuf166
 class PneumaticsLog : public MemoryLog166
 {
 public:
-	struct timespec starttime;
 	PneumaticsLog() : MemoryLog166(sizeof(struct pbuf166), PNEUMATICS_CYCLE_TIME, "pneumatics") {
 		clock_gettime(CLOCK_REALTIME, &starttime);
 		return;
@@ -120,7 +119,6 @@ int Pneumatics166::Main(int a2, int a3, int a4, int a5,
 	// Register our logger
 	lHandle = Robot166::getInstance();
 	lHandle->RegisterLogger(&sl);	
-
 
 	// Get handle to main Proxy166
 	proxy = Proxy166::getInstance();

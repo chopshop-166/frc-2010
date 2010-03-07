@@ -33,9 +33,7 @@ struct abuf166
 class CANDriveLog : public MemoryLog166
 {
 public:
-	struct timespec starttime;
 	CANDriveLog() : MemoryLog166(sizeof(struct abuf166), CAN_CYCLE_TIME, "candrive") {
-		clock_gettime(CLOCK_REALTIME, &starttime);
 		return;
 	};
 	~CANDriveLog() {return;};
@@ -132,6 +130,7 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 	// Register our logger
 	lHandle = Robot166::getInstance();
 	lHandle->RegisterLogger(&sl);
+	
 	printf("CANDrive is ready.\n");
 	float left=0,right=0;
 	

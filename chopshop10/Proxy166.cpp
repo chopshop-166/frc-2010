@@ -35,9 +35,7 @@ struct abuf166
 class ProxyLog : public MemoryLog166
 {
 public:
-	struct timespec starttime;               // Time of snapshot
 	ProxyLog() : MemoryLog166(sizeof(struct abuf166), PROXY_CYCLE_TIME, "proxy") {
-		clock_gettime(CLOCK_REALTIME, &starttime);
 		return;
 	};
 	~ProxyLog() {return;};

@@ -244,6 +244,7 @@ void Robot166::RegisterLogger(MemoryLog166 *ml)
 		ml->mlNext = mlHead;
 		mlHead = ml;
 		ml->Registered = 1;
+		clock_gettime(CLOCK_REALTIME, &(ml->starttime));
 	}
 }
 

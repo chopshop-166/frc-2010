@@ -31,7 +31,6 @@ struct abuf166
 class VacuumLog : public MemoryLog166
 {
 public:
-	struct timespec starttime;
 	VacuumLog() : MemoryLog166(sizeof(struct abuf166), VACUUM_CYCLE_TIME, "vacuum") {
 		clock_gettime(CLOCK_REALTIME, &starttime);
 		return;

@@ -28,9 +28,7 @@ struct sobuf166
 class SonarLog : public MemoryLog166
 {
 public:
-	struct timespec starttime;
 	SonarLog() : MemoryLog166(sizeof(struct sobuf166), SONAR_CYCLE_TIME, "sonar") {
-		clock_gettime(CLOCK_REALTIME, &starttime);
 		return;
 	};
 	~SonarLog() {return;};

@@ -28,31 +28,26 @@
 // Sample in memory buffer
 struct abuf166
 {
-	struct timespec tp;               // Time of snapshot
-	float x_acc;                     // accelarometer x value
-	float y_acc;					//  accelarometer y value
-	float acc_vector;
-	
+	struct timespec tp;						// Time of snapshot
+	string healthstats;								// String
 };
 
 //  Memory Log
 class HealthMonLog : public MemoryLog166
 {
 public:
-	struct timespec starttime;
-	HealthMonLog() : MemoryLog166(sizeof(struct abuf166), HEALTHMON_CYCLE_TIME, "health_monitor") {
-		clock_gettime(CLOCK_REALTIME, &starttime);
+	HealthMonLog() : MemoryLog166(sizeof(struct abuf166), HEALTHMON_CYCLE_TIME, "healthmon") {
 		return;
 	};
 	~HealthMonLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
 			FILE *outputFile);        // and then stored in this file
-	unsigned int PutOne(float x_acc, float y_acc, float acc_vector);     // Log the x and y values
+	unsigned int PutOne(char*);     // Log values
 };
 
 // Write one buffer into memory
-unsigned int HealthMonLog::PutOne(float x_acc, float y_acc, float acc_vector)
+unsigned int HealthMonLog::PutOne(char *stats)
 {
 	struct abuf166 *ob;               // Output buffer
 	
@@ -61,9 +56,7 @@ unsigned int HealthMonLog::PutOne(float x_acc, float y_acc, float acc_vector)
 		
 		// Fill it in.
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
-		ob->x_acc = x_acc;
-		ob->y_acc = y_acc;
-		ob->acc_vector = acc_vector;
+		ob->healthstats = stats;
 		return (sizeof(struct abuf166));
 	}
 	
@@ -77,10 +70,10 @@ unsigned int HealthMonLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct abuf166 *ab = (struct abuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %4.5f, %f, %f, %f\n",
+	fprintf(ofile, "%u, %u, %s\n",
 			ab->tp.tv_sec, ab->tp.tv_nsec,
 			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
-			ab->x_acc, ab->y_acc, ab->acc_vector);
+			ab->healthstats.c_str());
 	
 	// Done
 	return (sizeof(struct abuf166));
@@ -127,6 +120,7 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 		Wait(T166_TA_WAIT_LENGTH);
 	}
 	lHandle->RegisterLogger(&sl);
+	
 	char* buffer = new char[DASHBOARD_BUFFER_MAX];
 	
 	// Register each task
@@ -176,7 +170,7 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 		lHandle->DriverStationDisplayHSData(buffer);
 		
 		// do stuff
-		sl.PutOne(0, 0, 0);
+		sl.PutOne(buffer);
 		WaitForNextLoop();
 	}
 	return (0);

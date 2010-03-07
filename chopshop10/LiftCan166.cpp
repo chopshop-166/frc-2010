@@ -36,9 +36,7 @@ struct abuf166
 class LiftCanLog : public MemoryLog166
 {
 public:
-	struct timespec starttime;		// Start time for the logging
 	LiftCanLog() : MemoryLog166(sizeof(struct abuf166), LIFT_CYCLE_TIME, "lift") {
-		clock_gettime(CLOCK_REALTIME, &starttime);
 		return;
 	};
 	~LiftCanLog() {return;};
@@ -127,7 +125,7 @@ int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
 	
 	// Register our logger
 	lHandle = Robot166::getInstance();
-	lHandle->RegisterLogger(&sl);	
+	lHandle->RegisterLogger(&sl);
 	
 	proxy=Proxy166::getInstance();
 	

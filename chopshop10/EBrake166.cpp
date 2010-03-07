@@ -33,9 +33,7 @@ struct abuf166
 class EBrakeLog : public MemoryLog166
 {
 public:
-	struct timespec starttime;
 	EBrakeLog() : MemoryLog166(sizeof(struct abuf166), EBRAKE_CYCLE_TIME, "ebrake") {
-		clock_gettime(CLOCK_REALTIME, &starttime);
 		return;
 	};
 	~EBrakeLog() {return;};
@@ -113,7 +111,7 @@ int Team166EBrake::Main(int a2, int a3, int a4, int a5,
 	// Register our logger
 	lHandle = Robot166::getInstance();
 	lHandle->RegisterLogger(&sl);
-		
+	
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
