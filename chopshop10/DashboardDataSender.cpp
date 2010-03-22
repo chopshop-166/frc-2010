@@ -108,8 +108,7 @@ void DashboardDataSender::sendIOPortData() {
 			dash.AddCluster();
 			{
 				for (int i = 1; i <= 8; i++) {
-//					dash.AddFloat((float) AnalogModule::GetInstance(1)->GetAverageVoltage(i));
-					dash.AddFloat((float) i * 5.0 / 8.0);
+					dash.AddFloat((float) AnalogModule::GetInstance(1)->GetAverageVoltage(i));
 				}
 			}
 			dash.FinalizeCluster();
@@ -132,15 +131,12 @@ void DashboardDataSender::sendIOPortData() {
 					int module = 4;
 					dash.AddU8(DigitalModule::GetInstance(module)->GetRelayForward());
 					dash.AddU8(DigitalModule::GetInstance(module)->GetRelayReverse());
-					//					dash.AddU16((short)DigitalModule::GetInstance(module)->GetDIO());
-					dash.AddU16((short) 0xAAAA);
-					//					dash.AddU16((short)DigitalModule::GetInstance(module)->GetDIODirection());
-					dash.AddU16((short) 0x7777);
+					dash.AddU16((short)DigitalModule::GetInstance(module)->GetDIO());
+					dash.AddU16((short)DigitalModule::GetInstance(module)->GetDIODirection());
 					dash.AddCluster();
 					{
 						for (int i = 1; i <= 10; i++) {
-							//							dash.AddU8((unsigned char) DigitalModule::GetInstance(module)->GetPWM(i));
-							dash.AddU8((unsigned char) (i-1) * 255 / 9);
+							dash.AddU8((unsigned char) DigitalModule::GetInstance(module)->GetPWM(i));
 						}
 					}
 					dash.FinalizeCluster();
@@ -161,8 +157,7 @@ void DashboardDataSender::sendIOPortData() {
 					dash.AddCluster();
 					{
 						for (int i = 1; i <= 10; i++) {
-							//							dash.AddU8((unsigned char) DigitalModule::GetInstance(module)->GetPWM(i));
-							dash.AddU8((unsigned char) i * 255 / 10);
+							dash.AddU8((unsigned char) DigitalModule::GetInstance(module)->GetPWM(i));
 						}
 					}
 					dash.FinalizeCluster();
@@ -174,7 +169,15 @@ void DashboardDataSender::sendIOPortData() {
 		dash.FinalizeCluster();
 
 		// Can't read solenoids without an instance of the object
-		dash.AddU8((char) 0);
+		dash.AddCluster();
+		{
+			for(unsigned i=1;i<8;i++) {
+				dash.AddBoolean(Solenoid(i).Get());
+				printf("%d", Solenoid(i).Get());
+			}
+			printf("\r");
+		}
+		dash.FinalizeCluster();
 	}
 	dash.FinalizeCluster();
 	dash.Finalize();

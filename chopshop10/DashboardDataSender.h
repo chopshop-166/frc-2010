@@ -5,6 +5,7 @@
 #include <vector>
 #include "Target.h"
 #include "CANJaguar.h"
+#include "Team166Task.h"
 /**
  * This class is just an example of one way you could organize the data that you want
  * to send to the dashboard.  The PackAndSend method does all the work.  You could

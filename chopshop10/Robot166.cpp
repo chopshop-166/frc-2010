@@ -27,13 +27,14 @@
 #include "HealthMon166.h"
 #include "Inclinometer.h"
 #include "Pneumatics166.h"
+#include "Vacuum.h"
 #include "DashboardDataSender.h"
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
 
 // Are we using the CAN bus?
-#define UsingCan (1)
+#define UsingCan (0)
 #define UsingSuitcase (0)
 // List of tasks that have requested to come up
 Team166Task *Team166Task::ActiveTasks[T166_MAXTASK + 1] = {0};
@@ -41,8 +42,11 @@ Team166Task *Team166Task::ActiveTasks[T166_MAXTASK + 1] = {0};
 // Declare external tasks
 Proxy166 Team166ProxyObject; // This task has to always be started first or it'll error
 #if (!UsingSuitcase)
+#if UsingCan
 	Team166CANDrive Team166CANDriveObject;
 	Team166LiftCan Team166LiftCanObject;
+	Team166Vacuum Team166VacuumObject;
+#endif
 	Team166EBrake Team166EBrakeObject;
 	Team166Kicker Team166KickerObject;
 	Team166Banner Team166BannerObject;
@@ -53,7 +57,7 @@ Proxy166 Team166ProxyObject; // This task has to always be started first or it'l
 #if UsingCamera
 	Team166Vision Team166VisionObject;
 #endif
-Team166HealthMon Team166HealthMonObject;
+//Team166HealthMon Team166HealthMonObject;
 
 // This links to the single instance of the Robot task
 class Robot166;
