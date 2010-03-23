@@ -7,4 +7,3 @@ glob:ctdt.*
 glob:*.out
 glob:Makefile
 glob:*.csv
-glob:*/build/*
