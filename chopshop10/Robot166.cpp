@@ -224,7 +224,7 @@ void Robot166::OperatorControl(void)
 //				Team166ProxyObject.GetPressure(),
 				Team166ProxyObject.GetThrottle(3),
 //				Team166ProxyObject.GetInclinometer()
-				Team166ProxyObject.GetThrottle(1)
+				(int)Team166ProxyObject.GetThrottle(1)*100
 			);
 		Wait (ROBOT_WAIT_TIME);
 		dsHandleLCD->UpdateLCD();
