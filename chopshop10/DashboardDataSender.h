@@ -21,13 +21,12 @@ class DashboardDataSender
 {
 public:
 	DashboardDataSender();
-	void sendIOPortData();
+	void sendIOPortData(float, int);
 	void sendVisionData(double joyStickX,
 						double gyroAngle,
 						double gyroRate,
 						double targetX,
 						vector<Target> targets);
-	void sendPSI(float psi);
 	static DashboardDataSender *getInstance();
 private:
 	static DashboardDataSender *instance;

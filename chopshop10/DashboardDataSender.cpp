@@ -96,11 +96,12 @@ void DashboardDataSender::sendVisionData(double joyStickX,
  * free to modify it. Be sure to make the corresponding changes in the LabVIEW example
  * dashboard program running on your driver station.
  */
-void DashboardDataSender::sendIOPortData() {
+void DashboardDataSender::sendIOPortData(float psi, int tilt) {
 	if (IOTimer->Get() < 0.1)
 		return;
 	IOTimer->Reset();
 	Dashboard &dash = DriverStation::GetInstance()->GetLowPriorityDashboardPacker();
+	unsigned char solBuf=0;
 	dash.AddCluster();
 	{
 		dash.AddCluster();
@@ -171,27 +172,20 @@ void DashboardDataSender::sendIOPortData() {
 		// Can't read solenoids without an instance of the object
 		dash.AddCluster();
 		{
+			solBuf = 0;
 			for(unsigned i=1;i<8;i++) {
-				dash.AddBoolean(Solenoid(i).Get());
-				printf("%d", Solenoid(i).Get());
+				solBuf |= (Solenoid(i).Get() << (i-1));
 			}
-			printf("\r");
+			dash.AddU8(solBuf);
 		}
 		dash.FinalizeCluster();
 	}
-	dash.FinalizeCluster();
-	dash.Finalize();
-}
-void DashboardDataSender::sendPSI(float psi)
-{
-	if (visionTimer->Get() < 0.1)
-		return;
-	visionTimer->Reset();
-	Dashboard &dash = DriverStation::GetInstance()->GetHighPriorityDashboardPacker();
-	dash.AddCluster();
-	{
+//	dash.AddCluster();
+//	{
+		// PSI values
 		dash.AddFloat(psi);
-	}
+		dash.AddI32(tilt);
+//	}
 	dash.FinalizeCluster();
 	dash.Finalize();
 }

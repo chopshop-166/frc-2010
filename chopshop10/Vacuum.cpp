@@ -78,7 +78,7 @@ unsigned int VacuumLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-Team166Vacuum::Team166Vacuum(void): Vacuum_Jag(T166_VACUUM_CAN)
+Team166Vacuum::Team166Vacuum(void): Vacuum_Jag(T166_EBRAKE_MOTOR_CAN)
 {
 	Start((char *)"166BallSucker", VACUUM_CYCLE_TIME);
 	return;
@@ -116,7 +116,6 @@ int Team166Vacuum::Main(int a2, int a3, int a4, int a5,
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		// Is there something within 15 inches
 		// is the 5th button on the copilot joystick pressed?
 		if (proxy->GetButton(3,5) == true) {
 			Vacuum_On = !Vacuum_On;

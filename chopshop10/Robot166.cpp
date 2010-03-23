@@ -220,7 +220,10 @@ void Robot166::OperatorControl(void)
 			sprintf(imageName, "166_joystick_img_%03i.png", joystickImageCount);
 			TakeSnapshot(imageName);
 		}
-		sender->sendIOPortData();
+		sender->sendIOPortData(
+				Team166ProxyObject.GetPressure(),
+				Team166ProxyObject.GetInclinometer()
+			);
 		Wait (ROBOT_WAIT_TIME);
 		dsHandleLCD->UpdateLCD();
 	}
