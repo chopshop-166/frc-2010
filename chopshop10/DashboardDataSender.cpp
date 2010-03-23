@@ -96,11 +96,12 @@ void DashboardDataSender::sendVisionData(double joyStickX,
  * free to modify it. Be sure to make the corresponding changes in the LabVIEW example
  * dashboard program running on your driver station.
  */
-void DashboardDataSender::sendIOPortData() {
+void DashboardDataSender::sendIOPortData(float psi, int tilt) {
 	if (IOTimer->Get() < 0.1)
 		return;
 	IOTimer->Reset();
 	Dashboard &dash = DriverStation::GetInstance()->GetLowPriorityDashboardPacker();
+	unsigned char solBuf=0;
 	dash.AddCluster();
 	{
 		dash.AddCluster();
@@ -108,8 +109,7 @@ void DashboardDataSender::sendIOPortData() {
 			dash.AddCluster();
 			{
 				for (int i = 1; i <= 8; i++) {
-//					dash.AddFloat((float) AnalogModule::GetInstance(1)->GetAverageVoltage(i));
-					dash.AddFloat((float) i * 5.0 / 8.0);
+					dash.AddFloat((float) AnalogModule::GetInstance(1)->GetAverageVoltage(i));
 				}
 			}
 			dash.FinalizeCluster();
@@ -132,15 +132,12 @@ void DashboardDataSender::sendIOPortData() {
 					int module = 4;
 					dash.AddU8(DigitalModule::GetInstance(module)->GetRelayForward());
 					dash.AddU8(DigitalModule::GetInstance(module)->GetRelayReverse());
-					//					dash.AddU16((short)DigitalModule::GetInstance(module)->GetDIO());
-					dash.AddU16((short) 0xAAAA);
-					//					dash.AddU16((short)DigitalModule::GetInstance(module)->GetDIODirection());
-					dash.AddU16((short) 0x7777);
+					dash.AddU16((short)DigitalModule::GetInstance(module)->GetDIO());
+					dash.AddU16((short)DigitalModule::GetInstance(module)->GetDIODirection());
 					dash.AddCluster();
 					{
 						for (int i = 1; i <= 10; i++) {
-							//							dash.AddU8((unsigned char) DigitalModule::GetInstance(module)->GetPWM(i));
-							dash.AddU8((unsigned char) (i-1) * 255 / 9);
+							dash.AddU8((unsigned char) DigitalModule::GetInstance(module)->GetPWM(i));
 						}
 					}
 					dash.FinalizeCluster();
@@ -161,8 +158,7 @@ void DashboardDataSender::sendIOPortData() {
 					dash.AddCluster();
 					{
 						for (int i = 1; i <= 10; i++) {
-							//							dash.AddU8((unsigned char) DigitalModule::GetInstance(module)->GetPWM(i));
-							dash.AddU8((unsigned char) i * 255 / 10);
+							dash.AddU8((unsigned char) DigitalModule::GetInstance(module)->GetPWM(i));
 						}
 					}
 					dash.FinalizeCluster();
@@ -174,21 +170,22 @@ void DashboardDataSender::sendIOPortData() {
 		dash.FinalizeCluster();
 
 		// Can't read solenoids without an instance of the object
-		dash.AddU8((char) 0);
+		dash.AddCluster();
+		{
+			solBuf = 0;
+			for(unsigned i=1;i<8;i++) {
+				solBuf |= (Solenoid(i).Get() << (i-1));
+			}
+			dash.AddU8(solBuf);
+		}
+		dash.FinalizeCluster();
 	}
-	dash.FinalizeCluster();
-	dash.Finalize();
-}
-void DashboardDataSender::sendPSI(float psi)
-{
-	if (visionTimer->Get() < 0.1)
-		return;
-	visionTimer->Reset();
-	Dashboard &dash = DriverStation::GetInstance()->GetHighPriorityDashboardPacker();
-	dash.AddCluster();
-	{
+//	dash.AddCluster();
+//	{
+		// PSI values
 		dash.AddFloat(psi);
-	}
+		dash.AddI32(tilt);
+//	}
 	dash.FinalizeCluster();
 	dash.Finalize();
 }

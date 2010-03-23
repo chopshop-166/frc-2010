@@ -5,6 +5,7 @@
 #include <vector>
 #include "Target.h"
 #include "CANJaguar.h"
+#include "Team166Task.h"
 /**
  * This class is just an example of one way you could organize the data that you want
  * to send to the dashboard.  The PackAndSend method does all the work.  You could
@@ -20,13 +21,12 @@ class DashboardDataSender
 {
 public:
 	DashboardDataSender();
-	void sendIOPortData();
+	void sendIOPortData(float, int);
 	void sendVisionData(double joyStickX,
 						double gyroAngle,
 						double gyroRate,
 						double targetX,
 						vector<Target> targets);
-	void sendPSI(float psi);
 	static DashboardDataSender *getInstance();
 private:
 	static DashboardDataSender *instance;
