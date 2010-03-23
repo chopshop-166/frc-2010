@@ -221,8 +221,10 @@ void Robot166::OperatorControl(void)
 			TakeSnapshot(imageName);
 		}
 		sender->sendIOPortData(
-				Team166ProxyObject.GetPressure(),
-				Team166ProxyObject.GetInclinometer()
+//				Team166ProxyObject.GetPressure(),
+				Team166ProxyObject.GetThrottle(3),
+//				Team166ProxyObject.GetInclinometer()
+				Team166ProxyObject.GetThrottle(1)
 			);
 		Wait (ROBOT_WAIT_TIME);
 		dsHandleLCD->UpdateLCD();
