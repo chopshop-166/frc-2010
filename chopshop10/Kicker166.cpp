@@ -97,6 +97,7 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 	Robot166 *lHandle;                              // Local handle
 	KickerLog sl;                                   // Arm log
 	
+	
 	Solenoid unkickSolenoid(T166_UNKICKER_PISTON);                  // Unkicker solenoid
 	Solenoid kickSolenoid(T166_KICKER_PISTON);                      // Kicker solenoid
 	
