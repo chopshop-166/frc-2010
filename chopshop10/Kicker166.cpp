@@ -96,12 +96,13 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 	Proxy166 *proxy;	                            // Get handle for joystick
 	Robot166 *lHandle;                              // Local handle
 	KickerLog sl;                                   // Arm log
-	
+	int delay=500;									// Delay before the kick
 	
 	Solenoid unkickSolenoid(T166_UNKICKER_PISTON);                  // Unkicker solenoid
 	Solenoid kickSolenoid(T166_KICKER_PISTON);                      // Kicker solenoid
 	
 	int timer = 0;                                      // Latch release wait counter
+	bool buttondown = false;
 	DigitalInput Latch_Magnet_Sensor (T166_LATCH_MAGNET_SENSOR);
 	
 	// Let the world know we're in
@@ -121,21 +122,40 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		timer |= proxy->GetButton(T166_COPILOT_STICK, T166_KICKER_BUTTON);
-		if(timer) {
-			++timer;
-			if(timer <= (500 / KICKER_CYCLE_TIME) ) {
-				unkickSolenoid.Set(false);
+		if( proxy->GetButton(T166_COPILOT_STICK, 3) ) {
+			if( proxy->GetJoystickX(3) > 0 ) {
+				delay += 5;
+			} else if( proxy->GetJoystickX(3) < 0 ) {
+				delay -= 5;
 			} else {
-				kickSolenoid.Set(true);
+				delay = 500;
 			}
-			if(timer >= (1000 / KICKER_CYCLE_TIME) ) {
-				timer = 0;
+		}
+		if(buttondown==false) {
+			if( proxy->GetButton(T166_COPILOT_STICK, T166_KICKER_BUTTON) ) {
+				timer = 1;
+				buttondown = true;
 			}
 		} else {
-			timer = 0;
-			kickSolenoid.Set(false);
-			unkickSolenoid.Set(true);
+			if( !proxy->GetButton(T166_COPILOT_STICK, T166_KICKER_BUTTON) ) {
+				buttondown = false;
+			}
+			if(timer) {
+				buttondown = true;
+				++timer;
+				if(timer <= (delay / KICKER_CYCLE_TIME) ) {
+					unkickSolenoid.Set(false);
+				} else {
+					kickSolenoid.Set(true);
+				}
+				if(timer >= (1000 / KICKER_CYCLE_TIME) ) {
+					timer = 0;
+				}
+			} else {
+				timer = 0;
+				kickSolenoid.Set(false);
+				unkickSolenoid.Set(true);
+			}
 		}
 		
         // Should we log this value?
