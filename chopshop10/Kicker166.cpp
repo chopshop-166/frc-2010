@@ -122,24 +122,12 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		if( proxy->GetButton(T166_COPILOT_STICK, 3) ) {
-			if( proxy->GetJoystickX(3) > 0 ) {
-				delay += 5;
-			} else if( proxy->GetJoystickX(3) < 0 ) {
-				delay -= 5;
-			} else {
-				delay = 500;
-			}
-		}
 		if(buttondown==false) {
 			if( proxy->GetButton(T166_COPILOT_STICK, T166_KICKER_BUTTON) ) {
 				timer = 1;
 				buttondown = true;
 			}
 		} else {
-			if( !proxy->GetButton(T166_COPILOT_STICK, T166_KICKER_BUTTON) ) {
-				buttondown = false;
-			}
 			if(timer) {
 				buttondown = true;
 				++timer;
@@ -155,6 +143,9 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 				timer = 0;
 				kickSolenoid.Set(false);
 				unkickSolenoid.Set(true);
+			}
+			if( !proxy->GetButton(T166_COPILOT_STICK, T166_KICKER_BUTTON) ) {
+				buttondown = false;
 			}
 		}
 		
