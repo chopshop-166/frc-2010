@@ -28,7 +28,7 @@
 #define UsingCamera (0)
 
 // Code version number
-#define T166_CODE_VERSION ("CODE: TEST1-NOCAM")
+#define T166_CODE_VERSION ("CODE: TEST2-NOCAM")
 
 // Maximum dashboard buffer size
 #define DASHBOARD_BUFFER_MAX (21)
