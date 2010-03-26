@@ -25,6 +25,7 @@
 struct abuf166
 {
 	struct timespec tp;              // Time of snapshot
+	int timer;						// Timer value
 };
 
 // Sample Memory Log
@@ -38,11 +39,11 @@ public:
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
 			FILE *outputFile);        // and then stored in this file
-	unsigned int PutOne(void);     // Log the values
+	unsigned int PutOne(int);     // Log the values
 };
 
 // Write one buffer into memory
-unsigned int KickerLog::PutOne(void)
+unsigned int KickerLog::PutOne(int timer)
 {
 	struct abuf166 *ob;               // Output buffer
 	
@@ -51,6 +52,7 @@ unsigned int KickerLog::PutOne(void)
 		
 		// Fill it in.
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
+		ob->timer = timer;
 		
 		return (sizeof(struct abuf166));
 	}
@@ -65,9 +67,10 @@ unsigned int KickerLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct abuf166 *ab = (struct abuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %4.5f, %f, %f, %f\n",
+	fprintf(ofile, "%u, %u, %4.5f, %d\n",
 			ab->tp.tv_sec, ab->tp.tv_nsec,
-			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.))
+			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
+			ab->timer
 	);
 	
 	// Done
@@ -122,36 +125,34 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		if(buttondown==false) {
-			if( proxy->GetButton(T166_COPILOT_STICK, T166_KICKER_BUTTON) ) {
-				timer = 1;
-				buttondown = true;
-			}
-		} else {
-			if(timer) {
-				buttondown = true;
+		if( proxy->GetButton(T166_COPILOT_STICK, T166_KICKER_BUTTON, false) && !buttondown ) {
+			buttondown = true;
+			timer = 1;
+		}
+		if(timer) {
+			if(proxy->GetPressure() < T166_PNEU_KICK_MIN) {
+				timer = 0;
+				lHandle->DriverStationDisplay("Not enough pressure!");
+			} else {
 				++timer;
 				if(timer <= (delay / KICKER_CYCLE_TIME) ) {
 					unkickSolenoid.Set(false);
 				} else {
 					kickSolenoid.Set(true);
 				}
-				if(timer >= (1000 / KICKER_CYCLE_TIME) ) {
+				if(timer >= ((1000 + delay) / KICKER_CYCLE_TIME) ) {
 					timer = 0;
-				}
-			} else {
-				timer = 0;
-				kickSolenoid.Set(false);
-				unkickSolenoid.Set(true);
 			}
-			if( !proxy->GetButton(T166_COPILOT_STICK, T166_KICKER_BUTTON) ) {
-				buttondown = false;
-			}
+		} else {
+			kickSolenoid.Set(false);
+			unkickSolenoid.Set(true);
+		}
+		if( !proxy->GetButton(T166_COPILOT_STICK, T166_KICKER_BUTTON) ) {
+			buttondown = false;
 		}
 		
-        // Should we log this value?
-		printf("%d\r", timer); 
-		sl.PutOne();
+        // Should we log this value? 
+		sl.PutOne(timer);
 		
 		// Wait for our next lap
 		WaitForNextLoop();
