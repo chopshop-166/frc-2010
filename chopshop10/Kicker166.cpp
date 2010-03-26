@@ -142,6 +142,7 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 				}
 				if(timer >= ((1000 + delay) / KICKER_CYCLE_TIME) ) {
 					timer = 0;
+				}
 			}
 		} else {
 			kickSolenoid.Set(false);
