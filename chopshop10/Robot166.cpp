@@ -23,6 +23,7 @@
 #include "Sonar166.h"
 #include "RobotCamera166.h"
 #include "CANDrive166.h"
+#include "EBrake166.h"
 #include "HealthMon166.h"
 #include "Inclinometer.h"
 #include "Pneumatics166.h"
@@ -46,6 +47,7 @@ Proxy166 Team166ProxyObject; // This task has to always be started first or it'l
 	Team166LiftCan Team166LiftCanObject;
 	Team166Vacuum Team166VacuumObject;
 #endif
+	Team166EBrake Team166EBrakeObject;
 	Team166Kicker Team166KickerObject;
 	Team166Banner Team166BannerObject;
 	Team166Sonar Team166SonarObject;
