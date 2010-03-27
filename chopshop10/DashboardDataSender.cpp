@@ -179,13 +179,9 @@ void DashboardDataSender::sendIOPortData(float psi, int tilt) {
 			dash.AddU8(solBuf);
 		}
 		dash.FinalizeCluster();
-	}
-//	dash.AddCluster();
-//	{
-		// PSI values
 		dash.AddFloat(psi);
 		dash.AddI32(tilt);
-//	}
+	}
 	dash.FinalizeCluster();
 	dash.Finalize();
 }
