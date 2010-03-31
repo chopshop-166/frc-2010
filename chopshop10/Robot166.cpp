@@ -88,7 +88,8 @@ Robot166::Robot166(void)
 	mlHead = 0;
 	
 	// Trim log files down to 16MB
-	maxLogId = MemoryLog166::PruneLogs(16*1024*1024);
+	//maxLogId = MemoryLog166::PruneLogs(16*1024*1024);
+	maxLogId = 0;
 
 	// update DS
 	DriverStationDisplay("Starting 166 Robot");

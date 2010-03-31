@@ -18,6 +18,7 @@
 			<Item Name="Receive DS Packet.vi" Type="VI" URL="../Receive DS Packet.vi"/>
 			<Item Name="App EXE.ico" Type="Document" URL="../App EXE.ico"/>
 			<Item Name="Decode Status Byte.vi" Type="VI" URL="../Decode Status Byte.vi"/>
+			<Item Name="deleteoldlogs.vi" Type="VI" URL="../deleteoldlogs.vi"/>
 		</Item>
 		<Item Name="TypeDefs" Type="Folder">
 			<Item Name="DStoPCPacketTypeDef.ctl" Type="VI" URL="../DStoPCPacketTypeDef.ctl"/>
