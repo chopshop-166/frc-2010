@@ -66,13 +66,14 @@ unsigned int PneumaticsLog::PutOne(float ppress, bool c_on)
 unsigned int PneumaticsLog::DumpBuffer(char *nptr, FILE *ofile)
 {
 	struct pbuf166 *ab = (struct pbuf166 *)nptr;
-	
+	char Pneumatics_tempbuffer[512];
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %4.5f, %f, %d\n",
+	sprintf(Pneumatics_tempbuffer, "%u, %u, %4.5f, %f, %d\n",
 			ab->tp.tv_sec, ab->tp.tv_nsec,
 			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
 			ab->pressure, ab->compressor_on); // Add values here
-	
+	fprintf(ofile,Pneumatics_tempbuffer);
+	Pneumatics_buffer = Pneumatics_tempbuffer;
 	// Done
 	return (sizeof(struct pbuf166));
 }

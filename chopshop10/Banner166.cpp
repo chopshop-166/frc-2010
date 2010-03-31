@@ -63,14 +63,16 @@ unsigned int BannerLog::PutOne(UINT32 T166_BANNER_VALUE)
 // Format the next buffer for file output
 unsigned int BannerLog::DumpBuffer(char *nptr, FILE *ofile)
 {
+	char Banner_tempbuffer[512];
 	struct bbuf166 *ab = (struct bbuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %4.5f, %f\n",
+	sprintf(Banner_tempbuffer, "%u, %u, %4.5f, %f\n",
 			ab->tp.tv_sec, ab->tp.tv_nsec,
 			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
 			ab->T166_BANNER_VALUE);
-	
+	Banner_buffer = Banner_tempbuffer;
+	fprintf(ofile,Banner_tempbuffer);
 	// Done
 	return (sizeof(struct bbuf166));
 }

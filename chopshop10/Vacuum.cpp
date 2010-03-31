@@ -14,6 +14,7 @@
 #include "Team166Task.h"
 #include "Proxy166.h"
 #include "Vacuum.h"
+#include "string"
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
@@ -65,13 +66,14 @@ unsigned int VacuumLog::PutOne(bool Vacuum_On, float Vacuum_Current)
 unsigned int VacuumLog::DumpBuffer(char *nptr, FILE *ofile)
 {
 	struct abuf166 *ab = (struct abuf166 *)nptr;
-	
+	char Vacuum_tempbuffer[512];
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %4.5f, %d, %f\n",
+	sprintf(Vacuum_tempbuffer, "%u, %u, %4.5f, %d, %f\n",
 			ab->tp.tv_sec, ab->tp.tv_nsec,
 			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
 			ab->Vacuum_On, ab->Vacuum_Current); // Add values here
-	
+	fprintf(ofile, Vacuum_tempbuffer);	//Print buffer out to csv
+	Vacuum_buffer = Vacuum_tempbuffer;
 	// Done
 	return (sizeof(struct abuf166));
 }

@@ -181,6 +181,18 @@ void DashboardDataSender::sendIOPortData(float psi, int tilt) {
 		dash.FinalizeCluster();
 		dash.AddFloat(psi);
 		dash.AddI32(tilt);
+		dash.AddCluster();
+		{
+			dash.AddString( (char *) Proxy_buffer.c_str());
+			dash.AddString( (char *) Drive_buffer.c_str());
+			dash.AddString( (char *) Banner_buffer.c_str());
+			dash.AddString( (char *) Inclinometer_buffer.c_str());
+			dash.AddString( (char *) Pneumatics_buffer.c_str());
+			dash.AddString( (char *) Lift_buffer.c_str());
+			dash.AddString( (char *) Vacuum_buffer.c_str());
+			dash.AddString( (char *) Kicker_buffer.c_str());
+		}
+		dash.FinalizeCluster();
 	}
 	dash.FinalizeCluster();
 	dash.Finalize();

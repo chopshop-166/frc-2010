@@ -32,6 +32,7 @@
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
 
+
 // Are we using the CAN bus?
 #define UsingCan (0)
 #define UsingSuitcase (0)

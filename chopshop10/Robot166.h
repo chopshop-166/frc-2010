@@ -25,7 +25,7 @@
 #include "DashboardDataSender.h"
 
 // If we're using a camera, enable this
-#define UsingCamera (0)
+#define UsingCamera (1)
 
 // Code version number
 #define T166_CODE_VERSION ("CODE: TEST2-NOCAM")
@@ -35,6 +35,16 @@
 
 // Robot166 wait time
 #define ROBOT_WAIT_TIME (0.5)
+
+// Buffer logging
+std::string Proxy_buffer;			// Proxy logging buffer
+std::string	Drive_buffer;			// Drive logging buffer
+std::string Banner_buffer;			// Drive logging buffer
+std::string	Inclinometer_buffer;	// Drive logging buffer
+std::string Pneumatics_buffer;		// Drive logging buffer
+std::string	Lift_buffer;			// Drive logging buffer
+std::string Vacuum_buffer;			// Drive logging buffer
+std::string	Kicker_buffer;			// Drive logging buffer
 
 //
 // Robot modes

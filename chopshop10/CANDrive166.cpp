@@ -20,7 +20,6 @@
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
-
 // Sample in memory buffer
 struct abuf166
 {
@@ -66,13 +65,15 @@ unsigned int CANDriveLog::PutOne(float l_current, float r_current)
 unsigned int CANDriveLog::DumpBuffer(char *nptr, FILE *ofile)
 {
 	struct abuf166 *ab = (struct abuf166 *)nptr;
+	char Drive_tempbuffer[512];
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %4.5f, %f, %f\n",
+	sprintf(Drive_tempbuffer, "%u, %u, %4.5f, %f, %f\n",
 			ab->tp.tv_sec, ab->tp.tv_nsec,
 			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
 			ab->l_current, ab->r_current);
-	
+	fprintf(ofile,Drive_tempbuffer);
+	Drive_buffer = Drive_tempbuffer;
 	// Done
 	return (sizeof(struct abuf166));
 }
