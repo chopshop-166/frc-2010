@@ -103,6 +103,7 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 	
 	Solenoid unkickSolenoid(T166_UNKICKER_PISTON);                  // Unkicker solenoid
 	Solenoid kickSolenoid(T166_KICKER_PISTON);                      // Kicker solenoid
+	DigitalInput MagnetSensor (T166_LATCH_MAGNET_SENSOR);			// Magnet sensor to sense when fully retracted
 	
 	int timer = 0;                                      // Latch release wait counter
 	bool buttondown = false;
@@ -135,9 +136,7 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 				lHandle->DriverStationDisplay("Not enough pressure!");
 			} else {
 				++timer;
-				if(timer <= (delay / KICKER_CYCLE_TIME) ) {
-					unkickSolenoid.Set(false);
-				} else {
+				if( timer > (delay / KICKER_CYCLE_TIME) ) {
 					kickSolenoid.Set(true);
 				}
 				if(timer >= ((1000 + delay) / KICKER_CYCLE_TIME) ) {
@@ -146,7 +145,11 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 			}
 		} else {
 			kickSolenoid.Set(false);
-			unkickSolenoid.Set(true);
+			if( MagnetSensor.Get() ) {
+				unkickSolenoid.Set(false);
+			} else {
+				unkickSolenoid.Set(true);
+			}
 		}
 		if( !proxy->GetButton(T166_COPILOT_STICK, T166_KICKER_BUTTON) ) {
 			buttondown = false;
