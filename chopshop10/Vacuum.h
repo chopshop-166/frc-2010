@@ -20,6 +20,8 @@
 // of miliseconds. Max allowed time is 999 miliseconds.
 #define VACUUM_CYCLE_TIME (10) // 10ms
 
+char Vacuum_buffer[512];
+
 class Team166Vacuum : public Team166Task
 {
 	

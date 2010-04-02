@@ -20,6 +20,7 @@
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
 
+
 // Sample in memory buffer
 struct incbuf166
 {
@@ -62,16 +63,15 @@ unsigned int InclinometerLog::PutOne(int angle_inc)
 // Format the next buffer for file output
 unsigned int InclinometerLog::DumpBuffer(char *nptr, FILE *ofile)
 {
-	char Inclinometer_tempbuffer[512];
 	struct incbuf166 *ab = (struct incbuf166 *)nptr;
 	
 	// Output the data into the file
-	sprintf(Inclinometer_tempbuffer, "%u, %u, %4.5f, %f\n",
+	sprintf(Inclinometer_buffer, "%u, %u, %4.5f, %f\n",
 			ab->tp.tv_sec, ab->tp.tv_nsec,
 			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
 			ab->angle_inc);
-	fprintf(ofile,Inclinometer_tempbuffer);
-	Inclinometer_buffer = Inclinometer_tempbuffer;
+	fprintf(ofile,Inclinometer_buffer);
+//	Inclinometer_buffer = Inclinometer_tempbuffer;
 	// Done
 	return (sizeof(struct incbuf166));
 }

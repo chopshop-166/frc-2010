@@ -25,6 +25,8 @@
 #define NUMBER_OF_SWITCHES (10)
 #define NUMBER_OF_JOY_BUTTONS (12)
 
+char Proxy_buffer[512];
+
 //
 // This constant defines how often we want this task to run in the form
 // of miliseconds. Max allowed time is 999 miliseconds.
