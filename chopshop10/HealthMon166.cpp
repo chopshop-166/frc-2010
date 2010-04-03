@@ -150,12 +150,10 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		sprintf(buffer,
-				"%c %03d %c %c %03d %c",
+				"%c %c %c %c",
 				kickerTask->GetStatus()[0],
-				(int)proxy->GetPressure(),
 				bannerTask->GetStatus()[0],
 				sonarTask->GetStatus()[0],
-				proxy->GetInclinometer(),
 #if UsingCamera
 				visionTask->GetStatus()[0]
 #else
