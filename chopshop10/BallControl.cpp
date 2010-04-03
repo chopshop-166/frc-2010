@@ -78,7 +78,7 @@ unsigned int BallControlLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-Team166BallControl::Team166BallControl(void): Vacuum_Jag(T166_LEFT_MOTOR_CAN)
+Team166BallControl::Team166BallControl(void): BallControl_Jag(T166_LEFT_MOTOR_CAN)
 {
 	Start((char *)"166BallControl", BALLCONTROL_CYCLE_TIME);
 	return;
@@ -119,7 +119,7 @@ int Team166BallControl::Main(int a2, int a3, int a4, int a5,
 		// is the 5th button on the copilot joystick pressed?
 		if (proxy->GetButton(T166_COPILOT_STICK,5) == true) {
 			BallControl_On = !BallControl_On;
-			Vacuum_Jag.Set(BallControl_On);
+			BallControl_Jag.Set(BallControl_On);
 			SetStatus( ((BallControl_On)?"sucking" : "not sucking") );
 		}
         // Logging any values

@@ -37,7 +37,7 @@ public:
 	
 private:
 	// Any variables that the task has as members go here
-	CANJaguar Vacuum_Jag;
+	CANJaguar BallControl_Jag;
 };
 
 #endif // !defined(_Vacuum_H)
