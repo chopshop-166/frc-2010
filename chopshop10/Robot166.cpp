@@ -55,7 +55,7 @@ Proxy166 Team166ProxyObject; // This task has to always be started first or it'l
 #if UsingCamera
 	Team166Vision Team166VisionObject;
 #endif
-//Team166HealthMon Team166HealthMonObject;
+Team166HealthMon Team166HealthMonObject;
 
 // This links to the single instance of the Robot task
 class Robot166;
@@ -88,8 +88,7 @@ Robot166::Robot166(void)
 	mlHead = 0;
 	
 	// Trim log files down to 16MB
-	//maxLogId = MemoryLog166::PruneLogs(16*1024*1024);
-	maxLogId = 0;
+	maxLogId = MemoryLog166::PruneLogs(16*1024*1024);
 
 	// update DS
 	DriverStationDisplay("Starting 166 Robot");
@@ -102,7 +101,7 @@ Robot166::Robot166(void)
 	GetWatchdog().SetExpiration(5.0); // 5 seconds
 
 	// Wait for all of our tasks to come up
-	printf("Getting ready to check if tasks are up");
+	printf("Getting ready to check if tasks are up.\n");
 	while (!Team166Task::IfUp()) {
 		printf("Waiting for task(s) to come up: ");
 		Team166Task::PrintInactive();
