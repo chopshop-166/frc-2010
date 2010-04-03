@@ -23,7 +23,7 @@ struct abuf166
 {
 	struct timespec tp;               // Time of snapshot
 	// Any values that need to be logged go here
-	bool BallControl_On;
+	float BallControl_On;
 	float BallControl_Current;
 };
 
@@ -38,11 +38,11 @@ public:
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
 			FILE *outputFile);        // and then stored in this file
-	unsigned int PutOne(bool Vacuum_On, float Vacuum_Current);     // Log the values needed-add in arguments
+	unsigned int PutOne(float Vacuum_On, float Vacuum_Current);     // Log the values needed-add in arguments
 };
 
 // Write one buffer into memory
-unsigned int BallControlLog::PutOne(bool BallControl_On, float BallControl_Current)
+unsigned int BallControlLog::PutOne(float BallControl_On, float BallControl_Current)
 {
 	struct abuf166 *ob;               // Output buffer
 	
@@ -67,7 +67,7 @@ unsigned int BallControlLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct abuf166 *ab = (struct abuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %4.5f, %d, %f\n",
+	fprintf(ofile, "%u, %u, %4.5f, %f, %f\n",
 			ab->tp.tv_sec, ab->tp.tv_nsec,
 			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
 			ab->BallControl_On, ab->BallControl_Current); // Add values here
