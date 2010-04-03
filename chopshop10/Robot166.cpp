@@ -26,7 +26,7 @@
 #include "HealthMon166.h"
 #include "Inclinometer.h"
 #include "Pneumatics166.h"
-#include "Vacuum.h"
+#include "BallControl.h"
 #include "DashboardDataSender.h"
 
 // To locally enable debug printing: set true, to disable false
@@ -44,7 +44,7 @@ Proxy166 Team166ProxyObject; // This task has to always be started first or it'l
 #if UsingCan
 	Team166CANDrive Team166CANDriveObject;
 	Team166LiftCan Team166LiftCanObject;
-	Team166Vacuum Team166VacuumObject;
+	Team166BallControl Team166VacuumObject;
 #endif
 	Team166Kicker Team166KickerObject;
 	Team166Banner Team166BannerObject;

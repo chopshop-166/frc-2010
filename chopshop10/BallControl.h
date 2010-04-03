@@ -18,18 +18,18 @@
 //
 // This constant defines how often we want this task to run in the form
 // of miliseconds. Max allowed time is 999 miliseconds.
-#define VACUUM_CYCLE_TIME (10) // 10ms
+#define BALLCONTROL_CYCLE_TIME (10) // 10ms
 
-class Team166Vacuum : public Team166Task
+class Team166BallControl : public Team166Task
 {
 	
 public:
 	
 	// task constructor
-	Team166Vacuum(void);
+	Team166BallControl(void);
 
 	// task destructor
-	virtual ~Team166Vacuum(void);
+	virtual ~Team166BallControl(void);
 
 	// Main function of the task
 	virtual int Main(int a2, int a3, int a4, int a5,
