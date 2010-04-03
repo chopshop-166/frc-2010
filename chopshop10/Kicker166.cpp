@@ -126,7 +126,9 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		if( proxy->GetButton(T166_COPILOT_STICK, T166_KICKER_BUTTON, false) && !buttondown ) {
+		if( (proxy->GetButton(T166_DRIVER_STICK_LEFT, T166_KICKER_BUTTON, false) ||
+				proxy->GetButton(T166_DRIVER_STICK_RIGHT, T166_KICKER_BUTTON, false))
+				&& !buttondown ) {
 			buttondown = true;
 			timer = 1;
 		}

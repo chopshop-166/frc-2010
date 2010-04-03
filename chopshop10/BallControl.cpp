@@ -116,11 +116,23 @@ int Team166BallControl::Main(int a2, int a3, int a4, int a5,
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		// is the 5th button on the copilot joystick pressed?
-		if (proxy->GetButton(T166_COPILOT_STICK,5) == true) {
-			BallControl_On = !BallControl_On;
-			BallControl_Jag.Set(BallControl_On);
-			SetStatus( ((BallControl_On)?"sucking" : "not sucking") );
+		// is the copilot telling it to go in ONE direction?
+		BallControl_On = (
+				proxy->GetButton(T166_COPILOT_STICK,T166_BALLCONTROL_PULL) -
+				proxy->GetButton(T166_COPILOT_STICK,T166_BALLCONTROL_PUSH)
+				);
+		BallControl_Jag.Set(BallControl_On);
+		switch(BallControl_On) {
+		case -1:
+			SetStatus( "backward" );
+			break;
+		default:
+		case 0:
+			SetStatus( "neutral" );
+			break;
+		case 1:
+			SetStatus( "forward" );
+			break;
 		}
         // Logging any values
 		sl.PutOne(BallControl_On, BallControl_Current);

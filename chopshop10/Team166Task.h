@@ -67,10 +67,8 @@
 //
 // Relay Layout
 //
-/** Channels for Vacuum */
-#define T166_VACUUM_RELAY_CHANNEL (1)
 /** Channels for Compressor */
-#define T166_COMPRESSOR_RELAY_CHANNEL (2)
+#define T166_COMPRESSOR_RELAY_CHANNEL (1)
 
 //
 // Pneumatics Bumper */
@@ -131,19 +129,23 @@
 //
 // Joystick buttons
 //
-// Ebrake trigger
-#define T166_EBRAKE_BUTTON (1)
-// Lift button
-#define T166_LIFT_BUTTON (2)
+// Kicker button
+#define T166_KICKER_BUTTON (1)
+// Lift release
+#define T166_LIFT_RELEASE_BUTTON (2)
+// Ball control-pulls towards bot
+#define T166_BALLCONTROL_PULL (2)
 // Autobalancing button
 #define T166_AUTOBALANCE_BUTTON (3)
-// Kicker button
-#define T166_KICKER_BUTTON (4)
-// Vacuum botton
-#define T166_VACUUM_BUTTON (5)
+// Ball control-pushes from bot
+#define T166_BALLCONTROL_PUSH (3)
+// Lift down button
+#define T166_LIFT_DOWN_BUTTON (4)
+// Lift up button
+#define T166_LIFT_UP_BUTTON (5)
 // Camera snapshot button
-#define T166_CAMERA_BUTTON (8)
-// Other Camera snapshot button
+#define T166_CAMERA_BUTTON1 (8)
+// Other camera snapshot button
 #define T166_CAMERA_BUTTON2 (9)
 
 //
