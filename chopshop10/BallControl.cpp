@@ -78,7 +78,7 @@ unsigned int BallControlLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-Team166BallControl::Team166BallControl(void): BallControl_Jag(T166_LEFT_MOTOR_CAN)
+Team166BallControl::Team166BallControl(void): BallControl_Jag(T166_EBRAKE_MOTOR_CAN)
 {
 	Start((char *)"166BallControl", BALLCONTROL_CYCLE_TIME);
 	return;
@@ -98,10 +98,10 @@ int Team166BallControl::Main(int a2, int a3, int a4, int a5,
 	Robot166 *lHandle;            // Local handle
 	BallControlLog sl;                   // log
 	float BallControl_Current;
-	bool BallControl_On;
+	float BallControl_Speed;
 	
 	// Let the world know we're in
-	DPRINTF(LOG_DEBUG,"In the Vacuum\n");
+	DPRINTF(LOG_DEBUG,"In the Ball Control\n");
 	
 	// Wait for Robot go-ahead (e.g. entering Autonomous or Tele-operated mode)
 	WaitForGoAhead();
@@ -117,25 +117,23 @@ int Team166BallControl::Main(int a2, int a3, int a4, int a5,
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		// is the copilot telling it to go in ONE direction?
-		BallControl_On = (
+		BallControl_Speed = (
 				proxy->GetButton(T166_COPILOT_STICK,T166_BALLCONTROL_PULL) -
 				proxy->GetButton(T166_COPILOT_STICK,T166_BALLCONTROL_PUSH)
-				);
-		BallControl_Jag.Set(BallControl_On);
-		switch(BallControl_On) {
-		case -1:
+				)
+				* proxy->GetThrottle(T166_COPILOT_STICK)
+				;
+		BallControl_Jag.Set(-proxy->GetJoystickY(3));
+		printf("JoyY: %f\r", -proxy->GetJoystickY(3));
+		if(BallControl_Speed < 0) {
 			SetStatus( "backward" );
-			break;
-		default:
-		case 0:
-			SetStatus( "neutral" );
-			break;
-		case 1:
+		} else if(BallControl_Speed > 0) {
 			SetStatus( "forward" );
-			break;
+		} else {
+			SetStatus( "neutral" );
 		}
         // Logging any values
-		sl.PutOne(BallControl_On, BallControl_Current);
+		sl.PutOne(BallControl_Speed, BallControl_Current);
 		
 		// Wait for our next lap
 		WaitForNextLoop();		

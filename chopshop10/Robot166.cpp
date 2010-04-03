@@ -51,6 +51,7 @@ Proxy166 Team166ProxyObject; // This task has to always be started first or it'l
 	Team166Sonar Team166SonarObject;
 	Team166Inclinometer Team166InclinometerObject;
 	Pneumatics166 Team166PneumaticsObject;
+	Team166BallControl Team166BallControlObject;
 #endif
 #if UsingCamera
 	Team166Vision Team166VisionObject;

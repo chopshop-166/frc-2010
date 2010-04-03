@@ -107,6 +107,7 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 	Team166Task *visionTask;			// Vision task
 #endif
 	Team166Task *bannerTask;			// Banner task
+	Team166Task *ballcontrolTask;			// Ball Control task
 	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 HealthMon task\n");
@@ -140,25 +141,29 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 	while(!(bannerTask = Team166Task::GetTaskHandle("166BannerTask"))) {
 		Wait(T166_TA_WAIT_LENGTH);
 	}
+	while(!(ballcontrolTask = Team166Task::GetTaskHandle("166BallControl"))) {
+		Wait(T166_TA_WAIT_LENGTH);
+	}
 	
 	// Whether the camera is up
 
 	// Print out the key
-	lHandle->DriverStationDisplayHS("K B S C");
+	lHandle->DriverStationDisplayHS("K B S C B");
 	
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		sprintf(buffer,
-				"%c %c %c %c",
+				"%c %c %c %c %c",
 				kickerTask->GetStatus()[0],
 				bannerTask->GetStatus()[0],
 				sonarTask->GetStatus()[0],
 #if UsingCamera
-				visionTask->GetStatus()[0]
+				visionTask->GetStatus()[0],
 #else
-				'Z'
+				'Z',
 #endif
+				ballcontrolTask->GetStatus()[0]
 				);
 		lHandle->DriverStationDisplayHSData(buffer);
 		
