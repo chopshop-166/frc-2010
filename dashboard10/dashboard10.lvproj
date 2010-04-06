@@ -18,12 +18,12 @@
 			<Item Name="Receive DS Packet.vi" Type="VI" URL="../Receive DS Packet.vi"/>
 			<Item Name="App EXE.ico" Type="Document" URL="../App EXE.ico"/>
 			<Item Name="Decode Status Byte.vi" Type="VI" URL="../Decode Status Byte.vi"/>
-			<Item Name="FTPfiles.vi" Type="VI" URL="../FTPfiles.vi"/>
 		</Item>
 		<Item Name="TypeDefs" Type="Folder">
 			<Item Name="DStoPCPacketTypeDef.ctl" Type="VI" URL="../DStoPCPacketTypeDef.ctl"/>
 		</Item>
 		<Item Name="Dashboard Main.vi" Type="VI" URL="../Dashboard Main.vi"/>
+		<Item Name="FTPfiles.vi" Type="VI" URL="../FTPfiles.vi"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="vi.lib" Type="Folder">
 				<Item Name="IMAQ Create" Type="VI" URL="/&lt;vilib&gt;/Vision/Basics.llb/IMAQ Create"/>
@@ -113,10 +113,43 @@
 				<Property Name="Destination[1].path" Type="Path">../NI_AB_PROJECTNAME/build/data</Property>
 				<Property Name="DestinationCount" Type="Int">2</Property>
 				<Property Name="Exe_iconItemID" Type="Ref">/My Computer/Support/App EXE.ico</Property>
-				<Property Name="Source[0].itemID" Type="Str">{707E3259-8328-41F8-8A6E-50B54BB89A23}</Property>
+				<Property Name="Source[0].itemID" Type="Str">{4063C92E-8AEA-4518-AB4A-CAC02E3AF791}</Property>
 				<Property Name="Source[0].type" Type="Str">Container</Property>
 				<Property Name="Source[1].destinationIndex" Type="Int">0</Property>
 				<Property Name="Source[1].itemID" Type="Ref">/My Computer/Dashboard Main.vi</Property>
+				<Property Name="Source[1].sourceInclusion" Type="Str">TopLevel</Property>
+				<Property Name="Source[1].type" Type="Str">VI</Property>
+				<Property Name="Source[2].destinationIndex" Type="Int">0</Property>
+				<Property Name="Source[2].itemID" Type="Ref">/My Computer/FTPfiles.vi</Property>
+				<Property Name="Source[2].sourceInclusion" Type="Str">Include</Property>
+				<Property Name="Source[2].type" Type="Str">VI</Property>
+				<Property Name="SourceCount" Type="Int">3</Property>
+			</Item>
+			<Item Name="FTPtest" Type="EXE">
+				<Property Name="App_applicationGUID" Type="Str">{17CD897A-809D-4FA4-B61E-0320609749D5}</Property>
+				<Property Name="App_applicationName" Type="Str">FTPtest.exe</Property>
+				<Property Name="App_companyName" Type="Str">Chop Shop 166</Property>
+				<Property Name="App_fileDescription" Type="Str">FTPtest</Property>
+				<Property Name="App_fileVersion.major" Type="Int">1</Property>
+				<Property Name="App_INI_aliasGUID" Type="Str">{773761A6-DC40-484B-A793-935F1D92D2B1}</Property>
+				<Property Name="App_INI_GUID" Type="Str">{FA546E38-8E8F-4E90-BDDC-C44C093528BF}</Property>
+				<Property Name="App_internalName" Type="Str">FTPtest</Property>
+				<Property Name="App_legalCopyright" Type="Str">Copyright © 2010 Chop Shop 166</Property>
+				<Property Name="App_productName" Type="Str">FTPtest</Property>
+				<Property Name="Bld_buildSpecName" Type="Str">FTPtest</Property>
+				<Property Name="Bld_excludeLibraryItems" Type="Bool">true</Property>
+				<Property Name="Bld_excludePolymorphicVIs" Type="Bool">true</Property>
+				<Property Name="Bld_modifyLibraryFile" Type="Bool">true</Property>
+				<Property Name="Destination[0].destName" Type="Str">FTPtest.exe</Property>
+				<Property Name="Destination[0].path" Type="Path">../NI_AB_PROJECTNAME/build/internal.llb</Property>
+				<Property Name="Destination[0].type" Type="Str">App</Property>
+				<Property Name="Destination[1].destName" Type="Str">Support Directory</Property>
+				<Property Name="Destination[1].path" Type="Path">../NI_AB_PROJECTNAME/build/data</Property>
+				<Property Name="DestinationCount" Type="Int">2</Property>
+				<Property Name="Source[0].itemID" Type="Str">{EB43836A-D63B-4268-9385-53DEC1FD9077}</Property>
+				<Property Name="Source[0].type" Type="Str">Container</Property>
+				<Property Name="Source[1].destinationIndex" Type="Int">0</Property>
+				<Property Name="Source[1].itemID" Type="Ref">/My Computer/FTPfiles.vi</Property>
 				<Property Name="Source[1].sourceInclusion" Type="Str">TopLevel</Property>
 				<Property Name="Source[1].type" Type="Str">VI</Property>
 				<Property Name="SourceCount" Type="Int">2</Property>
