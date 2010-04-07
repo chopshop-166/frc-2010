@@ -118,8 +118,6 @@ int Team166Sonar::Main(int a2, int a3, int a4, int a5,
 	static int cc = 0;            // Counter to control print out
 #endif
 	
-	// Let the world know we're in
-	printf("In the 166 Sonar task\n");
 	
 	// Wait for Robot go-ahead (e.g. entering Autonomous or Tele-operated mode)
 	WaitForGoAhead();

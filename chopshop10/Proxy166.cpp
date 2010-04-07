@@ -547,6 +547,23 @@ float Proxy166::GetCurrent(int id)
 }
 
 /**
+ * @brief Sets Ball Control speed
+ * @param speed
+ */
+void Proxy166::SetBallControlSpeed(float speed)
+{
+	BallControlSpeed = speed;
+}
+
+/**
+ * @brief Gets Ball Control speed
+ */
+float Proxy166::GetBallControlSpeed(void)
+{
+	return BallControlSpeed;
+}
+
+/**
  * @brief Sets the Camera Bearing
  * @param down current camera bearing
  */

@@ -21,11 +21,11 @@
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
 
-
 // Sample in memory buffer
 struct abuf166
 {
 	struct timespec tp;              // Time of snapshot
+	int timer;						// Timer value
 };
 
 // Sample Memory Log
@@ -39,11 +39,11 @@ public:
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
 			FILE *outputFile);        // and then stored in this file
-	unsigned int PutOne(void);     // Log the values
+	unsigned int PutOne(int);     // Log the values
 };
 
 // Write one buffer into memory
-unsigned int KickerLog::PutOne(void)
+unsigned int KickerLog::PutOne(int timer)
 {
 	struct abuf166 *ob;               // Output buffer
 	
@@ -52,6 +52,7 @@ unsigned int KickerLog::PutOne(void)
 		
 		// Fill it in.
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
+		ob->timer = timer;
 		
 		return (sizeof(struct abuf166));
 	}
@@ -60,19 +61,18 @@ unsigned int KickerLog::PutOne(void)
 	return (0);
 }
 
-
 // Format the next buffer for file output
 unsigned int KickerLog::DumpBuffer(char *nptr, FILE *ofile)
 {
 	struct abuf166 *ab = (struct abuf166 *)nptr;
-
+	
 	// Output the data into the file
-	sprintf(Kicker_buffer, "%u, %u, %4.5f, %f, %f, %f\n",
+	fprintf(ofile, "%u, %u, %4.5f, %d\n",
 			ab->tp.tv_sec, ab->tp.tv_nsec,
-			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.))
+			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
+			ab->timer
 	);
-	fprintf(ofile,Kicker_buffer);
-//	Kicker_buffer = Kicker_tempbuffer;
+	
 	// Done
 	return (sizeof(struct abuf166));
 }
@@ -99,11 +99,14 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 	Proxy166 *proxy;	                            // Get handle for joystick
 	Robot166 *lHandle;                              // Local handle
 	KickerLog sl;                                   // Arm log
+	int delay=500;									// Delay before the kick
 	
 	Solenoid unkickSolenoid(T166_UNKICKER_PISTON);                  // Unkicker solenoid
 	Solenoid kickSolenoid(T166_KICKER_PISTON);                      // Kicker solenoid
+	DigitalInput MagnetSensor (T166_LATCH_MAGNET_SENSOR);			// Magnet sensor to sense when fully retracted
 	
 	int timer = 0;                                      // Latch release wait counter
+	bool buttondown = false;
 	DigitalInput Latch_Magnet_Sensor (T166_LATCH_MAGNET_SENSOR);
 	
 	// Let the world know we're in
@@ -123,26 +126,39 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		timer |= proxy->GetButton(T166_COPILOT_STICK, T166_KICKER_BUTTON);
+		if( (proxy->GetButton(T166_DRIVER_STICK_LEFT, T166_KICKER_BUTTON, false) ||
+				proxy->GetButton(T166_DRIVER_STICK_RIGHT, T166_KICKER_BUTTON, false))
+				&& !buttondown ) {
+			buttondown = true;
+			timer = 1;
+		}
 		if(timer) {
-			++timer;
-			if(timer <= (500 / KICKER_CYCLE_TIME) ) {
-				unkickSolenoid.Set(false);
-			} else {
-				kickSolenoid.Set(true);
-			}
-			if(timer >= (1000 / KICKER_CYCLE_TIME) ) {
+			if(proxy->GetPressure() < T166_PNEU_KICK_MIN) {
 				timer = 0;
+				lHandle->DriverStationDisplay("Not enough pressure!");
+			} else {
+				++timer;
+				if( timer > (delay / KICKER_CYCLE_TIME) ) {
+					kickSolenoid.Set(true);
+				}
+				if(timer >= ((1000 + delay) / KICKER_CYCLE_TIME) ) {
+					timer = 0;
+				}
 			}
 		} else {
-			timer = 0;
 			kickSolenoid.Set(false);
-			unkickSolenoid.Set(true);
+			if( MagnetSensor.Get() ) {
+				unkickSolenoid.Set(false);
+			} else {
+				unkickSolenoid.Set(true);
+			}
+		}
+		if( !proxy->GetButton(T166_COPILOT_STICK, T166_KICKER_BUTTON) ) {
+			buttondown = false;
 		}
 		
-        // Should we log this value?
-		printf("%d\r", timer); 
-		sl.PutOne();
+        // Should we log this value? 
+		sl.PutOne(timer);
 		
 		// Wait for our next lap
 		WaitForNextLoop();

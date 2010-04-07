@@ -23,10 +23,11 @@
 #include "Sonar166.h"
 #include "RobotCamera166.h"
 #include "CANDrive166.h"
+#include "EBrake166.h"
 #include "HealthMon166.h"
 #include "Inclinometer.h"
 #include "Pneumatics166.h"
-#include "Vacuum.h"
+#include "BallControl.h"
 #include "DashboardDataSender.h"
 
 // To locally enable debug printing: set true, to disable false
@@ -45,18 +46,20 @@ Proxy166 Team166ProxyObject; // This task has to always be started first or it'l
 #if UsingCan
 	Team166CANDrive Team166CANDriveObject;
 	Team166LiftCan Team166LiftCanObject;
-	Team166Vacuum Team166VacuumObject;
+	Team166BallControl Team166VacuumObject;
 #endif
+	Team166EBrake Team166EBrakeObject;
 	Team166Kicker Team166KickerObject;
 	Team166Banner Team166BannerObject;
 	Team166Sonar Team166SonarObject;
 	Team166Inclinometer Team166InclinometerObject;
 	Pneumatics166 Team166PneumaticsObject;
+	Team166BallControl Team166BallControlObject;
 #endif
 #if UsingCamera
 	Team166Vision Team166VisionObject;
 #endif
-//Team166HealthMon Team166HealthMonObject;
+Team166HealthMon Team166HealthMonObject;
 
 // This links to the single instance of the Robot task
 class Robot166;
@@ -102,7 +105,7 @@ Robot166::Robot166(void)
 	GetWatchdog().SetExpiration(5.0); // 5 seconds
 
 	// Wait for all of our tasks to come up
-	printf("Getting ready to check if tasks are up");
+	printf("Getting ready to check if tasks are up.\n");
 	while (!Team166Task::IfUp()) {
 		printf("Waiting for task(s) to come up: ");
 		Team166Task::PrintInactive();
@@ -208,11 +211,11 @@ void Robot166::OperatorControl(void)
 		    GetWatchdog().Feed();
 		
 		// take a picture 
-		if (Team166ProxyObject.GetButton(T166_DRIVER_STICK_LEFT,T166_CAMERA_BUTTON) 
+		if (Team166ProxyObject.GetButton(T166_DRIVER_STICK_LEFT,T166_CAMERA_BUTTON1) 
 				or Team166ProxyObject.GetButton(T166_DRIVER_STICK_LEFT,T166_CAMERA_BUTTON2)
-			    or Team166ProxyObject.GetButton(T166_DRIVER_STICK_RIGHT,T166_CAMERA_BUTTON) 
+			    or Team166ProxyObject.GetButton(T166_DRIVER_STICK_RIGHT,T166_CAMERA_BUTTON1) 
 			    or Team166ProxyObject.GetButton(T166_DRIVER_STICK_RIGHT,T166_CAMERA_BUTTON2)
-			    or Team166ProxyObject.GetButton(T166_COPILOT_STICK,T166_CAMERA_BUTTON) 
+			    or Team166ProxyObject.GetButton(T166_COPILOT_STICK,T166_CAMERA_BUTTON1) 
 			    or Team166ProxyObject.GetButton(T166_COPILOT_STICK,T166_CAMERA_BUTTON2))
 		{
 			joystickImageCount++;
@@ -221,9 +224,10 @@ void Robot166::OperatorControl(void)
 		}
 		sender->sendIOPortData(
 //				Team166ProxyObject.GetPressure(),
-				Team166ProxyObject.GetThrottle(3),
+				Team166ProxyObject.GetThrottle(2),
 //				Team166ProxyObject.GetInclinometer()
-				(int)Team166ProxyObject.GetThrottle(1)*100
+				int(Team166ProxyObject.GetThrottle(1)*100),
+				Team166ProxyObject.GetBallControlSpeed()
 			);
 		Wait (ROBOT_WAIT_TIME);
 		dsHandleLCD->UpdateLCD();

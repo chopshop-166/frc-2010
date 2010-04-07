@@ -175,7 +175,7 @@ void MemoryLog166::DetermineLogHiLow(int *hi, int *lo, size_t *tspace)
 	struct dirent *de;            // Next file we're examining
 	struct stat se;               // File information block
 	int generation;               // Generation number
-	int highest_gen = -1;         // Highest generation we know about
+	int highest_gen = 0;         // Highest generation we know about
 	int lowest_gen = 0x7fffffff;  // Lowest generation we know about
 	size_t total_space = 0;       // Total space (bytes) of files
 
