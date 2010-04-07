@@ -102,6 +102,7 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 	Proxy166 *proxy;              		// Local proxy handle
 	HealthMonLog sl;					// log
 	Team166Task *kickerTask;			// Kicker task
+	Team166Task *ebrakeTask;			// E-Brake task
 	Team166Task *sonarTask;				// Sonar task
 #if UsingCamera
 	Team166Task *visionTask;			// Vision task
@@ -128,6 +129,9 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 		Wait(T166_TA_WAIT_LENGTH);
 	}
 	while(!(kickerTask = Team166Task::GetTaskHandle("166KickerTask"))) {
+		Wait(T166_TA_WAIT_LENGTH);
+	}
+	while(!(ebrakeTask = Team166Task::GetTaskHandle("166EBrakeTask"))) {
 		Wait(T166_TA_WAIT_LENGTH);
 	}
 	while(!(sonarTask = Team166Task::GetTaskHandle("166SonarTask"))) {
