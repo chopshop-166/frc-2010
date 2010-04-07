@@ -109,7 +109,7 @@
 /** channel for the Lift Winch Motor */
 #define T166_LIFT_MOTOR_CAN (5)
 /** channel for the Ebrake motor */
-#define T166_EBRAKE_MOTOR_CAN (6)
+#define T166_BALLCONTROL_MOTOR_CAN (7)
 /** channel for the Left Motor */
 #define T166_LEFT_MOTOR_CAN (7)
 /** channel for the Vacuum */

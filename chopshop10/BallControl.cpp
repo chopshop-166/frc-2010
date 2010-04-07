@@ -78,7 +78,7 @@ unsigned int BallControlLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-Team166BallControl::Team166BallControl(void): BallControl_Jag(T166_EBRAKE_MOTOR_CAN)
+Team166BallControl::Team166BallControl(void): BallControl_Jag(T166_BALLCONTROL_MOTOR_CAN)
 {
 	Start((char *)"166BallControl", BALLCONTROL_CYCLE_TIME);
 	return;
@@ -117,14 +117,15 @@ int Team166BallControl::Main(int a2, int a3, int a4, int a5,
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		// is the copilot telling it to go in ONE direction?
-		BallControl_Speed = (
-				proxy->GetButton(T166_COPILOT_STICK,T166_BALLCONTROL_PULL) -
-				proxy->GetButton(T166_COPILOT_STICK,T166_BALLCONTROL_PUSH)
-				)
-				* proxy->GetThrottle(T166_COPILOT_STICK)
-				;
-		BallControl_Jag.Set(-proxy->GetJoystickY(3));
-		printf("JoyY: %f\r", -proxy->GetJoystickY(3));
+		BallControl_Speed = -(
+				(
+					proxy->GetButton(T166_COPILOT_STICK,T166_BALLCONTROL_PULL) -
+					proxy->GetButton(T166_COPILOT_STICK,T166_BALLCONTROL_PUSH)
+				) *
+					((-proxy->GetThrottle(T166_COPILOT_STICK)+1)/2)
+			);
+		BallControl_Jag.Set(BallControl_Speed);
+		
 		if(BallControl_Speed < 0) {
 			SetStatus( "backward" );
 		} else if(BallControl_Speed > 0) {
@@ -132,6 +133,7 @@ int Team166BallControl::Main(int a2, int a3, int a4, int a5,
 		} else {
 			SetStatus( "neutral" );
 		}
+		proxy->SetBallControlSpeed(BallControl_Speed);
         // Logging any values
 		sl.PutOne(BallControl_Speed, BallControl_Current);
 		
