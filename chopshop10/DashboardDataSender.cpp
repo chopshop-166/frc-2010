@@ -96,7 +96,7 @@ void DashboardDataSender::sendVisionData(double joyStickX,
  * free to modify it. Be sure to make the corresponding changes in the LabVIEW example
  * dashboard program running on your driver station.
  */
-void DashboardDataSender::sendIOPortData(float psi, int tilt) {
+void DashboardDataSender::sendIOPortData(float psi, int tilt, float BCSpeed) {
 	if (IOTimer->Get() < 0.1)
 		return;
 	IOTimer->Reset();
@@ -181,6 +181,7 @@ void DashboardDataSender::sendIOPortData(float psi, int tilt) {
 		dash.FinalizeCluster();
 		dash.AddFloat(psi);
 		dash.AddI32(tilt);
+		dash.AddFloat(BCSpeed);
 	}
 	dash.FinalizeCluster();
 	dash.Finalize();

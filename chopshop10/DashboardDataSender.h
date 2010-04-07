@@ -20,7 +20,7 @@ class DashboardDataSender
 {
 public:
 	DashboardDataSender();
-	void sendIOPortData(float, int);
+	void sendIOPortData(float, int, float);
 	void sendVisionData(double joyStickX,
 						double gyroAngle,
 						double gyroRate,
