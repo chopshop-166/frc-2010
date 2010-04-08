@@ -83,10 +83,8 @@
 #define T166_UNLATCH_PISTON (1)
 /** Channel for Kicker piston */
 #define T166_KICKER_PISTON (5)
-/** Channel for E-brake piston */
-#define T166_EBRAKE_PISTON (6)
-/** Channel for Un-e-brake piston */
-#define T166_UNEBRAKE_PISTON (7)
+/** Channel for Un-lift latch piston */
+#define T166_UNLIFT_PISTON (6)
 
 //
 // Pneumatics */
@@ -132,7 +130,7 @@
 // Kicker button
 #define T166_KICKER_BUTTON (1)
 // Lift release
-#define T166_LIFT_RELEASE_BUTTON (2)
+#define T166_LIFT_RELEASE_BUTTON (1)
 // Ball control-pulls towards bot
 #define T166_BALLCONTROL_PULL (2)
 // Autobalancing button

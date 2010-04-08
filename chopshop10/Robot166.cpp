@@ -34,7 +34,7 @@
 
 // Are we using the CAN bus?
 #define UsingCan (0)
-#define UsingSuitcase (0)
+#define UsingSuitcase (1)
 // List of tasks that have requested to come up
 Team166Task *Team166Task::ActiveTasks[T166_MAXTASK + 1] = {0};
 
@@ -52,11 +52,11 @@ Proxy166 Team166ProxyObject; // This task has to always be started first or it'l
 	Team166Inclinometer Team166InclinometerObject;
 	Pneumatics166 Team166PneumaticsObject;
 	Team166BallControl Team166BallControlObject;
+	Team166HealthMon Team166HealthMonObject;
 #endif
 #if UsingCamera
 	Team166Vision Team166VisionObject;
 #endif
-Team166HealthMon Team166HealthMonObject;
 
 // This links to the single instance of the Robot task
 class Robot166;

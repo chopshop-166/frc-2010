@@ -27,6 +27,7 @@ struct abuf166
 {
 	struct timespec tp;             // Time of snapshot
 	int liftstate;					// State of lift
+	bool deployed;					// Deployed already?
 	bool button;					// Whether the lift button is pressed
 };
 
@@ -41,11 +42,11 @@ public:
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
 			FILE *outputFile);        // and then stored in this file
-	unsigned int PutOne(int liftstate, bool button);     // Log the lift's state
+	unsigned int PutOne(int liftstate, bool deployed, bool button);     // Log the lift's state
 };
 
 // Write one buffer into memory
-unsigned int LiftCanLog::PutOne(int liftstate, bool button)
+unsigned int LiftCanLog::PutOne(int liftstate, bool deployed, bool button)
 {
 	struct abuf166 *ob;               // Output buffer
 	
@@ -55,7 +56,8 @@ unsigned int LiftCanLog::PutOne(int liftstate, bool button)
 		// Fill it in.
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
 		ob->liftstate = liftstate;
-		ob->button = button;
+		ob->deployed = button;
+		ob->deployed = button;
 		return (sizeof(struct abuf166));
 	}
 	
@@ -105,11 +107,12 @@ int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
 	
 	// Defines Solenoid for Lift piston
 	Solenoid Lift_Solenoid(T166_LIFT_PISTON);
+	Solenoid Unlift_Solenoid(T166_LIFT_PISTON);
 	Lift_Solenoid.Set(false);
+	Unlift_Solenoid.Set(true);
 	
+	bool deployed = false; 		// Whether the button was pressed
 	bool button = false; 		// Whether the button was pressed
-	bool haveejected = false; 	// Have we ejected yet?
-	Timer lifttimer;			// Wait for winching rope to be released
 	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 Lift task\n");
@@ -123,77 +126,30 @@ int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
 	
 	proxy=Proxy166::getInstance();
 	
-	int valuethrottle=0;
-	
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		
-		button = proxy->GetButton(T166_COPILOT_STICK ,T166_LIFT_RELEASE_BUTTON);
-		
-		switch (lstate) {
-			// Waiting for button to be pressed
-			case REST: {
-				// Check if the button is pressed
-				if ((button == true) && (haveejected == false)) {
-					// Pressurize the cylinder
-					lstate = EJECT;
-				}
-				else {
-					lstate = WINCHING;
-					Lift_Solenoid.Set(false);
-					break;
-				}
-			}
-			// Intiate ejecton of piston
-			case EJECT: {
-				//Move winch to release rope
-				lift_jag.Set(1);
-				//Start wait timer for ejecting piston
-				lifttimer.Start();
-				//If 2 seconds have passed extend lift
-				if (lifttimer.Get() == 2)
-				{
-					lift_jag.Set(0);
-					// Open solenoid, to fill cylinder
-					Lift_Solenoid.Set(true);
-					// Go to the winching state so we can lift ourself
-					lstate = WINCHING;
-					// We don't need this to continue running.
-					lifttimer.Stop();
-					// We have ejected so lets say so
-					haveejected = true;
-				}
-				else
-				{
-					continue;
-				}
-			}
-			// Allow Operator to control winch
-			case WINCHING: {
-				// Make sure limit is not pressed
-				if (Lift_BOTTOM_Limit_Switch.Get() == true) {
-					// If it is go back to rest
-					lstate = REST;
-				}
-				// only get current once a second
-				if ((++valuethrottle)% (1000/LIFT_CYCLE_TIME)==0)
-				{
-					proxy->SetCurrent(T166_LIFT_MOTOR_CAN,lift_jag.GetOutputCurrent());
-					Lift_Solenoid.Set(false);
-				}
-				if(button) {
-					// Set motor to joystick axis
-					lift_jag.Set(
-							proxy->GetButton(T166_COPILOT_STICK,T166_LIFT_UP_BUTTON) -
-							proxy->GetButton(T166_COPILOT_STICK,T166_LIFT_DOWN_BUTTON)
-					);
-				}
-				break;
+		if(deployed) {
+			// Set motor to retract or expand the arm
+			lift_jag.Set(
+					proxy->GetButton(T166_COPILOT_STICK,T166_LIFT_UP_BUTTON) -
+					proxy->GetButton(T166_COPILOT_STICK,T166_LIFT_DOWN_BUTTON)
+			);
+		} else {
+			button = proxy->GetButton(T166_COPILOT_STICK, T166_LIFT_RELEASE_BUTTON);
+			if(button) {
+				deployed = true;
+				Lift_Solenoid.Set(true);
+				Unlift_Solenoid.Set(false);
+			} else {
+				Lift_Solenoid.Set(false);
+				Unlift_Solenoid.Set(true);
 			}
 		}
+		
         // Should we log this value?
-		sl.PutOne(lstate, button);
+		sl.PutOne(lstate, deployed, button);
 		
 		// Wait for our next lap
 		WaitForNextLoop();
