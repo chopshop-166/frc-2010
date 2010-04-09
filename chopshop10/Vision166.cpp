@@ -216,11 +216,7 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {	
 	Robot166 *lHandle;
-	Proxy166 *pHandle = NULL;
-	while(0 == pHandle) {
-		pHandle = Proxy166::getInstance();
-		Wait(0.05);
-	}
+	Proxy166 *pHandle;
 	
 	DPRINTF(LOG_DEBUG, "Vision task initializing the camera...\n");
 	TryStartCamera(false);

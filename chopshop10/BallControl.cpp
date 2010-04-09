@@ -119,7 +119,6 @@ int Team166BallControl::Main(int a2, int a3, int a4, int a5,
 		// is the copilot telling it to go in ONE direction?
 		BallControl_Speed = ((-proxy->GetThrottle(T166_COPILOT_STICK)+1)/2);
 		proxy->SetBallControlSpeed(BallControl_Speed);
-		printf("%f\r", BallControl_Speed);
 		
 		BallControl_Speed *= (
 					proxy->GetButton(T166_COPILOT_STICK,T166_BALLCONTROL_PULL) -
