@@ -107,7 +107,7 @@ int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
 	
 	// Defines Solenoid for Lift piston
 	Solenoid Lift_Solenoid(T166_LIFT_PISTON);
-	Solenoid Unlift_Solenoid(T166_LIFT_PISTON);
+	Solenoid Unlift_Solenoid(T166_UNLIFT_PISTON);
 	Lift_Solenoid.Set(false);
 	Unlift_Solenoid.Set(true);
 	

@@ -41,11 +41,11 @@ Team166Task *Team166Task::ActiveTasks[T166_MAXTASK + 1] = {0};
 // Declare external tasks
 Proxy166 Team166ProxyObject; // This task has to always be started first or it'll error
 #if (!UsingSuitcase)
-#if UsingCan
-	Team166CANDrive Team166CANDriveObject;
-	Team166LiftCan Team166LiftCanObject;
-	Team166BallControl Team166VacuumObject;
-#endif
+	#if UsingCan
+		Team166CANDrive Team166CANDriveObject;
+		Team166LiftCan Team166LiftCanObject;
+		Team166BallControl Team166VacuumObject;
+	#endif
 	Team166Kicker Team166KickerObject;
 	Team166Banner Team166BannerObject;
 	Team166Sonar Team166SonarObject;
@@ -219,13 +219,7 @@ void Robot166::OperatorControl(void)
 			sprintf(imageName, "166_joystick_img_%03i.png", joystickImageCount);
 			TakeSnapshot(imageName);
 		}
-		sender->sendIOPortData(
-//				Team166ProxyObject.GetPressure(),
-				Team166ProxyObject.GetThrottle(2),
-//				Team166ProxyObject.GetInclinometer()
-				int(Team166ProxyObject.GetThrottle(1)*100),
-				Team166ProxyObject.GetBallControlSpeed()
-			);
+		sender->sendIOPortData();
 		Wait (ROBOT_WAIT_TIME);
 		dsHandleLCD->UpdateLCD();
 	}
