@@ -147,11 +147,7 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 			}
 		} else {
 			kickSolenoid.Set(false);
-			if( MagnetSensor.Get() ) {
-				unkickSolenoid.Set(false);
-			} else {
-				unkickSolenoid.Set(true);
-			}
+			unkickSolenoid.Set(!MagnetSensor.Get());
 		}
 		if( !proxy->GetButton(T166_COPILOT_STICK, T166_KICKER_BUTTON) ) {
 			buttondown = false;

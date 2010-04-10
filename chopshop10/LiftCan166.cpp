@@ -136,6 +136,8 @@ int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
 					proxy->GetButton(T166_COPILOT_STICK,T166_LIFT_UP_BUTTON) -
 					proxy->GetButton(T166_COPILOT_STICK,T166_LIFT_DOWN_BUTTON)
 			);
+			Lift_Solenoid.Set(false);
+			Unlift_Solenoid.Set(true);
 		} else {
 			button = proxy->GetButton(T166_COPILOT_STICK, T166_LIFT_RELEASE_BUTTON);
 			if(button) {

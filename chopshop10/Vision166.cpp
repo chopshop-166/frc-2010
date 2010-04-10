@@ -277,18 +277,19 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 		else {
 			SetStatus("Error");
 		}
-		if(pHandle->GetThrottle(3) > 0.0) { // Controlling the servos based on joystick input
-			float Jy = pHandle->GetJoystickY(3);
-			if(FLIP_SERVO_VERTICAL)
-				Jy *= -1.0;
-			
-			if(lHandle->IsAutonomous() || lHandle->IsOperatorControl())
-				SetServoPositions(pHandle->GetJoystickX(3), Jy);
+		// Controlling the servos based on joystick input
+		float Jy = pHandle->GetJoystickY(3);
+		if(FLIP_SERVO_VERTICAL) {
+			Jy *= -1.0;
 		}
+		if(lHandle->IsAutonomous() || lHandle->IsOperatorControl()) {
+			SetServoPositions(pHandle->GetJoystickX(3), Jy);
+		}
+		
 		if(debugTimer.HasPeriodPassed(3.0)) {
 			debugTimer.Reset();
-			DPRINTF(LOG_DEBUG, "[img %d] [Throttle %f] [Ly %f] [Ry %f]\n", 
-					img, pHandle->GetThrottle(3), pHandle->GetJoystickY(DRIVE_JOYSTICK_LEFT), pHandle->GetJoystickY(DRIVE_JOYSTICK_RIGHT)
+			DPRINTF(LOG_DEBUG, "[img %d] [Ly %f] [Ry %f]\n", 
+					img, pHandle->GetJoystickY(DRIVE_JOYSTICK_LEFT), pHandle->GetJoystickY(DRIVE_JOYSTICK_RIGHT)
 			);
 		}
 
