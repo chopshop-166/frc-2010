@@ -48,7 +48,6 @@ Proxy166 Team166ProxyObject; // This task has to always be started first or it'l
 	#endif
 	Team166Kicker Team166KickerObject;
 	Team166Banner Team166BannerObject;
-	Team166Sonar Team166SonarObject;
 	Team166Inclinometer Team166InclinometerObject;
 	Pneumatics166 Team166PneumaticsObject;
 	Team166BallControl Team166BallControlObject;
