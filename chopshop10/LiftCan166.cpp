@@ -81,7 +81,7 @@ unsigned int LiftCanLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-Team166LiftCan::Team166LiftCan(void): lift_jag(T166_LIFT_MOTOR_CAN), Lift_BOTTOM_Limit_Switch(BOTTOM_LIMITSWITCH_DIGITAL_INPUT)
+Team166LiftCan::Team166LiftCan(void): lift_jag(T166_LIFT_MOTOR_CAN)
 {
 	Start((char *)"166LiftCanTask", LIFT_CYCLE_TIME);
 	return;

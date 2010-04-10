@@ -103,11 +103,11 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 	
 	Solenoid unkickSolenoid(T166_UNKICKER_PISTON);                  // Unkicker solenoid
 	Solenoid kickSolenoid(T166_KICKER_PISTON);                      // Kicker solenoid
-	DigitalInput MagnetSensor (T166_LATCH_MAGNET_SENSOR);			// Magnet sensor to sense when fully retracted
+	DigitalInput MagnetSensor (T166_KICKER_MAGNET_SENSOR);			// Magnet sensor to sense when fully retracted
 	
 	int timer = 0;                                      // Latch release wait counter
 	bool buttondown = false;
-	DigitalInput Latch_Magnet_Sensor (T166_LATCH_MAGNET_SENSOR);
+	DigitalInput Latch_Magnet_Sensor (T166_KICKER_MAGNET_SENSOR);
 	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 Kicker task\n");
