@@ -126,6 +126,7 @@ int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
 	
 	proxy=Proxy166::getInstance();
 	
+	int valuethrottle = 0;
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
@@ -149,8 +150,11 @@ int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
 				Unlift_Solenoid.Set(true);
 			}
 		}
-		
-        // Should we log this value?
+		if ((++valuethrottle) % (1000/LIFT_CYCLE_TIME) == 0)
+		{
+			proxy->SetCurrent(T166_LIFT_MOTOR_CAN, lift_jag.GetOutputCurrent());
+		}
+		// Should we log this value?
 		sl.PutOne(lstate, deployed, button);
 		
 		// Wait for our next lap
