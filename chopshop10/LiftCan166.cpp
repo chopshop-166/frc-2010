@@ -106,10 +106,10 @@ int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
 	enum {REST, EJECT, WINCHING } lstate = REST;
 	
 	// Defines Solenoid for Lift piston
-	Solenoid Lift_Solenoid(T166_LIFT_PISTON);
-	Solenoid Unlift_Solenoid(T166_UNLIFT_PISTON);
-	Lift_Solenoid.Set(false);
-	Unlift_Solenoid.Set(true);
+	Solenoid LiftLatch_Solenoid(T166_LIFT_PISTON);
+	Solenoid LiftUnlatch_Solenoid(T166_UNLIFT_PISTON);
+	LiftLatch_Solenoid.Set(false);
+	LiftUnlatch_Solenoid.Set(true);
 	
 	bool deployed = false; 		// Whether the button was pressed
 	bool button = false; 		// Whether the button was pressed
@@ -136,17 +136,17 @@ int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
 					proxy->GetButton(T166_COPILOT_STICK,T166_LIFT_UP_BUTTON) -
 					proxy->GetButton(T166_COPILOT_STICK,T166_LIFT_DOWN_BUTTON)
 			);
-			Lift_Solenoid.Set(false);
-			Unlift_Solenoid.Set(true);
+			LiftLatch_Solenoid.Set(false);
+			LiftUnlatch_Solenoid.Set(true);
 		} else {
 			button = proxy->GetButton(T166_COPILOT_STICK, T166_LIFT_RELEASE_BUTTON);
 			if(button) {
 				deployed = true;
-				Lift_Solenoid.Set(true);
-				Unlift_Solenoid.Set(false);
+				LiftLatch_Solenoid.Set(true);
+				LiftUnlatch_Solenoid.Set(false);
 			} else {
-				Lift_Solenoid.Set(false);
-				Unlift_Solenoid.Set(true);
+				LiftLatch_Solenoid.Set(false);
+				LiftUnlatch_Solenoid.Set(true);
 			}
 		}
 		
