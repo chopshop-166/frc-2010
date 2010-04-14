@@ -26,9 +26,13 @@
 
 // If we're using a camera, enable this
 #define UsingCamera (0)
+// Are we using the CAN bus?
+#define UsingCan (1)
+// Are we on suitcasebot?
+#define UsingSuitcase (0)
 
 // Code version number
-#define T166_CODE_VERSION ("CODE: CAMTEST-03")
+#define T166_CODE_VERSION ("CODE: ATLANTA-START")
 
 // Maximum dashboard buffer size
 #define DASHBOARD_BUFFER_MAX (21)
