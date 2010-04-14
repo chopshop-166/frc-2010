@@ -15,11 +15,9 @@
 #include "Proxy166.h"
 #include "Robot166.h"
 #include "Runtime166.h"
-#include "string"
 
 // Enable proxy logging?
 #define LoggingProxy (1)
-
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
@@ -65,24 +63,19 @@ unsigned int ProxyLog::PutOne(ProxyJoystick joy1, ProxyJoystick joy2, ProxyJoyst
 	return (0);
 }
 
-
 // Format the next buffer for file output
 unsigned int ProxyLog::DumpBuffer(char *nptr, FILE *ofile)
 {
-
 	struct abuf166 *ab = (struct abuf166 *)nptr;	
 	// Output the data into the file
-	sprintf(Proxy_buffer, "%u, %u, %4.5f, ",
+	fprintf(ofile, "%u, %u, %4.5f, ",
 			ab->tp.tv_sec, ab->tp.tv_nsec,
 			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)));
-//	Proxy_buffer = Proxy_tempbuff;
 	for(int i=0;i<1;i++) {
-		sprintf(Proxy_buffer, "%f, %f, %f, %f, ",
+		fprintf(ofile, "%f, %f, %f, %f, ",
 				ab->joy[i].X, ab->joy[i].Y, ab->joy[i].Z, ab->joy[i].throttle);
-//		Proxy_buffer += Proxy_tempbuff;
 		for(int j=0;j<NUMBER_OF_JOY_BUTTONS;j++) {
-			sprintf(Proxy_buffer, "%u, ", ab->joy[i].button[j]);
-//			Proxy_buffer += Proxy_tempbuff;
+			fprintf(ofile, "%u, ", ab->joy[i].button[j]);
 		}
 	}
 	fprintf(ofile, "\n");

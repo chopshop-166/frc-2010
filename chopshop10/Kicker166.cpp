@@ -21,7 +21,6 @@
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
 
-
 // Sample in memory buffer
 struct abuf166
 {
@@ -60,19 +59,17 @@ unsigned int KickerLog::PutOne(void)
 	return (0);
 }
 
-
 // Format the next buffer for file output
 unsigned int KickerLog::DumpBuffer(char *nptr, FILE *ofile)
 {
 	struct abuf166 *ab = (struct abuf166 *)nptr;
-
+	
 	// Output the data into the file
-	sprintf(Kicker_buffer, "%u, %u, %4.5f, %f, %f, %f\n",
+	fprintf(ofile, "%u, %u, %4.5f, %f, %f, %f\n",
 			ab->tp.tv_sec, ab->tp.tv_nsec,
 			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.))
 	);
-	fprintf(ofile,Kicker_buffer);
-//	Kicker_buffer = Kicker_tempbuffer;
+	
 	// Done
 	return (sizeof(struct abuf166));
 }

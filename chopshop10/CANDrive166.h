@@ -14,7 +14,6 @@
 #define _CANDRIVE166_H
 #include "WPILib.h"
 #include "Robot166.h"
-char Drive_buffer[512];
 
 //
 // This constant defines how often we want this task to run in the form

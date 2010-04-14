@@ -32,7 +32,6 @@
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
 
-
 // Are we using the CAN bus?
 #define UsingCan (0)
 #define UsingSuitcase (0)
@@ -89,7 +88,8 @@ Robot166::Robot166(void)
 	mlHead = 0;
 	
 	// Trim log files down to 16MB
-	maxLogId = MemoryLog166::PruneLogs(16*1024*1024);
+	//maxLogId = MemoryLog166::PruneLogs(16*1024*1024);
+	maxLogId = 0;
 
 	// update DS
 	DriverStationDisplay("Starting 166 Robot");

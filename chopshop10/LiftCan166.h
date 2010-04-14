@@ -23,8 +23,6 @@
 //
 #define LIFT_CYCLE_TIME (10) // 10ms
 
-char Lift_buffer[512];
-
 
 #define NO_SPEED				 0    //speed to use when there is no input for the victor
 

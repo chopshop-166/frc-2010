@@ -1,14 +1,6 @@
 #include "DashboardDataSender.h"
 #include "Timer.h"
 #include "Robot166.h"
-//#include "CANDrive166.h"
-//#include "Vacuum.h"
-//#include "Inclinometer.h"
-//#include "Kicker166.h"
-//#include "LiftCan166.h"
-//#include "Pneumatics166.h"
-//#include "Proxy166.h"
-
 
 DashboardDataSender *DashboardDataSender::getInstance() {
 	if(instance == NULL)
@@ -189,18 +181,6 @@ void DashboardDataSender::sendIOPortData(float psi, int tilt) {
 		dash.FinalizeCluster();
 		dash.AddFloat(psi);
 		dash.AddI32(tilt);
-		dash.AddCluster();
-		{
-//			dash.AddString(Proxy_buffer);
-//			dash.AddString(Drive_buffer);
-//			dash.AddString(Banner_buffer);
-//			dash.AddString(Inclinometer_buffer);
-//			dash.AddString(Pneumatics_buffer);
-//			dash.AddString(Lift_buffer);
-//			dash.AddString(Vacuum_buffer);
-//			dash.AddString(Kicker_buffer);
-		}
-		dash.FinalizeCluster();
 	}
 	dash.FinalizeCluster();
 	dash.Finalize();

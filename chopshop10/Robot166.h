@@ -25,7 +25,7 @@
 #include "DashboardDataSender.h"
 
 // If we're using a camera, enable this
-#define UsingCamera (1)
+#define UsingCamera (0)
 
 // Code version number
 #define T166_CODE_VERSION ("CODE: TEST2-NOCAM")
