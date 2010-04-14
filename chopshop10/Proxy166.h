@@ -124,6 +124,10 @@ class Proxy166 : public Team166Task {
 		// Proxy access for Jaguar current
 		void SetCurrent(int, float);
 		float GetCurrent(int);
+		
+		// Proxy access for ball control speed
+		void SetBallControlSpeed(float);
+		float GetBallControlSpeed(void);
 
 		// Proxy access for camera bearing
 		void SetCameraBearing(float);
@@ -206,6 +210,9 @@ class Proxy166 : public Team166Task {
 		float PneumaticPressure;
 		
 		bool areSettingJoysticks;
+		
+		// Ball Control Speed (changed via the throttle)
+		float BallControlSpeed;
 };
 
 #endif

@@ -13,7 +13,7 @@
 #include "WPILib.h"
 #include "Team166Task.h"
 #include "Proxy166.h"
-#include "Vacuum.h"
+#include "BallControl.h"
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
@@ -23,26 +23,26 @@ struct abuf166
 {
 	struct timespec tp;               // Time of snapshot
 	// Any values that need to be logged go here
-	bool Vacuum_On;
-	float Vacuum_Current;
+	float BallControl_On;
+	float BallControl_Current;
 };
 
 //  Memory Log
-class VacuumLog : public MemoryLog166
+class BallControlLog : public MemoryLog166
 {
 public:
-	VacuumLog() : MemoryLog166(sizeof(struct abuf166), VACUUM_CYCLE_TIME, "vacuum") {
+	BallControlLog() : MemoryLog166(sizeof(struct abuf166), BALLCONTROL_CYCLE_TIME, "ballcontrol") {
 		return;
 	};
-	~VacuumLog() {return;};
+	~BallControlLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
 			FILE *outputFile);        // and then stored in this file
-	unsigned int PutOne(bool Vacuum_On, float Vacuum_Current);     // Log the values needed-add in arguments
+	unsigned int PutOne(float Vacuum_On, float Vacuum_Current);     // Log the values needed-add in arguments
 };
 
 // Write one buffer into memory
-unsigned int VacuumLog::PutOne(bool Vacuum_On, float Vacuum_Current)
+unsigned int BallControlLog::PutOne(float BallControl_On, float BallControl_Current)
 {
 	struct abuf166 *ob;               // Output buffer
 	
@@ -52,8 +52,8 @@ unsigned int VacuumLog::PutOne(bool Vacuum_On, float Vacuum_Current)
 		// Fill it in.
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
 		// Add any values to be logged here
-		ob->Vacuum_On = Vacuum_On;
-		ob->Vacuum_Current = Vacuum_Current;
+		ob->BallControl_On = BallControl_On;
+		ob->BallControl_Current = BallControl_Current;
 		return (sizeof(struct abuf166));
 	}
 	
@@ -62,15 +62,15 @@ unsigned int VacuumLog::PutOne(bool Vacuum_On, float Vacuum_Current)
 }
 
 // Format the next buffer for file output
-unsigned int VacuumLog::DumpBuffer(char *nptr, FILE *ofile)
+unsigned int BallControlLog::DumpBuffer(char *nptr, FILE *ofile)
 {
 	struct abuf166 *ab = (struct abuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %4.5f, %d, %f\n",
+	fprintf(ofile, "%u, %u, %4.5f, %f, %f\n",
 			ab->tp.tv_sec, ab->tp.tv_nsec,
 			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
-			ab->Vacuum_On, ab->Vacuum_Current); // Add values here
+			ab->BallControl_On, ab->BallControl_Current); // Add values here
 	
 	// Done
 	return (sizeof(struct abuf166));
@@ -78,30 +78,30 @@ unsigned int VacuumLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-Team166Vacuum::Team166Vacuum(void): Vacuum_Jag(T166_EBRAKE_MOTOR_CAN)
+Team166BallControl::Team166BallControl(void): BallControl_Jag(T166_BALLCONTROL_MOTOR_CAN)
 {
-	Start((char *)"166BallSucker", VACUUM_CYCLE_TIME);
+	Start((char *)"166BallControl", BALLCONTROL_CYCLE_TIME);
 	return;
 };
 	
 // task destructor
-Team166Vacuum::~Team166Vacuum(void)
+Team166BallControl::~Team166BallControl(void)
 {
 	return;
 };
 	
 // Main function of the task
-int Team166Vacuum::Main(int a2, int a3, int a4, int a5,
+int Team166BallControl::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {
 	Proxy166 *proxy;				// Handle to proxy
 	Robot166 *lHandle;            // Local handle
-	VacuumLog sl;                   // log
-	float Vac_Current;
-	bool Vacuum_On;
+	BallControlLog sl;                   // log
+	float BallControl_Current;
+	float BallControl_Speed;
 	
 	// Let the world know we're in
-	DPRINTF(LOG_DEBUG,"In the Vacuum\n");
+	DPRINTF(LOG_DEBUG,"In the Ball Control\n");
 	
 	// Wait for Robot go-ahead (e.g. entering Autonomous or Tele-operated mode)
 	WaitForGoAhead();
@@ -113,17 +113,33 @@ int Team166Vacuum::Main(int a2, int a3, int a4, int a5,
 	// Register the proxy
 	proxy = Proxy166::getInstance();		
 	
+	int valuethrottle = 0;
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		// is the 5th button on the copilot joystick pressed?
-		if (proxy->GetButton(3,5) == true) {
-			Vacuum_On = !Vacuum_On;
-			Vacuum_Jag.Set(Vacuum_On);
-			SetStatus( ((Vacuum_On)?"sucking" : "not sucking") );
+		// is the copilot telling it to go in ONE direction?
+		BallControl_Speed = ((-proxy->GetThrottle(T166_COPILOT_STICK)+1)/2);
+		proxy->SetBallControlSpeed(BallControl_Speed);
+		
+		BallControl_Speed *= (
+					proxy->GetButton(T166_COPILOT_STICK,T166_BALLCONTROL_PULL) -
+					proxy->GetButton(T166_COPILOT_STICK,T166_BALLCONTROL_PUSH)
+			);
+		BallControl_Jag.Set(BallControl_Speed);
+		
+		if(BallControl_Speed < 0) {
+			SetStatus( "backward" );
+		} else if(BallControl_Speed > 0) {
+			SetStatus( "forward" );
+		} else {
+			SetStatus( "neutral" );
+		}
+		if ((++valuethrottle) % (1000/BALLCONTROL_CYCLE_TIME) == 0)
+		{
+			proxy->SetCurrent(T166_BALLCONTROL_MOTOR_CAN, BallControl_Jag.GetOutputCurrent());
 		}
         // Logging any values
-		sl.PutOne(Vacuum_On, Vac_Current);
+		sl.PutOne(BallControl_Speed, BallControl_Current);
 		
 		// Wait for our next lap
 		WaitForNextLoop();		

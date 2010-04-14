@@ -24,6 +24,7 @@ DashboardDataSender::DashboardDataSender()
 	IOTimer->Start();
 	visionTimer->Start();
 	instance = this;
+	proxy = Proxy166::getInstance();
 }
 
 /**
@@ -96,7 +97,7 @@ void DashboardDataSender::sendVisionData(double joyStickX,
  * free to modify it. Be sure to make the corresponding changes in the LabVIEW example
  * dashboard program running on your driver station.
  */
-void DashboardDataSender::sendIOPortData(float psi, int tilt) {
+void DashboardDataSender::sendIOPortData(void) {
 	if (IOTimer->Get() < 0.1)
 		return;
 	IOTimer->Reset();
@@ -179,8 +180,14 @@ void DashboardDataSender::sendIOPortData(float psi, int tilt) {
 			dash.AddU8(solBuf);
 		}
 		dash.FinalizeCluster();
-		dash.AddFloat(psi);
-		dash.AddI32(tilt);
+		dash.AddFloat(proxy->GetPressure());
+		dash.AddI32(proxy->GetInclinometer());
+		dash.AddFloat(proxy->GetBallControlSpeed());
+		dash.AddFloat(proxy->GetSonarDistance());
+		dash.AddBoolean(proxy->GetBanner());
+		dash.AddFloat(proxy->GetCurrent(T166_LEFT_MOTOR_CAN));
+		dash.AddFloat(proxy->GetCurrent(T166_RIGHT_MOTOR_CAN));
+		dash.AddFloat(proxy->GetCurrent(T166_LIFT_MOTOR_CAN));
 	}
 	dash.FinalizeCluster();
 	dash.Finalize();
