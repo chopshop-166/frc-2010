@@ -113,13 +113,13 @@ int Team166BallControl::Main(int a2, int a3, int a4, int a5,
 	// Register the proxy
 	proxy = Proxy166::getInstance();		
 	
+	int valuethrottle = 0;
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		// is the copilot telling it to go in ONE direction?
 		BallControl_Speed = ((-proxy->GetThrottle(T166_COPILOT_STICK)+1)/2);
 		proxy->SetBallControlSpeed(BallControl_Speed);
-		printf("%f\r", BallControl_Speed);
 		
 		BallControl_Speed *= (
 					proxy->GetButton(T166_COPILOT_STICK,T166_BALLCONTROL_PULL) -
@@ -133,6 +133,10 @@ int Team166BallControl::Main(int a2, int a3, int a4, int a5,
 			SetStatus( "forward" );
 		} else {
 			SetStatus( "neutral" );
+		}
+		if ((++valuethrottle) % (1000/BALLCONTROL_CYCLE_TIME) == 0)
+		{
+			proxy->SetCurrent(T166_BALLCONTROL_MOTOR_CAN, BallControl_Jag.GetOutputCurrent());
 		}
         // Logging any values
 		sl.PutOne(BallControl_Speed, BallControl_Current);

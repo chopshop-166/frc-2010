@@ -43,18 +43,18 @@
 //
 // Digital Pin layout
 //
-#define T166_ENC_INCL_A (1)             // Inclinometer encoder; channel A
-#define T166_ENC_INCL_B (2)             // Inclinometer encoder; channel B
-
-#define T166_PNEUMATIC_PRESSURE_SWITCH (5)	// Pneumatic pressure NOT ready for use
-
-#define T166_AUTONOMOUS_JUMPER (7)           // Enable/Disable autonomous
-
-
-#define T166_LATCH_MAGNET_SENSOR (3)		// Latch Magnet Sensor
-#define T166_BANNER_SENSOR_DIGITAL_INPUT (10)	// Banner Sensor
-
-#define BOTTOM_LIMITSWITCH_DIGITAL_INPUT (14)  //bottom limit switch for lift
+// Inclinometer encoder; channel A
+#define T166_ENC_INCL_A (1)
+// Inclinometer encoder; channel B
+#define T166_ENC_INCL_B (2)   	 
+// Latch Magnet Sensor
+#define T166_KICKER_MAGNET_SENSOR (3)
+// Pneumatic pressure
+#define T166_PNEUMATIC_PRESSURE_SWITCH (5)	
+// Enable/Disable autonomous
+#define T166_AUTONOMOUS_JUMPER (7)           
+// Banner Sensor
+#define T166_BANNER_SENSOR_DIGITAL_INPUT (10)	
 
 //
 // PWM layout
@@ -73,20 +73,18 @@
 //
 // Pneumatics Bumper */
 //
-/** Channel for Latch piston */
-#define T166_LATCH_PISTON (4)
+/** Channel for Unlatch piston */
+#define T166_UNLATCH_PISTON (1)
 /** Channel for Unkicker piston */
 #define T166_UNKICKER_PISTON (2)
 /** Channel for Lift Piston */
 #define T166_LIFT_PISTON (3)
-/** Channel for Unlatch piston */
-#define T166_UNLATCH_PISTON (1)
+/** Channel for Latch piston */
+#define T166_LATCH_PISTON (4)
 /** Channel for Kicker piston */
 #define T166_KICKER_PISTON (5)
-/** Channel for E-brake piston */
-#define T166_EBRAKE_PISTON (6)
-/** Channel for Un-e-brake piston */
-#define T166_UNEBRAKE_PISTON (7)
+/** Channel for Un-lift latch piston */
+#define T166_UNLIFT_PISTON (6)
 
 //
 // Pneumatics */
@@ -130,7 +128,7 @@
 // Kicker button
 #define T166_KICKER_BUTTON (1)
 // Lift release
-#define T166_LIFT_RELEASE_BUTTON (2)
+#define T166_LIFT_RELEASE_BUTTON (1)
 // Ball control-pulls towards bot
 #define T166_BALLCONTROL_PULL (2)
 // Autobalancing button

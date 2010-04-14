@@ -216,11 +216,7 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {	
 	Robot166 *lHandle;
-	Proxy166 *pHandle = NULL;
-	while(0 == pHandle) {
-		pHandle = Proxy166::getInstance();
-		Wait(0.05);
-	}
+	Proxy166 *pHandle;
 	
 	DPRINTF(LOG_DEBUG, "Vision task initializing the camera...\n");
 	TryStartCamera(false);
@@ -261,38 +257,39 @@ int Team166Vision::Main(int a2, int a3, int a4, int a5,
 					matches[0].m_xPos / matches[0].m_xMax, 
 					matches
 				);
-				//DPRINTF(LOG_DEBUG, "HzS = %f ; VlS = %f\n", horizontalServo.Get(), verticalServo.Get())			
+				//DPRINTF(LOG_DEBUG, "HzS = %f ; VlS = %f\n", horizontalServo.Get(), verticalServo.Get());			
 				
 				// This method should only be called during Autonomous, but for testing
 				// we should call it during any mode. 
 				//DriveTowardsTarget();
-				
+
 				if(pHandle->GetCameraScoreToTargetX() < 0) {
 					// The target is left of the robot
-					SetStatus("L");
+					SetStatus("Left");
 				}
 				else {
-					SetStatus("R");
+					SetStatus("Right");
 				}
-				
+
 				pHandle->DeleteImage();
 			}
 		}
 		else {
-			SetStatus("0");
+			SetStatus("Error");
 		}
-		if(pHandle->GetThrottle(3) > 0.0) { // Controlling the servos based on joystick input
-			float Jy = pHandle->GetJoystickY(3);
-			if(FLIP_SERVO_VERTICAL)
-				Jy *= -1.0;
-			
-			if(lHandle->IsAutonomous() || lHandle->IsOperatorControl())
-				SetServoPositions(pHandle->GetJoystickX(3), Jy);
+		// Controlling the servos based on joystick input
+		float Jy = pHandle->GetJoystickY(3);
+		if(FLIP_SERVO_VERTICAL) {
+			Jy *= -1.0;
 		}
+		if(lHandle->IsAutonomous() || lHandle->IsOperatorControl()) {
+			SetServoPositions(pHandle->GetJoystickX(3), Jy);
+		}
+		
 		if(debugTimer.HasPeriodPassed(3.0)) {
 			debugTimer.Reset();
-			DPRINTF(LOG_DEBUG, "[img %d] [Throttle %f] [Ly %f] [Ry %f]\n", 
-					img, pHandle->GetThrottle(3), pHandle->GetJoystickY(DRIVE_JOYSTICK_LEFT), pHandle->GetJoystickY(DRIVE_JOYSTICK_RIGHT)
+			DPRINTF(LOG_DEBUG, "[img %d] [Ly %f] [Ry %f]\n", 
+					img, pHandle->GetJoystickY(DRIVE_JOYSTICK_LEFT), pHandle->GetJoystickY(DRIVE_JOYSTICK_RIGHT)
 			);
 		}
 
