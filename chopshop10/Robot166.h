@@ -32,7 +32,7 @@
 #define UsingSuitcase (0)
 
 // Code version number
-#define T166_CODE_VERSION ("CODE: ATLANTA-START")
+#define T166_CODE_VERSION ("CODE: ATLANTA-02")
 
 // Maximum dashboard buffer size
 #define DASHBOARD_BUFFER_MAX (21)

@@ -99,7 +99,7 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 	Proxy166 *proxy;	                            // Get handle for joystick
 	Robot166 *lHandle;                              // Local handle
 	KickerLog sl;                                   // Arm log
-	int delay=500;									// Delay before the kick
+	int delay=250;									// Delay before the kick
 	
 	Solenoid unkickSolenoid(T166_UNKICKER_PISTON);					// Unkicker solenoid
 	Solenoid kickSolenoid(T166_KICKER_PISTON);						// Kicker solenoid
