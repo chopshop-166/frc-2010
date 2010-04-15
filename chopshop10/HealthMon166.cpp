@@ -70,7 +70,7 @@ unsigned int HealthMonLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct abuf166 *ab = (struct abuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %4.5f, %s\n",
+	fprintf(ofile, "%u,%u,%4.5f,%s\n",
 			ab->tp.tv_sec, ab->tp.tv_nsec,
 			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
 			ab->healthstats);

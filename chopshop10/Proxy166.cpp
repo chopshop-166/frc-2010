@@ -68,14 +68,14 @@ unsigned int ProxyLog::DumpBuffer(char *nptr, FILE *ofile)
 {
 	struct abuf166 *ab = (struct abuf166 *)nptr;	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %4.5f, ",
+	fprintf(ofile, "%u,%u,%4.5f",
 			ab->tp.tv_sec, ab->tp.tv_nsec,
 			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)));
 	for(int i=0;i<1;i++) {
-		fprintf(ofile, "%f, %f, %f, %f, ",
+		fprintf(ofile, ",%f,%f,%f,%f",
 				ab->joy[i].X, ab->joy[i].Y, ab->joy[i].Z, ab->joy[i].throttle);
 		for(int j=0;j<NUMBER_OF_JOY_BUTTONS;j++) {
-			fprintf(ofile, "%u, ", ab->joy[i].button[j]);
+			fprintf(ofile, ",%u", ab->joy[i].button[j]);
 		}
 	}
 	fprintf(ofile, "\n");
