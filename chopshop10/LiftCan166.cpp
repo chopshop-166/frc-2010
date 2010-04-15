@@ -29,6 +29,7 @@ struct abuf166
 	int liftstate;					// State of lift
 	bool deployed;					// Deployed already?
 	bool button;					// Whether the lift button is pressed
+	float current;
 };
 
 //  Memory Log
@@ -42,11 +43,11 @@ public:
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
 			FILE *outputFile);        // and then stored in this file
-	unsigned int PutOne(int liftstate, bool deployed, bool button);     // Log the lift's state
+	unsigned int PutOne(int liftstate, bool deployed, bool button, float current);     // Log the lift's state
 };
 
 // Write one buffer into memory
-unsigned int LiftCanLog::PutOne(int liftstate, bool deployed, bool button)
+unsigned int LiftCanLog::PutOne(int liftstate, bool deployed, bool button, float current)
 {
 	struct abuf166 *ob;               // Output buffer
 	
@@ -57,7 +58,8 @@ unsigned int LiftCanLog::PutOne(int liftstate, bool deployed, bool button)
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
 		ob->liftstate = liftstate;
 		ob->deployed = button;
-		ob->deployed = button;
+		ob->button = button;
+		ob->current = current;
 		return (sizeof(struct abuf166));
 	}
 	
@@ -70,10 +72,10 @@ unsigned int LiftCanLog::DumpBuffer(char *nptr, FILE *ofile)
 {
 	struct abuf166 *ab = (struct abuf166 *)nptr;
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %4.5f, %d, %f, %d, %d\n",
+	fprintf(ofile, "%u, %u, %4.5f, %d, %f, %d, %d, %4.5f\n",
 			ab->tp.tv_sec, ab->tp.tv_nsec,
 			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
-			ab->liftstate, ab->button);
+			ab->liftstate, ab->button, ab->current);
 	
 	// Done
 	return (sizeof(struct abuf166));
@@ -81,7 +83,10 @@ unsigned int LiftCanLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-Team166LiftCan::Team166LiftCan(void): lift_jag(T166_LIFT_MOTOR_CAN)
+Team166LiftCan::Team166LiftCan(void):
+	liftJag(T166_LIFT_MOTOR_CAN),
+	LiftLatch_Solenoid(T166_LIFT_PISTON),
+	LiftUnlatch_Solenoid(T166_UNLIFT_PISTON)
 {
 	Start((char *)"166LiftCanTask", LIFT_CYCLE_TIME);
 	return;
@@ -105,14 +110,14 @@ int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
 	// State of Lift state machine
 	enum {REST, EJECT, WINCHING } lstate = REST;
 	
-	// Defines Solenoid for Lift piston
-	Solenoid Lift_Solenoid(T166_LIFT_PISTON);
-	Solenoid Unlift_Solenoid(T166_UNLIFT_PISTON);
-	Lift_Solenoid.Set(false);
-	Unlift_Solenoid.Set(true);
+	// Initializes Solenoid for Lift piston
+	LiftLatch_Solenoid.Set(false);
+	LiftUnlatch_Solenoid.Set(true);
 	
 	bool deployed = false; 		// Whether the button was pressed
-	bool button = false; 		// Whether the button was pressed
+	bool button = false; 		// Whether the button is a new press or not
+	unsigned valuethrottle = 0;	// Only let the current update every once in a while
+	float liftCurrent = 0;		// Current for the lift jag
 	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 Lift task\n");
@@ -126,36 +131,40 @@ int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
 	
 	proxy=Proxy166::getInstance();
 	
-	int valuethrottle = 0;
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		
 		if(deployed) {
 			// Set motor to retract or expand the arm
-			lift_jag.Set(
+			liftJag.Set(
 					proxy->GetButton(T166_COPILOT_STICK,T166_LIFT_UP_BUTTON) -
 					proxy->GetButton(T166_COPILOT_STICK,T166_LIFT_DOWN_BUTTON)
 			);
-			Lift_Solenoid.Set(false);
-			Unlift_Solenoid.Set(true);
+			LiftLatch_Solenoid.Set(false);
+			LiftUnlatch_Solenoid.Set(true);
 		} else {
 			button = proxy->GetButton(T166_COPILOT_STICK, T166_LIFT_RELEASE_BUTTON);
 			if(button) {
 				deployed = true;
-				Lift_Solenoid.Set(true);
-				Unlift_Solenoid.Set(false);
+				LiftLatch_Solenoid.Set(true);
+				LiftUnlatch_Solenoid.Set(false);
 			} else {
-				Lift_Solenoid.Set(false);
-				Unlift_Solenoid.Set(true);
+				LiftLatch_Solenoid.Set(false);
+				LiftUnlatch_Solenoid.Set(true);
 			}
 		}
-		if ((++valuethrottle) % (1000/LIFT_CYCLE_TIME) == 0)
-		{
-			proxy->SetCurrent(T166_LIFT_MOTOR_CAN, lift_jag.GetOutputCurrent());
+			if ((++valuethrottle) % (1000/LIFT_CYCLE_TIME) == 0)
+			{
+				// Get Current from each jaguar 
+				liftCurrent = liftJag.GetOutputCurrent();
+				// Put current values into proxy
+				proxy->SetCurrent(T166_LIFT_MOTOR_CAN, liftCurrent);
+				// Print debug to console
+				DPRINTF(LOG_DEBUG, "Lift Jag Current: %f", liftCurrent);
 		}
 		// Should we log this value?
-		sl.PutOne(lstate, deployed, button);
+		sl.PutOne(lstate, deployed, button, liftCurrent);
 		
 		// Wait for our next lap
 		WaitForNextLoop();

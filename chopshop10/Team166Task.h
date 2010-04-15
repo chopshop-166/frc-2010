@@ -102,7 +102,7 @@
 // CAN bus layout
 //
 /** Number of Jags used */
-#define T166_NUM_JAGS (5)
+#define T166_NUM_JAGS (11)
 
 /** channel for the Lift Winch Motor */
 #define T166_LIFT_MOTOR_CAN (6)
@@ -115,11 +115,11 @@
 //
 // USB port layout
 //
-/** First stick is in USB port #1 */
+/** Left driver stick is in USB port #1 */
 #define T166_DRIVER_STICK_LEFT (1)
-/** Second stick is in USB port #2 */
+/** Right driver stick is in USB port #2 */
 #define T166_DRIVER_STICK_RIGHT (2)
-/** Third stick is in USB port #3 */
+/** Copilot stick is in USB port #3 */
 #define T166_COPILOT_STICK (3)
 
 //
