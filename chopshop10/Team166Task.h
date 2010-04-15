@@ -94,7 +94,7 @@
 /** High pressure limit */
 #define T166_PNEU_HIGH (120.0)
 /** Minimum kicking pressure */
-#define T166_PNEU_KICK_MIN (80.0)
+#define T166_PNEU_KICK_MIN (50.0)
 /** Amount of time before magnet sensor is overridden */
 #define T166_LATCH_OVERRIDE (10)      // this is the number of 10 ms loops before the override
 
