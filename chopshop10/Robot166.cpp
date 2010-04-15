@@ -138,17 +138,15 @@ float Robot166::GetBatteryVoltage(void)
  */
 void Robot166::Autonomous(void)
 {
-	DigitalInput jumper(T166_AUTONOMOUS_JUMPER);
 	GetWatchdog().SetEnabled(false);
-	if(!jumper.Get()) {
-		DPRINTF(LOG_DEBUG,"Entered autonomous\n");
+	RobotMode = T166_AUTONOMOUS;
+	if(!DigitalInput(T166_AUTONOMOUS_JUMPER).Get()) {
+		DPRINTF(LOG_DEBUG,"Entered enabled autonomous\n");
 		DriverStationDisplay("IN AUTONOMOUS");
-		RobotMode = T166_AUTONOMOUS;
 		Autonomous166();
 	} else {
 		DPRINTF(LOG_DEBUG,"Entered disabled autonomous\n");
 		DriverStationDisplay("NO AUTONOMOUS");
-		RobotMode = T166_AUTONOMOUS;
 	}
 }
 
@@ -209,8 +207,7 @@ void Robot166::OperatorControl(void)
 			    or Team166ProxyObject.GetButton(T166_COPILOT_STICK,T166_CAMERA_BUTTON1) 
 			    or Team166ProxyObject.GetButton(T166_COPILOT_STICK,T166_CAMERA_BUTTON2))
 		{
-			joystickImageCount++;
-			sprintf(imageName, "166_joystick_img_%03i.png", joystickImageCount);
+			sprintf(imageName, "166_joystick_img_%03i.png", ++joystickImageCount);
 			TakeSnapshot(imageName);
 		}
 		sender->sendIOPortData();

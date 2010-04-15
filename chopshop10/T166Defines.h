@@ -12,6 +12,7 @@
 
 #ifndef _T166_DEFINES_H
 #define _T166_DEFINES_H
+
 //
 // Analog Pin layout
 // _MOD refers to cRIO module (1 or 2)
@@ -40,7 +41,7 @@
 #define T166_KICKER_MAGNET_SENSOR (3)
 // Pneumatic pressure
 #define T166_PNEUMATIC_PRESSURE_SWITCH (5)	
-// Enable/Disable autonomous
+// Enables autonomous if jumper is in
 #define T166_AUTONOMOUS_JUMPER (7)           
 // Banner Sensor
 #define T166_BANNER_SENSOR_DIGITAL_INPUT (10)	
@@ -90,9 +91,8 @@
 //
 // CAN bus layout
 //
-/** Number of Jags used */
+/** Maximum Jag number plus one */
 #define T166_NUM_JAGS (11)
-
 /** channel for the Lift Winch Motor */
 #define T166_LIFT_MOTOR_CAN (6)
 /** channel for the Ball Control  motor */
@@ -101,6 +101,8 @@
 #define T166_LEFT_MOTOR_CAN (7)
 /** channel for the Right Motor */
 #define T166_RIGHT_MOTOR_CAN (10)
+
+
 //
 // USB port layout
 //
