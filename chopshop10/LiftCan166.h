@@ -45,7 +45,6 @@ private:
 	CANJaguar liftJag;
 	Solenoid LiftLatch_Solenoid;
 	Solenoid LiftUnlatch_Solenoid;
-//	Team166CANDrive* CANDriveHandle;
 	
 };
 

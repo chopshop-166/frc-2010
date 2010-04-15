@@ -106,7 +106,7 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 	DigitalInput MagnetSensor (T166_KICKER_MAGNET_SENSOR);			// Magnet sensor to sense when fully retracted
 	
 	int timer = 0;									// Latch release wait counter
-	bool buttondown = false;
+	bool buttondown = false;						// Treat the trigger as a "newpress"
 	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 Kicker task\n");
@@ -121,17 +121,25 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 	// Get handle to main Proxy166
 	proxy = Proxy166::getInstance();
 	
-	//int printstop=0;
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
+		if(lHandle->RobotMode == T166_AUTONOMOUS) {
+			kickSolenoid.Set(false);
+			if(MagnetSensor.Get()) {
+				unkickSolenoid.Set(true);
+			} else {
+				unkickSolenoid.Set(false);
+			}
+			continue;
+		}
 		if( (proxy->GetButton(T166_DRIVER_STICK_LEFT, T166_KICKER_BUTTON, false) ||
 				proxy->GetButton(T166_DRIVER_STICK_RIGHT, T166_KICKER_BUTTON, false))
 				&& !buttondown ) {
 			buttondown = true;
 			timer = 1;
 		}
-		if(timer) {
+		if( timer && buttondown ) {
 			if(proxy->GetPressure() < T166_PNEU_KICK_MIN) {
 				timer = 0;
 				lHandle->DriverStationDisplay("Not enough pressure!");
@@ -139,6 +147,8 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 				++timer;
 				if( timer > (delay / KICKER_CYCLE_TIME) ) {
 					kickSolenoid.Set(true);
+				} else {
+					unkickSolenoid.Set(false);
 				}
 				if(timer >= ((1000 + delay) / KICKER_CYCLE_TIME) ) {
 					timer = 0;
@@ -146,9 +156,14 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 			}
 		} else {
 			kickSolenoid.Set(false);
-			unkickSolenoid.Set(!MagnetSensor.Get());
+			// Magnet sensor returns a 1 if the piston's not in "home"
+			unkickSolenoid.Set(MagnetSensor.Get());
+			timer = 0;
 		}
-		if( !proxy->GetButton(T166_COPILOT_STICK, T166_KICKER_BUTTON) ) {
+		if( !(
+				proxy->GetButton(T166_DRIVER_STICK_LEFT, T166_KICKER_BUTTON) ||
+				proxy->GetButton(T166_DRIVER_STICK_RIGHT, T166_KICKER_BUTTON)
+				) ) {
 			buttondown = false;
 		}
 		
