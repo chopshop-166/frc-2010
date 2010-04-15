@@ -102,7 +102,7 @@
 // CAN bus layout
 //
 /** Number of Jags used */
-#define T166_NUM_JAGS (5)
+#define T166_NUM_JAGS (11)
 
 /** channel for the Lift Winch Motor */
 #define T166_LIFT_MOTOR_CAN (6)

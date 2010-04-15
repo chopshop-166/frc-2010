@@ -185,6 +185,9 @@ void DashboardDataSender::sendIOPortData(void) {
 		dash.AddFloat(proxy->GetBallControlSpeed());
 		dash.AddFloat(proxy->GetSonarDistance());
 		dash.AddBoolean(proxy->GetBanner());
+		dash.AddFloat(proxy->GetCurrent(T166_LEFT_MOTOR_CAN));
+		dash.AddFloat(proxy->GetCurrent(T166_RIGHT_MOTOR_CAN));
+		dash.AddFloat(proxy->GetCurrent(T166_LIFT_MOTOR_CAN));
 	}
 	dash.FinalizeCluster();
 	dash.Finalize();
