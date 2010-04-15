@@ -42,7 +42,9 @@ public:
 			int a6, int a7, int a8, int a9, int a10);
 private:
 	
-	CANJaguar lift_jag;
+	CANJaguar liftJag;
+	Solenoid LiftLatch_Solenoid;
+	Solenoid LiftUnlatch_Solenoid;
 //	Team166CANDrive* CANDriveHandle;
 	
 };
