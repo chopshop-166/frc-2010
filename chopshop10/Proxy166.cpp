@@ -17,7 +17,7 @@
 #include "Runtime166.h"
 
 // Enable proxy logging?
-#define LoggingProxy (1)
+#define LoggingProxy (0)
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf

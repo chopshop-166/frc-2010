@@ -22,7 +22,7 @@
 #define UsingSuitcase (0)
 
 // Code version number
-#define T166_CODE_VERSION ("CODE: ATLANTA-07")
+#define T166_CODE_VERSION ("CODE: ATLANTA-08")
 
 //
 // Analog Pin layout
