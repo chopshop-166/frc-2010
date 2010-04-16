@@ -26,9 +26,9 @@
 // Sample in memory buffer
 struct abuf166
 {
-	struct timespec tp;               // Time of snapshot
-	ProxyJoystick joy[3];                  // current value
-	
+	struct timespec tp;					// Time of snapshot
+	ProxyJoystick joy[3];				// current value
+	float battery;						// Battery value
 };
 
 //  Memory Log
@@ -38,6 +38,7 @@ public:
 	ProxyLog() : MemoryLog166(
 			sizeof(struct abuf166), PROXY_CYCLE_TIME, "proxy",
 			"Seconds,Nanoseconds,Elapsed Time,"
+			"Battery,"
 			"Joy1 X,Joy1 Y,Joy1 Z,Joy1 Throttle,"
 			"Joy1 Trigger,Joy1 Button 2,Joy1 Button 3,Joy1 Button 4,Joy1 Button 5,Joy1 Button 6,"
 			"Joy1 Button 7,Joy1 Button 8,Joy1 Button 9,Joy1 Button 10,Joy1 Button 11,Joy1 Button 12,"
@@ -54,11 +55,11 @@ public:
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
 			FILE *outputFile);        // and then stored in this file
-	unsigned int PutOne(ProxyJoystick joy1, ProxyJoystick joy2, ProxyJoystick joy3);     // Log values
+	unsigned int PutOne(float battery, ProxyJoystick joy1, ProxyJoystick joy2, ProxyJoystick joy3);     // Log values
 };
 
 // Write one buffer into memory
-unsigned int ProxyLog::PutOne(ProxyJoystick joy1, ProxyJoystick joy2, ProxyJoystick joy3)
+unsigned int ProxyLog::PutOne(float battery, ProxyJoystick joy1, ProxyJoystick joy2, ProxyJoystick joy3)
 {
 	struct abuf166 *ob;               // Output buffer
 	
@@ -66,6 +67,7 @@ unsigned int ProxyLog::PutOne(ProxyJoystick joy1, ProxyJoystick joy2, ProxyJoyst
 	if ((ob = (struct abuf166 *)GetNextBuffer(sizeof(struct abuf166)))) {
 		// Fill it in.
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
+		ob->battery = battery;
 		ob->joy[1] = joy1;
 		ob->joy[2] = joy2;
 		ob->joy[3] = joy3;
@@ -80,10 +82,11 @@ unsigned int ProxyLog::DumpBuffer(char *nptr, FILE *ofile)
 {
 	struct abuf166 *ab = (struct abuf166 *)nptr;	
 	// Output the data into the file
-	fprintf(ofile, "%u,%u,%4.5f",
+	fprintf(ofile, "%u,%u,%4.5f,%2.2f",
 			ab->tp.tv_sec, ab->tp.tv_nsec,
-			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)));
-	for(int i=0;i<1;i++) {
+			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
+			ab->battery);
+	for(int i=0;i<3;i++) {
 		fprintf(ofile, ",%f,%f,%f,%f",
 				ab->joy[i].X, ab->joy[i].Y, ab->joy[i].Z, ab->joy[i].throttle);
 		for(int j=0;j<NUMBER_OF_JOY_BUTTONS;j++) {
@@ -208,8 +211,9 @@ int Proxy166::Main(	int a2, int a3, int a4, int a5,
 				// Debug info
 			}
 		}
+		SetBattery(lHandle->GetBatteryVoltage());
 #if LoggingProxy
-		sl.PutOne(GetJoystick(1), GetJoystick(2), GetJoystick(3));
+		sl.PutOne(Battery, GetJoystick(1), GetJoystick(2), GetJoystick(3));
 #endif
 		// The task ends if it's not initialized
 		WaitForNextLoop();
@@ -434,6 +438,23 @@ void Proxy166::SetSonarDistance(float dist) {
 float Proxy166::GetSonarDistance(void) {
 	return SonarDistance;
 }
+
+
+/**
+ * @brief Set distance from sonar object in front of it
+ * @param Distance in inches
+ */
+void Proxy166::SetBattery(float battery) {
+	Battery = battery;
+}
+
+/**
+ * @brief Obtain distance seen by the sonar task
+ */
+float Proxy166::GetBattery(void) {
+	return Battery;
+}
+
 /** 
  *@brief Set Whether ball is captured
  *@param ballcap is ball captured

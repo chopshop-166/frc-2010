@@ -34,7 +34,7 @@ class PneumaticsLog : public MemoryLog166
 public:
 	PneumaticsLog() : MemoryLog166(
 			sizeof(struct pbuf166), PNEUMATICS_CYCLE_TIME, "pneumatics",
-			"Seconds,Milliseconds,Elapsed Time,PSI,Compressor State\n"
+			"Seconds,Nanoseconds,Elapsed Time,PSI,Compressor State\n"
 			) {
 		return;
 	};

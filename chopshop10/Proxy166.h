@@ -124,6 +124,10 @@ class Proxy166 : public Team166Task {
 		// Proxy access for ball control speed
 		void SetBallControlSpeed(float);
 		float GetBallControlSpeed(void);
+		
+		// Proxy access for ball control speed
+		void SetBattery(float);
+		float GetBattery(void);
 
 		// Proxy access for camera bearing
 		void SetCameraBearing(float);
@@ -185,6 +189,9 @@ class Proxy166 : public Team166Task {
 
 		// Distance in inches to the object in front of the sonar
 		float SonarDistance;
+		
+		// Battery level
+		float Battery;
 		
 		//proxy storage for Ball captured
 		bool BallCaptured;

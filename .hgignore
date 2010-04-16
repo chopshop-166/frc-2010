@@ -8,3 +8,4 @@ glob:*.out
 glob:Makefile
 glob:*.csv
 glob:*.lnk
+glob:*.pyc

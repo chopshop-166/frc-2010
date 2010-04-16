@@ -1,6 +1,9 @@
+
+__all__ = ['parse_robolog', 'parse_latest']
+
 import csv, os
 def parse_robolog(filename):
-    global linenum
+    global linenum, ln, name
     reader = csv.DictReader(open(filename))
     names = reader.fieldnames
     linelist = []
@@ -13,16 +16,21 @@ def parse_robolog(filename):
         linenum += 1
         for name in names:
             ln[name] = float(ln[name])
-    for ln in linelist:
-        pass
     return linelist
 
-max_foldername = "00000000.00.00.00"
-for filename in os.listdir("C:\\FTP"):
-#    parse_robolog("W:\\workspace\\test.csv")
-    if filename > max_foldername:
-        max_foldername = filename
-max_foldername = "C:\\FTP\\" + max_foldername
-for filename in os.listdir(max_foldername):
-    print("Checking " + max_foldername + '\\' + filename)
-    parse_robolog(max_foldername+"\\"+filename)
+def parse_latest():
+    # The initial timestamp of all 0s
+    # All timestamps are guarenteed to be greater than this!
+    max_foldername = "00000000.00.00.00"
+    for filename in os.listdir("C:\\FTP"):
+        # Find the latest files
+        if filename > max_foldername:
+            max_foldername = filename
+    max_foldername = "C:\\FTP\\" + max_foldername
+    for filename in os.listdir(max_foldername):
+        # Check each file in the latest folder
+        print("Checking " + max_foldername + '\\' + filename)
+        parse_robolog(max_foldername + "\\" + filename)
+
+if __name__ == "__main__":
+    parse_latest()
