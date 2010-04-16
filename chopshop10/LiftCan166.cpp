@@ -35,7 +35,10 @@ struct abuf166
 class LiftCanLog : public MemoryLog166
 {
 public:
-	LiftCanLog() : MemoryLog166(sizeof(struct abuf166), LIFT_CYCLE_TIME, "lift") {
+	LiftCanLog() : MemoryLog166(
+			sizeof(struct abuf166), LIFT_CYCLE_TIME, "lift",
+			"Seconds,Nanoseconds,Elapsed Time,Deployed?,Button State,Lift Motor Current\n"
+			) {
 		return;
 	};
 	~LiftCanLog() {return;};

@@ -35,7 +35,19 @@ struct abuf166
 class ProxyLog : public MemoryLog166
 {
 public:
-	ProxyLog() : MemoryLog166(sizeof(struct abuf166), PROXY_CYCLE_TIME, "proxy") {
+	ProxyLog() : MemoryLog166(
+			sizeof(struct abuf166), PROXY_CYCLE_TIME, "proxy",
+			"Seconds,Nanoseconds,Elapsed Time,"
+			"Joy1 X,Joy1 Y,Joy1 Z,Joy1 Throttle,"
+			"Joy1 Trigger,Joy1 Button 2,Joy1 Button 3,Joy1 Button 4,Joy1 Button 5,Joy1 Button 6,"
+			"Joy1 Button 7,Joy1 Button 8,Joy1 Button 9,Joy1 Button 10,Joy1 Button 11,Joy1 Button 12"
+			"Joy2 X,Joy2 Y,Joy2 Z,Joy2 Throttle,"
+			"Joy2 Trigger,Joy2 Button 2,Joy2 Button 3,Joy2 Button 4,Joy2 Button 5,Joy2 Button 6,"
+			"Joy2 Button 7,Joy2 Button 8,Joy2 Button 9,Joy2 Button 10,Joy2 Button 11,Joy2 Button 12"
+			"Joy3 X,Joy3 Y,Joy3 Z,Joy3 Throttle,"
+			"Joy3 Trigger,Joy3 Button 2,Joy3 Button 3,Joy3 Button 4,Joy3 Button 5,Joy3 Button 6,"
+			"Joy3 Button 7,Joy3 Button 8,Joy3 Button 9,Joy3 Button 10,Joy3 Button 11,Joy3 Button 12\n"
+			) {
 		return;
 	};
 	~ProxyLog() {return;};
@@ -488,22 +500,6 @@ void Proxy166::SetInclinometer(int newval) {
  */
 int Proxy166::GetInclinometer() { 
 	return Inclinometer; 
-}
-
-/**
- * @brief Sets the value of the Ebrake
- * @param down state of the ebrake
- */
-void Proxy166::SetEbrake(bool down) {
-	EbrakeDown = down;
-}
-
-/**
- * @brief Gets the state of the Ebrake
- * @return The state of the Ebrake
- */
-bool Proxy166::GetEbrake() {
-	return EbrakeDown;
 }
 
 /**

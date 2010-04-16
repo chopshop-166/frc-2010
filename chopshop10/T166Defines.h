@@ -13,6 +13,17 @@
 #ifndef _T166_DEFINES_H
 #define _T166_DEFINES_H
 
+
+// If we're using a camera, enable this
+#define UsingCamera (0)
+// Are we using the CAN bus?
+#define UsingCan (1)
+// Are we on suitcasebot?
+#define UsingSuitcase (0)
+
+// Code version number
+#define T166_CODE_VERSION ("CODE: ATLANTA-04")
+
 //
 // Analog Pin layout
 // _MOD refers to cRIO module (1 or 2)

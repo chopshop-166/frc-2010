@@ -23,7 +23,7 @@
 #define DPRINTF if(false)dprintf
 
 // Memory log constructor
-MemoryLog166::MemoryLog166(unsigned int msize, unsigned int ltime, char *f)
+MemoryLog166::MemoryLog166(unsigned int msize, unsigned int ltime, char *f, char *titles)
 {
 	unsigned int ms;  // Size of memory that we need
 	
@@ -44,6 +44,10 @@ MemoryLog166::MemoryLog166(unsigned int msize, unsigned int ltime, char *f)
 	// Capture name of file
 	FileName = (char *)malloc(strlen(f) + 1);
 	strcpy(FileName, f);
+	
+	// Capture titles
+	Titles = (char *)malloc(strlen(titles) + 1);
+	strcpy(Titles, titles);
 	
 	// Not yet registered
 	Registered = 0;
@@ -97,6 +101,7 @@ int MemoryLog166::DumpToFile(int dnum)
 	Factual[sizeof(Factual) - 1] = 0;
 	snprintf(Factual, sizeof(Factual) - 1, "%s__%d.csv", FileName, dnum);
 	if (ofile = fopen(Factual, "w")) {
+		fprintf(ofile,Titles);
 	
 		// Enter loop to dump out the data into the file
 		int l=0;

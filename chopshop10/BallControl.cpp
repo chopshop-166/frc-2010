@@ -23,7 +23,7 @@ struct abuf166
 {
 	struct timespec tp;               // Time of snapshot
 	// Any values that need to be logged go here
-	float BallControl_On;
+	float BallControl_Speed;
 	float BallControl_Current;
 };
 
@@ -31,7 +31,10 @@ struct abuf166
 class BallControlLog : public MemoryLog166
 {
 public:
-	BallControlLog() : MemoryLog166(sizeof(struct abuf166), BALLCONTROL_CYCLE_TIME, "ballcontrol") {
+	BallControlLog() : MemoryLog166(
+			sizeof(struct abuf166), BALLCONTROL_CYCLE_TIME, "ballcontrol",
+			"Seconds,Nanoseconds,Elapsed Time,Vacuum State,Vacuum Current\n"
+			) {
 		return;
 	};
 	~BallControlLog() {return;};
@@ -52,7 +55,7 @@ unsigned int BallControlLog::PutOne(float BallControl_On, float BallControl_Curr
 		// Fill it in.
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
 		// Add any values to be logged here
-		ob->BallControl_On = BallControl_On;
+		ob->BallControl_Speed = BallControl_On;
 		ob->BallControl_Current = BallControl_Current;
 		return (sizeof(struct abuf166));
 	}
@@ -67,10 +70,10 @@ unsigned int BallControlLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct abuf166 *ab = (struct abuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u,%u,%4.5f,%f,%f\n",
+	fprintf(ofile, "%u,%u,%4.5f,%4.5f,%4.5f\n",
 			ab->tp.tv_sec, ab->tp.tv_nsec,
 			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
-			ab->BallControl_On, ab->BallControl_Current); // Add values here
+			ab->BallControl_Speed, ab->BallControl_Current); // Add values here
 	
 	// Done
 	return (sizeof(struct abuf166));

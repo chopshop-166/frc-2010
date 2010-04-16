@@ -32,7 +32,10 @@ struct pbuf166
 class PneumaticsLog : public MemoryLog166
 {
 public:
-	PneumaticsLog() : MemoryLog166(sizeof(struct pbuf166), PNEUMATICS_CYCLE_TIME, "pneumatics") {
+	PneumaticsLog() : MemoryLog166(
+			sizeof(struct pbuf166), PNEUMATICS_CYCLE_TIME, "pneumatics",
+			"Seconds,Milliseconds,Elapsed Time,PSI,Compressor State\n"
+			) {
 		return;
 	};
 	~PneumaticsLog() {return;};
@@ -159,9 +162,11 @@ int Pneumatics166::Main(int a2, int a3, int a4, int a5,
 		if(!PressureSwitch.Get()) {
 			CompressorSpike.Set(Relay::kOn);
 			SetStatus("Compressing");
+			CompressorOn = true;
 		} else {
 			CompressorSpike.Set(Relay::kOff);
 			SetStatus("Decompressing");
+			CompressorOn = false;
 		}
 		
         // Logging any values

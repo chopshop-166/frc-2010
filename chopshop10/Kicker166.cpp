@@ -32,7 +32,10 @@ struct abuf166
 class KickerLog : public MemoryLog166
 {
 public:
-	KickerLog() : MemoryLog166(sizeof(struct abuf166), KICKER_CYCLE_TIME, "kicker") {
+	KickerLog() : MemoryLog166(
+			sizeof(struct abuf166), KICKER_CYCLE_TIME, "kicker",
+			"Seconds,Nanoseconds,Time Elapsed,Kicker Timer (ms)\n"
+			) {
 		return;
 	};
 	~KickerLog() {return;};

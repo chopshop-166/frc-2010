@@ -28,7 +28,10 @@ struct sobuf166
 class SonarLog : public MemoryLog166
 {
 public:
-	SonarLog() : MemoryLog166(sizeof(struct sobuf166), SONAR_CYCLE_TIME, "sonar") {
+	SonarLog() : MemoryLog166(
+			sizeof(struct sobuf166), SONAR_CYCLE_TIME, "sonar",
+			"Seconds,Nanoseconds,Elapsed Time,Distance\n"
+			) {
 		return;
 	};
 	~SonarLog() {return;};

@@ -24,7 +24,7 @@ class MemoryLog166
 // Methods	
 public:
 	struct timespec starttime;					// Time the
-	MemoryLog166(unsigned int msize, unsigned int ltime, char *f);// Constructor
+	MemoryLog166(unsigned int msize, unsigned int ltime, char *f, char *titles);// Constructor
 	virtual ~MemoryLog166(void);				// Destructor
 	char *GetNextBuffer(unsigned int bsize);	// Get next buffer to write
 	int DumpToFile(int dnum);					// Dump the data into a file
@@ -48,6 +48,7 @@ private:
 	char *MemoryNext;							// Next
 	class MemoryLog166 *Next;					// Link to next log structure
 	char *FileName;								// Filename
+	char *Titles;								// Titles at the top of the csv
 	int BuffersRequested;						// Buffers requested
 	int BuffersObtained;						// Buffers obtained
 };

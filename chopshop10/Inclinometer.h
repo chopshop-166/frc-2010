@@ -43,7 +43,6 @@ public:
 	
 private:
 	Encoder Inclinometer;
-	float lastAngle;
 };
 
 #endif // !defined(_INCLINOMETER_166)

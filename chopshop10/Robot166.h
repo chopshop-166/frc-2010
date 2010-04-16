@@ -24,16 +24,6 @@
 #include "Inclinometer.h"
 #include "DashboardDataSender.h"
 
-// If we're using a camera, enable this
-#define UsingCamera (0)
-// Are we using the CAN bus?
-#define UsingCan (1)
-// Are we on suitcasebot?
-#define UsingSuitcase (0)
-
-// Code version number
-#define T166_CODE_VERSION ("CODE: ATLANTA-02")
-
 // Maximum dashboard buffer size
 #define DASHBOARD_BUFFER_MAX (21)
 

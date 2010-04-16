@@ -29,7 +29,10 @@ struct abuf166
 class TemplateLog : public MemoryLog166
 {
 public:
-	TemplateLog() : MemoryLog166(sizeof(struct abuf166), TEMPLATE_CYCLE_TIME, "template") {
+	TemplateLog() : MemoryLog166(
+			sizeof(struct abuf166), TEMPLATE_CYCLE_TIME, "template",
+			"Seconds,Nanoseconds,Elapsed Time\n" // Put the names of the values in here, comma-seperated
+			) {
 		return;
 	};
 	~TemplateLog() {return;};

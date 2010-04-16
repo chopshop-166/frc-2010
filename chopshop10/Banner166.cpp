@@ -32,7 +32,10 @@ struct bbuf166
 class BannerLog : public MemoryLog166
 {
 public:
-	BannerLog() : MemoryLog166(sizeof(struct bbuf166), BANNER_CYCLE_TIME, "banner") {
+	BannerLog() : MemoryLog166(
+			sizeof(struct bbuf166), BANNER_CYCLE_TIME, "banner",
+			"Seconds,Nanoseconds,Elapsed Time,Banner State\n"
+			) {
 		return;
 	};
 	~BannerLog() {return;};

@@ -36,7 +36,10 @@ struct abuf166
 class HealthMonLog : public MemoryLog166
 {
 public:
-	HealthMonLog() : MemoryLog166(sizeof(struct abuf166), HEALTHMON_CYCLE_TIME, "healthmon") {
+	HealthMonLog() : MemoryLog166(
+			sizeof(struct abuf166), HEALTHMON_CYCLE_TIME, "healthmon",
+			"Seconds,Nanoseconds,Elapsed Time,Healthmon String\n"
+			) {
 		return;
 	};
 	~HealthMonLog() {return;};

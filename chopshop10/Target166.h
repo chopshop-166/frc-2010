@@ -107,7 +107,9 @@ struct vbuf166
 class VisionLog : public MemoryLog166
 {
 public:
-	VisionLog() : MemoryLog166(sizeof(struct vbuf166), 1, "vision") {return;};
+	VisionLog() : MemoryLog166(
+			sizeof(struct vbuf166), 1, "vision", "N/A\n"
+			) {return;};
 	~VisionLog() {return;};
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
