@@ -27,14 +27,10 @@ public:
 	MemoryLog166(unsigned int msize, unsigned int ltime, char *f, char *titles);// Constructor
 	virtual ~MemoryLog166(void);				// Destructor
 	char *GetNextBuffer(unsigned int bsize);	// Get next buffer to write
-	int DumpToFile(int dnum);					// Dump the data into a file
+	int DumpToFile(void);						// Dump the data into a file
 	virtual unsigned int DumpBuffer(			// Dump the next buffer into the file
 			char *nptr,							// Buffer that needs to be formatted
 			FILE *outputFile) = 0;				// and then stored in this file
-	static void DetermineLogHiLow(int *hi, int *lo, size_t *tspace); // Determine hi/low values for log-files
-	static int DetermineGen(char *fname);		// Determine generation of file
-	static void TrimGeneration(int gen);		// Trim a generation of logfiles
-	static int PruneLogs(size_t maxsize);		// Prune the log files down to a aggregate size
 	
 // Members
 public:

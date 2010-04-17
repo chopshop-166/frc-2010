@@ -81,9 +81,6 @@ Robot166::Robot166(void)
 	sender = DashboardDataSender::getInstance();
 	RobotHandle = this;
 	mlHead = 0;
-	
-	// Trim log files down to 16MB
-	maxLogId = MemoryLog166::PruneLogs(16*1024*1024);
 
 	// update DS
 	DriverStationDisplay("Starting 166 Robot");
@@ -254,7 +251,7 @@ void Robot166::DumpLoggers(int dnum)
 	while (ml) {
 		
 		// Dump the next one
-		ml->DumpToFile(dnum);
+		ml->DumpToFile();
 		
 		// Advance to the next log
 		ml = ml->mlNext;
