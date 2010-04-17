@@ -37,27 +37,47 @@ def lod2dol(lod):
     del dol['Elapsed Time']
     return (timer, dol)
 
-def graph_robolog(times, dol):
-    import random
+def randrgb():
+    return "b-"
+
+def graph_robolog(times, dol, filename):
     import matplotlib.pyplot as plt
-    for ls in dol:
-        plt.plot(times, ls)
+    i=0
+    keyrange = 0
+    xlen = 2
+    ylen = len(dol)
+    if ylen % 2 == 1:
+        ylen += 1
+    ylen /= 2
+    for key in dol.keys():
+        keyrange += 1
+    for key in dol.keys():
+        i += 1
+        plt.subplot(xlen,ylen,i)
+        #plt.title(key)
+        plt.xlabel('Elapsed Time')
+        plt.ylabel(key)
+        plt.plot(times, dol[key], randrgb())
+    plt.savefig(filename)
 
 def parse_latest():
     # The initial timestamp of all 0s
     # All timestamps are guaranteed to be greater than this!
     global linenum, ln, name
     max_foldername = "00000000.00.00.00"
-    for filename in os.listdir("C:\\FTP"):
+    for filename in os.listdir("C:\\FTP\\Logs"):
         # Find the latest files
         if filename > max_foldername:
             max_foldername = filename
-    max_foldername = "C:\\FTP\\" + max_foldername
-    for filename in os.listdir(max_foldername):
+    address = "C:\\FTP\\Logs\\" + max_foldername
+    pngaddress = "C:\\FTP\\PNG\\" + max_foldername
+    os.mkdir(pngaddress)
+    for filename in os.listdir(address):
         # Check each file in the latest folder
         try:
-            l = parse_robolog(max_foldername + "\\" + filename)
-            
+            lod = parse_robolog(address + "\\" + filename)
+            (times, data) = lod2dol(lod)
+            graph_robolog(times,data, pngaddress + "\\" + filename + ".png")
         except:
             print("\tError: invalid data on line " + str(linenum))
             print("\tIn file: " + str(max_foldername + '\\' + filename))

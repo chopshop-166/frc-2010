@@ -33,7 +33,7 @@ class BallControlLog : public MemoryLog166
 public:
 	BallControlLog() : MemoryLog166(
 			sizeof(struct abuf166), BALLCONTROL_CYCLE_TIME, "ballcontrol",
-			"Seconds,Nanoseconds,Elapsed Time,Vacuum State,Vacuum Current\n"
+			"Seconds,Nanoseconds,Elapsed Time,Ball Control State,Ball Control Current\n"
 			) {
 		return;
 	};
@@ -139,7 +139,8 @@ int Team166BallControl::Main(int a2, int a3, int a4, int a5,
 		}
 		if ((++valuethrottle) % (1000/BALLCONTROL_CYCLE_TIME) == 0)
 		{
-			proxy->SetCurrent(T166_BALLCONTROL_MOTOR_CAN, BallControl_Jag.GetOutputCurrent());
+			BallControl_Current = BallControl_Jag.GetOutputCurrent();
+			proxy->SetCurrent(T166_BALLCONTROL_MOTOR_CAN, BallControl_Current);
 		}
         // Logging any values
 		sl.PutOne(BallControl_Speed, BallControl_Current);
