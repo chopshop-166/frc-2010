@@ -22,6 +22,7 @@
 // Inclinometer has "near real time" updates
 
 #define INCLINOMETER_CYCLE_TIME (100) // 100ms
+char Inclinometer_buffer[512];
 
 
 #define NO_SPEED				 0    //speed to use when there is no input for the victor
