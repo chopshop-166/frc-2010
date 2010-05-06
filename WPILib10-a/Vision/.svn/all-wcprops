@@ -1,0 +1,149 @@
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/!svn/ver/531/trunk/WPILib10-a/Vision
+END
+HSLImage.h
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/531/trunk/WPILib10-a/Vision/HSLImage.h
+END
+Threshold.h
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/531/trunk/WPILib10-a/Vision/Threshold.h
+END
+IntCameraParameter.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 64
+/svn/!svn/ver/531/trunk/WPILib10-a/Vision/IntCameraParameter.cpp
+END
+IntCameraParameter.h
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/531/trunk/WPILib10-a/Vision/IntCameraParameter.h
+END
+MonoImage.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/531/trunk/WPILib10-a/Vision/MonoImage.cpp
+END
+RGBImage.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/531/trunk/WPILib10-a/Vision/RGBImage.cpp
+END
+AxisCamera.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/531/trunk/WPILib10-a/Vision/AxisCamera.cpp
+END
+ImageBase.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/531/trunk/WPILib10-a/Vision/ImageBase.cpp
+END
+EnumCameraParameter.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/531/trunk/WPILib10-a/Vision/EnumCameraParameter.cpp
+END
+MonoImage.h
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/531/trunk/WPILib10-a/Vision/MonoImage.h
+END
+PCVideoServer.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/svn/!svn/ver/531/trunk/WPILib10-a/Vision/PCVideoServer.cpp
+END
+ColorImage.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 56
+/svn/!svn/ver/531/trunk/WPILib10-a/Vision/ColorImage.cpp
+END
+AxisCameraParams.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/531/trunk/WPILib10-a/Vision/AxisCameraParams.cpp
+END
+ImageBase.h
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/531/trunk/WPILib10-a/Vision/ImageBase.h
+END
+RGBImage.h
+K 25
+svn:wc:ra_dav:version-url
+V 52
+/svn/!svn/ver/531/trunk/WPILib10-a/Vision/RGBImage.h
+END
+AxisCamera.h
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/531/trunk/WPILib10-a/Vision/AxisCamera.h
+END
+EnumCameraParameter.h
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/svn/!svn/ver/531/trunk/WPILib10-a/Vision/EnumCameraParameter.h
+END
+PCVideoServer.h
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/531/trunk/WPILib10-a/Vision/PCVideoServer.h
+END
+ColorImage.h
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/531/trunk/WPILib10-a/Vision/ColorImage.h
+END
+AxisCameraParams.h
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/svn/!svn/ver/531/trunk/WPILib10-a/Vision/AxisCameraParams.h
+END
+BinaryImage.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/531/trunk/WPILib10-a/Vision/BinaryImage.cpp
+END
+HSLImage.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 54
+/svn/!svn/ver/531/trunk/WPILib10-a/Vision/HSLImage.cpp
+END
+BinaryImage.h
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/531/trunk/WPILib10-a/Vision/BinaryImage.h
+END
+Threshold.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/531/trunk/WPILib10-a/Vision/Threshold.cpp
+END

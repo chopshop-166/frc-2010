@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 37
+/svn/!svn/ver/260/trunk/WPILib10/visa
+END
+visa.h
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/!svn/ver/260/trunk/WPILib10/visa/visa.h
+END
+visatype.h
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/260/trunk/WPILib10/visa/visatype.h
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/!svn/ver/260/trunk/WPILib10/visa/Makefile
+END

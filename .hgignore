@@ -1,0 +1,10 @@
+glob:*.svn
+glob:*.orig
+glob:.metadata\
+glob:*.o
+glob:*.d
+glob:ctdt.*
+glob:*.out
+glob:Makefile
+glob:*.csv
+glob:*.lnk

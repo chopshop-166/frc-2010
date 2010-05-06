@@ -1,0 +1,23 @@
+K 25
+svn:wc:ra_dav:version-url
+V 40
+/svn/!svn/ver/260/trunk/WPILib10/Scripts
+END
+updateBuiltInLibrary.cmd
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/260/trunk/WPILib10/Scripts/updateBuiltInLibrary.cmd
+END
+Makefile
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/svn/!svn/ver/260/trunk/WPILib10/Scripts/Makefile
+END
+CopyWPILibToUpdateDirectory.cmd
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/!svn/ver/260/trunk/WPILib10/Scripts/CopyWPILibToUpdateDirectory.cmd
+END
