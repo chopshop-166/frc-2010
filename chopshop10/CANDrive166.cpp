@@ -33,7 +33,10 @@ struct abuf166
 class CANDriveLog : public MemoryLog166
 {
 public:
-	CANDriveLog() : MemoryLog166(sizeof(struct abuf166), CAN_CYCLE_TIME, "candrive") {
+	CANDriveLog() : MemoryLog166(
+			sizeof(struct abuf166), CAN_CYCLE_TIME, "candrive",
+			"Seconds,Nanoseconds,Elapsed Time,Left Current,Right Current\n"
+			) {
 		return;
 	};
 	~CANDriveLog() {return;};
@@ -68,7 +71,7 @@ unsigned int CANDriveLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct abuf166 *ab = (struct abuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %4.5f, %f, %f\n",
+	fprintf(ofile, "%u,%u,%4.5f,%f,%f\n",
 			ab->tp.tv_sec, ab->tp.tv_nsec,
 			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
 			ab->l_current, ab->r_current);

@@ -24,12 +24,6 @@
 #include "Inclinometer.h"
 #include "DashboardDataSender.h"
 
-// If we're using a camera, enable this
-#define UsingCamera (0)
-
-// Code version number
-#define T166_CODE_VERSION ("CODE: TEST2-NOCAM")
-
 // Maximum dashboard buffer size
 #define DASHBOARD_BUFFER_MAX (21)
 

@@ -29,7 +29,10 @@ struct abuf166
 class TemplateLog : public MemoryLog166
 {
 public:
-	TemplateLog() : MemoryLog166(sizeof(struct abuf166), TEMPLATE_CYCLE_TIME, "template") {
+	TemplateLog() : MemoryLog166(
+			sizeof(struct abuf166), TEMPLATE_CYCLE_TIME, "template",
+			"Seconds,Nanoseconds,Elapsed Time\n" // Put the names of the values in here, comma-seperated
+			) {
 		return;
 	};
 	~TemplateLog() {return;};
@@ -63,7 +66,7 @@ unsigned int TemplateLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct abuf166 *ab = (struct abuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %4.5f\n",
+	fprintf(ofile, "%u,%u,%4.5f\n",
 			ab->tp.tv_sec, ab->tp.tv_nsec,
 			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.))
 	); // Add values here

@@ -29,14 +29,17 @@
 struct abuf166
 {
 	struct timespec tp;						// Time of snapshot
-	string healthstats;								// String
+	char healthstats[DASHBOARD_BUFFER_MAX];	// String
 };
 
 //  Memory Log
 class HealthMonLog : public MemoryLog166
 {
 public:
-	HealthMonLog() : MemoryLog166(sizeof(struct abuf166), HEALTHMON_CYCLE_TIME, "healthmon") {
+	HealthMonLog() : MemoryLog166(
+			sizeof(struct abuf166), HEALTHMON_CYCLE_TIME, "healthmon",
+			"Seconds,Nanoseconds,Elapsed Time,Healthmon String\n"
+			) {
 		return;
 	};
 	~HealthMonLog() {return;};
@@ -47,7 +50,7 @@ public:
 };
 
 // Write one buffer into memory
-unsigned int HealthMonLog::PutOne(char *stats)
+unsigned int HealthMonLog::PutOne(char* stats)
 {
 	struct abuf166 *ob;               // Output buffer
 	
@@ -56,7 +59,7 @@ unsigned int HealthMonLog::PutOne(char *stats)
 		
 		// Fill it in.
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
-		ob->healthstats = stats;
+		strncpy(ob->healthstats, stats, DASHBOARD_BUFFER_MAX);
 		return (sizeof(struct abuf166));
 	}
 	
@@ -70,10 +73,10 @@ unsigned int HealthMonLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct abuf166 *ab = (struct abuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %s\n",
+	fprintf(ofile, "%u,%u,%4.5f,%s\n",
 			ab->tp.tv_sec, ab->tp.tv_nsec,
 			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
-			ab->healthstats.c_str());
+			ab->healthstats);
 	
 	// Done
 	return (sizeof(struct abuf166));
@@ -107,6 +110,7 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 	Team166Task *visionTask;			// Vision task
 #endif
 	Team166Task *bannerTask;			// Banner task
+	Team166Task *ballcontrolTask;			// Ball Control task
 	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 HealthMon task\n");
@@ -140,27 +144,29 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 	while(!(bannerTask = Team166Task::GetTaskHandle("166BannerTask"))) {
 		Wait(T166_TA_WAIT_LENGTH);
 	}
+	while(!(ballcontrolTask = Team166Task::GetTaskHandle("166BallControl"))) {
+		Wait(T166_TA_WAIT_LENGTH);
+	}
 	
 	// Whether the camera is up
 
 	// Print out the key
-	lHandle->DriverStationDisplayHS("K PSI B S INC C");
+	lHandle->DriverStationDisplayHS("K B S C B");
 	
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		sprintf(buffer,
-				"%c %03d %c %c %03d %c",
+				"%c %c %c %c %c",
 				kickerTask->GetStatus()[0],
-				(int)proxy->GetPressure(),
 				bannerTask->GetStatus()[0],
 				sonarTask->GetStatus()[0],
-				proxy->GetInclinometer(),
 #if UsingCamera
-				visionTask->GetStatus()[0]
+				visionTask->GetStatus()[0],
 #else
-				'Z'
+				'Z',
 #endif
+				ballcontrolTask->GetStatus()[0]
 				);
 		lHandle->DriverStationDisplayHSData(buffer);
 		

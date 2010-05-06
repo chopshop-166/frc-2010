@@ -32,7 +32,10 @@ struct abuf166
 class KickerLog : public MemoryLog166
 {
 public:
-	KickerLog() : MemoryLog166(sizeof(struct abuf166), KICKER_CYCLE_TIME, "kicker") {
+	KickerLog() : MemoryLog166(
+			sizeof(struct abuf166), KICKER_CYCLE_TIME, "kicker",
+			"Seconds,Nanoseconds,Time Elapsed,Kicker Timer (ms)\n"
+			) {
 		return;
 	};
 	~KickerLog() {return;};
@@ -67,7 +70,7 @@ unsigned int KickerLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct abuf166 *ab = (struct abuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %4.5f, %d\n",
+	fprintf(ofile, "%u,%u,%4.5f,%d\n",
 			ab->tp.tv_sec, ab->tp.tv_nsec,
 			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
 			ab->timer
@@ -99,14 +102,14 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 	Proxy166 *proxy;	                            // Get handle for joystick
 	Robot166 *lHandle;                              // Local handle
 	KickerLog sl;                                   // Arm log
-	int delay=500;									// Delay before the kick
+	int delay=250;									// Delay before the kick
 	
-	Solenoid unkickSolenoid(T166_UNKICKER_PISTON);                  // Unkicker solenoid
-	Solenoid kickSolenoid(T166_KICKER_PISTON);                      // Kicker solenoid
+	Solenoid unkickSolenoid(T166_UNKICKER_PISTON);					// Unkicker solenoid
+	Solenoid kickSolenoid(T166_KICKER_PISTON);						// Kicker solenoid
+	DigitalInput MagnetSensor (T166_KICKER_MAGNET_SENSOR);			// Magnet sensor to sense when fully retracted
 	
-	int timer = 0;                                      // Latch release wait counter
-	bool buttondown = false;
-	DigitalInput Latch_Magnet_Sensor (T166_LATCH_MAGNET_SENSOR);
+	int timer = 0;									// Latch release wait counter
+	bool buttondown = false;						// Treat the trigger as a "newpress"
 	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 Kicker task\n");
@@ -121,24 +124,34 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 	// Get handle to main Proxy166
 	proxy = Proxy166::getInstance();
 	
-	//int printstop=0;
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		if( proxy->GetButton(T166_COPILOT_STICK, T166_KICKER_BUTTON, false) && !buttondown ) {
+		if(lHandle->RobotMode == T166_AUTONOMOUS) {
+			kickSolenoid.Set(false);
+			if(MagnetSensor.Get()) {
+				unkickSolenoid.Set(true);
+			} else {
+				unkickSolenoid.Set(false);
+			}
+			continue;
+		}
+		if( (proxy->GetButton(T166_DRIVER_STICK_LEFT, T166_KICKER_BUTTON, false) ||
+				proxy->GetButton(T166_DRIVER_STICK_RIGHT, T166_KICKER_BUTTON, false))
+				&& !buttondown ) {
 			buttondown = true;
 			timer = 1;
 		}
-		if(timer) {
+		if( timer && buttondown ) {
 			if(proxy->GetPressure() < T166_PNEU_KICK_MIN) {
 				timer = 0;
 				lHandle->DriverStationDisplay("Not enough pressure!");
 			} else {
 				++timer;
-				if(timer <= (delay / KICKER_CYCLE_TIME) ) {
-					unkickSolenoid.Set(false);
-				} else {
+				if( timer > (delay / KICKER_CYCLE_TIME) ) {
 					kickSolenoid.Set(true);
+				} else {
+					unkickSolenoid.Set(false);
 				}
 				if(timer >= ((1000 + delay) / KICKER_CYCLE_TIME) ) {
 					timer = 0;
@@ -146,9 +159,14 @@ int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 			}
 		} else {
 			kickSolenoid.Set(false);
-			unkickSolenoid.Set(true);
+			// Magnet sensor returns a 1 if the piston's not in "home"
+			unkickSolenoid.Set(MagnetSensor.Get());
+			timer = 0;
 		}
-		if( !proxy->GetButton(T166_COPILOT_STICK, T166_KICKER_BUTTON) ) {
+		if( !(
+				proxy->GetButton(T166_DRIVER_STICK_LEFT, T166_KICKER_BUTTON) ||
+				proxy->GetButton(T166_DRIVER_STICK_RIGHT, T166_KICKER_BUTTON)
+				) ) {
 			buttondown = false;
 		}
 		

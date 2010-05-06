@@ -32,7 +32,10 @@ struct pbuf166
 class PneumaticsLog : public MemoryLog166
 {
 public:
-	PneumaticsLog() : MemoryLog166(sizeof(struct pbuf166), PNEUMATICS_CYCLE_TIME, "pneumatics") {
+	PneumaticsLog() : MemoryLog166(
+			sizeof(struct pbuf166), PNEUMATICS_CYCLE_TIME, "pneumatics",
+			"Seconds,Nanoseconds,Elapsed Time,PSI,Compressor State\n"
+			) {
 		return;
 	};
 	~PneumaticsLog() {return;};
@@ -68,7 +71,7 @@ unsigned int PneumaticsLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct pbuf166 *ab = (struct pbuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %4.5f, %f, %d\n",
+	fprintf(ofile, "%u,%u,%4.5f,%f,%d\n",
 			ab->tp.tv_sec, ab->tp.tv_nsec,
 			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
 			ab->pressure, ab->compressor_on); // Add values here
@@ -105,8 +108,7 @@ int Pneumatics166::Main(int a2, int a3, int a4, int a5,
 	AnalogChannel ps(T166_PNEU_MOD,TI66_PNEU_PRESS);	// Pressure sensor
 	float pressure;                                 	// Pressure from a/d converter
 	float ppressure;                                // Pressure converted to psi
-	bool PressureSensorGood = true;										// Whether the pressure sensor's good
-	enum {UNKNOWN, FILL, DRAIN} pState = UNKNOWN;   // Pressure state
+	bool PressureSensorGood = true;				// Whether the pressure sensor's good
 	int doprint = 0;
 	
 	// Let the world know we're in
@@ -149,7 +151,6 @@ int Pneumatics166::Main(int a2, int a3, int a4, int a5,
 			ppressure = (PressureSwitch.Get())? T166_PNEU_HIGH+1 : T166_PNEU_LOW-1;
 		}
 		
-        
         // Update the pressure value in the proxy
         proxy->SetPressure(ppressure);
     	
@@ -158,84 +159,15 @@ int Pneumatics166::Main(int a2, int a3, int a4, int a5,
 			DPRINTF(LOG_DEBUG, "Pressure switch value: %d %d \n\t Trim: %f Psi: %f\n",
 					PressureSwitch.Get(), CompressorOn, pressure, ppressure);
 		
-		
-        // Decide what we need to do now
-        switch (pState) {
-        
-        // We do not know what the pressure is yet. Figure that out first.
-        case UNKNOWN:
-        {
-        	// Do we have enough pressure already?
-        	if (ppressure < T166_PNEU_HIGH) {
-        		
-        		// No, we need to start by filling the tank(s)
-        		pState = FILL;
-        	} else {
-        		
-        		// Yes, we're good to go right away
-        		pState = DRAIN;
-        	}
-        	
-        	// We're done
-        	break;
-        }
-        
-        // We need more pressure. Keep filling.
-        case FILL:
-        {
-        	SetStatus("low");
-        	// We need to fill the tank(s). Is the compressor on already?
-			if (!CompressorOn)
-			{
-				// The compressor is off, now let's turn it on
-				// Say we are turning on the compressor
-				DPRINTF(LOG_DEBUG, "Turning on the compressor!!\n");
-				
-				// Turn the compressor on
-				CompressorSpike.Set(Relay::kOn);
-				
-				// Remember that the compressor is on
-				CompressorOn = 1;
-			}
-			
-			// Have we reached our target pressure?
-			if (ppressure >= T166_PNEU_HIGH) {
-				
-				// Yes. We can let it drain now
-				pState = DRAIN;
-			}
-			
-			// Done
-			break;
-        }
-        
-        // We have enough pressure. Just keep using it.
-        case DRAIN:
-        {
-        	SetStatus("full");
-			// Is the compressor on?
-			if (CompressorOn){
-				
-				DPRINTF(LOG_DEBUG, "Turning off the compressor!!\n");
-				
-				// Yes compressor is on: turn it off
-				CompressorSpike.Set(Relay::kOff);
-				
-				// Remember we have turned off the compressor
-				CompressorOn = 0;
-			}
-			
-			// Have we gone down too far?
-			if (ppressure <= T166_PNEU_LOW) {
-				
-				// Yes. We need more air
-				pState = FILL;
-			}
-			
-			// Done
-			break;
-        }
-        }
+		if(!PressureSwitch.Get()) {
+			CompressorSpike.Set(Relay::kOn);
+			SetStatus("Compressing");
+			CompressorOn = true;
+		} else {
+			CompressorSpike.Set(Relay::kOff);
+			SetStatus("Decompressing");
+			CompressorOn = false;
+		}
 		
         // Logging any values
 		sl.PutOne(ppressure, CompressorOn);

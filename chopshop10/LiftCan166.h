@@ -42,9 +42,9 @@ public:
 			int a6, int a7, int a8, int a9, int a10);
 private:
 	
-	CANJaguar lift_jag;
-	DigitalInput Lift_BOTTOM_Limit_Switch;
-//	Team166CANDrive* CANDriveHandle;
+	CANJaguar liftJag;
+	Solenoid LiftLatch_Solenoid;
+	Solenoid LiftUnlatch_Solenoid;
 	
 };
 

@@ -4,8 +4,8 @@
 #include "WPILib.h"
 #include <vector>
 #include "Target.h"
-#include "CANJaguar.h"
 #include "Team166Task.h"
+#include "Proxy166.h"
 /**
  * This class is just an example of one way you could organize the data that you want
  * to send to the dashboard.  The PackAndSend method does all the work.  You could
@@ -21,7 +21,7 @@ class DashboardDataSender
 {
 public:
 	DashboardDataSender();
-	void sendIOPortData(float, int);
+	void sendIOPortData(void);
 	void sendVisionData(double joyStickX,
 						double gyroAngle,
 						double gyroRate,
@@ -32,5 +32,6 @@ private:
 	static DashboardDataSender *instance;
 	Timer *visionTimer;
 	Timer *IOTimer;
+	Proxy166* proxy;
 };
 #endif // __DashboardDataFormat_h__

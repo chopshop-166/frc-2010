@@ -32,7 +32,10 @@ struct bbuf166
 class BannerLog : public MemoryLog166
 {
 public:
-	BannerLog() : MemoryLog166(sizeof(struct bbuf166), BANNER_CYCLE_TIME, "banner") {
+	BannerLog() : MemoryLog166(
+			sizeof(struct bbuf166), BANNER_CYCLE_TIME, "banner",
+			"Seconds,Nanoseconds,Elapsed Time,Banner State\n"
+			) {
 		return;
 	};
 	~BannerLog() {return;};
@@ -66,7 +69,7 @@ unsigned int BannerLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct bbuf166 *ab = (struct bbuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %4.5f, %f\n",
+	fprintf(ofile, "%u,%u,%4.5f,%f\n",
 			ab->tp.tv_sec, ab->tp.tv_nsec,
 			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
 			ab->T166_BANNER_VALUE);

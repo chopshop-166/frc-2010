@@ -113,10 +113,6 @@ class Proxy166 : public Team166Task {
 		void SetInclinometer(int);
 		int GetInclinometer(void);
 
-		// Proxy access for Ebrake
-		void SetEbrake(bool);
-		bool GetEbrake(void);
-
 		// Set/Get methods for pneumatic pressure
 		void SetPressure(float);
 		float GetPressure(void);
@@ -124,6 +120,14 @@ class Proxy166 : public Team166Task {
 		// Proxy access for Jaguar current
 		void SetCurrent(int, float);
 		float GetCurrent(int);
+		
+		// Proxy access for ball control speed
+		void SetBallControlSpeed(float);
+		float GetBallControlSpeed(void);
+		
+		// Proxy access for ball control speed
+		void SetBattery(float);
+		float GetBattery(void);
 
 		// Proxy access for camera bearing
 		void SetCameraBearing(float);
@@ -186,15 +190,14 @@ class Proxy166 : public Team166Task {
 		// Distance in inches to the object in front of the sonar
 		float SonarDistance;
 		
-		//proxy storage for state of ebrake
-		bool EbrakeDown;
+		// Battery level
+		float Battery;
 		
 		//proxy storage for Ball captured
 		bool BallCaptured;
 		
 		// Proxy storage for jaguar output current
 		float Current[T166_NUM_JAGS];
-		
 		
 		// Proxy storage for camera bearing
 		float CameraBearing;
@@ -206,6 +209,9 @@ class Proxy166 : public Team166Task {
 		float PneumaticPressure;
 		
 		bool areSettingJoysticks;
+		
+		// Ball Control Speed (changed via the throttle)
+		float BallControlSpeed;
 };
 
 #endif

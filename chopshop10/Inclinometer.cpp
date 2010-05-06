@@ -31,7 +31,10 @@ struct incbuf166
 class InclinometerLog : public MemoryLog166
 {
 public:
-	InclinometerLog() : MemoryLog166(sizeof(struct incbuf166), INCLINOMETER_CYCLE_TIME, "inclinometer") {
+	InclinometerLog() : MemoryLog166(
+			sizeof(struct incbuf166), INCLINOMETER_CYCLE_TIME, "inclinometer",
+			"Seconds,Nanoseconds,Elapsed Time,Tilt (degrees)\n"
+			) {
 		return;
 	};
 	~InclinometerLog() {return;};
@@ -65,7 +68,7 @@ unsigned int InclinometerLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct incbuf166 *ab = (struct incbuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %4.5f, %f\n",
+	fprintf(ofile, "%u,%u,%4.5f,%0.5f\n",
 			ab->tp.tv_sec, ab->tp.tv_nsec,
 			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
 			ab->angle_inc);
@@ -81,7 +84,6 @@ Team166Inclinometer::Team166Inclinometer(void):
 
 {
 	Start((char *)"166InclinometerTask", INCLINOMETER_CYCLE_TIME);
-	lastAngle = 360.0; // set to abnormal angle to force logging
 	return;
 };
 	
@@ -129,14 +131,9 @@ int Team166Inclinometer::Main(int a2, int a3, int a4, int a5,
 			DPRINTF(LOG_DEBUG, "%d", proxy->GetInclinometer());
 		}
 		
-		// Should we log this value? Only if changed from previous value
-		if ((fabs(inclinometerAngle-lastAngle)) > 0.001) {
-			sl.PutOne(inclinometerAngle);
-			lastAngle = inclinometerAngle;
-		}
-		
+		sl.PutOne(inclinometerAngle);
 		// Wait for our next lap
-		WaitForNextLoop();		
+		WaitForNextLoop();
 	}
 	return (0);
 	

@@ -28,7 +28,10 @@ struct sobuf166
 class SonarLog : public MemoryLog166
 {
 public:
-	SonarLog() : MemoryLog166(sizeof(struct sobuf166), SONAR_CYCLE_TIME, "sonar") {
+	SonarLog() : MemoryLog166(
+			sizeof(struct sobuf166), SONAR_CYCLE_TIME, "sonar",
+			"Seconds,Nanoseconds,Elapsed Time,Distance\n"
+			) {
 		return;
 	};
 	~SonarLog() {return;};
@@ -62,7 +65,7 @@ unsigned int SonarLog::DumpBuffer(char *nptr, FILE *ofile)
 	struct sobuf166 *ab = (struct sobuf166 *)nptr;
 	
 	// Output the data into the file
-	fprintf(ofile, "%u, %u, %4.5f, %f\n",
+	fprintf(ofile, "%u,%u,%4.5f,%f\n",
 			ab->tp.tv_sec, ab->tp.tv_nsec,
 			((ab->tp.tv_sec - starttime.tv_sec) + ((ab->tp.tv_nsec-starttime.tv_nsec)/1000000000.)),
 			ab->distance);
@@ -118,8 +121,6 @@ int Team166Sonar::Main(int a2, int a3, int a4, int a5,
 	static int cc = 0;            // Counter to control print out
 #endif
 	
-	// Let the world know we're in
-	printf("In the 166 Sonar task\n");
 	
 	// Wait for Robot go-ahead (e.g. entering Autonomous or Tele-operated mode)
 	WaitForGoAhead();

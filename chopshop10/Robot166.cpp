@@ -26,36 +26,31 @@
 #include "HealthMon166.h"
 #include "Inclinometer.h"
 #include "Pneumatics166.h"
-#include "Vacuum.h"
+#include "BallControl.h"
 #include "DashboardDataSender.h"
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
 
-// Are we using the CAN bus?
-#define UsingCan (0)
-#define UsingSuitcase (0)
 // List of tasks that have requested to come up
 Team166Task *Team166Task::ActiveTasks[T166_MAXTASK + 1] = {0};
 
 // Declare external tasks
 Proxy166 Team166ProxyObject; // This task has to always be started first or it'll error
 #if (!UsingSuitcase)
-#if UsingCan
-	Team166CANDrive Team166CANDriveObject;
-	Team166LiftCan Team166LiftCanObject;
-	Team166Vacuum Team166VacuumObject;
-#endif
+	#if UsingCan
+		Team166CANDrive Team166CANDriveObject;
+		Team166LiftCan Team166LiftCanObject;
+		Team166BallControl Team166BallControlObject;
+	#endif
 	Team166Kicker Team166KickerObject;
 	Team166Banner Team166BannerObject;
-	Team166Sonar Team166SonarObject;
 	Team166Inclinometer Team166InclinometerObject;
 	Pneumatics166 Team166PneumaticsObject;
 #endif
 #if UsingCamera
 	Team166Vision Team166VisionObject;
 #endif
-//Team166HealthMon Team166HealthMonObject;
 
 // This links to the single instance of the Robot task
 class Robot166;
@@ -86,9 +81,6 @@ Robot166::Robot166(void)
 	sender = DashboardDataSender::getInstance();
 	RobotHandle = this;
 	mlHead = 0;
-	
-	// Trim log files down to 16MB
-	maxLogId = MemoryLog166::PruneLogs(16*1024*1024);
 
 	// update DS
 	DriverStationDisplay("Starting 166 Robot");
@@ -101,7 +93,7 @@ Robot166::Robot166(void)
 	GetWatchdog().SetExpiration(5.0); // 5 seconds
 
 	// Wait for all of our tasks to come up
-	printf("Getting ready to check if tasks are up");
+	printf("Getting ready to check if tasks are up.\n");
 	while (!Team166Task::IfUp()) {
 		printf("Waiting for task(s) to come up: ");
 		Team166Task::PrintInactive();
@@ -143,17 +135,15 @@ float Robot166::GetBatteryVoltage(void)
  */
 void Robot166::Autonomous(void)
 {
-	DigitalInput jumper(T166_AUTONOMOUS_JUMPER);
 	GetWatchdog().SetEnabled(false);
-	if(!jumper.Get()) {
-		DPRINTF(LOG_DEBUG,"Entered autonomous\n");
+	RobotMode = T166_AUTONOMOUS;
+	if(!DigitalInput(T166_AUTONOMOUS_JUMPER).Get()) {
+		DPRINTF(LOG_DEBUG,"Entered enabled autonomous\n");
 		DriverStationDisplay("IN AUTONOMOUS");
-		RobotMode = T166_AUTONOMOUS;
 		Autonomous166();
 	} else {
 		DPRINTF(LOG_DEBUG,"Entered disabled autonomous\n");
 		DriverStationDisplay("NO AUTONOMOUS");
-		RobotMode = T166_AUTONOMOUS;
 	}
 }
 
@@ -207,23 +197,17 @@ void Robot166::OperatorControl(void)
 		    GetWatchdog().Feed();
 		
 		// take a picture 
-		if (Team166ProxyObject.GetButton(T166_DRIVER_STICK_LEFT,T166_CAMERA_BUTTON) 
+		if (Team166ProxyObject.GetButton(T166_DRIVER_STICK_LEFT,T166_CAMERA_BUTTON1) 
 				or Team166ProxyObject.GetButton(T166_DRIVER_STICK_LEFT,T166_CAMERA_BUTTON2)
-			    or Team166ProxyObject.GetButton(T166_DRIVER_STICK_RIGHT,T166_CAMERA_BUTTON) 
+			    or Team166ProxyObject.GetButton(T166_DRIVER_STICK_RIGHT,T166_CAMERA_BUTTON1) 
 			    or Team166ProxyObject.GetButton(T166_DRIVER_STICK_RIGHT,T166_CAMERA_BUTTON2)
-			    or Team166ProxyObject.GetButton(T166_COPILOT_STICK,T166_CAMERA_BUTTON) 
+			    or Team166ProxyObject.GetButton(T166_COPILOT_STICK,T166_CAMERA_BUTTON1) 
 			    or Team166ProxyObject.GetButton(T166_COPILOT_STICK,T166_CAMERA_BUTTON2))
 		{
-			joystickImageCount++;
-			sprintf(imageName, "166_joystick_img_%03i.png", joystickImageCount);
+			sprintf(imageName, "166_joystick_img_%03i.png", ++joystickImageCount);
 			TakeSnapshot(imageName);
 		}
-		sender->sendIOPortData(
-//				Team166ProxyObject.GetPressure(),
-				Team166ProxyObject.GetThrottle(3),
-//				Team166ProxyObject.GetInclinometer()
-				(int)Team166ProxyObject.GetThrottle(1)*100
-			);
+		sender->sendIOPortData();
 		Wait (ROBOT_WAIT_TIME);
 		dsHandleLCD->UpdateLCD();
 	}
@@ -267,7 +251,7 @@ void Robot166::DumpLoggers(int dnum)
 	while (ml) {
 		
 		// Dump the next one
-		ml->DumpToFile(dnum);
+		ml->DumpToFile();
 		
 		// Advance to the next log
 		ml = ml->mlNext;
