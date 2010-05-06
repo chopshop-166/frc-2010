@@ -33,12 +33,6 @@ svn:wc:ra_dav:version-url
 V 52
 /svn/!svn/ver/260/trunk/WPILib10/Vision/RGBImage.cpp
 END
-AxisCamera2010.cpp
-K 25
-svn:wc:ra_dav:version-url
-V 58
-/svn/!svn/ver/260/trunk/WPILib10/Vision/AxisCamera2010.cpp
-END
 MonoImage.h
 K 25
 svn:wc:ra_dav:version-url
@@ -51,23 +45,29 @@ svn:wc:ra_dav:version-url
 V 57
 /svn/!svn/ver/260/trunk/WPILib10/Vision/PCVideoServer.cpp
 END
+AxisCamera2010.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/svn/!svn/ver/260/trunk/WPILib10/Vision/AxisCamera2010.cpp
+END
 ColorImage.cpp
 K 25
 svn:wc:ra_dav:version-url
 V 54
 /svn/!svn/ver/260/trunk/WPILib10/Vision/ColorImage.cpp
 END
-ImageBase.h
-K 25
-svn:wc:ra_dav:version-url
-V 51
-/svn/!svn/ver/260/trunk/WPILib10/Vision/ImageBase.h
-END
 RGBImage.h
 K 25
 svn:wc:ra_dav:version-url
 V 50
 /svn/!svn/ver/260/trunk/WPILib10/Vision/RGBImage.h
+END
+ImageBase.h
+K 25
+svn:wc:ra_dav:version-url
+V 51
+/svn/!svn/ver/260/trunk/WPILib10/Vision/ImageBase.h
 END
 AxisCamera2010.h
 K 25
@@ -93,15 +93,15 @@ svn:wc:ra_dav:version-url
 V 52
 /svn/!svn/ver/260/trunk/WPILib10/Vision/HSLImage.cpp
 END
-Threshold.cpp
-K 25
-svn:wc:ra_dav:version-url
-V 53
-/svn/!svn/ver/260/trunk/WPILib10/Vision/Threshold.cpp
-END
 BinaryImage.h
 K 25
 svn:wc:ra_dav:version-url
 V 53
 /svn/!svn/ver/260/trunk/WPILib10/Vision/BinaryImage.h
+END
+Threshold.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 53
+/svn/!svn/ver/260/trunk/WPILib10/Vision/Threshold.cpp
 END
