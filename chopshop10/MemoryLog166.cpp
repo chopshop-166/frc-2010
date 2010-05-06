@@ -86,7 +86,6 @@ char *MemoryLog166::GetNextBuffer(unsigned int bsize)
 // Dump the buffers into a file
 int MemoryLog166::DumpToFile(void)
 {
-	
 	char *nptr = MemoryBase;
 	char Factual[128];
 	FILE *ofile;
@@ -100,13 +99,13 @@ int MemoryLog166::DumpToFile(void)
 	// Create the output file
 	Factual[sizeof(Factual) - 1] = 0;
 	snprintf(Factual, sizeof(Factual) - 1, "%s.csv", FileName);
-	if (ofile = fopen(Factual, "a")) {
+	if (ofile = fopen(Factual, "w")) {
+		printf("%s\n",Factual);
 		fprintf(ofile,Titles);
 	
 		// Enter loop to dump out the data into the file
 		int l=0;
 		while (nptr < MemoryNext) {
-			
 			// Call a user defined routine to format and dump this out
 			nptr += DumpBuffer(nptr, ofile);
 			l++;

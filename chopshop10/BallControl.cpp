@@ -33,7 +33,7 @@ class BallControlLog : public MemoryLog166
 public:
 	BallControlLog() : MemoryLog166(
 			sizeof(struct abuf166), BALLCONTROL_CYCLE_TIME, "ballcontrol",
-			"Seconds,Nanoseconds,Elapsed Time,Ball Control State,Ball Control Current\n"
+			"Seconds,Nanoseconds,Elapsed Time,Ball Control Speed,Ball Control Current\n"
 			) {
 		return;
 	};
