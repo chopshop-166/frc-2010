@@ -60,7 +60,7 @@ def graph_robolog(dol, filename):
 def parse_latest():
     # The initial timestamp of all 0s
     # All timestamps are guaranteed to be greater than this!
-    global max_foldername
+    global max_foldername, filename
     max_foldername = "00000000.00.00.00"
     for filename in os.listdir("C:\\FTP\\Logs"):
         # Find the latest files
@@ -82,13 +82,14 @@ def parse_latest():
             lod = parse_robolog(address + "\\" + filename)
         except:
             diagnostics()
+            return
         data = lod2dol(lod)
         graph_robolog(data, pngaddress + "\\" + filename + ".png")
         lod = ()
         data = {}
         
 def diagnostics():
-    global linenum, ln, name
+    global linenum, ln, name, filename
     # Error in the CSV
     print("\tError: invalid data on line " + str(linenum))
     print("\tIn file: " + str(max_foldername + '\\' + filename))
