@@ -9,17 +9,17 @@
 /*----------------------------------------------------------------------------*/
 /*  Copyright (c) MHS Chopshop Team 166, 2010.  All Rights Reserved.          */
 /*----------------------------------------------------------------------------*/
+#ifndef _PROXY166_H
+#define _PROXY166_H
+
+#include "WPILib.h"
 #include "Utility.h"
 #include "Team166Task.h"
 #include "Vision/AxisCamera.h"
-
 #include "AxisCamera.h" 
 #include "FrcError.h"
 #include "PCVideoServer.h"
 #include "nivision.h" 
-
-#ifndef _PROXY166_H
-#define _PROXY166_H
 
 #define NUMBER_OF_JOYSTICKS (4)
 #define NUMBER_OF_SWITCHES (10)

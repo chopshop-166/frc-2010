@@ -9,13 +9,9 @@
 /*----------------------------------------------------------------------------*/
 /*  Copyright (c) MHS Chopshop Team 166, 2010.  All Rights Reserved.          */
 /*----------------------------------------------------------------------------*/
-#include <math.h>
+
 #include "WPILib.h"
-#include "Team166Task.h"
 #include "Inclinometer.h"
-#include "MemoryLog166.h"
-#include "Robot166.h"
-#include "BaeUtilities.h"
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf

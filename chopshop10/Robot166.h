@@ -13,16 +13,15 @@
 #if !defined(_ROBOT166_H)
 #define _ROBOT166_H
 #include "WPILib.h"
+#include "BaeUtilities.h"
 #include "CANJaguar.h"
 #include "Team166Task.h"
-#include "LiftCan166.h"
-#include "Kicker166.h"
+#include "Target.h"
 #include "Autonomous166.h"
 #include "MemoryLog166.h"
 #include "Proxy166.h"
-#include "Banner166.h"
-#include "Inclinometer.h"
 #include "DashboardDataSender.h"
+#include "Defines.h"
 
 // Maximum dashboard buffer size
 #define DASHBOARD_BUFFER_MAX (21)

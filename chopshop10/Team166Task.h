@@ -15,7 +15,7 @@
 #include "WPILib.h"
 #include <math.h>
 #include <sysLib.h>
-#include "T166Defines.h"
+#include "Defines.h"
 
 //
 // task (as in kernel task)

@@ -11,7 +11,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "Runtime166.h"
-#include <math.h>
+#include <cmath>
 #include <string>
 using namespace std;
 

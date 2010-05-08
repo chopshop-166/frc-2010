@@ -14,7 +14,6 @@
 #define _SONAR166_H
 #include "WPILib.h"
 #include "Robot166.h"
-#include "semLib.h"
 
 //
 // This constant defines how often we want this task to run in the form

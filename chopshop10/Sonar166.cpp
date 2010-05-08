@@ -12,9 +12,6 @@
 
 #include "WPILib.h"
 #include "Sonar166.h"
-#include "MemoryLog166.h"
-#include <math.h>
-#include <sysLib.h>
 
 // Sample in memory buffer
 struct sobuf166

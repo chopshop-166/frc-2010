@@ -14,20 +14,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <stdio.h>
+#include <cstdio>
 #include "WPILib.h"
-#include "Team166Task.h"
-#include "Kicker166.h"
-#include "LiftCan166.h"
-#include "Banner166.h"
-#include "Sonar166.h"
-#include "RobotCamera166.h"
-#include "CANDrive166.h"
-#include "HealthMon166.h"
-#include "Inclinometer.h"
-#include "Pneumatics166.h"
-#include "BallControl.h"
-#include "DashboardDataSender.h"
+#include "Autonomous166.h"
+#include "Robot166.h"
+#include "Includes.h"
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
@@ -133,7 +124,8 @@ void Robot166::Autonomous(void)
 {
 	GetWatchdog().SetEnabled(false);
 	RobotMode = T166_AUTONOMOUS;
-	if(!DigitalInput(T166_AUTONOMOUS_JUMPER).Get()) {
+	// TODO: Reenable the jumper support
+	if(DigitalInput(T166_AUTONOMOUS_JUMPER).Get()) {
 		DPRINTF(LOG_DEBUG,"Entered enabled autonomous\n");
 		DriverStationDisplay("IN AUTONOMOUS");
 		Autonomous166();

@@ -14,7 +14,6 @@
 #define _LIFT166Can_H
 #include "WPILib.h"
 #include "Robot166.h"
-#include "CANJaguar.h"
 
 
 //
