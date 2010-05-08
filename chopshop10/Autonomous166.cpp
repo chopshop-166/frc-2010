@@ -14,7 +14,7 @@
 
 #define AUTONOMOUS_TILT (10)
 #define AUTONOMOUS_MOTOR_TOLERENCE (10)
-#define AUTONOMOUS_SPEED (-0.50)
+#define AUTONOMOUS_SPEED (-0.25)
 #define AUTONOMOUS_MOTOR_FLAG_LIMIT (5)
 
 // To locally enable debug printing: set true, to disable false
@@ -64,7 +64,7 @@ Autonomous166::Autonomous166() {
 			motorflag = ((--motorflag>0)? motorflag : 0);
 		}
 		
-		if( banner || inclinometerflag || (motorflag > AUTONOMOUS_MOTOR_FLAG_LIMIT) ) {
+		if( AlreadyStopped || banner || inclinometerflag || (motorflag > AUTONOMOUS_MOTOR_FLAG_LIMIT) ) {
 			proxy->SetJoystickY(T166_DRIVER_STICK_LEFT,0);
 			proxy->SetJoystickY(T166_DRIVER_STICK_RIGHT,0);
 			if(!AlreadyStopped) {

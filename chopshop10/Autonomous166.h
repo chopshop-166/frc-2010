@@ -18,7 +18,7 @@
 #include "BaeUtilities.h"
 #include "Vision166.h"
 #include "Robot166.h"
-#include <math.h>
+#include <cmath>
 
 #define AUTONOMOUS_WAIT_TIME (0.050)
 

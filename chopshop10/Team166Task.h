@@ -13,7 +13,7 @@
 #if !defined(_TEAM166TASK_H)
 #define _TEAM166TASK_H
 #include "WPILib.h"
-#include <math.h>
+#include <cmath>
 #include <sysLib.h>
 #include "Defines.h"
 
