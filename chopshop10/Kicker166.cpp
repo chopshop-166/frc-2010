@@ -98,7 +98,7 @@ Team166Kicker::~Team166Kicker(void)
 int Team166Kicker::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {
-	// TODO THE VARS LIVE HERE!!!!!!!!!!
+	// THE VARS LIVE HERE!!!!!!!!!!
 	Proxy166 *proxy;	                            // Get handle for joystick
 	Robot166 *lHandle;                              // Local handle
 	KickerLog sl;                                   // Arm log

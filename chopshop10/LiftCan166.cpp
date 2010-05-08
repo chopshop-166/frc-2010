@@ -139,7 +139,11 @@ int Team166LiftCan::Main(int a2, int a3, int a4, int a5,
 					proxy->GetButton(T166_COPILOT_STICK,T166_LIFT_DOWN_BUTTON)
 			);
 		} else { // Not deployed
-			button = proxy->GetButton(T166_COPILOT_STICK, T166_LIFT_RELEASE_BUTTON);
+			button = (
+					proxy->GetButton(T166_COPILOT_STICK, T166_LIFT_RELEASE_BUTTON) &
+					proxy->GetButton(T166_DRIVER_STICK_LEFT, T166_AUTOBALANCE_BUTTON, false) &
+					proxy->GetButton(T166_DRIVER_STICK_RIGHT, T166_AUTOBALANCE_BUTTON, false)
+			);
 			if(button) {
 				deployed = true;
 				LiftLatch_Solenoid.Set(false);

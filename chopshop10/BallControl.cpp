@@ -100,7 +100,7 @@ int Team166BallControl::Main(int a2, int a3, int a4, int a5,
 	Proxy166 *proxy;				// Handle to proxy
 	Robot166 *lHandle;            // Local handle
 	BallControlLog sl;                   // log
-	float BallControl_Current;
+	float BallControl_Current = 0;
 	float BallControl_Speed;
 	
 	// Let the world know we're in
@@ -142,7 +142,7 @@ int Team166BallControl::Main(int a2, int a3, int a4, int a5,
 			BallControl_Current = BallControl_Jag.GetOutputCurrent();
 			proxy->SetCurrent(T166_BALLCONTROL_MOTOR_CAN, BallControl_Current);
 		}
-        // Logging any values
+        // Logging our values
 		sl.PutOne(BallControl_Speed, BallControl_Current);
 		
 		// Wait for our next lap

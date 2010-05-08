@@ -84,10 +84,6 @@ Robot166::Robot166(void)
 
 	// update DS
 	DriverStationDisplay("Starting 166 Robot");
-
-	/* allow writing to vxWorks target */
-	//TODO: see if we can write to disk with this out of the system
-	//Priv_SetWriteFileAllowed(1);   	
 	
 	// Setup expiration for task watchdog.
 	GetWatchdog().SetExpiration(5.0); // 5 seconds

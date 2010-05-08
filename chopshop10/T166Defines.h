@@ -20,9 +20,11 @@
 #define UsingCan (1)
 // Are we on suitcasebot?
 #define UsingSuitcase (0)
+// Enable autobalance
+#define UsingAutobalance (1)
 
 // Code version number
-#define T166_CODE_VERSION ("CODE: ATLANTA-08")
+#define T166_CODE_VERSION ("CODE: BATTLECRY-04")
 
 //
 // Analog Pin layout
