@@ -140,9 +140,6 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 	}
 	
 	// Whether the camera is up
-
-	// Print out the key
-	lHandle->DriverStationDisplayHS("K B S C B");
 	
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
@@ -159,7 +156,7 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 #endif
 				ballcontrolTask->GetStatus()[0]
 				);
-		lHandle->DriverStationDisplayHSData(buffer);
+		lHandle->DriverStationDisplay(buffer);
 		
 		// do stuff
 		sl.PutOne(buffer);
