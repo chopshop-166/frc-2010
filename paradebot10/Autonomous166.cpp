@@ -10,7 +10,7 @@
 /*  Copyright (c) MHS Chopshop Team 166, 2010.  All Rights Reserved.          */
 /*----------------------------------------------------------------------------*/
 
-#include "Robot166.h"
+#include "Robot.h"
 
 #define AUTONOMOUS_TILT (10)
 #define AUTONOMOUS_MOTOR_TOLERENCE (10)

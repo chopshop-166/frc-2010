@@ -17,7 +17,7 @@
 #include <cstdio>
 #include "WPILib.h"
 #include "Autonomous166.h"
-#include "Robot166.h"
+#include "Robot.h"
 #include "Includes.h"
 
 // To locally enable debug printing: set true, to disable false
@@ -30,6 +30,7 @@ Team166Task *Team166Task::ActiveTasks[T166_MAXTASK + 1] = {0};
 Proxy166 Team166ProxyObject;
 // Declare external tasks
 Team166CANDrive Team166CANDriveObject;
+Pneumatics166 Pneumatics166Object;
 
 
 // This links to the single instance of the Robot task
@@ -250,6 +251,16 @@ int Robot166::DriverStationDisplay(char* dsTextString)
 		strncpy(string5, DASHBOARD_BLANK_SPACES, DASHBOARD_BUFFER_MAX);
 		string6=new char [DASHBOARD_BUFFER_MAX];
 		strncpy(string6, DASHBOARD_BLANK_SPACES, DASHBOARD_BUFFER_MAX);
+		
+		//Outputs each line back onto the station.
+		dsHandleLCD->Printf(DriverStationLCD::kUser_Line1,1,string1);
+		dsHandleLCD->Printf(DriverStationLCD::kUser_Line2,1,string2);
+		dsHandleLCD->Printf(DriverStationLCD::kUser_Line3,1,string3);
+		dsHandleLCD->Printf(DriverStationLCD::kUser_Line4,1,string4);
+		dsHandleLCD->Printf(DriverStationLCD::kUser_Line5,1,string5);
+		dsHandleLCD->Printf(DriverStationLCD::kUser_Line6,1,string6);
+		dsHandleLCD->UpdateLCD();
+		
 		init=false;
 #undef DASHBOARD_BLANK_SPACES
 	}

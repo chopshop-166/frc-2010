@@ -12,7 +12,7 @@
 
 #include <semLib.h>
 #include "wpilib.h"
-#include "Robot166.h"
+#include "Robot.h"
 
 // Enable proxy logging?
 #define LoggingProxy (0)

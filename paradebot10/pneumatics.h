@@ -1,58 +1,47 @@
 /*******************************************************************************
 *  Project   		: chopshop10 - 2010 Chopshop Robot Controller Code
-*  File Name  		: CANDrive166.h     
+*  File Name  		: TaskTemplate.h     
 *  Owner		   	: Software Group (FIRST Chopshop Team 166)
-*  Creation Date	: January 23, 2010
+*  Creation Date	: January 18, 2010
 *  Revision History	: From Explorer with TortoiseSVN, Use "Show log" menu item
-*  File Description	: Header for code which monitors jaguar return info
+*  File Description	: Pneumatics header file for tasks, with template functions
 *******************************************************************************/ 
 /*----------------------------------------------------------------------------*/
 /*  Copyright (c) MHS Chopshop Team 166, 2010.  All Rights Reserved.          */
 /*----------------------------------------------------------------------------*/
 
-#if !defined(_CANDRIVE166_H)
-#define _CANDRIVE166_H
+#if !defined(PNEUMATICS_H)
+#define PNEUMATICS_H
 #include "WPILib.h"
 #include "Robot.h"
 
 //
 // This constant defines how often we want this task to run in the form
 // of miliseconds. Max allowed time is 999 miliseconds.
-//
-#define CAN_CYCLE_TIME (50) // 20ms
-#define NO_SPEED				 0    //speed to use when there is no input
+// You should rename this when you copy it into a new file 
+#define PNEUMATICS_CYCLE_TIME (10) // 10ms
 
-// Autobalance constants
-// Dead zone-won't try to center itself-in degrees
-#define AUTOBALANCE_DEADZONE (5)
-// Speed from 0 to 1
-#define AUTOBALANCE_SPEED (0.425)
-
-class Team166CANDrive : public Team166Task
+// Rename this, too, or you'll run into collisions
+class Pneumatics166 : public Team166Task
 {
 	
 public:
 	
 	// task constructor
-	Team166CANDrive(void);
+	Pneumatics166(void);
 
 	// task destructor
-	virtual ~Team166CANDrive(void);
+	virtual ~Pneumatics166(void);
 
-	// get handle
-	static Team166CANDrive *getInstance(void);
-	
 	// Main function of the task
 	virtual int Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10);
 	
-	CANJaguar leftJag,rightJag;
-
 private:
-	/**
-	 * @brief The single instance handle
-	 */
-	static Team166CANDrive* CANDriveHandle;
+	// Any variables that the task has as members go here
+	Compressor compressor;
+	Solenoid cylinder_open;
+	Solenoid cylinder_close;
 };
 
-#endif // !defined(_CANDRIVE166)
+#endif // !defined(PNEUMATICS_H)

@@ -37,6 +37,7 @@
 //
 // Place #defines for the digital pins here
 // Autonomous Jumper Port: This enables the autonomous if it's in
+#define PSI_SWITCH (1)
 #define T166_AUTONOMOUS_JUMPER (7)
 
 //
@@ -48,7 +49,7 @@
 // Relay Layout
 //
 /** Channels for Compressor */
-#define T166_COMPRESSOR_RELAY_CHANNEL (1)
+#define COMPRESSOR_RELAY (1)
 
 
 //
@@ -58,8 +59,11 @@
 #define T166_PNEU_LOW (110.0)
 /** High pressure limit */
 #define T166_PNEU_HIGH (120.0)
-/** Minimum kicking pressure */
-#define T166_PNEU_KICK_MIN (50.0)
+/** Open cylinder */
+#define SOLENOID_OPEN (1)
+/** Close cylinder */
+#define SOLENOID_CLOSE (2)
+
 
 //
 // CAN bus layout
