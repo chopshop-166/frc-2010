@@ -10,9 +10,6 @@
 /*  Copyright (c) MHS Chopshop Team 166, 2010.  All Rights Reserved.          */
 /*----------------------------------------------------------------------------*/
 
-#include "Autonomous166.h"
-#include "RobotCamera166.h"
-#include "Proxy166.h"
 #include "Robot166.h"
 
 #define AUTONOMOUS_TILT (10)
@@ -67,14 +64,14 @@ Autonomous166::Autonomous166() {
 			motorflag = ((--motorflag>0)? motorflag : 0);
 		}
 		
-		if( banner || inclinometerflag || (motorflag > AUTONOMOUS_MOTOR_FLAG_LIMIT) ) {
+		if( AlreadyStopped || banner || inclinometerflag || (motorflag > AUTONOMOUS_MOTOR_FLAG_LIMIT) ) {
 			proxy->SetJoystickY(T166_DRIVER_STICK_LEFT,0);
 			proxy->SetJoystickY(T166_DRIVER_STICK_RIGHT,0);
 			if(!AlreadyStopped) {
 				AlreadyStopped = true;
 				if(banner) {
 					sprintf(buffer,"STOP: BANNER");
-				} else if((inclinometer > AUTONOMOUS_TILT) || (inclinometer < -AUTONOMOUS_TILT)) {
+				} else if(inclinometerflag) {
 					sprintf(buffer,"STOP: TILT");
 				} else {
 					sprintf(buffer,"STOP: MOTORS");

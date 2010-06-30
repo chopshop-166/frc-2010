@@ -11,16 +11,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "WPILib.h"
-#include "Team166Task.h"
 #include "HealthMon166.h"
-#include "MemoryLog166.h"
-#include "Robot166.h"
-#include "BaeUtilities.h"
-#include "CANJaguar.h"
-#include "Vision166.h"
-#include "CANDrive166.h"
-
-
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
@@ -149,9 +140,6 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 	}
 	
 	// Whether the camera is up
-
-	// Print out the key
-	lHandle->DriverStationDisplayHS("K B S C B");
 	
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
@@ -168,7 +156,7 @@ int Team166HealthMon::Main(int a2, int a3, int a4, int a5,
 #endif
 				ballcontrolTask->GetStatus()[0]
 				);
-		lHandle->DriverStationDisplayHSData(buffer);
+		lHandle->DriverStationDisplay(buffer);
 		
 		// do stuff
 		sl.PutOne(buffer);

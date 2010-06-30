@@ -11,11 +11,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include "WPILib.h"
-#include "Team166Task.h"
 #include "LiftCan166.h"
-#include "MemoryLog166.h"
-#include "Robot166.h"
-#include "BaeUtilities.h"
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf

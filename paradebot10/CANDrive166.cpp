@@ -14,7 +14,7 @@
 #include "CANDrive166.h"
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(false)dprintf
+#define DPRINTF if(true)dprintf
 
 // Sample in memory buffer
 struct abuf166
@@ -130,46 +130,18 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 	lHandle->RegisterLogger(&sl);
 	
 	printf("CANDrive is ready.\n");
-#if UsingAutobalance
-	float left=0,right=0;
-#endif
-	
 	float leftCurrent=0, rightCurrent=0;
 
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-#if UsingAutobalance
-		if( proxy->GetButton(T166_DRIVER_STICK_LEFT,T166_AUTOBALANCE_BUTTON)
-				|| proxy->GetButton(T166_DRIVER_STICK_RIGHT,T166_AUTOBALANCE_BUTTON)) {
-			if(proxy->GetInclinometer() < -AUTOBALANCE_DEADZONE) {
-				left = -AUTOBALANCE_SPEED;
-				right = -AUTOBALANCE_SPEED;
-			} else if(proxy->GetInclinometer() > AUTOBALANCE_DEADZONE) {
-				left = AUTOBALANCE_SPEED;
-				right = AUTOBALANCE_SPEED;
-			} else {
-				left = 0;
-				right = 0;
-			}
-		} else {
-			left = proxy->GetJoystickY(1);
-			right = proxy->GetJoystickY(2);
-		}
-		leftJag.Set(-left);
-		rightJag.Set(right);
-#else
-		leftJag.Set(-proxy->GetJoystickY(1));
-		rightJag.Set(proxy->GetJoystickY(2));
-#endif
+		leftJag.Set(proxy->GetJoystickY(1));
+		rightJag.Set(-proxy->GetJoystickY(2));
 		if ((++valuethrottle) % (1000/CAN_CYCLE_TIME) ==0)
 		{
 			// Get Current from each jaguar 
 			leftCurrent = leftJag.GetOutputCurrent();
 			rightCurrent = rightJag.GetOutputCurrent();
-			// Put current values into proxy
-			proxy->SetCurrent(T166_LEFT_MOTOR_CAN, leftCurrent);
-			proxy->SetCurrent(T166_RIGHT_MOTOR_CAN, rightCurrent);
 			// Print debug to console
 			DPRINTF(LOG_DEBUG, "Left Jag Current: %f", leftCurrent);
 			DPRINTF(LOG_DEBUG, "Right Jag Current: %f", rightCurrent );

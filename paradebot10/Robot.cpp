@@ -17,7 +17,7 @@
 #include <cstdio>
 #include "WPILib.h"
 #include "Autonomous166.h"
-#include "Robot166.h"
+#include "Robot.h"
 #include "Includes.h"
 
 // To locally enable debug printing: set true, to disable false
@@ -29,20 +29,9 @@ Team166Task *Team166Task::ActiveTasks[T166_MAXTASK + 1] = {0};
 // This task has to always be started first or the system will crash
 Proxy166 Team166ProxyObject;
 // Declare external tasks
-#if (!UsingSuitcase)
-	#if UsingCan
-		Team166CANDrive Team166CANDriveObject;
-		Team166LiftCan Team166LiftCanObject;
-		Team166BallControl Team166BallControlObject;
-	#endif
-	Team166Kicker Team166KickerObject;
-	Team166Banner Team166BannerObject;
-	Team166Inclinometer Team166InclinometerObject;
-	Pneumatics166 Team166PneumaticsObject;
-#endif
-#if UsingCamera
-	Team166Vision Team166VisionObject;
-#endif
+Team166CANDrive Team166CANDriveObject;
+Pneumatics166 Pneumatics166Object;
+
 
 // This links to the single instance of the Robot task
 class Robot166;
@@ -125,8 +114,7 @@ void Robot166::Autonomous(void)
 {
 	GetWatchdog().SetEnabled(false);
 	RobotMode = T166_AUTONOMOUS;
-	// TODO: Reenable the jumper support
-	if(DigitalInput(T166_AUTONOMOUS_JUMPER).Get()) {
+	if(!DigitalInput(T166_AUTONOMOUS_JUMPER).Get()) {
 		DPRINTF(LOG_DEBUG,"Entered enabled autonomous\n");
 		DriverStationDisplay("IN AUTONOMOUS");
 		Autonomous166();
@@ -151,8 +139,6 @@ void Robot166::Disabled(void)
 void Robot166::OperatorControl(void)
 {
 	int has_been_disabled = 0;
-	int joystickImageCount = 0;
-	char imageName[80]; 
 	
 	Timer debugTimer;
 	debugTimer.Start();
@@ -187,17 +173,6 @@ void Robot166::OperatorControl(void)
 		if (Team166Task::FeedWatchDog())
 		    GetWatchdog().Feed();
 		
-		// take a picture 
-		if (Team166ProxyObject.GetButton(T166_DRIVER_STICK_LEFT,T166_CAMERA_BUTTON1) 
-				or Team166ProxyObject.GetButton(T166_DRIVER_STICK_LEFT,T166_CAMERA_BUTTON2)
-			    or Team166ProxyObject.GetButton(T166_DRIVER_STICK_RIGHT,T166_CAMERA_BUTTON1) 
-			    or Team166ProxyObject.GetButton(T166_DRIVER_STICK_RIGHT,T166_CAMERA_BUTTON2)
-			    or Team166ProxyObject.GetButton(T166_COPILOT_STICK,T166_CAMERA_BUTTON1) 
-			    or Team166ProxyObject.GetButton(T166_COPILOT_STICK,T166_CAMERA_BUTTON2))
-		{
-			sprintf(imageName, "166_joystick_img_%03i.png", ++joystickImageCount);
-			TakeSnapshot(imageName);
-		}
 		sender->sendIOPortData();
 		Wait (ROBOT_WAIT_TIME);
 		dsHandleLCD->UpdateLCD();
@@ -276,6 +251,16 @@ int Robot166::DriverStationDisplay(char* dsTextString)
 		strncpy(string5, DASHBOARD_BLANK_SPACES, DASHBOARD_BUFFER_MAX);
 		string6=new char [DASHBOARD_BUFFER_MAX];
 		strncpy(string6, DASHBOARD_BLANK_SPACES, DASHBOARD_BUFFER_MAX);
+		
+		//Outputs each line back onto the station.
+		dsHandleLCD->Printf(DriverStationLCD::kUser_Line1,1,string1);
+		dsHandleLCD->Printf(DriverStationLCD::kUser_Line2,1,string2);
+		dsHandleLCD->Printf(DriverStationLCD::kUser_Line3,1,string3);
+		dsHandleLCD->Printf(DriverStationLCD::kUser_Line4,1,string4);
+		dsHandleLCD->Printf(DriverStationLCD::kUser_Line5,1,string5);
+		dsHandleLCD->Printf(DriverStationLCD::kUser_Line6,1,string6);
+		dsHandleLCD->UpdateLCD();
+		
 		init=false;
 #undef DASHBOARD_BLANK_SPACES
 	}

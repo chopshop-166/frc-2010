@@ -97,38 +97,6 @@ class Proxy166 : public Team166Task {
 		void SetImage(ColorImage *);
 		void DeleteImage(void);
 
-		// Set/Get methods for sonar distance
-		void SetSonarDistance(float);
-		float GetSonarDistance(void);
-		
-		// Proxy access for Ball captured
-		void SetBallCap(bool);
-		bool GetBallCap();
-		
-		// Proxy access for banner sensor
-		void SetBanner(bool);
-		bool GetBanner(void);
-		
-		// Proxy access for inclinometer
-		void SetInclinometer(int);
-		int GetInclinometer(void);
-
-		// Set/Get methods for pneumatic pressure
-		void SetPressure(float);
-		float GetPressure(void);
-		
-		// Proxy access for Jaguar current
-		void SetCurrent(int, float);
-		float GetCurrent(int);
-		
-		// Proxy access for ball control speed
-		void SetBallControlSpeed(float);
-		float GetBallControlSpeed(void);
-		
-		// Proxy access for ball control speed
-		void SetBattery(float);
-		float GetBattery(void);
-
 		// Proxy access for camera bearing
 		void SetCameraBearing(float);
 		float GetCameraBearing(void);
@@ -189,9 +157,6 @@ class Proxy166 : public Team166Task {
 
 		// Distance in inches to the object in front of the sonar
 		float SonarDistance;
-		
-		// Battery level
-		float Battery;
 		
 		//proxy storage for Ball captured
 		bool BallCaptured;

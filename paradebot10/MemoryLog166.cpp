@@ -12,8 +12,8 @@
 
 #include <memLib.h>
 #include "BaeUtilities.h"
-#include <cstring>
-#include <cstdlib>
+#include <string.h>
+#include <stdlib.h>
 #include <dirent.h>
 #include <stat.h>
 #include "MemoryLog166.h"

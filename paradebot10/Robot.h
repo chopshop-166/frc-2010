@@ -1,6 +1,6 @@
 /*******************************************************************************
 *  Project   		: chopshop10 - 2010 Chopshop Robot Controller Code
-*  File Name  		: Robot166.h     
+*  File Name  		: Robot.h     
 *  Owner		   	: Software Group (FIRST Chopshop Team 166)
 *  Creation Date	: January 18, 2010
 *  Revision History	: From Explorer with TortoiseSVN, Use "Show log" menu item
@@ -68,8 +68,6 @@ public:
 	void RegisterLogger(MemoryLog166 *ml);    // Register memory logger
 	void DumpLoggers(int dnum);               // Dump all logs
 	int DriverStationDisplay (char*);		  // Display text on DS
-	int DriverStationDisplayHS (char*);		  // Display text on DS
-	int DriverStationDisplayHSData (char*);		  // Display text on DS	
 };
 
 #endif // !defined(_ROBOT166_H)

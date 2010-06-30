@@ -11,8 +11,6 @@
 /*----------------------------------------------------------------------------*/
 
 #include "WPILib.h"
-#include "Team166Task.h"
-#include "Proxy166.h"
 #include "Pneumatics166.h"
 
 // To locally enable debug printing: set true, to disable false
