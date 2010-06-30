@@ -105,6 +105,19 @@ Team166CANDrive::~Team166CANDrive(void)
 	return;
 };
 
+float Team166CANDrive::Limit(float num)
+{
+	if (num > 1.0)
+	{
+		return 1.0;
+	}
+	if (num < -1.0)
+	{
+		return -1.0;
+	}
+	return num;
+}
+
 // Main function of the task
 int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
@@ -131,12 +144,55 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 	
 	printf("CANDrive is ready.\n");
 	float leftCurrent=0, rightCurrent=0;
+	float leftMotorSpeed = 0;
+	float rightMotorSpeed = 0;
+#define USING_ARCADE (1)
 
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
-			(lHandle->RobotMode == T166_OPERATOR)) {
-		leftJag.Set(proxy->GetJoystickY(1));
-		rightJag.Set(-proxy->GetJoystickY(2));
+			(lHandle->RobotMode == T166_OPERATOR)) {		
+#if USING_ARCADE
+		float moveValue = proxy->GetJoystickY(1);
+		float rotateValue = proxy->GetJoystickX(1);
+
+		if (moveValue > 0.0)
+			{
+				if (rotateValue > 0.0)
+				{
+					leftMotorSpeed = moveValue - rotateValue;
+					rightMotorSpeed = max(moveValue, rotateValue);
+				}
+				else
+				{
+					leftMotorSpeed = max(moveValue, -rotateValue);
+					rightMotorSpeed = moveValue + rotateValue;
+				}
+			}
+			else
+			{
+				if (rotateValue > 0.0)
+				{
+					leftMotorSpeed = - max(-moveValue, rotateValue);
+					rightMotorSpeed = moveValue + rotateValue;
+				}
+				else
+				{
+					leftMotorSpeed = moveValue - rotateValue;
+					rightMotorSpeed = - max(-moveValue, -rotateValue);
+				}
+			}
+		//Make sure values aren't out of bounds
+		leftMotorSpeed = Limit(leftMotorSpeed);
+		rightMotorSpeed = Limit(rightMotorSpeed);
+#else
+		leftMotorSpeed = proxy->GetJoystickY(1);
+		rightMotorSpeed = proxy->GetJoystickY(2);
+#endif
+		
+		//Set Speed of motor to correct value depending on drive mode
+		leftJag.Set(leftMotorSpeed);
+		rightJag.Set(rightMotorSpeed);
+		//LOGGING STUFF
 		if ((++valuethrottle) % (1000/CAN_CYCLE_TIME) ==0)
 		{
 			// Get Current from each jaguar 
