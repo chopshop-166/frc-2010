@@ -135,8 +135,8 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		leftJag.Set(-proxy->GetJoystickY(1));
-		rightJag.Set(proxy->GetJoystickY(2));
+		leftJag.Set(proxy->GetJoystickY(1));
+		rightJag.Set(-proxy->GetJoystickY(2));
 		if ((++valuethrottle) % (1000/CAN_CYCLE_TIME) ==0)
 		{
 			// Get Current from each jaguar 

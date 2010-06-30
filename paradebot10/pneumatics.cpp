@@ -76,7 +76,7 @@ unsigned int PneumaticsLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-Pneumatics166::Pneumatics166(void): compressor(PSI_SWITCH, COMPRESSOR_RELAY), cylinder_open(SOLENOID_OPEN), cylinder_close(SOLENOID_CLOSE)
+Pneumatics166::Pneumatics166(void): compressor(PSI_SWITCH, COMPRESSOR_RELAY), cylinder_open(SOLENOID_OPEN)
 {
 	Start((char *)"166PneumaticsTask", PNEUMATICS_CYCLE_TIME);
 	// ^^^ Rename those ^^^
@@ -109,20 +109,14 @@ int Pneumatics166::Main(int a2, int a3, int a4, int a5,
 	
 	// Register the proxy
 	proxy = Proxy166::getInstance();
-		
+	
 	compressor.Start();
 	
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		
-		if(proxy->GetTrigger(1)) {
-			cylinder_close.Set(false);
-			cylinder_open.Set(true);
-		} else {
-			cylinder_open.Set(false);
-			cylinder_close.Set(true);
-		}
+
+		cylinder_open.Set(proxy->GetTrigger(1));
 
         // Logging any values
 		sl.PutOne();
