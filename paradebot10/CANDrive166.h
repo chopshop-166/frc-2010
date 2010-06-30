@@ -20,6 +20,8 @@
 // of miliseconds. Max allowed time is 999 miliseconds.
 //
 #define CAN_CYCLE_TIME (50) // 50ms
+// Set to 1 if using arcade drive
+#define USING_ARCADE (1)
 
 
 class Team166CANDrive : public Team166Task

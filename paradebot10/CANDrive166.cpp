@@ -146,7 +146,6 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 	float leftCurrent=0, rightCurrent=0;
 	float leftMotorSpeed = 0;
 	float rightMotorSpeed = 0;
-#define USING_ARCADE (1)
 
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
@@ -155,32 +154,23 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 		float moveValue = proxy->GetJoystickY(1);
 		float rotateValue = proxy->GetJoystickX(1);
 
-		if (moveValue > 0.0)
-			{
-				if (rotateValue > 0.0)
-				{
-					leftMotorSpeed = moveValue - rotateValue;
-					rightMotorSpeed = max(moveValue, rotateValue);
-				}
-				else
-				{
-					leftMotorSpeed = max(moveValue, -rotateValue);
-					rightMotorSpeed = moveValue + rotateValue;
-				}
+		if (moveValue > 0.0) {
+			if (rotateValue > 0.0) {
+				leftMotorSpeed = moveValue - rotateValue;
+				rightMotorSpeed = max(moveValue, rotateValue);
+			} else {
+				leftMotorSpeed = max(moveValue, -rotateValue);
+				rightMotorSpeed = moveValue + rotateValue;
 			}
-			else
-			{
-				if (rotateValue > 0.0)
-				{
-					leftMotorSpeed = - max(-moveValue, rotateValue);
-					rightMotorSpeed = moveValue + rotateValue;
-				}
-				else
-				{
-					leftMotorSpeed = moveValue - rotateValue;
-					rightMotorSpeed = - max(-moveValue, -rotateValue);
-				}
+		} else {
+			if (rotateValue > 0.0) {
+				leftMotorSpeed = - max(-moveValue, rotateValue);
+				rightMotorSpeed = moveValue + rotateValue;
+			} else {
+				leftMotorSpeed = moveValue - rotateValue;
+				rightMotorSpeed = - max(-moveValue, -rotateValue);
 			}
+		}
 		//Make sure values aren't out of bounds
 		leftMotorSpeed = Limit(leftMotorSpeed);
 		rightMotorSpeed = Limit(rightMotorSpeed);
