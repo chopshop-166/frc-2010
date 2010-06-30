@@ -21,6 +21,7 @@
 #define BALLCONTROL_CYCLE_TIME (10) // 10ms
 
 class Team166BallControl : public Team166Task
+
 {
 	
 public:

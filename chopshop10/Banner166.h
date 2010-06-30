@@ -15,6 +15,8 @@
 #include "WPILib.h"
 #include "Robot166.h"
 
+char Banner_buffer[512];
+
 //
 // This constant defines how often we want this task to run in the form
 // of miliseconds. Max allowed time is 999 miliseconds.
