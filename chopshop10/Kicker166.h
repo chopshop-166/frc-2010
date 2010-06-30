@@ -20,7 +20,7 @@
 // of miliseconds. Max allowed time is 999 miliseconds.
 //
 #define KICKER_CYCLE_TIME (10) // 10ms
-#define KICKER_RELOAD_WAIT (20) //Wait 
+#define KICKER_RELOAD_WAIT (20) //Wait
 
 
 class Team166Kicker : public Team166Task

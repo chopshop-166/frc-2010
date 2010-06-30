@@ -36,7 +36,7 @@ public:
 public:
 	int Registered;								// This handler has been registered with Robot166
 	MemoryLog166 *mlNext;						// Link to the next block
-
+	
 private:
 	unsigned int MemorySize;					// Size of the memory we have allocated
 	char *MemoryBase;							// Base pointer to memory just allocated
@@ -48,5 +48,6 @@ private:
 	int BuffersRequested;						// Buffers requested
 	int BuffersObtained;						// Buffers obtained
 };
+
 
 #endif // !defined(_MEMORYLOG166_H)
