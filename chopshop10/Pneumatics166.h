@@ -20,8 +20,6 @@
 // of miliseconds. Max allowed time is 999 miliseconds.
 #define PNEUMATICS_CYCLE_TIME (500) // 500ms
 
-char Pneumatics_buffer[512];
-
 class Pneumatics166 : public Team166Task
 {
 	

@@ -36,15 +36,6 @@ public:
 public:
 	int Registered;								// This handler has been registered with Robot166
 	MemoryLog166 *mlNext;						// Link to the next block
-	// Buffer logging
-//	static std::string Proxy_buffer;			// Proxy logging buffer
-//	static std::string	Drive_buffer;			// Drive logging buffer
-//	static std::string Banner_buffer;			// Banner logging buffer
-//	static std::string	Inclinometer_buffer;	// Inclinometer logging buffer
-//	static std::string Pneumatics_buffer;		// Pneumatics logging buffer
-//	static std::string	Lift_buffer;			// Lift logging buffer
-//	static std::string Vacuum_buffer;			// Vacuum logging buffer
-//	static std::string	Kicker_buffer;			// Kicker logging buffer
 	
 private:
 	unsigned int MemorySize;					// Size of the memory we have allocated
