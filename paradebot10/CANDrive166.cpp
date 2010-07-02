@@ -118,6 +118,23 @@ float Team166CANDrive::Limit(float num)
 	return num;
 }
 
+void Team166CANDrive::SquareInputs(float &leftValue,float &rightValue)
+{
+	// square the inputs (while preserving the sign) to increase fine control while permitting full power
+	leftValue = Limit(leftValue);
+	rightValue = Limit(rightValue);
+	if (leftValue >= 0.0) {
+		leftValue = (leftValue * leftValue);
+	} else {
+		leftValue = -(leftValue * leftValue);
+	}
+	if (rightValue >= 0.0) {
+		rightValue = (rightValue * rightValue);
+	} else {
+		rightValue = -(rightValue * rightValue);
+	}
+}
+
 // Main function of the task
 int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
@@ -151,29 +168,36 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {		
 #if USING_ARCADE
-		float moveValue = proxy->GetJoystickY(1);
-		float rotateValue = proxy->GetJoystickX(1);
-
-		if (moveValue > 0.0) {
-			if (rotateValue > 0.0) {
-				leftMotorSpeed = moveValue - rotateValue;
-				rightMotorSpeed = max(moveValue, rotateValue);
-			} else {
-				leftMotorSpeed = max(moveValue, -rotateValue);
-				rightMotorSpeed = moveValue + rotateValue;
-			}
+		if(proxy->GetButton(1,3)) {
+			leftMotorSpeed = ARCADE_AUTO_SPEED;
+			rightMotorSpeed = -ARCADE_AUTO_SPEED;
+		} else if(proxy->GetButton(1,2)) {
+			leftMotorSpeed = -ARCADE_AUTO_SPEED;
+			rightMotorSpeed = ARCADE_AUTO_SPEED;
 		} else {
-			if (rotateValue > 0.0) {
-				leftMotorSpeed = - max(-moveValue, rotateValue);
-				rightMotorSpeed = moveValue + rotateValue;
+			float moveValue = proxy->GetJoystickX(1);
+			float rotateValue = proxy->GetJoystickY(1);
+	
+			if (moveValue > 0.0) {
+				if (rotateValue > 0.0) {
+					leftMotorSpeed = moveValue - rotateValue;
+					rightMotorSpeed = max(moveValue, rotateValue);
+				} else {
+					leftMotorSpeed = max(moveValue, -rotateValue);
+					rightMotorSpeed = moveValue + rotateValue;
+				}
 			} else {
-				leftMotorSpeed = moveValue - rotateValue;
-				rightMotorSpeed = - max(-moveValue, -rotateValue);
+				if (rotateValue > 0.0) {
+					leftMotorSpeed = - max(-moveValue, rotateValue);
+					rightMotorSpeed = moveValue + rotateValue;
+				} else {
+					leftMotorSpeed = moveValue - rotateValue;
+					rightMotorSpeed = - max(-moveValue, -rotateValue);
+				}
 			}
+			//Make sure values aren't out of bounds
+			SquareInputs(leftMotorSpeed, rightMotorSpeed);
 		}
-		//Make sure values aren't out of bounds
-		leftMotorSpeed = Limit(leftMotorSpeed);
-		rightMotorSpeed = Limit(rightMotorSpeed);
 #else
 		leftMotorSpeed = proxy->GetJoystickY(1);
 		rightMotorSpeed = proxy->GetJoystickY(2);

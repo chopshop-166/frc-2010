@@ -22,6 +22,7 @@
 #define CAN_CYCLE_TIME (50) // 50ms
 // Set to 1 if using arcade drive
 #define USING_ARCADE (1)
+#define ARCADE_AUTO_SPEED (0.25)
 
 
 class Team166CANDrive : public Team166Task
@@ -40,6 +41,7 @@ public:
 	
 	// Limit values to -1 - 1
 	float Limit(float);
+	void SquareInputs(float&,float&);
 	
 	// Main function of the task
 	virtual int Main(int a2, int a3, int a4, int a5,
