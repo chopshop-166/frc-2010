@@ -41,6 +41,7 @@ private:
 	// Any variables that the task has as members go here
 	Compressor compressor;
 	Solenoid cylinder_open;
+	Relay fans;
 };
 
 #endif // !defined(PNEUMATICS_H)

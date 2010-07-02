@@ -76,7 +76,7 @@ unsigned int PneumaticsLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-Pneumatics166::Pneumatics166(void): compressor(PSI_SWITCH, COMPRESSOR_RELAY), cylinder_open(SOLENOID_OPEN)
+Pneumatics166::Pneumatics166(void): compressor(PSI_SWITCH, COMPRESSOR_RELAY), cylinder_open(SOLENOID_OPEN), fans(FANS_RELAY)
 {
 	Start((char *)"166PneumaticsTask", PNEUMATICS_CYCLE_TIME);
 	// ^^^ Rename those ^^^
@@ -112,11 +112,18 @@ int Pneumatics166::Main(int a2, int a3, int a4, int a5,
 	
 	compressor.Start();
 	
+	bool trigger = false;
+	
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-
-		cylinder_open.Set(proxy->GetTrigger(1));
+		trigger = proxy->GetTrigger(1);
+		cylinder_open.Set(trigger);
+		if(trigger) {
+			fans.Set(Relay::kForward);
+		} else {
+			fans.Set(Relay::kOff);
+		}
 
         // Logging any values
 		sl.PutOne();

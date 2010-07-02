@@ -51,6 +51,8 @@
 /** Channels for Compressor */
 #define COMPRESSOR_RELAY (1)
 
+#define FANS_RELAY (2)
+
 
 //
 // Pneumatics */
