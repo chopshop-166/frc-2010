@@ -140,7 +140,7 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {
 		
-	Robot166 *lHandle;                  // Local handle
+	Robot *lHandle;                  // Local handle
 	CANDriveLog sl;                    // log
 	Proxy166 *proxy;				  //pointer to proxy	
 	
@@ -156,7 +156,7 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 	proxy = Proxy166::getInstance();
 	
 	// Register our logger
-	lHandle = Robot166::getInstance();
+	lHandle = Robot::getInstance();
 	lHandle->RegisterLogger(&sl);
 	
 	printf("CANDrive is ready.\n");

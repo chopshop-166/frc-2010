@@ -41,7 +41,7 @@ typedef enum {T166_UNKNOWN=0, T166_CONSTRUCTOR, T166_AUTONOMOUS, T166_OPERATOR, 
  * Autonomous and OperatorControl methods at the right time as controlled by the switches on
  * the driver station or the field controls.
  */ 
-class Robot166 : public SimpleRobot
+class Robot : public SimpleRobot
 {
 public:
     t_RobotMode RobotMode;                    // Robot mode
@@ -58,11 +58,11 @@ private:
     int maxLogId;                             // Max log file id
     DashboardDataSender *sender;				  // Dashboard sender
 public:
-	Robot166(void);                           // Constructor
+	Robot(void);                           // Constructor
 	void Autonomous(void);                    // Method called by WPI when we're in autonomous mode
 	void OperatorControl(void);               // Method called by WPI when we're in operator control mode
 	void Disabled(void);                    // Method called by WPI when we're disabled
-	static Robot166 *getInstance(void);       // Get pointer to our Robot166 instance
+	static Robot *getInstance(void);       // Get pointer to our Robot166 instance
 	float GetBatteryVoltage(void);            // Get voltage of battery on robot
 			
 	void RegisterLogger(MemoryLog166 *ml);    // Register memory logger
