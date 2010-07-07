@@ -166,42 +166,46 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
-			(lHandle->RobotMode == T166_OPERATOR)) {		
-#if USING_ARCADE
-		if(proxy->GetButton(1,3)) {
-			leftMotorSpeed = ARCADE_AUTO_SPEED;
-			rightMotorSpeed = -ARCADE_AUTO_SPEED;
-		} else if(proxy->GetButton(1,2)) {
-			leftMotorSpeed = -ARCADE_AUTO_SPEED;
-			rightMotorSpeed = ARCADE_AUTO_SPEED;
-		} else {
-			float moveValue = proxy->GetJoystickX(1);
-			float rotateValue = proxy->GetJoystickY(1);
-	
-			if (moveValue > 0.0) {
-				if (rotateValue > 0.0) {
-					leftMotorSpeed = moveValue - rotateValue;
-					rightMotorSpeed = max(moveValue, rotateValue);
-				} else {
-					leftMotorSpeed = max(moveValue, -rotateValue);
-					rightMotorSpeed = moveValue + rotateValue;
-				}
+			(lHandle->RobotMode == T166_OPERATOR)) {	
+		
+		//Drive mode determined by throttle on joystick 1
+		if(proxy->GetThrottle(1)>0) {
+			//Arcade Drive
+			if(proxy->GetButton(1,3)) {
+				leftMotorSpeed = ARCADE_AUTO_SPEED;
+				rightMotorSpeed = -ARCADE_AUTO_SPEED;
+			} else if(proxy->GetButton(1,2)) {
+				leftMotorSpeed = -ARCADE_AUTO_SPEED;
+				rightMotorSpeed = ARCADE_AUTO_SPEED;
 			} else {
-				if (rotateValue > 0.0) {
-					leftMotorSpeed = - max(-moveValue, rotateValue);
-					rightMotorSpeed = moveValue + rotateValue;
+				float moveValue = proxy->GetJoystickX(1);
+				float rotateValue = proxy->GetJoystickY(1);
+		
+				if (moveValue > 0.0) {
+					if (rotateValue > 0.0) {
+						leftMotorSpeed = moveValue - rotateValue;
+						rightMotorSpeed = max(moveValue, rotateValue);
+					} else {
+						leftMotorSpeed = max(moveValue, -rotateValue);
+						rightMotorSpeed = moveValue + rotateValue;
+					}
 				} else {
-					leftMotorSpeed = moveValue - rotateValue;
-					rightMotorSpeed = - max(-moveValue, -rotateValue);
+					if (rotateValue > 0.0) {
+						leftMotorSpeed = - max(-moveValue, rotateValue);
+						rightMotorSpeed = moveValue + rotateValue;
+					} else {
+						leftMotorSpeed = moveValue - rotateValue;
+						rightMotorSpeed = - max(-moveValue, -rotateValue);
+					}
 				}
+				//Make sure values aren't out of bounds
+				SquareInputs(leftMotorSpeed, rightMotorSpeed);
 			}
-			//Make sure values aren't out of bounds
-			SquareInputs(leftMotorSpeed, rightMotorSpeed);
+		} else {
+			//Tank Drive
+			leftMotorSpeed = -proxy->GetJoystickY(1);
+			rightMotorSpeed = proxy->GetJoystickY(2);
 		}
-#else
-		leftMotorSpeed = proxy->GetJoystickY(1);
-		rightMotorSpeed = proxy->GetJoystickY(2);
-#endif
 		
 		//Set Speed of motor to correct value depending on drive mode
 		leftJag.Set(leftMotorSpeed);
