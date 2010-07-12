@@ -19,6 +19,11 @@
 // Code version number
 #define T166_CODE_VERSION ("CODE: BATTLECRY-05")
 
+
+//
+//General Defines
+//
+
 //
 // Analog Pin layout
 // _MOD refers to cRIO module (1 or 2)
@@ -28,9 +33,10 @@
 #define T166_ANALOG_MODULE_1 (1)
 #define T166_ANALOG_MODULE_2 (2)
 
-// first analog module
-#define T166_BAT_MOD (T166_ANALOG_MODULE_1) // Module for battery sensor
-#define T166_BAT_VOLT (8)                   // Channel for battery voltage
+//Channel for UltraSonic Sensor
+#define T166_US (1)
+// Channel for battery voltage
+#define T166_BAT_VOLT (8)
 
 //
 // Digital Pin layout

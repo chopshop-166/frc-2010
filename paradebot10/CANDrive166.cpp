@@ -146,7 +146,6 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 	
 	int valuethrottle=0;
 	
-	char *buffer = new char[DASHBOARD_BUFFER_MAX];
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 CANDrive task\n");
 
@@ -163,11 +162,40 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 	float leftCurrent=0, rightCurrent=0;
 	float leftMotorSpeed = 0;
 	float rightMotorSpeed = 0;
+	bool held = 0;
+	float test_speed = 0;
+	bool test_mode = 0;
 
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {	
 		
+		if((proxy->GetButton(2,7)) && (held = 0)) {
+			held = 1;
+			test_mode = !test_mode;
+			test_speed = proxy->GetThrottle(2);
+			
+		} else {
+			held = 0;
+		}
+		if(test_mode) {
+			lHandle->DriverStationDisplay("Test Mode is enabled");
+			bool held = 0;
+			if(proxy->GetButton(2,8)) {
+				held = 1;
+				test_speed--;
+			} else if (proxy->GetButton(2,9)) {
+				held = 1;
+				test_speed++;
+			} else {
+				held = 0;
+			}
+			lHandle->DriverStationDisplay("Speed: %f\r", test_speed);
+			leftMotorSpeed = test_speed;
+			rightMotorSpeed = test_speed;
+		} else {
+			lHandle->DriverStationDisplay("Test Mode is disabled");
+		}
 		//Drive mode determined by throttle on joystick 1
 		if(proxy->GetThrottle(1)>0) {
 			//Arcade Drive
@@ -210,6 +238,7 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 		//Set Speed of motor to correct value depending on drive mode
 		leftJag.Set(leftMotorSpeed);
 		rightJag.Set(rightMotorSpeed);
+		
 		//LOGGING STUFF
 		if ((++valuethrottle) % (1000/CAN_CYCLE_TIME) ==0)
 		{
@@ -219,10 +248,7 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 			// Print debug to console
 			DPRINTF(LOG_DEBUG, "Left Jag Current: %f", leftCurrent);
 			DPRINTF(LOG_DEBUG, "Right Jag Current: %f", rightCurrent );
-		}
-		if (false) {
-			sprintf(buffer,"DRV: %f %f", leftCurrent, rightCurrent);
-			lHandle->DriverStationDisplay(buffer);
+			lHandle->DriverStationDisplay("DRV: %f %f", leftCurrent, rightCurrent);
 		}
 		
 		// do stuff

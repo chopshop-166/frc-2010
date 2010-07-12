@@ -4,5 +4,6 @@
 // Add any #defines for your .h files for each seperate task
 #include "CANDrive166.h"
 #include "pneumatics.h"
+#include "Sonar.h"
 
 #endif

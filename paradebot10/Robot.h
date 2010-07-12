@@ -62,7 +62,7 @@ public:
 			
 	void RegisterLogger(MemoryLog166 *ml);    // Register memory logger
 	void DumpLoggers(int dnum);               // Dump all logs
-	int DriverStationDisplay (char*);		  // Display text on DS
+	int DriverStationDisplay (const char*, ...);			// Display text on DS
 };
 
 #endif // !defined(_ROBOT166_H)
