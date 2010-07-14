@@ -29,8 +29,8 @@ Team166Task *Team166Task::ActiveTasks[T166_MAXTASK + 1] = {0};
 // This task has to always be started first or the system will crash
 Proxy166 Team166ProxyObject;
 // Declare external tasks
-Team166CANDrive Team166CANDriveObject;
-Pneumatics166 Pneumatics166Object;
+//Team166CANDrive Team166CANDriveObject;
+//Pneumatics166 Pneumatics166Object;
 Sonar166 SonarObject;
 
 

@@ -18,8 +18,7 @@
 //
 // This constant defines how often we want this task to run in the form
 // of miliseconds. Max allowed time is 999 miliseconds.
-// You should rename this when you copy it into a new file 
-#define SONAR_CYCLE_TIME (10) // 10ms
+#define SONAR_CYCLE_TIME (49) // 10ms
 
 // Rename this, too, or you'll run into collisions
 class Sonar166 : public Team166Task

@@ -34,7 +34,7 @@
 #define T166_ANALOG_MODULE_2 (2)
 
 //Channel for UltraSonic Sensor
-#define T166_US (1)
+#define T166_US (7)
 // Channel for battery voltage
 #define T166_BAT_VOLT (8)
 

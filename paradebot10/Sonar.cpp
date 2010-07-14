@@ -28,7 +28,7 @@ class SonarLog : public MemoryLog166
 {
 public:
 	SonarLog() : MemoryLog166(
-			sizeof(struct abuf166), SONAR_CYCLE_TIME, "template",
+			sizeof(struct abuf166), SONAR_CYCLE_TIME, "sonar",
 			"Seconds,Nanoseconds,Elapsed Time\n" // Put the names of the values in here, comma-seperated
 			) {
 		return;
@@ -114,17 +114,31 @@ int Sonar166::Main(int a2, int a3, int a4, int a5,
 	float orig_voltage = 0;
 	
 	//Distance in inches
-	float distance = 0; 
+	float cur_distance = 0;
+	unsigned int index = 0;
+	float distances[20];
+	float average = 0;
+	float average_distance = 0;
 	
 	// Distance Multiplier for US sensor
-	#define T166_Distance_Multiplier (46.182)
+	#define T166_MV_TO_IN (9.8)
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
+		//Get Voltage from US sensor
 		orig_voltage = US.GetVoltage();
-		distance = orig_voltage * T166_Distance_Multiplier;
-		lHandle->DriverStationDisplay("Distance: %f", distance);
-		DPRINTF(LOG_DEBUG, "Distance: %f", distance);
+		//Convert Voltage to milliamps
+		orig_voltage = orig_voltage * 1000;
+		//Convert Milliamps to inches
+		cur_distance = orig_voltage / T166_MV_TO_IN;
+		//Add Distance into Distance array for averageing
+		distances[(index++ % 20)] = cur_distance;
+		for(int i=0; i<20; i++) {
+			average += distances[i];
+		}
+		
+		average = average / 20;
+		DPRINTF(LOG_DEBUG, "Distance: %f Voltage: %f", average, orig_voltage);
         // Logging any values
 		sl.PutOne();
 		
