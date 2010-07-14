@@ -14,7 +14,7 @@
 #include "CANDrive166.h"
 
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(true)dprintf
+#define DPRINTF if(false)dprintf
 
 // Sample in memory buffer
 struct abuf166
@@ -165,74 +165,87 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 	bool held = 0;
 	float test_speed = 0;
 	bool test_mode = 0;
+	bool output_limit = 1;
 
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {	
-		
-		if((proxy->GetButton(2,7)) && (held = 0)) {
+		if((proxy->GetButton(2,7)) && (held == 0)) {
 			held = 1;
 			test_mode = !test_mode;
+			output_limit = 1;
 			test_speed = proxy->GetThrottle(2);
-			
 		} else {
 			held = 0;
 		}
 		if(test_mode) {
-			lHandle->DriverStationDisplay("Test Mode is enabled");
+			if(output_limit) {
+				lHandle->DriverStationDisplay("Test Mode is enabled");
+				output_limit = 0;
+			}
 			bool held = 0;
 			if(proxy->GetButton(2,8)) {
 				held = 1;
-				test_speed--;
+				test_speed = test_speed - .01;
+				lHandle->DriverStationDisplay("Speed: %f", test_speed);
 			} else if (proxy->GetButton(2,9)) {
 				held = 1;
-				test_speed++;
+				test_speed = test_speed + .01;
+				lHandle->DriverStationDisplay("Speed: %f", test_speed);
 			} else {
 				held = 0;
 			}
-			lHandle->DriverStationDisplay("Speed: %f\r", test_speed);
-			leftMotorSpeed = test_speed;
-			rightMotorSpeed = test_speed;
-		} else {
-			lHandle->DriverStationDisplay("Test Mode is disabled");
-		}
-		//Drive mode determined by throttle on joystick 1
-		if(proxy->GetThrottle(1)>0) {
-			//Arcade Drive
-			if(proxy->GetButton(1,3)) {
-				leftMotorSpeed = ARCADE_AUTO_SPEED;
-				rightMotorSpeed = -ARCADE_AUTO_SPEED;
-			} else if(proxy->GetButton(1,2)) {
-				leftMotorSpeed = -ARCADE_AUTO_SPEED;
-				rightMotorSpeed = ARCADE_AUTO_SPEED;
+			
+			if(proxy->GetTrigger(2)) {
+				leftMotorSpeed = test_speed;
+				rightMotorSpeed = -test_speed;
 			} else {
-				float moveValue = proxy->GetJoystickX(1);
-				float rotateValue = proxy->GetJoystickY(1);
-		
-				if (moveValue > 0.0) {
-					if (rotateValue > 0.0) {
-						leftMotorSpeed = moveValue - rotateValue;
-						rightMotorSpeed = max(moveValue, rotateValue);
-					} else {
-						leftMotorSpeed = max(moveValue, -rotateValue);
-						rightMotorSpeed = moveValue + rotateValue;
-					}
-				} else {
-					if (rotateValue > 0.0) {
-						leftMotorSpeed = - max(-moveValue, rotateValue);
-						rightMotorSpeed = moveValue + rotateValue;
-					} else {
-						leftMotorSpeed = moveValue - rotateValue;
-						rightMotorSpeed = - max(-moveValue, -rotateValue);
-					}
-				}
-				//Make sure values aren't out of bounds
-				SquareInputs(leftMotorSpeed, rightMotorSpeed);
+				leftMotorSpeed = 0;
+				rightMotorSpeed = 0;
 			}
 		} else {
-			//Tank Drive
-			leftMotorSpeed = -proxy->GetJoystickY(1);
-			rightMotorSpeed = proxy->GetJoystickY(2);
+			if (output_limit) {
+				lHandle->DriverStationDisplay("Test Mode is disabled");
+				output_limit = 0;
+			}
+			//Drive mode determined by throttle on joystick 1
+			if(proxy->GetThrottle(1)>0) {
+				//Arcade Drive
+				if(proxy->GetButton(1,3)) {
+					leftMotorSpeed = ARCADE_AUTO_SPEED;
+					rightMotorSpeed = -ARCADE_AUTO_SPEED;
+				} else if(proxy->GetButton(1,2)) {
+					leftMotorSpeed = -ARCADE_AUTO_SPEED;
+					rightMotorSpeed = ARCADE_AUTO_SPEED;
+				} else {
+					float moveValue = proxy->GetJoystickX(1);
+					float rotateValue = proxy->GetJoystickY(1);
+			
+					if (moveValue > 0.0) {
+						if (rotateValue > 0.0) {
+							leftMotorSpeed = moveValue - rotateValue;
+							rightMotorSpeed = max(moveValue, rotateValue);
+						} else {
+							leftMotorSpeed = max(moveValue, -rotateValue);
+							rightMotorSpeed = moveValue + rotateValue;
+						}
+					} else {
+						if (rotateValue > 0.0) {
+							leftMotorSpeed = - max(-moveValue, rotateValue);
+							rightMotorSpeed = moveValue + rotateValue;
+						} else {
+							leftMotorSpeed = moveValue - rotateValue;
+							rightMotorSpeed = - max(-moveValue, -rotateValue);
+						}
+					}
+					//Make sure values aren't out of bounds
+					SquareInputs(leftMotorSpeed, rightMotorSpeed);
+				}
+			} else {
+				//Tank Drive
+				leftMotorSpeed = proxy->GetJoystickY(1);
+				rightMotorSpeed = -proxy->GetJoystickY(2);
+			}
 		}
 		
 		//Set Speed of motor to correct value depending on drive mode
