@@ -117,7 +117,7 @@ int Sonar166::Main(int a2, int a3, int a4, int a5,
 	float distance = 0; 
 	
 	// Distance Multiplier for US sensor
-	#define T166_Distance_Multiplier (.046875)
+	#define T166_Distance_Multiplier (46.182)
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {

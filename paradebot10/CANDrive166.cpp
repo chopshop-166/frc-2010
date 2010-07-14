@@ -166,50 +166,32 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 	float test_speed = 0;
 	bool test_mode = 0;
 	bool output_limit = 1;
-
+	typedef enum {CONFIG = 0, TANK_DRIVE = 1, ARCADE_DRIVE = 2, TEST_MODE = 3} Drive_States;
+	Drive_States Drive_State = CONFIG;
+	
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
-			(lHandle->RobotMode == T166_OPERATOR)) {	
-		if((proxy->GetButton(2,7)) && (held == 0)) {
-			held = 1;
-			test_mode = !test_mode;
-			output_limit = 1;
-			test_speed = proxy->GetThrottle(2);
-		} else {
-			held = 0;
-		}
-		if(test_mode) {
-			if(output_limit) {
-				lHandle->DriverStationDisplay("Test Mode is enabled");
-				output_limit = 0;
-			}
-			bool held = 0;
-			if(proxy->GetButton(2,8)) {
-				held = 1;
-				test_speed = test_speed - .01;
-				lHandle->DriverStationDisplay("Speed: %f", test_speed);
-			} else if (proxy->GetButton(2,9)) {
-				held = 1;
-				test_speed = test_speed + .01;
-				lHandle->DriverStationDisplay("Speed: %f", test_speed);
-			} else {
-				held = 0;
-			}
-			
-			if(proxy->GetTrigger(2)) {
-				leftMotorSpeed = test_speed;
-				rightMotorSpeed = -test_speed;
-			} else {
-				leftMotorSpeed = 0;
-				rightMotorSpeed = 0;
-			}
-		} else {
-			if (output_limit) {
-				lHandle->DriverStationDisplay("Test Mode is disabled");
-				output_limit = 0;
-			}
-			//Drive mode determined by throttle on joystick 1
-			if(proxy->GetThrottle(1)>0) {
+			(lHandle->RobotMode == T166_OPERATOR)) {
+		Drive_State = CONFIG;
+		switch (Drive_State) {
+			case 0:
+				if((proxy->GetButton(2,7)) && (held == 0)) {
+					held = 1;
+					test_mode = !test_mode;
+					Drive_State = TEST_MODE;
+				} else {
+					held = 0;
+					if(proxy->GetThrottle(1)>=0) {
+						Drive_State = TANK_DRIVE;
+					} else {
+						Drive_State = ARCADE_DRIVE;
+					}
+				}
+			case 1:
+				//Tank Drive
+				leftMotorSpeed = proxy->GetJoystickY(1);
+				rightMotorSpeed = -proxy->GetJoystickY(2);
+			case 2:
 				//Arcade Drive
 				if(proxy->GetButton(1,3)) {
 					leftMotorSpeed = ARCADE_AUTO_SPEED;
@@ -239,15 +221,43 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 						}
 					}
 					//Make sure values aren't out of bounds
-					SquareInputs(leftMotorSpeed, rightMotorSpeed);
+					SquareInputs(leftMotorSpeed, rightMotorSpeed);		
 				}
-			} else {
-				//Tank Drive
-				leftMotorSpeed = proxy->GetJoystickY(1);
-				rightMotorSpeed = -proxy->GetJoystickY(2);
+			case 3:
+				output_limit = 1;
+				test_speed = proxy->GetThrottle(2);
+				if(output_limit) {
+					lHandle->DriverStationDisplay("Test Mode is enabled");
+					output_limit = 0;
+				}
+				bool num_held = 0;
+				if((proxy->GetButton(2,8)) && (num_held == 0)) {
+					num_held = 1;
+					test_speed = test_speed - .01;
+					lHandle->DriverStationDisplay("Speed: %f", test_speed);
+				} else if((proxy->GetButton(2,9)) && (num_held == 0)) {
+					num_held = 1;
+					test_speed = test_speed + .01;
+					lHandle->DriverStationDisplay("Speed: %f", test_speed);
+				} else {
+					num_held = 0;
+				}
+				//Only drive while trigger is being held
+				if(proxy->GetTrigger(2)) {
+					leftMotorSpeed = test_speed;
+					rightMotorSpeed = -test_speed;
+				//Make sure robot stops moving when trigger is let go
+				} else {
+					leftMotorSpeed = 0;
+					rightMotorSpeed = 0;
+				}
+		}
+		if(!test_mode) {
+			if(output_limit) {
+				lHandle->DriverStationDisplay("Test Mode is disabled");
+				output_limit = 0;
 			}
 		}
-		
 		//Set Speed of motor to correct value depending on drive mode
 		leftJag.Set(leftMotorSpeed);
 		rightJag.Set(rightMotorSpeed);
