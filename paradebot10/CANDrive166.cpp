@@ -166,32 +166,42 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 	float test_speed = 0;
 	bool test_mode = 0;
 	bool output_limit = 1;
-	typedef enum {CONFIG = 0, TANK_DRIVE = 1, ARCADE_DRIVE = 2, TEST_MODE = 3} Drive_States;
-	Drive_States Drive_State = CONFIG;
+	typedef enum {TANK_DRIVE = 1, ARCADE_DRIVE = 2, TEST_MODE = 3} Drive_States;
+	Drive_States Drive_State;
+	Drive_States Prev_State;
 	
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		Drive_State = CONFIG;
+		if ((proxy->GetButton(2,7)) && (held == 0)) {
+			Drive_State = TEST_MODE;
+			test_mode = !test_mode;
+		} else if(test_mode == 0){
+			if(proxy->GetThrottle(2)>=0) {
+				Drive_State = TANK_DRIVE;
+			} else {
+				Drive_State = ARCADE_DRIVE;
+			}
+		}
+		if (Drive_State != Prev_State) {
+			lHandle->DriverStationDisplay("State Changed");
+		}
 		switch (Drive_State) {
-			case 0:
-				if((proxy->GetButton(2,7)) && (held == 0)) {
-					held = 1;
-					test_mode = !test_mode;
-					Drive_State = TEST_MODE;
-				} else {
-					held = 0;
-					if(proxy->GetThrottle(1)>=0) {
-						Drive_State = TANK_DRIVE;
-					} else {
-						Drive_State = ARCADE_DRIVE;
-					}
-				}
 			case 1:
+				if (output_limit) {
+					lHandle->DriverStationDisplay("In Tank Drive");
+					output_limit = 0;
+				}
 				//Tank Drive
 				leftMotorSpeed = proxy->GetJoystickY(1);
 				rightMotorSpeed = -proxy->GetJoystickY(2);
+				Prev_State = TANK_DRIVE;
+				break;
 			case 2:
+				if (output_limit) {
+					lHandle->DriverStationDisplay("In Arcade Drive");
+					output_limit = 0;
+				}
 				//Arcade Drive
 				if(proxy->GetButton(1,3)) {
 					leftMotorSpeed = ARCADE_AUTO_SPEED;
@@ -200,8 +210,8 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 					leftMotorSpeed = -ARCADE_AUTO_SPEED;
 					rightMotorSpeed = ARCADE_AUTO_SPEED;
 				} else {
-					float moveValue = proxy->GetJoystickX(1);
-					float rotateValue = proxy->GetJoystickY(1);
+					float moveValue = -proxy->GetJoystickX(1);
+					float rotateValue = -proxy->GetJoystickY(1);
 			
 					if (moveValue > 0.0) {
 						if (rotateValue > 0.0) {
@@ -223,8 +233,9 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 					//Make sure values aren't out of bounds
 					SquareInputs(leftMotorSpeed, rightMotorSpeed);		
 				}
+				Prev_State = ARCADE_DRIVE;
+				break;
 			case 3:
-				output_limit = 1;
 				test_speed = proxy->GetThrottle(2);
 				if(output_limit) {
 					lHandle->DriverStationDisplay("Test Mode is enabled");
@@ -251,6 +262,7 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 					leftMotorSpeed = 0;
 					rightMotorSpeed = 0;
 				}
+				Prev_State = TEST_MODE;
 		}
 		if(!test_mode) {
 			if(output_limit) {

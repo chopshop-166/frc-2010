@@ -5,5 +5,6 @@
 #include "CANDrive166.h"
 #include "pneumatics.h"
 #include "Sonar.h"
+#include "AxesSensors.h"
 
 #endif

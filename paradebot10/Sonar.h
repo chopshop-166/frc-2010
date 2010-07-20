@@ -38,6 +38,7 @@ public:
 	
 private:
 	AnalogChannel US;
+	AnalogChannel IR;
 	// Any variables that the task has as members go here
 };
 

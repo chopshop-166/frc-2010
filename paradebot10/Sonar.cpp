@@ -76,7 +76,7 @@ unsigned int SonarLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-Sonar166::Sonar166(void): US(T166_ANALOG_MODULE_1,T166_US)
+Sonar166::Sonar166(void): US(T166_ANALOG_MODULE_1,T166_US), IR(T166_ANALOG_MODULE_1,T166_IR)
 {
 	Start((char *)"166SonarTask", SONAR_CYCLE_TIME);
 	// ^^^ Rename those ^^^
@@ -111,14 +111,14 @@ int Sonar166::Main(int a2, int a3, int a4, int a5,
 	proxy = Proxy166::getInstance();
 	
 	//Original voltage
-	float orig_voltage = 0;
-	
+	float orig_voltage_us = 0;
+	float orig_voltage_ir = 0;
 	//Distance in inches
-	float cur_distance = 0;
+	float cur_distance_us = 0;
+	float cur_distance_ir = 0;
 	unsigned int index = 0;
 	float distances[20];
 	float average = 0;
-	float average_distance = 0;
 	
 	// Distance Multiplier for US sensor
 	#define T166_MV_TO_IN (9.8)
@@ -126,19 +126,21 @@ int Sonar166::Main(int a2, int a3, int a4, int a5,
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
 		//Get Voltage from US sensor
-		orig_voltage = US.GetVoltage();
+		orig_voltage_us = US.GetVoltage();
+		orig_voltage_ir = IR.GetVoltage();
+		//lHandle->DriverStationDisplay("Voltage: %f", orig_voltage_ir);
 		//Convert Voltage to milliamps
-		orig_voltage = orig_voltage * 1000;
+		orig_voltage_us = orig_voltage_us * 1000;
 		//Convert Milliamps to inches
-		cur_distance = orig_voltage / T166_MV_TO_IN;
+		cur_distance_us = orig_voltage_us / T166_MV_TO_IN;
 		//Add Distance into Distance array for averageing
-		distances[(index++ % 20)] = cur_distance;
+		distances[(index++ % 20)] = cur_distance_us;
 		for(int i=0; i<20; i++) {
 			average += distances[i];
 		}
 		
 		average = average / 20;
-		DPRINTF(LOG_DEBUG, "Distance: %f Voltage: %f", average, orig_voltage);
+		//DPRINTF(LOG_DEBUG, "Distance: %f Voltage: %f", average, orig_voltage_us);
         // Logging any values
 		sl.PutOne();
 		

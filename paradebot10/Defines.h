@@ -33,6 +33,16 @@
 #define T166_ANALOG_MODULE_1 (1)
 #define T166_ANALOG_MODULE_2 (2)
 
+//Channel for Y axis on DAA Sensor
+#define T166_Y_AXIS (4)
+//Channel for X axis on DAA Sensor
+#define T166_X_AXIS (5)
+//Channel for Gyro Sensor
+#define T166_Gyro (1)
+//Channel for Temp Sensor
+#define T166_Temp (2)
+//Channel for IR sensor
+#define T166_IR (6)
 //Channel for UltraSonic Sensor
 #define T166_US (7)
 // Channel for battery voltage

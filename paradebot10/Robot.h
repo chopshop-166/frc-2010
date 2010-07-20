@@ -19,6 +19,7 @@
 #include "Target.h"
 #include "Autonomous166.h"
 #include "Sonar.h"
+#include "AxesSensors.h"
 #include "MemoryLog166.h"
 #include "Proxy166.h"
 class DashboardDataSender;
