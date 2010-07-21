@@ -92,18 +92,25 @@ float AxesSensors166::GetTemperature(AnalogChannel &TempSensor,char temp) {
 	#define CELSIUS_TO_KELVIN (273.15)
 	float orig_voltage_temp;
 	float Temp_Kelvin;
+	
 	//Get Temperature In Kelvin, Celsius, Fahrenheit
 	orig_voltage_temp = TempSensor.GetVoltage();
 	//Convert Millivolts to kelvin
-	Temp_Kelvin = ((orig_voltage_temp * 1000) / 9.8);
+	Temp_Kelvin = ((orig_voltage_temp * 1000) / 8.4);
 	if (temp == 'K') {
 		return Temp_Kelvin;
-	} else if(temp == 'C') {
-		return (Temp_Kelvin - CELSIUS_TO_KELVIN);
-	} else if(temp == 'F') {
-		return ((9/5) * (Temp_Kelvin - CELSIUS_TO_KELVIN)) + 32;
 	} else {
-		return 1;
+		float Temp_Celsius;
+		Temp_Celsius = Temp_Kelvin - CELSIUS_TO_KELVIN;	
+		if(temp == 'C') {
+			return Temp_Celsius;
+		} else if(temp == 'F') {
+			float Temp_Fahrenheit;
+			Temp_Fahrenheit = ((1.8 * Temp_Celsius) + 32);
+			return Temp_Fahrenheit;
+		} else {
+			return 1;
+		}
 	}
 }
 	
@@ -128,23 +135,25 @@ int AxesSensors166::Main(int a2, int a3, int a4, int a5,
 	// Register the proxy
 	proxy = Proxy166::getInstance();
 
-	float orig_voltage_gyro = 0;
+	//float orig_voltage_gyro = 0;
 	float Gyro_Angle = 0;
 	float X_Axis_Accel = 0;
 	float Y_Axis_Accel = 0;
-	#define Sensitivity_DAA (0.174)
-	X_Axis.SetSensitivity(Sensitivity_DAA);
-	Y_Axis.SetSensitivity(Sensitivity_DAA);
+	float X_Axis_Old = 0;
+	float Y_Axis_Old = 0;
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		
-	
 		//lHandle->DriverStationDisplay("Temp: %f", orig_voltage_temp);
 		Gyro_Angle = Gyro_Sensor.GetAngle();
         //lHandle->DriverStationDisplay("Angle: %f", Gyro_Angle);
-		X_Axis_Accel = X_Axis.GetAcceleration();
-		Y_Axis_Accel = Y_Axis.GetAcceleration();		
+		X_Axis_Accel = X_Axis.GetVoltage();
+		Y_Axis_Accel = Y_Axis.GetAcceleration();
+		if((X_Axis_Accel != X_Axis_Old) || (Y_Axis_Accel != Y_Axis_Old)) {
+			printf("X: %f\tY: %f\n",X_Axis_Accel,Y_Axis_Accel);
+		}
+		X_Axis_Old = X_Axis_Accel;
+		Y_Axis_Old = Y_Axis_Accel;
 		// Logging any values
 		sl.PutOne();
 		

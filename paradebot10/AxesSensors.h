@@ -41,7 +41,7 @@ private:
 	float GetTemperature(AnalogChannel&, char);
 	AnalogChannel Temp_Sensor;
 	Gyro Gyro_Sensor;
-	Accelerometer X_Axis;
+	AnalogChannel X_Axis;
 	Accelerometer Y_Axis;
 	// Any variables that the task has as members go here
 };

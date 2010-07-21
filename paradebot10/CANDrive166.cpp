@@ -283,7 +283,7 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 			// Print debug to console
 			DPRINTF(LOG_DEBUG, "Left Jag Current: %f", leftCurrent);
 			DPRINTF(LOG_DEBUG, "Right Jag Current: %f", rightCurrent );
-			lHandle->DriverStationDisplay("DRV: %f %f", leftCurrent, rightCurrent);
+			//lHandle->DriverStationDisplay("DRV: %f %f", leftCurrent, rightCurrent);
 		}
 		
 		// do stuff

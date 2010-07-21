@@ -17,7 +17,7 @@
 // Place any #defines for things you want to enable in multiple tasks, simply, here
 
 // Code version number
-#define T166_CODE_VERSION ("CODE: BATTLECRY-05")
+#define T166_CODE_VERSION ("CODE: PARADE 10")
 
 
 //
