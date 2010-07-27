@@ -33,6 +33,7 @@ Team166CANDrive Team166CANDriveObject;
 Pneumatics166 Pneumatics166Object;
 Sonar166 SonarObject;
 AxesSensors166 AxesSensorsObject;
+CameraServo CameraServoObject;
 
 
 // This links to the single instance of the Robot task

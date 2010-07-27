@@ -6,5 +6,6 @@
 #include "pneumatics.h"
 #include "Sonar.h"
 #include "AxesSensors.h"
+#include "cameraServo.h"
 
 #endif

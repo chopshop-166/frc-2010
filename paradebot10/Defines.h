@@ -108,4 +108,10 @@
 //
 // Place #defines for the button layout here
 
+//
+// Camera ports on the analog module
+//
+#define CAMERA_PORT_X (1)
+#define CAMERA_PORT_Y (2)
+
 #endif // !defined(_T166_DEFINES_H)
