@@ -1,9 +1,5 @@
 #include "WPILib.h"
 
-#include "Vision/AxisCamera2010.h"
-#include "Vision/HSLImage.h"
-#include "PIDController.h"
-#include "Gyro.h"
 #include "Target.h"
 #include "DashboardDataSender.h"
 
@@ -83,27 +79,28 @@ public:
 
 		// Create and set up a camera instance. first wait for the camera to start
 		// if the robot was just powered on. This gives the camera time to boot.
-		Wait(10.0);
 		printf("Getting camera instance\n");
-		AxisCamera &camera = AxisCamera::getInstance();
+		AxisCamera &camera = AxisCamera::GetInstance();
 		printf("Setting camera parameters\n");
-		camera.writeResolution(k320x240);
-		camera.writeBrightness(0);
-		
+		camera.WriteResolution(AxisCamera::kResolution_320x240);
+		camera.WriteCompression(20);
+		camera.WriteBrightness(0);
+
 		// set sensitivity for the 2010 kit gyro
 		gyro->SetSensitivity(0.007);
-		
+
 		// set watchdog
 		GetWatchdog().SetExpiration(1.0);
-
-		Wait(3.0);
 
 		// keep track of the previous joystick trigger value
 		bool lastTrigger = false;
 
 		// loop getting images from the camera and finding targets
 		printf("Starting operator control loop\n");
-		while (IsOperatorControl()) {
+		Timer timer;
+		timer.Start();
+		while (IsOperatorControl())
+		{
 			bool trigger;
 			GetWatchdog().Feed();
 			// if trigger is pulled, the robot will run with standard arcade drive
@@ -113,12 +110,14 @@ public:
 					turnController.Enable();
 				// if there's a fresh and we're at the previous target heading then
 				// get a camera image and process it
-				if (camera.freshImage() /*&& turnController.OnTarget() */) {
+				if (camera.IsFreshImage())
+				{
+					timer.Reset();
 					// get the gyro heading that goes with this image
 					double gyroAngle = gyro->PIDGet();
-					
+
 					// get the camera image
-					ColorImage *image = camera.GetImage();
+					HSLImage *image = camera.GetImage();
 
 					// find FRC targets in the image
 					vector<Target> targets = Target::FindCircularTargets(image);
@@ -141,7 +140,7 @@ public:
 						if (targets.size() == 0)
 							printf("No target found\n\n");
 						else
-							printf("No valid targets found, best score: %f\n", targets[0].m_score);
+							printf("No valid targets found, best score: %f ", targets[0].m_score);
 					}
 					else {
 						// We have some targets.
@@ -153,8 +152,10 @@ public:
 						
 						// send dashbaord data for target tracking
 						dds->sendVisionData(0.0, gyro->GetAngle(), 0.0, targets[0].m_xPos / targets[0].m_xMax, targets);
+						printf("Target found %f ", targets[0].m_score);
 //						targets[0].Print();
 					}
+					printf("Time: %f\n", 1.0 / timer.Get());
 				}
 			} else {
 				// if the trigger is not pressed, then do Arcade driving with joystick 1

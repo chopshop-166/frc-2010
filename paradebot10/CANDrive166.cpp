@@ -179,8 +179,10 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 		} else if(test_mode == 0){
 			if(proxy->GetThrottle(2)>=0) {
 				Drive_State = TANK_DRIVE;
+				output_limit = 0;
 			} else {
 				Drive_State = ARCADE_DRIVE;
+				output_limit = 0;
 			}
 		}
 		if (Drive_State != Prev_State) {
