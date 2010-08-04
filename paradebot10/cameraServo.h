@@ -14,6 +14,7 @@
 #define _CAMERA_SERVO_H
 #include "WPILib.h"
 #include "Robot.h"
+#include "Vision/AxisCamera.h"
 
 //
 // This constant defines how often we want this task to run in the form
@@ -41,6 +42,7 @@ private:
 	// Any variables that the task has as members go here
 	Servo cameraX;
 	Servo cameraY;
+	AxisCamera &camera;
 };
 
 #endif // !defined(_TASK_TEMPLATE_H)

@@ -76,10 +76,12 @@ unsigned int CameraServoLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-CameraServo::CameraServo(void): cameraX(CAMERA_PORT_X), cameraY(CAMERA_PORT_Y)
+CameraServo::CameraServo(void): cameraX(CAMERA_PORT_X), cameraY(CAMERA_PORT_Y), camera(AxisCamera::GetInstance())
 {
 	Start((char *)"166CameraServoes", CAMERA_SERVO_CYCLE_TIME);
-	// ^^^ Rename those ^^^
+	camera.WriteResolution(AxisCamera::kResolution_320x240);
+	camera.WriteCompression(20);
+	camera.WriteBrightness(0);
 	return;
 };
 	
@@ -119,27 +121,31 @@ int CameraServo::Main(int a2, int a3, int a4, int a5,
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		CamJoystickX = proxy->GetJoystickX(T166_COPILOT_STICK);
-		CamJoystickY = proxy->GetJoystickY(T166_COPILOT_STICK);
-		if(CamJoystickX >= DEADBAND) {
-			CamX += CAMMOVE;
-		} else if(CamJoystickX <= -DEADBAND) {
-			CamX -= CAMMOVE;
-		}
-		if(CamJoystickY >= DEADBAND) {
-			CamY -= CAMMOVE;
-		} else if(CamJoystickY <= -DEADBAND) {
-			CamY += CAMMOVE;
-		}
-		if(CamX > 1.0) {
-			CamX = 1.0;
-		} else if(CamX < .0) {
-			CamX = .0;
-		}
-		if(CamY > 1.0) {
-			CamY = 1.0;
-		} else if(CamY < .0) {
-			CamY = .0;
+		if(!proxy->GetTrigger(3)) {
+			CamJoystickX = proxy->GetJoystickX(T166_COPILOT_STICK);
+			CamJoystickY = proxy->GetJoystickY(T166_COPILOT_STICK);
+			if(CamJoystickX >= DEADBAND) {
+				CamX += CAMMOVE;
+			} else if(CamJoystickX <= -DEADBAND) {
+				CamX -= CAMMOVE;
+			}
+			if(CamJoystickY >= DEADBAND) {
+				CamY -= CAMMOVE;
+			} else if(CamJoystickY <= -DEADBAND) {
+				CamY += CAMMOVE;
+			}
+			if(CamX > 1.0) {
+				CamX = 1.0;
+			} else if(CamX < .0) {
+				CamX = .0;
+			}
+			if(CamY > 1.0) {
+				CamY = 1.0;
+			} else if(CamY < .0) {
+				CamY = .0;
+			}
+		} else {
+			CamX = CamY = 0.5;
 		}
 		cameraX.Set(CamX);
 		cameraY.Set(CamY);
