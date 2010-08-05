@@ -115,7 +115,6 @@ int Sonar166::Main(int a2, int a3, int a4, int a5,
 	float orig_voltage_ir = 0;
 	//Distance in inches
 	float cur_distance_us = 0;
-	float cur_distance_ir = 0;
 	unsigned int index = 0;
 	float distances[20];
 	float average = 0;

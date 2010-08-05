@@ -76,9 +76,11 @@ unsigned int CameraServoLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-CameraServo::CameraServo(void): cameraX(CAMERA_PORT_X), cameraY(CAMERA_PORT_Y), camera(AxisCamera::GetInstance())
+CameraServo::CameraServo(void): cameraX(CAMERA_PORT_X), cameraY(CAMERA_PORT_Y), camera(AxisCamera::GetInstance()) 
 {
 	Start((char *)"166CameraServoes", CAMERA_SERVO_CYCLE_TIME);
+	Cone_Range->minValue = 100;
+	Cone_Range->maxValue = 150;
 	camera.WriteResolution(AxisCamera::kResolution_320x240);
 	camera.WriteCompression(20);
 	camera.WriteBrightness(0);
@@ -115,13 +117,23 @@ int CameraServo::Main(int a2, int a3, int a4, int a5,
 	float CamJoystickY = 0.0;
 	float CamX = 0.5;
 	float CamY = 0.5;
+	double distanceX = 0;
+	double distanceY = 0;
+	double CenterValueX = 0;
+	double CenterValueY = 0;
+	float CamValueX = 0;
+	float CamValueY = 0;
 	#define DEADBAND (0.2)
 	#define CAMMOVE (.5 / (1000/CAMERA_SERVO_CYCLE_TIME))
-		
+	// Center pixel of camera along x axis
+	#define CAMERA_CENTER_X (160)
+	// Center pixel of camera along y axis
+	#define CAMERA_CENTER_Y (120)
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		if(!proxy->GetTrigger(3)) {
+		if(proxy->GetThrottle(3)) {
+			if(!proxy->GetTrigger(3)) {
 			CamJoystickX = proxy->GetJoystickX(T166_COPILOT_STICK);
 			CamJoystickY = proxy->GetJoystickY(T166_COPILOT_STICK);
 			if(CamJoystickX >= DEADBAND) {
@@ -144,12 +156,25 @@ int CameraServo::Main(int a2, int a3, int a4, int a5,
 			} else if(CamY < .0) {
 				CamY = .0;
 			}
+			} else {
+				CamX = CamY = 0.5;
+			}	
 		} else {
-			CamX = CamY = 0.5;
+			FindColor(Cone_Range, Particle_Report);
+			CenterValueX = Particle_Report->center_mass_x_normalized;
+			CenterValueY = Particle_Report->center_mass_y_normalized;
+			distanceX = CenterValueX - .5;
+			distanceY = CenterValueY - .5;
+			CamValueX = cameraX.Get();
+			CamValueY = cameraY.Get();
+			CamX = CamValueX + distanceX;
+			CamY = CamValueY = distanceY;
+			CamX = NormalizeToRange(CamX, 0, 1);
+			CamY = NormalizeToRange(CamY, 0, 1);
 		}
-		cameraX.Set(CamX);
+        cameraX.Set(CamX);
 		cameraY.Set(CamY);
-        // Logging any values
+		// Logging any values
 		sl.PutOne();
 		
 		// Wait for our next lap

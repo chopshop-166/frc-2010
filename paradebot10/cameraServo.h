@@ -15,6 +15,7 @@
 #include "WPILib.h"
 #include "Robot.h"
 #include "Vision/AxisCamera.h"
+#include "TrackAPI.h"
 
 //
 // This constant defines how often we want this task to run in the form
@@ -43,6 +44,8 @@ private:
 	Servo cameraX;
 	Servo cameraY;
 	AxisCamera &camera;
+	ParticleAnalysisReport *Particle_Report;
+	Range* Cone_Range;
 };
 
 #endif // !defined(_TASK_TEMPLATE_H)
