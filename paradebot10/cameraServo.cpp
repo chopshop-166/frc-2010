@@ -155,7 +155,7 @@ int CameraServo::Main(int a2, int a3, int a4, int a5,
 		} else {
 			CamX = CamY = 0.5;
 		}
-		if ((++timer) % (500/CAMERA_SERVO_CYCLE_TIME) == 0) {
+		if ((++timer) % (500/CAMERA_SERVO_CYCLE_TIME) == 0 && camera.IsFreshImage()) {
 			timer = 0;
 			camera.GetImage(srcimage);
 			frcColorThreshold(destimage, srcimage, IMAQ_HSL, &Hue_Range, &Sat_Range, &Lum_Range);
