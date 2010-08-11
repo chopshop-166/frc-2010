@@ -150,7 +150,7 @@ int AxesSensors166::Main(int a2, int a3, int a4, int a5,
 		X_Axis_Accel = X_Axis.GetVoltage();
 		Y_Axis_Accel = Y_Axis.GetAcceleration();
 		if((X_Axis_Accel != X_Axis_Old) || (Y_Axis_Accel != Y_Axis_Old)) {
-			printf("X: %f\tY: %f\n",X_Axis_Accel,Y_Axis_Accel);
+			//printf("X: %f\tY: %f\n",X_Axis_Accel,Y_Axis_Accel);
 		}
 		X_Axis_Old = X_Axis_Accel;
 		Y_Axis_Old = Y_Axis_Accel;

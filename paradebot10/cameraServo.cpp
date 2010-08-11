@@ -79,16 +79,17 @@ CameraServo::CameraServo(void): cameraX(CAMERA_PORT_X), cameraY(CAMERA_PORT_Y), 
 	destimage(frcCreateImage((ImageType) 4)),
 	srcimage(frcCreateImage((ImageType)0))
 {
-	Start((char *)"166CameraServoes", CAMERA_SERVO_CYCLE_TIME);
-	Hue_Range->minValue = 110;
-	Hue_Range->maxValue = 130;
-	Sat_Range->minValue = 25;
-	Sat_Range->maxValue = 220;
-	Lum_Range->minValue = 15;
-	Lum_Range->maxValue = 130;
+	Start((char *)"166CameraServos", CAMERA_SERVO_CYCLE_TIME);
+	Hue_Range.minValue = 110;
+	Hue_Range.maxValue = 130;
+	Sat_Range.minValue = 25;
+	Sat_Range.maxValue = 220;
+	Lum_Range.minValue = 15;
+	Lum_Range.maxValue = 130;
 	camera.WriteResolution(AxisCamera::kResolution_320x240);
 	camera.WriteCompression(20);
 	camera.WriteBrightness(0);
+	particle_report_temp = new ParticleAnalysisReport;
 	return;
 };
 	
@@ -105,6 +106,8 @@ int CameraServo::Main(int a2, int a3, int a4, int a5,
 	Proxy166 *proxy;				// Handle to proxy
 	Robot *lHandle;            // Local handle
 	CameraServoLog sl;                   // log
+	unsigned timer = 0;					// Timer to only do certain things so often
+	int particlecount = 0;
 	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 Template task\n");
@@ -128,40 +131,46 @@ int CameraServo::Main(int a2, int a3, int a4, int a5,
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 	(lHandle->RobotMode == T166_OPERATOR)) {
 		if(!proxy->GetTrigger(3)) {
-		CamJoystickX = proxy->GetJoystickX(T166_COPILOT_STICK);
-		CamJoystickY = proxy->GetJoystickY(T166_COPILOT_STICK);
-		if(CamJoystickX >= DEADBAND) {
-			CamX += CAMMOVE;
-		} else if(CamJoystickX <= -DEADBAND) {
-			CamX -= CAMMOVE;
-		}
-		if(CamJoystickY >= DEADBAND) {
-			CamY -= CAMMOVE;
-		} else if(CamJoystickY <= -DEADBAND) {
-			CamY += CAMMOVE;
-		}
-		if(CamX > 1.0) {
-			CamX = 1.0;
-		} else if(CamX < .0) {
-			CamX = .0;
-		}
-		if(CamY > 1.0) {
-			CamY = 1.0;
-		} else if(CamY < .0) {
-			CamY = .0;
-		}
+			CamJoystickX = proxy->GetJoystickX(T166_COPILOT_STICK);
+			CamJoystickY = proxy->GetJoystickY(T166_COPILOT_STICK);
+			if(CamJoystickX >= DEADBAND) {
+				CamX += CAMMOVE;
+			} else if(CamJoystickX <= -DEADBAND) {
+				CamX -= CAMMOVE;
+			}
+			if(CamJoystickY >= DEADBAND) {
+				CamY -= CAMMOVE;
+			} else if(CamJoystickY <= -DEADBAND) {
+				CamY += CAMMOVE;
+			}
+			if(CamX > 1.0) {
+				CamX = 1.0;
+			} else if(CamX < .0) {
+				CamX = .0;
+			}
+			if(CamY > 1.0) {
+				CamY = 1.0;
+			} else if(CamY < .0) {
+				CamY = .0;
+			}
 		} else {
 			CamX = CamY = 0.5;
 		}
-		camera.GetImage(srcimage);
-		frcColorThreshold(destimage, srcimage,IMAQ_HSL, Hue_Range, Sat_Range, Lum_Range);
-		int *particlecount;
-		frcCountParticles(srcimage, particlecount);
-		for (int i=0; i<*particlecount; i++) {
-			frcParticleAnalysis(srcimage, i, Particle_Report[i]);
-		}
-		for (int i=0; i<*particlecount; i++) {
-			
+		if ((++timer) % (500/CAMERA_SERVO_CYCLE_TIME) == 0) {
+			timer = 0;
+			camera.GetImage(srcimage);
+			frcColorThreshold(destimage, srcimage, IMAQ_HSL, &Hue_Range, &Sat_Range, &Lum_Range);
+			frcCountParticles(destimage, &particlecount);
+			FrcHue_enum t;
+			lHandle->DriverStationDisplay("Particles: %d", particlecount);
+			printf("Particles: %d\n", particlecount);
+			for (int i=0; i<particlecount; i++) {
+				frcParticleAnalysis(destimage, i, particle_report_temp);
+				if(Particle_Report.particleArea > particle_report_temp->particleArea) {
+					Particle_Report = *particle_report_temp;
+				}
+			}
+			printf("\tLargest Area: %f\n", Particle_Report.particleArea);
 		}
         cameraX.Set(CamX);
 		cameraY.Set(CamY);

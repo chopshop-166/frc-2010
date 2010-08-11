@@ -47,10 +47,11 @@ private:
 	AxisCamera &camera;
 	Image* destimage;
 	Image* srcimage;
-	vector<ParticleAnalysisReport*> Particle_Report;
-	Range* Hue_Range;
-	Range* Sat_Range;
-	Range* Lum_Range;
+	ParticleAnalysisReport Particle_Report;
+	ParticleAnalysisReport* particle_report_temp;
+	Range Hue_Range;
+	Range Sat_Range;
+	Range Lum_Range;
 };
 
 #endif // !defined(_TASK_TEMPLATE_H)
