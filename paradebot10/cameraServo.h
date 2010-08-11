@@ -48,7 +48,6 @@ private:
 	Image* destimage;
 	Image* srcimage;
 	ParticleAnalysisReport Particle_Report;
-	ParticleAnalysisReport* particle_report_temp;
 	Range Hue_Range;
 	Range Sat_Range;
 	Range Lum_Range;

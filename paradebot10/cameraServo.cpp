@@ -89,7 +89,6 @@ CameraServo::CameraServo(void): cameraX(CAMERA_PORT_X), cameraY(CAMERA_PORT_Y), 
 	camera.WriteResolution(AxisCamera::kResolution_320x240);
 	camera.WriteCompression(20);
 	camera.WriteBrightness(0);
-	particle_report_temp = new ParticleAnalysisReport;
 	return;
 };
 	
@@ -107,7 +106,7 @@ int CameraServo::Main(int a2, int a3, int a4, int a5,
 	Robot *lHandle;            // Local handle
 	CameraServoLog sl;                   // log
 	unsigned timer = 0;					// Timer to only do certain things so often
-	int particlecount = 0;
+	int largestParticleIndex = 0;
 	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 Template task\n");
@@ -160,17 +159,13 @@ int CameraServo::Main(int a2, int a3, int a4, int a5,
 			timer = 0;
 			camera.GetImage(srcimage);
 			frcColorThreshold(destimage, srcimage, IMAQ_HSL, &Hue_Range, &Sat_Range, &Lum_Range);
-			frcCountParticles(destimage, &particlecount);
-			FrcHue_enum t;
-			lHandle->DriverStationDisplay("Particles: %d", particlecount);
-			printf("Particles: %d\n", particlecount);
-			for (int i=0; i<particlecount; i++) {
-				frcParticleAnalysis(destimage, i, particle_report_temp);
-				if(Particle_Report.particleArea > particle_report_temp->particleArea) {
-					Particle_Report = *particle_report_temp;
-				}
+			GetLargestParticle(destimage,&largestParticleIndex);
+			if(largestParticleIndex != 0) {
+				frcParticleAnalysis(destimage, largestParticleIndex, &Particle_Report);
+				printf("\tLargest Area: %f\n", Particle_Report.particleArea);
+			} else {
+				printf("No particle found...\n");
 			}
-			printf("\tLargest Area: %f\n", Particle_Report.particleArea);
 		}
         cameraX.Set(CamX);
 		cameraY.Set(CamY);
