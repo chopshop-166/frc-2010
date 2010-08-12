@@ -13,7 +13,7 @@
 #include "WPILib.h"
 #include "cameraServo.h"
 // To locally enable debug printing: set true, to disable false
-#define DPRINTF if(false)dprintf
+#define DPRINTF if(true)dprintf
 
 // Sample in memory buffer
 struct abuf166
@@ -76,8 +76,8 @@ unsigned int CameraServoLog::DumpBuffer(char *nptr, FILE *ofile)
 
 // task constructor
 CameraServo::CameraServo(void): cameraX(CAMERA_PORT_X), cameraY(CAMERA_PORT_Y), camera(AxisCamera::GetInstance()),
-	destimage(frcCreateImage((ImageType) 4)),
-	srcimage(frcCreateImage((ImageType)0))
+	destimage(frcCreateImage(IMAQ_IMAGE_U8)),
+	srcimage(frcCreateImage(IMAQ_IMAGE_RGB))
 {
 	Start((char *)"166CameraServos", CAMERA_SERVO_CYCLE_TIME);
 	Hue_Range.minValue = 110;
@@ -160,13 +160,17 @@ int CameraServo::Main(int a2, int a3, int a4, int a5,
 			timer = 0;
 			camera.GetImage(srcimage);
 			frcColorThreshold(destimage, srcimage, IMAQ_HSL, &Hue_Range, &Sat_Range, &Lum_Range);
+			imaqWriteJPEGFile(destimage, "dest",750,NULL);
+			int errorCode = GetLastVisionError();     // error code: 0 = no error	
+			char* errorText = GetVisionErrorText(errorCode);
+			printf("Error = %i  %s ", errorCode, errorText);
 			frcCountParticles(destimage, &particlecount);
 			FrcHue_enum t;
 			lHandle->DriverStationDisplay("Particles: %d", particlecount);
 			printf("Particles: %d\n", particlecount);
 			for (int i=0; i<particlecount; i++) {
 				frcParticleAnalysis(destimage, i, particle_report_temp);
-				if(Particle_Report.particleArea > particle_report_temp->particleArea) {
+				if(Particle_Report.particleArea < particle_report_temp->particleArea) {
 					Particle_Report = *particle_report_temp;
 				}
 			}
