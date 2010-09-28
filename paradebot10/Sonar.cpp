@@ -93,7 +93,7 @@ Sonar166::~Sonar166(void)
 int Sonar166::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {
-	Proxy166 *proxy;				// Handle to proxy
+	Proxy *proxy;				// Handle to proxy
 	Robot *lHandle;            // Local handle
 	SonarLog sl;                   // log
 	
@@ -108,7 +108,7 @@ int Sonar166::Main(int a2, int a3, int a4, int a5,
 	lHandle->RegisterLogger(&sl);
 	
 	// Register the proxy
-	proxy = Proxy166::getInstance();
+	proxy = Proxy::getInstance();
 	
 	//Original voltage
 	float orig_voltage_us = 0;

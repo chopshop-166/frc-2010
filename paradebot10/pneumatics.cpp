@@ -93,7 +93,7 @@ Pneumatics166::~Pneumatics166(void)
 int Pneumatics166::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {
-	Proxy166 *proxy;				// Handle to proxy
+	Proxy *proxy;				// Handle to proxy
 	Robot *lHandle;            // Local handle
 	PneumaticsLog sl;                   // log
 	
@@ -108,7 +108,7 @@ int Pneumatics166::Main(int a2, int a3, int a4, int a5,
 	lHandle->RegisterLogger(&sl);
 	
 	// Register the proxy
-	proxy = Proxy166::getInstance();
+	proxy = Proxy::getInstance();
 	
 	compressor.Start();
 	
@@ -117,7 +117,11 @@ int Pneumatics166::Main(int a2, int a3, int a4, int a5,
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		trigger = proxy->GetTrigger(1);
+		if(proxy->GetThrottle(1) > 0) {
+			trigger = proxy->GetTrigger(1);
+		} else {
+			trigger ^= proxy->GetNewpress(1,1);
+		}
 		cylinder_open.Set(trigger);
 		if(trigger) {
 			fans.Set(Relay::kForward);

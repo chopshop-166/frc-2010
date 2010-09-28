@@ -102,7 +102,7 @@ CameraServo::~CameraServo(void)
 int CameraServo::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {
-	Proxy166 *proxy;				// Handle to proxy
+	Proxy *proxy;				// Handle to proxy
 	Robot *lHandle;            // Local handle
 	CameraServoLog sl;                   // log
 	unsigned timer = 0;					// Timer to only do certain things so often
@@ -119,7 +119,7 @@ int CameraServo::Main(int a2, int a3, int a4, int a5,
 	lHandle->RegisterLogger(&sl);
 	
 	// Register the proxy
-	proxy = Proxy166::getInstance();
+	proxy = Proxy::getInstance();
 	float CamJoystickX = 0.0;
 	float CamJoystickY = 0.0;
 	float CamX = 0.5;

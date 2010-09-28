@@ -142,7 +142,7 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 		
 	Robot *lHandle;                  // Local handle
 	CANDriveLog sl;                    // log
-	Proxy166 *proxy;				  //pointer to proxy	
+	Proxy *proxy;				  //pointer to proxy	
 	
 	int valuethrottle=0;
 	
@@ -152,7 +152,7 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 	// Wait for Robot go-ahead (e.g. entering Autonomous or Tele-operated mode)
 	WaitForGoAhead();
 
-	proxy = Proxy166::getInstance();
+	proxy = Proxy::getInstance();
 	
 	// Register our logger
 	lHandle = Robot::getInstance();

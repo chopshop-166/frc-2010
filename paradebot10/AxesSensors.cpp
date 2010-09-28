@@ -118,7 +118,7 @@ float AxesSensors166::GetTemperature(AnalogChannel &TempSensor,char temp) {
 int AxesSensors166::Main(int a2, int a3, int a4, int a5,
 			int a6, int a7, int a8, int a9, int a10)
 {
-	Proxy166 *proxy;				// Handle to proxy
+	Proxy *proxy;				// Handle to proxy
 	Robot *lHandle;            // Local handle
 	AxesSensorsLog sl;                   // log
 	
@@ -133,7 +133,7 @@ int AxesSensors166::Main(int a2, int a3, int a4, int a5,
 	lHandle->RegisterLogger(&sl);
 	
 	// Register the proxy
-	proxy = Proxy166::getInstance();
+	proxy = Proxy::getInstance();
 
 	//float orig_voltage_gyro = 0;
 	float Gyro_Angle = 0;

@@ -1,9 +1,8 @@
 /*******************************************************************************
-*  Project   		: chopshop10 - 2010 Chopshop Robot Controller Code
+*  Project   		: Framework
 *  File Name  		: MemoryLog166.cpp    
 *  Owner		   	: Software Group (FIRST Chopshop Team 166)
 *  Creation Date	: January 18, 2010
-*  Revision History	: From Explorer with TortoiseSVN, Use "Show log" menu item
 *  File Description	: General memory logger on chopshop robot
 *******************************************************************************/ 
 /*----------------------------------------------------------------------------*/
@@ -11,6 +10,7 @@
 /*----------------------------------------------------------------------------*/
 
 #include <memLib.h>
+#include "wpilib.h"
 #include "BaeUtilities.h"
 #include <string.h>
 #include <stdlib.h>
@@ -21,14 +21,15 @@
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
-
+#define Match_Time (135)
+#define Padding (5)
 // Memory log constructor
-MemoryLog166::MemoryLog166(unsigned int msize, unsigned int ltime, char *f, char *titles)
+MemoryLog166::MemoryLog166(unsigned int msize, unsigned int ltime, char *filename_, char *titles_)
 {
 	unsigned int ms;  // Size of memory that we need
 	
 	// Compute the size that we need for 1 item per loop during 2m15s + 5s padding
-	ms = ((1000*((2*60) + 15 + 5)) / ltime) * msize;
+	ms = ((1000*(Match_Time + Padding)) / ltime) * msize;
 	
 	// Allocate the requested memory
 	MemoryBase = (char *)valloc(ms);
@@ -42,12 +43,12 @@ MemoryLog166::MemoryLog166(unsigned int msize, unsigned int ltime, char *f, char
 	BuffersObtained = 0;
 	
 	// Capture name of file
-	FileName = (char *)malloc(strlen(f) + 1);
-	strcpy(FileName, f);
+	wpi_assert(strlen(filename_)>0);
+	FileName = filename_;
 	
 	// Capture titles
-	Titles = (char *)malloc(strlen(titles) + 1);
-	strcpy(Titles, titles);
+	wpi_assert(strlen(titles_)>0);
+	Titles = titles_;
 	
 	// Not yet registered
 	Registered = 0;
@@ -60,7 +61,6 @@ MemoryLog166::MemoryLog166(unsigned int msize, unsigned int ltime, char *f, char
 // Destructor
 MemoryLog166::~MemoryLog166(void)
 {
-	
 	// Done
 	return;
 }
@@ -98,10 +98,10 @@ int MemoryLog166::DumpToFile(void)
 	
 	// Create the output file
 	Factual[sizeof(Factual) - 1] = 0;
-	snprintf(Factual, sizeof(Factual) - 1, "%s.csv", FileName);
+	snprintf(Factual, sizeof(Factual) - 1, "%s.csv", FileName.c_str());
 	if (ofile = fopen(Factual, "w")) {
 		printf("%s\n",Factual);
-		fprintf(ofile,Titles);
+		fprintf(ofile,Titles.c_str());
 	
 		// Enter loop to dump out the data into the file
 		int l=0;
@@ -117,7 +117,7 @@ int MemoryLog166::DumpToFile(void)
 	
 	// Reset what we have logged
 	MemoryNext = MemoryBase;
-	printf("Completed dump for %s into %s;\n", FileName, Factual);
+	printf("Completed dump for %s into %s;\n", FileName.c_str(), Factual);
 	printf("  Requested buffers %d, Obtained buffers %d\n",
 			BuffersRequested, BuffersObtained);
 	BuffersRequested = 0;

@@ -20,16 +20,11 @@ class DashboardDataSender
 public:
 	DashboardDataSender();
 	void sendIOPortData(void);
-	void sendVisionData(double joyStickX,
-						double gyroAngle,
-						double gyroRate,
-						double targetX,
-						vector<Target> targets);
 	static DashboardDataSender *getInstance();
 private:
 	static DashboardDataSender *instance;
 	Timer *visionTimer;
 	Timer *IOTimer;
-	Proxy166* proxy;
+	Proxy* proxy;
 };
 #endif // __DashboardDataFormat_h__

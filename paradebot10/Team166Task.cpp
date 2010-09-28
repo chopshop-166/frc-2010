@@ -1,9 +1,8 @@
 /********************************************************************************
-*  Project   		: Chopshop 2009
-*  File Name  		: Team166Task.h          
-*  Contributors   	: PSH
-*  Creation Date 	: February 6, 2008
-*  Revision History	: Source code & revision history maintained at code.google.com    
+*  Project   		: Framework
+*  File Name  		: Team166Task.cpp         
+*  Owner		   	: Software Group (FIRST Chopshop Team 166)
+*  Creation Date 	: January 18, 2010
 *  File Description	: This file defines the high level and shared context for a Team 166
 *******************************************************************************/ 
 /*----------------------------------------------------------------------------*/
@@ -15,7 +14,6 @@
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
-
 // Constructor
 Team166Task::Team166Task(int IsEssential)
 {	
@@ -59,9 +57,9 @@ int Team166Task::Start(char *tname, unsigned int loop_interval)
 		
 	// Capture the preferred loop time
 	if (loop_interval >= 1000) {
-		MyLoopMs = 999 * 1000 * 1000; // Convert ms to ns
+		MyLoopNs = 999 * 1000 * 1000; // Convert ms to ns
 	} else {
-		MyLoopMs = loop_interval * 1000 * 1000; // Convert ms to ns
+		MyLoopNs = loop_interval * 1000 * 1000; // Convert ms to ns
 	}
 		
 	// Spawn a new task
@@ -182,9 +180,9 @@ void Team166Task::WaitForNextLoop(void)
 	}
 	
 	// How far into this cycle have we run?
-	delta_time.tv_nsec = MyLoopMs - (delta_time.tv_nsec % MyLoopMs);
+	delta_time.tv_nsec = MyLoopNs - (delta_time.tv_nsec % MyLoopNs);
 	if ((unsigned int)delta_time.tv_nsec < half_tick)
-		  delta_time.tv_nsec = MyLoopMs;
+		  delta_time.tv_nsec = MyLoopNs;
 	delta_time.tv_sec = 0;
 	
 	// Enable task preemption
@@ -201,7 +199,7 @@ void Team166Task::WaitForNextLoop(void)
 		}
 		
 		// Have we exceeded our run length?
-		if (rundelta_time.tv_sec || ((unsigned int)rundelta_time.tv_nsec > MyLoopMs))
+		if (rundelta_time.tv_sec || ((unsigned int)rundelta_time.tv_nsec > MyLoopNs))
 			OverRuns++;
 	} else {
 		rundelta_time.tv_sec = 0;
@@ -218,7 +216,6 @@ void Team166Task::WaitForNextLoop(void)
 	loop_calls++;
 	if (last_print_sec != current_time.tv_sec) {
 		last_print_sec = current_time.tv_sec;
-		//DPRINTF(LOG_DEBUG,"Task '%s' checking in after %u calls with %u over runs\n", MyName, loop_calls, OverRuns);
 		loop_calls = 0;
 	}
 	
@@ -229,14 +226,14 @@ void Team166Task::WaitForNextLoop(void)
 // Check if all registered tasks are up
 int Team166Task::IfUp(void)
 {
-	int l;  // Local loop variable
+	
 
 	// Loop through all the slots and check each registered task
-	for (l=0; l<T166_MAXTASK; l++) {
+	for (int i=0; i<T166_MAXTASK; i++) {
 			
 		// If the task is registered but not initialized, we're not done
-		if ((ActiveTasks[l]) &&
-			 (!ActiveTasks[l]->MyTaskInitialized)) {
+		if ((ActiveTasks[i]) &&
+			 (!ActiveTasks[i]->MyTaskInitialized)) {
 			return (0);	
 		}
 	}
@@ -271,7 +268,7 @@ void Team166Task::PrintStats(void) {
 		printf("\n");
 }
 /**
- * Prints out a list of tasks that have no tinitialized.
+ * Prints out a list of tasks that have not initialized.
  */
 void Team166Task::PrintInactive(void) {
 	int last_id = 0;
@@ -292,34 +289,38 @@ void Team166Task::PrintInactive(void) {
 // Should we feed the watchdog?
 int Team166Task::FeedWatchDog(void)
 {
-		
-	int l;  // Local loop variable
-		
+	int i;	//Looping variable
 	// Loop through all the slots and check each registered task
-	for (l=0; l<T166_MAXTASK; l++) {
+	for (i=0; i<T166_MAXTASK; i++) {
 			
 		// Is this a registered and essential task?
-		if ((ActiveTasks[l]) &&
-			 (ActiveTasks[l]->MyTaskIsEssential)) {
+		if ((ActiveTasks[i]) &&
+			 (ActiveTasks[i]->MyTaskIsEssential)) {
 				
 			// Yes. Has this task set its watchdog?
-			if (!ActiveTasks[l]->MyWatchDog) {
-					
-				// No. Tell caller at least one task is not ready
-				if (ActiveTasks[l]->MissedWatchDog++ > T166_WATCHDOG_MIN)
-					//DPRINTF(LOG_DEBUG,"Task '%s' has not reported its watchdog %d times in a row.\n", ActiveTasks[l]->MyName ? ActiveTasks[l]->MyName : "unknown", T166_WATCHDOG_MIN);
-					printf("Task '%s' has not reported its watchdog %d times in a row.\n", ActiveTasks[l]->MyName ? ActiveTasks[l]->MyName : "unknown", T166_WATCHDOG_MIN);
+			if (!ActiveTasks[i]->MyWatchDog) {
+				// No. Tell caller at least one task is not ready.
+				
+				// Increase the number of times it's missed
+				ActiveTasks[i]->MissedWatchDog++;
+				
+				// Has the task missed the watchdog too many times?
+				if (ActiveTasks[i]->MissedWatchDog > T166_WATCHDOG_MIN) {
+					printf("Task '%s' has not reported its watchdog %d times in a row.\n",
+						ActiveTasks[i]->MyName ? ActiveTasks[i]->MyName : "unknown",
+						T166_WATCHDOG_MIN);
+				}
 				return (0);
 			}
 		}
 	}
 		
 	// If we get here they have all said we're good. Clear them and tell caller
-	for (l=0; l<T166_MAXTASK; l++)
-		if ((ActiveTasks[l]) &&
-			 (ActiveTasks[l]->MyTaskIsEssential)) {
-			ActiveTasks[l]->MyWatchDog = 0;
-			ActiveTasks[l]->MissedWatchDog = 0;				
+	for (i=0; i<T166_MAXTASK; i++)
+		if ((ActiveTasks[i]) &&
+			 (ActiveTasks[i]->MyTaskIsEssential)) {
+			ActiveTasks[i]->MyWatchDog = 0;
+			ActiveTasks[i]->MissedWatchDog = 0;				
 		}
 	return (1);
 };

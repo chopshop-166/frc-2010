@@ -1,9 +1,8 @@
 /*******************************************************************************
-*  Project   		: chopshop10 - 2010 Chopshop Robot Controller Code
+*  Project   		: Framework
 *  File Name  		: Runtime166.cpp
 *  Owner		   	: Software Group (FIRST Chopshop Team 166)
 *  Creation Date	: January 18, 2010
-*  Revision History	: From Explorer with TortoiseSVN, Use "Show log" menu item
 *  File Description	: Class that generates runtime statistics
 *******************************************************************************/ 
 /*----------------------------------------------------------------------------*/
@@ -15,9 +14,12 @@
 #include <string>
 using namespace std;
 
+// 512 is arbitrary
+#define RUNTIME_BUFFER_LIMIT (512)
+
 Runtime166::Runtime166(int lim) {
 	limit = lim;
-	r = new char[500]; // Returned string
+	r = new char[RUNTIME_BUFFER_LIMIT]; // Returned string
 }
 
 void Runtime166::Start() {

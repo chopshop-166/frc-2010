@@ -1,21 +1,23 @@
 /*******************************************************************************
-*  Project   		: chopshop10 - 2010 Chopshop Robot Controller Code
+*  Project   		: Framework
 *  File Name  		: Team166Task.h     
 *  Owner		   	: Software Group (FIRST Chopshop Team 166)
 *  Creation Date	: January 18, 2010
-*  Revision History	: From Explorer with TortoiseSVN, Use "Show log" menu item
 *  File Description	: Header for main robot task and global paramters
 *******************************************************************************/ 
 /*----------------------------------------------------------------------------*/
 /*  Copyright (c) MHS Chopshop Team 166, 2010.  All Rights Reserved.          */
 /*----------------------------------------------------------------------------*/
 
-#if !defined(_TEAM166TASK_H)
-#define _TEAM166TASK_H
+#pragma once
+
 #include "WPILib.h"
 #include <cmath>
 #include <sysLib.h>
 #include "Defines.h"
+
+// Framework version number
+#define FRAMEWORK_VERSION ("2010-Aug-04")
 
 //
 // task (as in kernel task)
@@ -98,7 +100,7 @@ public:
 	char *MyName;               // Name of this task
 	int MissedWatchDog;         // Missed watchdog count
 	float MyLoopInterval;       // Timing interval for loop
-	unsigned int MyLoopMs;      // Length of loop for this 
+	unsigned int MyLoopNs;      // Length of loop for this 
 	unsigned int OverRuns;      // Task over runs
 	
 private:
@@ -117,4 +119,3 @@ private:
 	unsigned int loop_calls;      // Times we've been called to wait
 	
 };
-#endif // !defined(_TEAM166TASK_H)

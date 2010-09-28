@@ -1,14 +1,15 @@
 /*******************************************************************************
-*  Project   		: chopshop10 - 2010 Chopshop Robot Controller Code
+*  Project   		: Framework
 *  File Name  		: Runtime166.h  
 *  Owner		   	: Software Group (FIRST Chopshop Team 166)
 *  Creation Date	: January 18, 2010
-*  Revision History	: From Explorer with TortoiseSVN, Use "Show log" menu item
 *  File Description	: Header for class that generates runtime statistics
 *******************************************************************************/ 
 /*----------------------------------------------------------------------------*/
 /*  Copyright (c) MHS Chopshop Team 166, 2010.  All Rights Reserved.          */
 /*----------------------------------------------------------------------------*/
+
+#pragma once
 
 #include "WPILib.h"
 #include <vector>
@@ -47,7 +48,7 @@ public:
 	 */
 	void Start();
 	/**
-	 * Starts tracking time.
+	 * Stops tracking time.
 	 */
 	void Stop();
 	/**

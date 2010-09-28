@@ -1,9 +1,8 @@
 /*******************************************************************************
-*  Project   		: chopshop10 - 2010 Chopshop Robot Controller Code
-*  File Name  		: Robot166.cpp     
+*  Project   		: Framework
+*  File Name  		: Robot.cpp     
 *  Owner		   	: Software Group (FIRST Chopshop Team 166)
 *  Creation Date	: January 18, 2010
-*  Revision History	: From Explorer with TortoiseSVN, Use "Show log" menu item
 *  File Description	: Base class used in entire robot
 *******************************************************************************/ 
 /*----------------------------------------------------------------------------*/
@@ -16,9 +15,10 @@
 #include <fcntl.h>
 #include <cstdio>
 #include "WPILib.h"
-#include "Autonomous166.h"
+#include "Autonomous.h"
 #include "Robot.h"
 #include "Includes.h"
+#include <stdarg.h>
 
 // To locally enable debug printing: set true, to disable false
 #define DPRINTF if(false)dprintf
@@ -26,25 +26,16 @@
 // List of tasks that have requested to come up
 Team166Task *Team166Task::ActiveTasks[T166_MAXTASK + 1] = {0};
 
+// Create the robot handle that's used by all the other classes
+Robot *Robot::RobotHandle = NULL;
+
 // This task has to always be started first or the system will crash
-Proxy166 Team166ProxyObject;
-// Declare external tasks
-Team166CANDrive Team166CANDriveObject;
-Pneumatics166 Pneumatics166Object;
-Sonar166 SonarObject;
-AxesSensors166 AxesSensorsObject;
-CameraServo CameraServoObject;
-
-
-// This links to the single instance of the Robot task
-class Robot;
-static Robot *RobotHandle = 0;
+Proxy Team166ProxyObject;
+// Declare external tasks inside Tasks.h
+#include "Tasks.h"
 
 /**
- * This is a demo program showing the use of the RobotBase class.
- * The SimpleRobot class is the base of a robot application that will automatically call your
- * Autonomous and OperatorControl methods at the right time as controlled by the switches on
- * the driver station or the field controls.
+ * The constructor for the main robot tastk that initializes various components of the robot code
  */ 
 Robot::Robot(void)  
 {
@@ -55,15 +46,15 @@ Robot::Robot(void)
 	DPRINTF(LOG_DEBUG, "Constructor\n");
 	
 	RobotMode = T166_CONSTRUCTOR;
-	DSLock = semBCreate(SEM_Q_PRIORITY, SEM_FULL);
 	dsHandle = DriverStation::GetInstance();
 	dsHandleLCD = DriverStationLCD::GetInstance();
-	sender = DashboardDataSender::getInstance();
-	RobotHandle = this;
+	if(RobotHandle == NULL) {
+		RobotHandle = this;
+	}
 	mlHead = 0;
 
 	// update DS
-	DriverStationDisplay("Starting 166 Robot");
+	DriverStationDisplay("Starting Robot");
 	
 	// Setup expiration for task watchdog.
 	GetWatchdog().SetExpiration(5.0); // 5 seconds
@@ -80,47 +71,12 @@ Robot::Robot(void)
 }
 
 /**
- * Obtain battery voltage. Wrapper here ensures we do not collide with
- * other tasks touching the drive station.
- */
-float Robot::GetBatteryVoltage(void)
-{
-	static unsigned int ds_a = 0;
-	unsigned int prev_a = ds_a;
-	semTake(DSLock, WAIT_FOREVER);
-	float bv = dsHandle->GetBatteryVoltage();
-	for (int i=0; i<8; i++)
-		ds_a = (ds_a & ~(1<<i)) | dsHandle->GetDigitalIn(i+1)<<i;
-	semGive(DSLock);
-	if (prev_a != ds_a) {
-		for (int i=0; i<8; i++) {
-			if ((prev_a & 1<<i) != (ds_a & 1<<i)) {
-				if (ds_a & 1<<i) {
-					DPRINTF(LOG_INFO, "Digital port %d is ON\n", i);
-				} else {
-					DPRINTF(LOG_INFO, "Digital port %d is OFF\n", i);
-				}
-			}
-		}
-	}
-	return (bv);	
-}
-
-/**
- * Run autonomous class if jumper is in, otherwise wait for Teleop
+ * Run autonomous class
  */
 void Robot::Autonomous(void)
 {
 	GetWatchdog().SetEnabled(false);
-	RobotMode = T166_AUTONOMOUS;
-	if(!DigitalInput(T166_AUTONOMOUS_JUMPER).Get()) {
-		DPRINTF(LOG_DEBUG,"Entered enabled autonomous\n");
-		DriverStationDisplay("IN AUTONOMOUS");
-		Autonomous166();
-	} else {
-		DPRINTF(LOG_DEBUG,"Entered disabled autonomous\n");
-		DriverStationDisplay("NO AUTONOMOUS");
-	}
+	AutonomousTask();
 }
 
 /**
@@ -128,12 +84,12 @@ void Robot::Autonomous(void)
  */
 void Robot::Disabled(void)
 {
-	DriverStationDisplay(T166_CODE_VERSION);
-	printf("%s\n", T166_CODE_VERSION);
+	DriverStationDisplay(FRAMEWORK_VERSION);
+	printf("%s\n", FRAMEWORK_VERSION);
 }
 
 /** 
- * Runs the motors with arcade steering. 
+ * Run tasks under operator control
  */
 void Robot::OperatorControl(void)
 {
@@ -146,7 +102,6 @@ void Robot::OperatorControl(void)
 	RobotMode = T166_OPERATOR;
 	GetWatchdog().SetEnabled(true);
 	DriverStationDisplay("Teleoperated Enabled.");
-		dsHandleLCD->UpdateLCD();
 	while (IsOperatorControl())
 	{
 		if(debugTimer.HasPeriodPassed(ROBOT_WAIT_TIME))
@@ -169,12 +124,11 @@ void Robot::OperatorControl(void)
 		}
 		
 		// Each task needs to update for us to feed the watch dog.
-		if (Team166Task::FeedWatchDog())
+		if (Team166Task::FeedWatchDog()) {
 		    GetWatchdog().Feed();
+		}
 		
-		sender->sendIOPortData();
 		Wait (ROBOT_WAIT_TIME);
-		dsHandleLCD->UpdateLCD();
 	}
 	
 }
@@ -231,7 +185,7 @@ int Robot::DriverStationDisplay(const char* format, ...)
 	va_list args;
 	static string dash_string[6];
 	static bool init=true;
-	char formatted_string[21];
+	char formatted_string[DASHBOARD_BUFFER_MAX];
 	if(init) {
 		//Initializes it first call.
 		for(int i=0;i<6;i++) {
