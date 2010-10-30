@@ -50,20 +50,24 @@ def graph_robolog(dol, filename):
     times = dol['Elapsed Time']
     del dol['Elapsed Time']
     i=0
-    keyrange = 0
     xlen = 1
     ylen = len(dol)
     for key in dol.keys():
-        keyrange += 1
+        plt.xlabel('Elapsed Time')
+        plt.ylabel(key)
+        plt.plot(times, dol[key])
+        plt.savefig(filename + "__" + key + ".png")
+        plt.clf()
     for key in dol.keys():
         i += 1
         plt.subplot(ylen,xlen,i)
         plt.xlabel('Elapsed Time')
         plt.ylabel(key)
         plt.plot(times, dol[key])
-    plt.savefig(filename)
+    plt.savefig(filename + ".png")
     plt.clf()
     
+
 def parse_latest():
     global max_foldername, filename
     base_foldername = raw_input("What is the base log folder name?\n==>")
@@ -94,7 +98,7 @@ def parse_latest():
             raw_input();
             return
         data = lod2dol(lod)
-        graph_robolog(data, pngaddress + "\\" + filename + ".png")
+        graph_robolog(data, pngaddress + "\\" + filename)
         lod = ()
         data = {}
         
