@@ -129,7 +129,7 @@ int CameraServo::Main(int a2, int a3, int a4, int a5,
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 	(lHandle->RobotMode == T166_OPERATOR)) {
-		if(!proxy->GetTrigger(3)) {
+		if(!proxy->get("Joy3BT")) {
 			CamJoystickX = proxy->GetJoystickX(T166_COPILOT_STICK);
 			CamJoystickY = proxy->GetJoystickY(T166_COPILOT_STICK);
 			if(CamJoystickX >= DEADBAND) {

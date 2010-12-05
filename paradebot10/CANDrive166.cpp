@@ -177,7 +177,7 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 			Drive_State = TEST_MODE;
 			test_mode = !test_mode;
 		} else if(test_mode == 0){
-			if(proxy->GetThrottle(2)>=0) {
+			if(proxy->get("Joy2T")>=0) {
 				Drive_State = TANK_DRIVE;
 				output_limit = 0;
 			} else {
@@ -238,7 +238,7 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 				Prev_State = ARCADE_DRIVE;
 				break;
 			case 3:
-				test_speed = proxy->GetThrottle(2);
+				test_speed = proxy->get("Joy2T");
 				if(output_limit) {
 					lHandle->DriverStationDisplay("Test Mode is enabled");
 					output_limit = 0;
@@ -256,7 +256,7 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 					num_held = 0;
 				}
 				//Only drive while trigger is being held
-				if(proxy->GetTrigger(2)) {
+				if(proxy->get("Joy2BT")) {
 					leftMotorSpeed = test_speed;
 					rightMotorSpeed = -test_speed;
 				//Make sure robot stops moving when trigger is let go

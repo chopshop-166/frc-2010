@@ -117,8 +117,8 @@ int Pneumatics166::Main(int a2, int a3, int a4, int a5,
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		if(proxy->GetThrottle(1) > 0) {
-			trigger = proxy->GetTrigger(1);
+		if(proxy->get("Joy1T") > 0) {
+			trigger = proxy->get("Joy1BT");
 		} else {
 			trigger ^= proxy->GetNewpress(1,1);
 		}

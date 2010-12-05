@@ -14,7 +14,7 @@
 #include "Utility.h"
 #include "Team166Task.h"
 #include "FrcError.h"
-#include "ProxyBase.h"
+#include <map>
 
 #define NUMBER_OF_JOYSTICKS (4)
 #define NUMBER_OF_SWITCHES (10)
@@ -27,24 +27,6 @@
 #define PROXY_CYCLE_TIME (25) // 25ms
 
 /**
- * @brief Proxy Joystick class that will be returned if a full cached joystick is requested.
- * 
- * If Proxy1666::GetJoystick is called, then a full joystick should be returned. 
- */
-class ProxyJoystick {
-	public:
-		float X;
-		float Y;
-		float Z;
-		float throttle;
-		bool button[NUMBER_OF_JOY_BUTTONS];
-		bool newpress[NUMBER_OF_JOY_BUTTONS];
-		
-		ProxyJoystick(void);
-		static ProxyJoystick Copy(Joystick input);
-};
-
-/**
  * @brief Proxy class to store cached values for joysticks and switches.
  * 
  * This class will store the cached values for joysticks and switches. It will also
@@ -52,8 +34,15 @@ class ProxyJoystick {
  * access them like Drive, Autonomous, etc. 
  */
 
-class Proxy : public Team166Task, public ProxyBase {
-	public:		
+class Proxy : public Team166Task{
+	private:
+		static map<string,pair<float, SEM_ID> > data;
+	public:
+		// Proxy 2.0 functions
+		bool add(string);
+		float get(string, bool=false);
+		float set(string, float);
+		bool del(string);
 		
 		// joystick axes
 		void SetJoystickX(int, float);  
@@ -64,10 +53,6 @@ class Proxy : public Team166Task, public ProxyBase {
 		float GetJoystickY(int);
 		float GetJoystickZ(int);
 		
-		// driver station switches
-		void SetSwitch(int, int);
-		int GetSwitch(int);
-		
 		// joystick buttons
 		void SetButton(int,int,bool);
 		bool GetButton(int,int,bool=false);
@@ -77,17 +62,6 @@ class Proxy : public Team166Task, public ProxyBase {
 		void UnregisterCounter(int,int);
 		int GetPendingCount(int,int);
 		bool IsRegistered(int,int);
-		
-		// joystick throttle
-		void SetThrottle(int,float);
-		float GetThrottle(int);
-
-		// joystick trigger (same as switch #1)
-		void SetTrigger(int,bool);
-		bool GetTrigger(int,bool=false);
-
-		// internal representation of joystick as a whole
-		ProxyJoystick GetJoystick(int);
 		
 		Proxy(void);
 		~Proxy(void);
@@ -100,19 +74,12 @@ class Proxy : public Team166Task, public ProxyBase {
 		virtual int Main(int a2, int a3, int a4, int a5,
 					int a6, int a7, int a8, int a9, int a10);
 	private:
-		/**
-		 * @brief The single instance handle to Proxy166.
-		 */
-		static Proxy* ProxyHandle;
+		// Handle to the proxy
+		static Proxy *ProxyHandle;
 		
 		// internal method to get values from real joystick
 		void SetJoystick(int,Joystick&);
-
-		// proxy storage for driver station switches
-		int Switches[NUMBER_OF_SWITCHES];
-		
-		// proxy storage for driver station joysticks
-		ProxyJoystick Joysticks[NUMBER_OF_JOYSTICKS];
+		void setNewpress(void);
 		
 		/**
 		 * A tuple of ints. For every tracked button, there is three
@@ -131,7 +98,4 @@ class Proxy : public Team166Task, public ProxyBase {
 		float Battery;
 				
 		bool areSettingJoysticks;
-		
-		// <<CHANGEME>>
-		// Insert your own things into the proxy here
 };
