@@ -20,6 +20,11 @@
 struct abuf166
 {
 	struct timespec tp;               // Time of snapshot
+	float orig_temp;
+	float Angle;
+	float Voltage;
+	float X_Accel;
+	float Y_Accel;
 	// Any values that need to be logged go here
 };
 
@@ -29,7 +34,7 @@ class AxesSensorsLog : public MemoryLog166
 public:
 	AxesSensorsLog() : MemoryLog166(
 			sizeof(struct abuf166), AXESSENSORS_CYCLE_TIME, "AxesSensors",
-			"Seconds,Nanoseconds,Elapsed Time\n" // Put the names of the values in here, comma-seperated
+			"Seconds,Nanoseconds,Elapsed Time,Temperature, Angle, Voltage, X Accel, Y Accel\n"  // Put the names of the values in here, comma-seperated
 			) {
 		return;
 	};
@@ -37,11 +42,11 @@ public:
 	unsigned int DumpBuffer(          // Dump the next buffer into the file
 			char *nptr,               // Buffer that needs to be formatted
 			FILE *outputFile);        // and then stored in this file
-	unsigned int PutOne(void);     // Log the values needed-add in arguments
+	unsigned int PutOne(float orig_temp, float Angle, float Voltage, float X_Accel, float Y_Accel);     // Log the values needed-add in arguments
 };
 
 // Write one buffer into memory
-unsigned int AxesSensorsLog::PutOne(void)
+unsigned int AxesSensorsLog::PutOne(float orig_temp, float Angle, float Voltage, float X_Accel, float Y_Accel)
 {
 	struct abuf166 *ob;               // Output buffer
 	
@@ -50,6 +55,11 @@ unsigned int AxesSensorsLog::PutOne(void)
 		
 		// Fill it in.
 		clock_gettime(CLOCK_REALTIME, &ob->tp);
+		ob->orig_temp = orig_temp;
+		ob->Angle = Angle;
+		ob->Voltage = Voltage;
+		ob->X_Accel = X_Accel;
+		ob->Y_Accel = Y_Accel;
 		// Add any values to be logged here
 		return (sizeof(struct abuf166));
 	}
@@ -81,7 +91,8 @@ unsigned int AxesSensorsLog::DumpBuffer(char *nptr, FILE *ofile)
 
 
 // task constructor
-AxesSensors166::AxesSensors166(void): Temp_Sensor(T166_Temp), Gyro_Sensor(T166_Gyro), X_Axis(T166_X_AXIS), Y_Axis(T166_Y_AXIS)
+AxesSensors166::AxesSensors166(void): Temp_Sensor(T166_Temp), Gyro_voltage(T166_Gyro),Gyro_gyro(&Gyro_voltage), X_Axis(T166_X_AXIS), Y_Axis(T166_Y_AXIS)
+
 {
 	Start((char *)"166AxesSensorsTask", AXESSENSORS_CYCLE_TIME);
 	// ^^^ Rename those ^^^
@@ -140,8 +151,9 @@ int AxesSensors166::Main(int a2, int a3, int a4, int a5,
 	// Register the proxy
 	proxy = Proxy::getInstance();
 
-	//float orig_voltage_gyro = 0;
+	float orig_voltage_temp = 0;
 	float Gyro_Angle = 0;
+	float Gyro_Volt = 0;
 	float X_Axis_Accel = 0;
 	float Y_Axis_Accel = 0;
 	float X_Axis_Old = 0;
@@ -149,19 +161,20 @@ int AxesSensors166::Main(int a2, int a3, int a4, int a5,
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		//float orig_voltage_temp = GetTemperature(Temp_Sensor, 'F');
+		orig_voltage_temp = GetTemperature(Temp_Sensor, 'F');
 		//lHandle->DriverStationDisplay("Temp: %f", orig_voltage_temp);
-		Gyro_Angle = Gyro_Sensor.GetAngle();
-        //lHandle->DriverStationDisplay("Angle: %f", Gyro_Angle);
+		Gyro_Angle = Gyro_gyro.GetAngle();
+		Gyro_Volt = Gyro_voltage.GetVoltage();
+        lHandle->DriverStationDisplay("A: %2.3f V: %2.3f", Gyro_Angle, Gyro_Volt);
 		X_Axis_Accel = X_Axis.GetAcceleration();
 		Y_Axis_Accel = Y_Axis.GetAcceleration();
-		if((X_Axis_Accel != X_Axis_Old) || (Y_Axis_Accel != Y_Axis_Old)) {
-			lHandle->DriverStationDisplay("X: %1.3f\tY: %1.3f",X_Axis_Accel,Y_Axis_Accel);
-		}
+//		if((X_Axis_Accel != X_Axis_Old) || (Y_Axis_Accel != Y_Axis_Old)) {
+//			lHandle->DriverStationDisplay("X: %1.3f\tY: %1.3f",X_Axis_Accel,Y_Axis_Accel);
+//		}
 		X_Axis_Old = X_Axis_Accel;
 		Y_Axis_Old = Y_Axis_Accel;
 		// Logging any values
-		sl.PutOne();
+		sl.PutOne(orig_voltage_temp, Gyro_Angle, Gyro_Volt, X_Axis_Accel, Y_Axis_Accel);
 		
 		// Wait for our next lap
 		WaitForNextLoop();		
