@@ -162,28 +162,20 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 	float leftCurrent=0, rightCurrent=0;
 	float leftMotorSpeed = 0;
 	float rightMotorSpeed = 0;
-	bool held = 0;
-	float test_speed = 0;
-	bool test_mode = 0;
 	bool output_limit = 1;
-	typedef enum {TANK_DRIVE = 1, ARCADE_DRIVE = 2, TEST_MODE = 3} Drive_States;
+	typedef enum {TANK_DRIVE = 1, ARCADE_DRIVE = 2} Drive_States;
 	Drive_States Drive_State;
 	Drive_States Prev_State;
 	
     // General main loop (while in Autonomous or Tele mode)
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 			(lHandle->RobotMode == T166_OPERATOR)) {
-		if ((proxy->GetButton(2,7)) && (held == 0)) {
-			Drive_State = TEST_MODE;
-			test_mode = !test_mode;
-		} else if(test_mode == 0){
-			if(proxy->get("Joy2T")>=0) {
-				Drive_State = TANK_DRIVE;
-				output_limit = 0;
-			} else {
-				Drive_State = ARCADE_DRIVE;
-				output_limit = 0;
-			}
+		if(proxy->get("Joy2T")>=0) {
+			Drive_State = TANK_DRIVE;
+			output_limit = 0;
+		} else {
+			Drive_State = ARCADE_DRIVE;
+			output_limit = 0;
 		}
 		if (Drive_State != Prev_State) {
 			lHandle->DriverStationDisplay("State Changed");
@@ -195,8 +187,8 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 					output_limit = 0;
 				}
 				//Tank Drive
-				leftMotorSpeed = proxy->GetJoystickY(1);
-				rightMotorSpeed = -proxy->GetJoystickY(2);
+				leftMotorSpeed = proxy->get("Joy1Y");
+				rightMotorSpeed = -proxy->get("Joy2Y");
 				Prev_State = TANK_DRIVE;
 				break;
 			case 2:
@@ -205,15 +197,15 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 					output_limit = 0;
 				}
 				//Arcade Drive
-				if(proxy->GetButton(1,3)) {
+				if(proxy->get("Joy1B3")) {
 					leftMotorSpeed = ARCADE_AUTO_SPEED;
 					rightMotorSpeed = -ARCADE_AUTO_SPEED;
-				} else if(proxy->GetButton(1,2)) {
+				} else if(proxy->get("Joy1B2")) {
 					leftMotorSpeed = -ARCADE_AUTO_SPEED;
 					rightMotorSpeed = ARCADE_AUTO_SPEED;
 				} else {
-					float moveValue = -proxy->GetJoystickX(1);
-					float rotateValue = -proxy->GetJoystickY(1);
+					float moveValue = -proxy->get("Joy1X");
+					float rotateValue = -proxy->get("Joy1Y");
 			
 					if (moveValue > 0.0) {
 						if (rotateValue > 0.0) {
@@ -237,40 +229,6 @@ int Team166CANDrive::Main(int a2, int a3, int a4, int a5,
 				}
 				Prev_State = ARCADE_DRIVE;
 				break;
-			case 3:
-				test_speed = proxy->get("Joy2T");
-				if(output_limit) {
-					lHandle->DriverStationDisplay("Test Mode is enabled");
-					output_limit = 0;
-				}
-				bool num_held = 0;
-				if((proxy->GetButton(2,8)) && (num_held == 0)) {
-					num_held = 1;
-					test_speed = test_speed - .01;
-					lHandle->DriverStationDisplay("Speed: %f", test_speed);
-				} else if((proxy->GetButton(2,9)) && (num_held == 0)) {
-					num_held = 1;
-					test_speed = test_speed + .01;
-					lHandle->DriverStationDisplay("Speed: %f", test_speed);
-				} else {
-					num_held = 0;
-				}
-				//Only drive while trigger is being held
-				if(proxy->get("Joy2BT")) {
-					leftMotorSpeed = test_speed;
-					rightMotorSpeed = -test_speed;
-				//Make sure robot stops moving when trigger is let go
-				} else {
-					leftMotorSpeed = 0;
-					rightMotorSpeed = 0;
-				}
-				Prev_State = TEST_MODE;
-		}
-		if(!test_mode) {
-			if(output_limit) {
-				lHandle->DriverStationDisplay("Test Mode is disabled");
-				output_limit = 0;
-			}
 		}
 		//Set Speed of motor to correct value depending on drive mode
 		leftJag.Set(leftMotorSpeed);

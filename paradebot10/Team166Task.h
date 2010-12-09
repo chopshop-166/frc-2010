@@ -17,7 +17,7 @@
 #include "Defines.h"
 
 // Framework version number
-#define FRAMEWORK_VERSION ("2010-Aug-04")
+#define FRAMEWORK_VERSION ("2010-Dec-07")
 
 //
 // task (as in kernel task)

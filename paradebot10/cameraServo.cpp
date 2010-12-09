@@ -105,8 +105,10 @@ int CameraServo::Main(int a2, int a3, int a4, int a5,
 	Proxy *proxy;				// Handle to proxy
 	Robot *lHandle;            // Local handle
 	CameraServoLog sl;                   // log
+#if 0
 	unsigned timer = 0;					// Timer to only do certain things so often
 	int largestParticleIndex = 0;
+#endif
 	
 	// Let the world know we're in
 	DPRINTF(LOG_DEBUG,"In the 166 Template task\n");
@@ -130,8 +132,8 @@ int CameraServo::Main(int a2, int a3, int a4, int a5,
 	while ((lHandle->RobotMode == T166_AUTONOMOUS) || 
 	(lHandle->RobotMode == T166_OPERATOR)) {
 		if(!proxy->get("Joy3BT")) {
-			CamJoystickX = proxy->GetJoystickX(T166_COPILOT_STICK);
-			CamJoystickY = proxy->GetJoystickY(T166_COPILOT_STICK);
+			CamJoystickX = proxy->get("Joy3X");
+			CamJoystickY = proxy->get("Joy3Y");
 			if(CamJoystickX >= DEADBAND) {
 				CamX += CAMMOVE;
 			} else if(CamJoystickX <= -DEADBAND) {
@@ -155,6 +157,7 @@ int CameraServo::Main(int a2, int a3, int a4, int a5,
 		} else {
 			CamX = CamY = 0.5;
 		}
+#if 0
 		if ((++timer) % (500/CAMERA_SERVO_CYCLE_TIME) == 0 && camera.IsFreshImage()) {
 			timer = 0;
 			camera.GetImage(srcimage);
@@ -167,6 +170,7 @@ int CameraServo::Main(int a2, int a3, int a4, int a5,
 				printf("No particle found...\n");
 			}
 		}
+#endif
         cameraX.Set(CamX);
 		cameraY.Set(CamY);
 		// Logging any values

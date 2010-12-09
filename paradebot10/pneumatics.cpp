@@ -120,7 +120,7 @@ int Pneumatics166::Main(int a2, int a3, int a4, int a5,
 		if(proxy->get("Joy1T") > 0) {
 			trigger = proxy->get("Joy1BT");
 		} else {
-			trigger ^= proxy->GetNewpress(1,1);
+			trigger ^= (bool)proxy->get("Joy1B1N");
 		}
 		cylinder_open.Set(trigger);
 		if(trigger) {
