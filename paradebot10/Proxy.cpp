@@ -210,10 +210,11 @@ void Proxy::SetJoystick(int joy_id, Joystick & stick)
 	set(name + 'T', stick.GetThrottle());
 	string bname;
 	for(unsigned i=0;i<NUMBER_OF_JOY_BUTTONS;i++) {
-			ss << name << "B" << i+1;
-			ss >> bname;
-			set(bname,stick.GetRawButton(i));
-		}
+		ss << name << "B" << i+1;
+		ss >> bname;
+		set(bname,stick.GetRawButton(i));
+	}
+	set(name+"BT", stick.GetTrigger());
 }
 
 /**
